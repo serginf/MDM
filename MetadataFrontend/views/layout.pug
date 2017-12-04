@@ -1,0 +1,154 @@
+doctype html
+html
+  head
+    title="Bolster | MDM"
+    script(src='/js/jquery-2.2.3.min.js')
+    script(src='/js/underscore-1.8.3.min.js')
+    script(src='/js/bootswatch.js')
+    script(src='/js/bootstrap.js')
+    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/bootswatch.min.css')
+    block headers
+
+  .navbar.navbar-default.navbar-fixed-top
+    .container
+      .navbar-header
+        a.navbar-brand(href='/') MDM
+        button.navbar-toggle(type='button', data-toggle='collapse', data-target='#navbar-main')
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+
+      #navbar-main.navbar-collapse.collapse
+        ul.nav.navbar-nav
+          li
+            h5
+              span.badge Data Management
+
+        ul.nav.navbar-nav
+          li.dropdown
+            a.dropdown-toggle(data-toggle='dropdown', href='#')
+              | Releases
+              span.caret
+            ul.dropdown-menu(aria-labelledby='release')
+              li
+                a(href='/new_release') New Release
+              li
+                a(href='/manage_releases') Manage Releases
+
+        ul.nav.navbar-nav
+          li.dropdown
+            a.dropdown-toggle(data-toggle='dropdown', href='#')
+              | Big Data Integration Ontology
+              span.caret
+            ul.dropdown-menu(aria-labelledby='release')
+              li
+                a(href='/new_bdi_ontology') New BDI Ontology
+              li
+                a(href='/manage_bdi_ontologies') Manage BDI Ontologies
+
+        ul.nav.navbar-nav
+          li
+            h5
+              span.badge Data Analysis
+
+        ul.nav.navbar-nav
+          li.dropdown
+            a.dropdown-toggle(data-toggle='dropdown', href='#')
+              | Data Feed
+              span.caret
+            ul.dropdown-menu(aria-labelledby='release')
+              li
+                a(href='/live_data_feeds') Raw Data
+              //li
+                a(href='/general_statistics') General Statistics
+              li
+                a(href='/data_source_statistics_wrapper') Graphical Viewer
+
+
+        //ul.nav.navbar-nav
+          li.dropdown
+            a.dropdown-toggle(data-toggle='dropdown', href='#')
+              | Training Sets
+              span.caret
+            ul.dropdown-menu(aria-labelledby='release')
+              li
+                a(href='/new_statistical_analysis_model') New Statistical Analysis Model
+              li
+                a(href='/manage_statistical_analysis_models') Manage Statistical Analysis Models
+
+        //ul.nav.navbar-nav
+          li.dropdown
+            a.dropdown-toggle(data-toggle='dropdown', href='#')
+              | Statistical Analysis Models
+              span.caret
+            ul.dropdown-menu(aria-labelledby='release')
+              li
+                a(href='/new_statistical_analysis_model') New Statistical Analysis Model
+              li
+                a(href='/manage_statistical_analysis_models') Manage Statistical Analysis Models
+
+        ul.nav.navbar-nav
+          li.dropdown
+            a.dropdown-toggle(data-toggle='dropdown', href='#')
+              | ECA Rules
+              span.caret
+            ul.dropdown-menu(aria-labelledby='release')
+              li
+                a(href='/new_eca_rule') New ECA Rule
+              li
+                a(href='/manage_eca_rules') Manage ECA Rules
+
+
+        //ul.nav.navbar-nav
+          li.dropdown
+            a.dropdown-toggle(data-toggle='dropdown', href='#')
+              | Logical Ontologies
+              span.caret
+            ul.dropdown-menu(aria-labelledby='projects')
+              li
+                a(href='/manage_logical_ontologies') Manage Logical Ontologies
+              li.divider
+              li
+                a(href='/ontology_extraction') Manual Generation
+              li
+                a(href='/clone_physical_to_logical') Clone from Physical Ontology
+
+
+        //ul.nav.navbar-nav
+          li.dropdown
+            a.dropdown-toggle(data-toggle='dropdown', href='#')
+              | Physical Ontologies
+              span.caret
+            ul.dropdown-menu(aria-labelledby='projects')
+              li
+                a(href='/new_physical_ontology') New Physical Ontology
+              li
+                a(href='/manage_physical_ontologies') Manage Physical Ontologies
+              li.divider
+              li
+                a(href='/new_dataset') Upload Sample Dataset
+              li
+                a(href='/manage_datasets') Manage Sample Datasets
+
+        //ul.nav.navbar-nav
+          li.dropdown
+            a.dropdown-toggle(data-toggle='dropdown', href='#')
+              | Three Level Ontology
+              span.caret
+            ul.dropdown-menu(aria-labelledby='projects')
+              li
+                a(href='/new_three_level_ontology') New Three-Level Ontology
+              li
+                a(href='/manage_three_level_ontologies') Manage Three-Level Ontologies
+
+        ul.nav.navbar-nav.navbar-right
+          li.dropdown
+            a.dropdown-toggle(data-toggle='dropdown', href='#')
+              | Signed in as #{user.username}
+              span.caret
+            ul.dropdown-menu(aria-labelledby='username')
+              li
+                a(href='/logout') Logout
+  block content

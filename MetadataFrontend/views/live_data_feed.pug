@@ -1,0 +1,20 @@
+extends layout_iframe
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+
+    script(src='/js/socket.io.js')
+    script(src='/js/client_live_data_feed.js')
+
+block content
+
+    style.
+        tr {
+            font-size: xx-large;
+        }
+
+
+    .bs-component
+        table.table.table-striped.table-hover#liveDataFeed
+            thead
+                tr(style="font-size: xx-large;")
+                tbody

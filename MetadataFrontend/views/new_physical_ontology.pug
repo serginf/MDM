@@ -1,0 +1,32 @@
+extends layout
+block headers
+    script(src='/js/underscore-1.8.3.min.js')
+    link(href="/js/select2-3.5.4/select2.css", rel="stylesheet")
+    script(src='/js/select2-3.5.4/select2.min.js')
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    link(rel='stylesheet', href='/stylesheets/new_dataset.css')
+    script(src='/js/client_new_physical_ontology.js')
+block content
+
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 New Physical Ontology
+                    br
+
+            .container-fluid
+                .col-lg-8
+                    .well.bs-component
+                        form#physicalOntologyForm(role='form').form-horizontal
+                            .form-group#physicalOntologyNameForm
+                                label.col-lg-2.control-label(for='physicalOntologyName') Name
+                                .col-lg-10
+                                    input#physicalOntologyName.form-control(type='text', name='physicalOntologyName', required='required')
+                            .form-group#datasetForm
+                                label.col-lg-2.control-label(for='dataset') Dataset
+                                .col-lg-10
+                                    select#dataset(data-placeholder='Select a dataset',multiple=false,style="width:100%")
+                            .form-group
+                                .col-lg-10.col-lg-offset-2
+                                    button#save.btn.btn-primary.btn-lg.btn-block(type='submit') Submit

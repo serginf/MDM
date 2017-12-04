@@ -1,0 +1,24 @@
+.node {
+    stroke: #555;
+    stroke-width: 2.25px;
+}
+
+.link {
+    stroke-opacity: 1.6px;
+    stroke-width: 3px;
+    opacity: 0.5;
+}
+
+text.label {
+    font-size: x-small;
+    fill: white;
+}
+
+textPath {
+    font-size: x-small;
+}
+
+path.link {
+    fill: none;
+    stroke-width: 2px;
+}

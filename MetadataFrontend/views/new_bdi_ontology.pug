@@ -1,0 +1,39 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    script(src='/js/client_new_bdiontology.js')
+    link(href='/js/select2-4.0.3/dist/css/select2.min.css', rel='stylesheet', type='text/css')
+    script(src='/js/select2-4.0.3/dist/js/select2.min.js')
+    link(rel='stylesheet', href='/stylesheets/select2-bootstrap.min.css')
+
+block content
+
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 New BDI Ontology
+                    br
+
+            .container-fluid
+                .col-lg-8
+                    .well.bs-component
+                        form#bdiontologyForm(role='form').form-horizontal
+                            .form-group#nameForm
+                                label.col-lg-2.control-label(for='name') Name
+                                .col-lg-10
+                                    input#name.form-control(type='text', name='name', required='required')
+
+                            .form-group#releaseForm
+                                label.col-lg-2.control-label(for='releases') Releases
+                                .col-lg-10
+                                    select#releases(multiple='multiple',style="width:100%")
+
+                            .form-group#generationStrategyFrom
+                                label.col-lg-2.control-label(for='generationStrategy') Generation Strategy
+                                .col-lg-10
+                                    select#generationStrategy(style="width:100%")
+
+                            .form-group
+                                .col-lg-10.col-lg-offset-2
+                                    button#submit_bdiontology.btn.btn-primary.btn-lg.btn-block(type='submit') Submit

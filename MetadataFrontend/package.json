@@ -1,0 +1,30 @@
+{
+  "name": "MetadataFrontend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "^1.5.2",
+    "cookie-parser": "latest",
+    "debug": "latest",
+    "express": "^4.8.0",
+    "pug": "latest",
+    "morgan": "latest",
+    "serve-favicon": "latest",
+    "socket.io":"latest",
+    "method-override": "^2.1.2",
+    "express-session":"latest",
+    "express-flash":"latest",
+    "multer": "latest",
+    "passport" : "latest",
+    "bcryptjs":"latest",
+    "passport-local" : "latest",
+    "underscore":"latest",
+    "request":"latest",
+    "randomstring":"latest",
+    "uuid":"latest",
+    "async":"latest"
+  }
+}

@@ -1,0 +1,23 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    script(src='/js/client_manage_domain_ontologies.js')
+block content
+
+
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 Manage Domain Ontologies
+                    br
+            .container-fluid
+                .bs-component
+                    table.table.table-striped.table-hover#domainOntologies
+                        thead
+                            tr
+                                th #
+                                th Name
+                                th Graph IRI
+                                th User
+                        tbody

@@ -1,0 +1,20 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    link(rel='stylesheet', href='/stylesheets/domain_ontology.css')
+    script(src='/js/client_view_sample_dataset.js')
+
+    link(rel='stylesheet', href='/js/highlight/styles/railscasts.css')
+    script(src='/js/highlight/highlight.pack.js')
+block content
+
+
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 View Sample Dataset
+                    h3
+                        #theTitle
+
+            pre#text

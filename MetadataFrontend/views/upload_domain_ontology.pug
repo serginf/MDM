@@ -1,0 +1,35 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    link(rel='stylesheet', href='/stylesheets/new_dataset.css')
+    script(src='/js/client_upload_domain_ontology.js')
+block content
+
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 Upload Domain Ontology
+                    br
+
+
+            .container-fluid
+                    .col-lg-8
+                        .well.bs-component
+                            form#domainOntologyForm(role='form', enctype="multipart/form-data").form-horizontal
+                                .form-group#domainOntologyNameForm
+                                    label.col-lg-2.control-label(for='domainOntologyName') Name
+                                    .col-lg-10
+                                        input#domainOntologyName.form-control(type='text', name='domainOntologyName', required='required')
+                                .form-group#domainOntologyFileForm
+                                    label.col-lg-2.control-label(for='domainOntologyFile') OWL File
+                                    .col-lg-10
+                                        .input-group
+                                            span.input-group-btn
+                                                span.btn.btn-primary.btn-file
+                                                    | Browse
+                                                    input#domainOntologyFile.form-control(type='file', name='domainOntologyFile', required='required', multiple='')
+                                            input#domainOntologyFilePath.form-control(type='text', readonly='')
+                                .form-group
+                                    .col-lg-10.col-lg-offset-2
+                                        button#save.btn.btn-primary.btn-lg.btn-block(type='submit') Submit

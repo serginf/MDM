@@ -1,0 +1,26 @@
+extends layout
+block headers
+    script(src='/js/socket.io.js')
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    script(src='/js/client_general_statistics.js')
+    link(rel='stylesheet', href='/stylesheets/manage_styles.css')
+
+
+block content
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 Stream General Statistics
+                    br
+            .container-fluid
+                .bs-component
+                    table.table.table-striped.table-hover#releases
+                        thead
+                            tr
+                                th #
+                                th Event
+                                th Schema Version
+                                th Kafka Topic
+                                th Number of events in last 5 min
+                        tbody

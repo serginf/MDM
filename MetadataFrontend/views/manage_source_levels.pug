@@ -1,0 +1,24 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    script(src='/js/client_manage_physical_ontologies.js')
+block content
+
+
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 Manage Source Levels
+                    br
+            .container-fluid
+                .bs-component
+                    table.table.table-striped.table-hover#physicalOntologies
+                        thead
+                            tr
+                                th #
+                                th Name
+                                th Graph IRI
+                                th Dataset
+                                th User
+                        tbody

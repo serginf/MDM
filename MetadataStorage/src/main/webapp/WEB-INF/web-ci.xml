@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         id="MetadataStorage" version="3.0">
+    <servlet>
+        <servlet-name>eu.supersede.mdm.storage</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>eu.supersede.mdm.storage.Main</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>eu.supersede.mdm.storage</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Database for system metadata server, i.e. MongoDB -->
+    <context-param>
+        <param-name>system_metadata_db_server</param-name>
+        <param-value>localhost</param-value>
+    </context-param>
+    <!-- Database for system metadata name -->
+    <context-param>
+        <param-name>system_metadata_db_name</param-name>
+        <param-value>BolsterMetadataStorage</param-value>
+    </context-param>
+    <!-- Database for metadata, i.e. RDF -->
+    <context-param>
+        <param-name>metadata_db_server</param-name>
+        <param-value>localhost</param-value>
+    </context-param>
+    <!-- Database for metadata path (for TDB!) -->
+    <context-param>
+        <param-name>metadata_db_path</param-name>
+        <param-value>/opt/jenkins/apps/jenkins/jenkins_home/jobs/MetadataManagementSystem/workspace/data_management/MetadataManagementSystem/MetadataStorage</param-value>
+    </context-param>
+    <!-- File name for metadata path (for TDB!) -->
+    <context-param>
+        <param-name>metadata_db_file</param-name>
+        <param-value>BolsterMetadataStorage</param-value>
+    </context-param>
+    <!-- Database for metadata name -->
+    <context-param>
+        <param-name>metadata_db_name</param-name>
+        <param-value>BolsterMetadataStorage</param-value>
+    </context-param>
+    <!-- Metadata Data Layer URI -->
+    <context-param>
+        <param-name>metadata_data_storage_uri</param-name>
+        <param-value>http://localhost:8080/</param-value>
+    </context-param>
+    <!-- Metadata Data Layer URL -->
+    <context-param>
+        <param-name>metadata_data_storage_url</param-name>
+        <param-value>http://localhost:8080/metadataStorage/</param-value>
+    </context-param>
+
+</web-app>

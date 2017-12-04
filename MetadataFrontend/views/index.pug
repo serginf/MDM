@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  .container
+    #banner
+      .row
+        .col-lg-8.col-md-7.col-sm-6
+          h1 Bolster | Metadata Management System
+      p
+        | The Metadata Management System (MDM) is responsible of providing the other components with the necessary information to describe and model raw data, as well as keeping the footprint about data usage. With this purpose, the MDM contains all the metadata artifacts needed to deal with data governance and assist data exploitation.
+      p
+        | The main artifact currently managed by the MDM is the Big Data Integration (BDI) ontology. The introduced ontology builds upon known ideas from data integration research and includes two layers in order to provide analysts with an integrated and format-agnostic view of the sources. We exploit this structure to handle the evolution of source schema via semi-automated transformations on the ontology upon service releases. Our approach is based on well known Semantic Web technologies, specifically RDF, which contrary to other schema definition languages (e.g., XSD) enable (a) reutilization of existing vocabularies, (b) self-description of data, and (c) publishing such data on the web.
+      p
+        | You can learn more about the API in
+        a(href="https://jsapi.apiary.io/previews/metadatamanagementsystem/reference")  https://jsapi.apiary.io/previews/metadatamanagementsystem/reference

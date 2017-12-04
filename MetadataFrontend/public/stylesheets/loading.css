@@ -1,0 +1,41 @@
+/**************************** LOADING *******************************/
+
+#loading_wrapper {
+    position: absolute;
+    display: none;
+    text-align: center;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#loading_sombra {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    opacity: 0.75;
+    z-index: 50;
+}
+
+#loading_img_wrapper {
+    position: absolute;
+    padding-top: 10px;
+    top: 45%;
+    left: 47.5%;
+    width: 100px;
+    height: 90px;
+    background-color: #FFF;
+    opacity: 1.0;
+    z-index: 100;
+    -moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
+    border-radius: 15px;
+}

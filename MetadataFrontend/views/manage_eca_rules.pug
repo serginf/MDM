@@ -1,0 +1,24 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    script(src='/js/client_manage_eca_rules.js')
+    link(rel='stylesheet', href='/stylesheets/manage_styles.css')
+    script(src='/js/FileSaver.js')
+
+block content
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 Manage ECA Rules
+                    br
+            .container-fluid
+                .bs-component
+                    table.table.table-striped.table-hover#rules
+                        thead
+                            tr
+                                th #
+                                th Name
+                                th View Details
+                                th Generate config file
+                        tbody

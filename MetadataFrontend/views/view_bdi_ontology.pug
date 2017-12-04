@@ -1,0 +1,65 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    link(rel='stylesheet', href='/stylesheets/source_level.css')
+    script(src='/js/metamodel.js')
+    script(src='/js/d3.min.js')
+    script(src='/js/cola.d3.min.js')
+    script(src='/js/client_view_bdi_ontology.js')
+    script(src='/js/client_view_bdi_ontology_d3.js')
+
+    link(rel='stylesheet', href='/js/highlight/styles/railscasts.css')
+    script(src='/js/highlight/highlight.pack.js')
+block content
+
+
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 View BDI Ontology
+                    h3
+                        #theTitle
+                    h4
+                        #theURL
+
+        h5
+            span.label Metadata Model
+            | &nbsp;
+            //span.label(id='Concept')
+                | G:Concept
+            //| &nbsp;&nbsp;
+            span.label(id='Feature')
+                | G:Feature
+            | &nbsp;&nbsp;
+            span.label(id='IntegrityConstraint')
+                | G:IntegrityConstraint
+            | &nbsp;&nbsp;
+            span.label(id='Datatype')
+                | rdfs:Datatype
+            | &nbsp;&nbsp;
+            span.label(id='Event')
+                | S:Event
+            | &nbsp;&nbsp;
+            span.label(id='SchemaVersion')
+                | S:SchemaVersion
+            | &nbsp;&nbsp;
+            span.label(id='mediaType')
+                | dcat:mediaType
+            | &nbsp;&nbsp;
+            span.label(id='EmbeddedObject')
+                | S:EmbeddedObject
+            | &nbsp;&nbsp;
+            span.label(id='Array')
+                | S:Array
+            | &nbsp;&nbsp;
+            span.label(id='Attribute')
+                | S:Attribute
+            | &nbsp;&nbsp;
+            span.label(id='KafkaTopic')
+                | S:KafkaTopic
+            | &nbsp;&nbsp;
+
+
+
+    #bdiOntologyWrapper

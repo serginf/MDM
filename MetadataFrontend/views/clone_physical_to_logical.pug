@@ -1,0 +1,32 @@
+extends layout
+block headers
+    script(src='/js/underscore-1.8.3.min.js')
+    link(href="/js/select2-3.5.4/select2.css", rel="stylesheet")
+    script(src='/js/select2-3.5.4/select2.min.js')
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    link(rel='stylesheet', href='/stylesheets/new_dataset.css')
+    script(src='/js/client_new_logical_ontology_clone.js')
+block content
+
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 New Logical Ontology from Physical
+                    br
+
+            .container-fluid
+                .col-lg-8
+                    .well.bs-component
+                        form#logicalOntologyForm(role='form').form-horizontal
+                            .form-group#logicalOntologyNameForm
+                                label.col-lg-2.control-label(for='logicalOntologyName') Name
+                                .col-lg-10
+                                    input#logicalOntologyName.form-control(type='text', name='logicalOntologyName', required='required')
+                            .form-group#physicalOntologyForm
+                                label.col-lg-2.control-label(for='physicalOntology') Physical Ontology
+                                .col-lg-10
+                                    select#physicalOntology(data-placeholder='Select a physical ontology',multiple=false,style="width:100%")
+                            .form-group
+                                .col-lg-10.col-lg-offset-2
+                                    button#save.btn.btn-primary.btn-lg.btn-block(type='submit') Submit

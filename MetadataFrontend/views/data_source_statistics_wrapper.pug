@@ -1,0 +1,19 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    link(rel='stylesheet', href='/stylesheets/live_data_feeds.css')
+    script(src='/js/client_data_source_statistics_wrapper.js')
+
+block content
+
+
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 Dashboards
+                    br
+    .container.fill
+        .row.fill
+            ul.nav.nav-tabs(role='tablist')#tabPanel
+            .tab-content.fill(style="border-top: 1px solid;")#tabContent
