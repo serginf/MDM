@@ -497,8 +497,8 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
             .data([d])
             .enter()
             .append("foreignObject")
-            .attr("x", nodeBCR.left + placePad)
-            .attr("y", nodeBCR.top + placePad)
+            .attr("x", nodeBCR.left - 190)
+            .attr("y", nodeBCR.top - 300)
             .attr("height", 2 * useHW)
             .attr("width", 300)
             .append("xhtml:p")
@@ -534,6 +534,57 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
         return d3txt;
     };
 
+    GraphCreator.prototype.changeTextOfEdge = function (d3node, d, source, target) {
+        var thisGraph = this,
+            consts = thisGraph.consts,
+            htmlEl = d3node.node();
+        d3node.selectAll("text").remove();
+        var nodeBCR = htmlEl.getBoundingClientRect(),
+            curScale = nodeBCR.width / consts.nodeRadius,
+            placePad = 5 * curScale,
+            useHW = curScale > 1 ? nodeBCR.width * 0.71 : consts.nodeRadius * 1.42;
+        // replace with editableconent text
+        var d3txt = thisGraph.svg.selectAll("foreignObject")
+            .data([d])
+            .enter()
+            .append("foreignObject")
+            .attr("x", nodeBCR.left - 190)
+            .attr("y", nodeBCR.top - 300)
+            .attr("height", 2 * useHW)
+            .attr("width", 300)
+            .append("xhtml:p")
+            .attr("id", consts.activeEditId)
+            .attr("contentEditable", "true")
+            .text(d.name)
+            .on("mousedown", function (d) {
+                d3.event.stopPropagation();
+            })
+            .on("keydown", function (d) {
+                d3.event.stopPropagation();
+                if (d3.event.keyCode == consts.ENTER_KEY && !d3.event.shiftKey) {
+                    this.blur();
+                }
+            })
+            .on("blur", function (d) {
+                /** ACTION: NODE CHANGED **/
+                // Set localName
+                d.title = this.textContent;
+                // Set namespace
+                d.namespace = Global[current_metamodel_element.attr('id').toUpperCase()].iri;
+                // Set full IRI
+                d.iri = Global[current_metamodel_element.attr('id').toUpperCase()].iri + "/" + this.textContent;
+
+                addTriple(source, d.iri, target);
+
+                d.color = Global[current_metamodel_element.attr('id').toUpperCase()].color;
+
+                thisGraph.insertTitleLinebreaks(d3node, d.title == null ? d.name : d.name);
+                d3.select(this.parentElement).remove();
+            });
+
+        return d3txt;
+    };
+
     // mouseup on nodes
     GraphCreator.prototype.circleMouseUp = function (d3node, d) {
         var thisGraph = this,
@@ -551,24 +602,33 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
 
         if (mouseDownNode !== d) {
             // we're in a different node: create new edge for mousedown edge and add to graph
-            var newEdge = {source: mouseDownNode, target: d};
+            var newEdge = {source: mouseDownNode, target: d, name: "new edge"};
             var filtRes = thisGraph.paths.filter(function (d) {
                 if (d.source === newEdge.target && d.target === newEdge.source) {
                     thisGraph.edges.splice(thisGraph.edges.indexOf(d), 1);
                 }
                 return d.source === newEdge.source && d.target === newEdge.target;
             });
+
+            if (newEdge.source.namespace == Global.CONCEPT.iri && newEdge.target.namespace == Global.FEATURE.iri) newEdge.name = "has Feature";
+
             if (!filtRes[0].length) {
                 thisGraph.edges.push(newEdge);
                 thisGraph.updateGraph();
+                thisGraph.paths.each(function (d) {
+                    if (d == newEdge) thisGraph.insertTitleLinebreaks(d3.select(this), d.name);
+                });
             }
             /** ACTION: EDGE CHANGED **/
 
             var edgeType = getGlobalEdge(newEdge.source.namespace, newEdge.target.namespace);
-            if (edgeType != null) {
-                addTriple(newEdge.source.iri, edgeType, newEdge.target.iri);
-            } else {
+
+            if (edgeType != null && edgeType != Global.HAS_RELATION.iri)  addTriple(newEdge.source.iri, edgeType, newEdge.target.iri);
+            else {
                 errorNotification("You can't create edges from " + newEdge.source.namespace + " to " + newEdge.target.namespace);
+                thisGraph.edges.splice(thisGraph.edges.indexOf(newEdge), 1);
+                state.selectedEdge = null;
+                thisGraph.updateGraph();
             }
 
             //alert(JSON.stringify(newEdge));
@@ -708,7 +768,9 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
             .on("mouseup", function (d) {
                 state.mouseDownLink = null;
             });
-
+       /* paths.each(function (d) {
+            thisGraph.insertTitleLinebreaks(d3.select(this), d.name);
+        });*/
         // remove old links
         paths.exit().remove();
 

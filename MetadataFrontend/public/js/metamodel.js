@@ -18,6 +18,11 @@ const Global = {
         name: "Concept",
         color: "#33CCCC"
     },
+    HAS_RELATION: {
+        iri: Namespaces.G+"hasRelation",
+        name: "hasRelation",
+        color: "#33CCCC"
+    },
     FEATURE: {
         iri: Namespaces.G+"Feature",
         name: "Feature",
@@ -93,6 +98,6 @@ function getGlobalEdge(namespaceOrigin, namespaceDest) {
     if (namespaceOrigin == Global.CONCEPT.iri && namespaceDest == Global.FEATURE.iri) return Global.HAS_FEATURE.iri;
     if (namespaceOrigin == Global.FEATURE.iri && namespaceDest == Global.INTEGRITY_CONSTRAINT.iri) return Global.HAS_INTEGRITY_CONSTRAINT.iri;
     if (namespaceOrigin == Global.FEATURE.iri && namespaceDest == Global.DATATYPE.iri) return Global.HAS_DATATYPE.iri;
-
+    if (namespaceOrigin == Global.CONCEPT.iri && namespaceDest == Global.CONCEPT.iri) return Global.HAS_RELATION.iri;
     return null;
 }
