@@ -70,9 +70,7 @@ $(window).load(function() {
             .attr({'class':'edgelabel',
                 'id':function(d,i){return 'edgelabel'+i},
                 'dx':function(d,i){ return euclidean(d.source.x,d.source.y,d.target.x,d.target.y)/3-2*d.name.length;},
-                'dy':20,
-                'font-size':10,
-                'fill':'#aaa'});
+                'dy':20});
 
         edgelabels.append('textPath')
             .attr('xlink:href',function(d,i) {return '#edgepath'+i})

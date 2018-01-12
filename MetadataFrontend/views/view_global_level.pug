@@ -47,11 +47,16 @@ block content
                 a(href="#") rdfs:Datatype
             | &nbsp;&nbsp;
 
+    //Used to save the graph
+    // p#download-input Download
+    //Used to load the graph
+    //p#upload-input Upload
+    div#toolbox
+        input#upload-input(type="button" class="btn btn-primary btn-md" value="Upload")
+        input#download-input(type="button" class="btn btn-primary btn-md" value="Download")
+        input#delete-graph(type="button" class="btn btn-primary btn-md" value="Delete")
+
     #graph
 
-    //Used to save the graph
-    p(hidden='')#download-input
-    //Used to load the graph
-    p(hidden='')#upload-input
 
     script(src='/js/client_global_level_creator.js')
