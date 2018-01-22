@@ -228,30 +228,31 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
                 alert("graf guardat");
             });
 
-            // handle uploaded data
-            d3.select("#upload-input").on("click", function () {
-                $.get("/artifacts/GLOBAL/"+encodeURIComponent(getParameterByName("graph")), function(data) {
-                    if (data.graphicalGraph) {
-                        var graphicalGraph = JSON.parse(data.graphicalGraph);
-                        var jsonObj = graphicalGraph;
-                        thisGraph.deleteGraph(true);
-                        thisGraph.nodes = jsonObj.nodes;
-                        thisGraph.setIdCt(jsonObj.nodes.length + 1);
-                        var newEdges = jsonObj.edges;
-                        newEdges.forEach(function (e, i) {
-                            newEdges[i] = {
-                                source: thisGraph.nodes.filter(function (n) {
-                                    return n.id == e.source;
-                                })[0],
-                                target: thisGraph.nodes.filter(function (n) {
-                                    return n.id == e.target;
-                                })[0]
-                            };
-                        });
-                        thisGraph.edges = newEdges;
-                        thisGraph.updateGraph();
-                    }
-                });
+        // handle uploaded data
+        d3.select("#upload-input").on("click", function () {
+            $.get("/artifacts/GLOBAL/"+encodeURIComponent(getParameterByName("graph")), function(data) {
+                if (data.graphicalGraph) {
+                    var graphicalGraph = JSON.parse(data.graphicalGraph);
+                    var jsonObj = graphicalGraph;
+                    thisGraph.deleteGraph(true);
+                    thisGraph.nodes = jsonObj.nodes;
+                    thisGraph.setIdCt(jsonObj.nodes.length + 1);
+                    var newEdges = jsonObj.edges;
+                    newEdges.forEach(function (e, i) {
+                        newEdges[i] = {
+                            source: thisGraph.nodes.filter(function (n) {
+                                return n.id == e.source;
+                            })[0],
+                            target: thisGraph.nodes.filter(function (n) {
+                                return n.id == e.target;
+                            })[0],
+                            title: e.name
+                        };
+                    });
+                    thisGraph.edges = newEdges;
+                    thisGraph.updateGraph();
+                }
+            });
         });
 
         d3.select("#hidden-file-upload").on("change", function(){
@@ -545,7 +546,7 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
 
         if (mouseDownNode !== d) {
             // we're in a different node: create new edge for mousedown edge and add to graph
-            var newEdge = {source: mouseDownNode, target: d, title: "new edge"};
+            var newEdge = {source: mouseDownNode, target: d, title: "new relation"};
 
             if (newEdge.source.namespace == Global.CONCEPT.iri && newEdge.target.namespace == Global.FEATURE.iri) {
                 newEdge.title="has Feature";
@@ -634,13 +635,13 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
             curScale = nodeBCR.width / consts.nodeRadius,
             placePad = 5 * curScale,
             useHW = curScale > 1 ? nodeBCR.width * 0.71 : consts.nodeRadius * 1.42;
-        // replace with editableconent text
+        // replace with editable content text
         var d3txt = thisGraph.svg.selectAll("foreignObject")
             .data([d])
             .enter()
             .append("foreignObject")
-            .attr("x", nodeBCR.left - 190)
-            .attr("y", nodeBCR.top - 300)
+            .attr("x", nodeBCR.left)
+            .attr("y", nodeBCR.top -350)
             .attr("height", 2 * useHW)
             .attr("width", 300)
             .append("xhtml:p")
@@ -657,11 +658,15 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
                 }
             })
             .on("blur", function (d) {
-                /** ACTION: NODE CHANGED **/
+                /** ACTION: EDGE CHANGED **/
                 // Set localName
                 // TODO safe edge name
-                thisGraph.insertTitleLinebreaks(d3node, d.title == null ? d.name : d.title);
+                console.log(this.textContent);
+                d.title = this.textContent;
+                addTriple(d.source.iri, "http://www.BDIOntology.com/global/" + d.title, d.target.iri);
+                console.log(d);
                 d3.select(this.parentElement).remove();
+                thisGraph.updateGraph();
             });
 
         return d3txt;
@@ -674,8 +679,6 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
 
             // shift-clicked node: edit text content
             var d3txt = thisGraph.changeTextOfEdge(d3node, d);
-
-            console.log("d3text" + d3txt);
 
             var txtNode = d3txt.node();
             thisGraph.selectElementContents(txtNode);
@@ -760,7 +763,7 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
             state = thisGraph.state;
 
         thisGraph.paths = thisGraph.paths.data(thisGraph.edges, function (d) {
-            return String(d.source.id) + "+" + String(d.target.id);
+            return String(d.source.id) + "+" + String(d.target.id) + d.title;
         });
 
         // update existing paths
@@ -770,38 +773,42 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
             })
             .attr("d", function (d) {
                 return "M" + d.source.x + "," + d.source.y + "L" + d.target.x + "," + d.target.y;
-            });
+            })
 
         thisGraph.paths.select("g text").attr("transform", function (d) {
             return "translate(" + (d.source.x+d.target.x)/2 + "," + (d.source.y+d.target.y)/2 + ")";
-        });
-/*
-        paths = d3.selectAll(".link")
-            .data(thisGraph.paths)
-            .enter().append('svg:path')
-            .attr('id', function(d,i) { return 'edgepath'+i; })
-            .attr('stroke',function(d) {
-                return d.color
             })
-            .attr('marker-start', function(d,i){ return 'url(#marker_' + d.name + ')' })
-            .attr('marker-end', function(d,i){ return 'url(#marker_' + d.name  + ')' })
-            .attr('class', 'link');
+            .text(function(d) {
+                return d.title;
+            });
 
-        var edgelabels = d3.selectAll(".edgelabel")
-            .data(thisGraph.paths);
-            .enter()
-            .append('text')
-            .style("pointer-events", "none")
-            .attr({'class':'edgelabel',
-                'id':function(d,i){return 'edgelabel'+i},
-                'dx':function(d,i){ return euclidean(d.source.x,d.source.y,d.target.x,d.target.y)/3-2*d.name.length;},
-                'dy':20,
-                'fill':'#aaa'});
+        /*
+                paths = d3.selectAll(".link")
+                    .data(thisGraph.paths)
+                    .enter().append('svg:path')
+                    .attr('id', function(d,i) { return 'edgepath'+i; })
+                    .attr('stroke',function(d) {
+                        return d.color
+                    })
+                    .attr('marker-start', function(d,i){ return 'url(#marker_' + d.name + ')' })
+                    .attr('marker-end', function(d,i){ return 'url(#marker_' + d.name  + ')' })
+                    .attr('class', 'link');
 
-        edgelabels.append('textPath')
-            .attr('xlink:href',function(d,i) {return '#edgepath'+i})
-            .style("pointer-events", "none")
-            .text(function(d,i){ return d.name});*/
+                var edgelabels = d3.selectAll(".edgelabel")
+                    .data(thisGraph.paths);
+                    .enter()
+                    .append('text')
+                    .style("pointer-events", "none")
+                    .attr({'class':'edgelabel',
+                        'id':function(d,i){return 'edgelabel'+i},
+                        'dx':function(d,i){ return euclidean(d.source.x,d.source.y,d.target.x,d.target.y)/3-2*d.name.length;},
+                        'dy':20,
+                        'fill':'#aaa'});
+
+                edgelabels.append('textPath')
+                    .attr('xlink:href',function(d,i) {return '#edgepath'+i})
+                    .style("pointer-events", "none")
+                    .text(function(d,i){ return d.name});*/
 
         // add new paths
         var newPaths = thisGraph.paths.enter().append("g");
