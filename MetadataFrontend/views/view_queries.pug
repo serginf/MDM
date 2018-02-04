@@ -1,0 +1,24 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    link(rel='stylesheet', href='/stylesheets/source_level.css')
+    script(src='/js/d3.min.js')
+    script(src='/js/cola.d3.min.js')
+    script(src='/js/client_view_queries.js')
+    script(src='/js/client_view_queries_d3.js')
+
+    link(rel='stylesheet', href='/js/highlight/styles/railscasts.css')
+    script(src='/js/highlight/highlight.pack.js')
+block content
+
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 View queries
+                    h3
+                        #theTitle
+                    h4
+                        #theURL
+
+    #sourceLevelWrapper

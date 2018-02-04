@@ -48,11 +48,11 @@ block content
             | &nbsp;&nbsp;
 
     //Used to save the graph
-    // p#download-input Download
+    p#download-input(hidden="") Download
     //Used to load the graph
-    //p#upload-input Upload
+    p#upload-input(hidden="") Upload
     div#toolbox
-        input#upload-input(type="button" class="btn btn-primary btn-md" value="Upload")
+        //input#upload-input(type="button" class="btn btn-primary btn-md" visibility="hidden")
         input#download-input(type="button" class="btn btn-primary btn-md" value="Download")
         input#delete-graph(type="button" class="btn btn-primary btn-md" value="Delete")
 

@@ -366,6 +366,12 @@ app.get('/view_eca_rule', checkAuthenticated, function(req,res) {
     res.render('view_eca_rule', {user:req.session.passport.user});
 });
 
+/******* Queries section **************************************************************/
+
+app.get('/view_queries', checkAuthenticated, function (req, res) {
+   res.render('view_queries', {user:req.session.passport.user});
+});
+
 /**********************************   END   ********************************************/
 
 function checkAuthenticated(req, res, next) {

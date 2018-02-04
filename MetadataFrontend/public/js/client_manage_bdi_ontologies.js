@@ -24,6 +24,7 @@ function getOntologies() {
                         ).append($('<td>').append($('<a href="/view_global_level?graph='+(ontologyObj.globalLevel)+'">').append($('<span class="glyphicon glyphicon-search"></span>')))
                         ).append($('<td>').append($('<a href="/view_mappings?bdi_ontologyID='+(ontologyObj.bdi_ontologyID)+'">').append($('<span class="glyphicon glyphicon-search"></span>')))
                         ).append($('<td>').append($('<a href="/view_bdi_ontology?graph='+(ontologyObj.O)+'">').append($('<span class="glyphicon glyphicon-search"></span>')))
+                        ).append($('<td>').append($('<a href="/view_queries?graph='+(ontologyObj.globalLevel)+'">').append($('<span class="glyphicon glyphicon-search"></span>')))
                         //).append($('<td>').append($('<a href="/view_eca_rules?graph='+(ontologyObj.rules)+'">').append($('<span class="glyphicon glyphicon-search"></span>')))
                         //).append($('<td>').append($('<a href="/view_source_level?graph='+(theObj.graph)+'">').append($('<span class="glyphicon glyphicon-search"></span>')))
 
