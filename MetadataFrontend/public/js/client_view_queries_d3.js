@@ -54,7 +54,7 @@ $(window).load(function() {
             .style('opacity',0)
             .attr('width', "100%")
             .attr('height', "100%")
-            .call(d3.zoom().on("zoom", redraw))
+            .call(d3.behavior.zoom().on("zoom", redraw))
 
         var svg = outer
             .append('g')
@@ -182,7 +182,7 @@ $(window).load(function() {
             Based in Mike Bostock's Line drawing
             https://bl.ocks.org/mbostock/f705fc55e6f26df29354
          */
-        var line = d3.line();
+       /* var line = d3.line();
 
         var svg = d3.select("#sourceLevelWrapper").append("svg")
             .attr("width", $(window).width()*0.75)
@@ -212,7 +212,7 @@ $(window).load(function() {
                 else d[d.length - 1] = [x1, y1];
                 active.attr("d", line);
             });
-        }
+        }*/
 
 
         /*
