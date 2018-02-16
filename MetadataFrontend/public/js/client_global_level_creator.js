@@ -227,6 +227,7 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
                 url: '/artifacts/GLOBAL/' + encodeURIComponent(getParameterByName('graph')) + "/graphicalGraph",
                 data: {graphicalGraph: {"nodes": thisGraph.nodes,"edges": saveEdges} }
             });
+            alert("saved graph");
         });
 
         // handle uploaded data
