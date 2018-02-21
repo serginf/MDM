@@ -44,7 +44,7 @@ $(window).load(function() {
         });
         thisGraph.nodes = newNodes;
 
-        var newEdges = jsonObj.edges;
+        newEdges = jsonObj.edges;
         newEdges.forEach(function (e, i) {
             newEdges[i] = {
                 source: thisGraph.nodes.filter(function (n) {
@@ -64,8 +64,6 @@ $(window).load(function() {
          */
 
         var svg = d3.select("svg"),
-            width = $(window).width()*0.75,
-            height = $(window).height()*0.75,
             node,
             link;
 
@@ -84,15 +82,12 @@ $(window).load(function() {
             .style('stroke','none');
 
         var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink().id(function (d) {return d.id;}).distance(120).strength(0.7))
-            .force("charge", d3.forceManyBody())
+            .force("charge", d3.forceManyBody().strength(-500))
             .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collide", d3.forceCollide().radius(function(d) { return d.r + 0.5; }).iterations(2));
-
-        var zoom_handler = d3.zoom()
-            .on("zoom", zoom_actions);
-
-        zoom_handler(svg);
+            .force("collide", d3.forceCollide().radius(function(d) { return d.r + 0.5; }).iterations(20))
+            .force("x", d3.forceX(width / 2).strength(.05))
+            .force("y", d3.forceY(height / 2).strength(.05))
+            .force("link", d3.forceLink().distance(120).strength(1));
 
         link = svg.selectAll(".link")
             .data(thisGraph.edges)
@@ -109,8 +104,6 @@ $(window).load(function() {
             .enter()
             .append('path')
             .attr('class', 'edgepath')
-            .attr('fill-opacity', 0)
-            .attr('stroke-opacity', 0)
             .attr('id', function (d, i) {return 'edgepath' + i})
             .style("pointer-events", "none");
 
@@ -122,7 +115,6 @@ $(window).load(function() {
             .attr('class', 'edgelabel')
             .attr('id', function (d, i) {return 'edgelabel' + i})
             .attr('font-size', 10)
-            .attr('fill', '#aaa');
 
         edgelabels.append('textPath')
             .attr('fill', '#aaa')
@@ -137,11 +129,11 @@ $(window).load(function() {
             .enter()
             .append("g")
             .attr("class", "node")
-            .call(d3.drag()
+            /*.call(d3.drag()
                     .on("start", dragstarted)
                     .on("drag", dragged)
                     .on("end", dragended)
-            );
+            );*/
 
         node.append("circle")
             .attr("r", nodeRadius)
@@ -169,7 +161,7 @@ $(window).load(function() {
                 .attr("y2", function (d) {return d.target.y;});
 
             node
-                .attr("transform", function (d) {return "translate(" + d.x + ", " + d.y + ")";});
+                .attr("transform", function (d) {return "translate(" + d.x +  ", " + d.y + ")";});
 
             edgepaths.attr('d', function (d) {
                 var deltaX = d.target.x - d.source.x,
@@ -200,7 +192,7 @@ $(window).load(function() {
             });
         }
 
-        function dragstarted(d) {
+      /*  function dragstarted(d) {
             if (!d3.event.active) simulation.alphaTarget(0.3).restart()
             d.fx = d.x;
             d.fy = d.y;
@@ -215,11 +207,7 @@ $(window).load(function() {
             if (!d3.event.active) simulation.alphaTarget(0);
             d.fx = null;
             d.fy = null;
-        }
-
-        function zoom_actions(){
-            svg.attr("transform", d3.event.transform)
-        }
+        }*/
     });
 
     /*
@@ -244,8 +232,9 @@ $(window).load(function() {
             var d = d3.event.subject,
                 active = svg.append("path").datum(d)
                     .attr("stroke", "#ff3f27")
-                    .attr("fill", "none")
-                    .attr("stroke-width", 3),
+                    .attr("fill", "#ffb4a2")
+                    .attr("stroke-width", 3)
+                    .style("fill-opacity", 0.2),
                 x0 = d3.event.x,
                 y0 = d3.event.y;
 
@@ -262,14 +251,14 @@ $(window).load(function() {
                 if (y1 < ymin) ymin = y1;
                 if (y1 > ymax) ymax = y1;
                 active.attr("d", line);
-                closeArea();
+                calculateArea();
             });
 
       //  }
 
     }
 
-    function closeArea() {
+    function calculateArea() {
         console.log(xmin + ", " + xmax + ", " + ymin + ", " + ymax);
         var selection = [];
 
@@ -279,6 +268,16 @@ $(window).load(function() {
                 selection.push(e);
             }
         });
+
+        newEdges.forEach(function(e) {
+            var s = false,
+                t = false;
+            for (var i = 0; i < selection.length; ++i) {
+                if (selection[i] == e.source) s = true;
+                if (selection[i] == e.target) t = true;
+            }
+            if (s && t) selection.push(e);
+        })
 
         console.log(selection);
     }

@@ -110,7 +110,7 @@ $(window).load(function() {
             .append("circle")
             .attr("r", nodeRadius)
             .attr("cx", 10)
-            .attr("cx", 10)
+            .attr("cy", 10)
             .style("fill", function(d) {
                 return d.color;
             })
