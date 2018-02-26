@@ -160,4 +160,12 @@ public class BDIOntologyResource {
 
         return Response.ok(new Gson().toJson(out)).build();
     }
+
+    @POST
+    @Path("bdi_ontology/sparQLQuery")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response POST_BDI_ontology_SparQLQuery(String body) {
+        System.out.println("Query: " + body);
+        return Response.ok(new Gson().toJson("SparQL Query")).build();
+    }
 }

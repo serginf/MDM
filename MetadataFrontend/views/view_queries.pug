@@ -22,4 +22,10 @@ block content
                     h4
                         #theURL
 
-    svg(width=960, height=600)#sourceLevelWrapper
+    .row
+        .col.col-md-8
+            svg(width=960, height=600)#sourceLevelWrapper
+
+        .col.col-md-4
+            button#generateQuery.btn.btn-primary.btn-lg.btn-block(type='submit') Generate SPARQL
+            input.textarea#algebraText(readonly="", size=40)

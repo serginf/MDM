@@ -116,6 +116,8 @@ app.post('/bdi_ontology', bdi_ontology_routes.postBDIOntology);
 
 app.get('/bdi_ontology_generation_strategies', bdi_ontology_routes.getGenerationStrategies);
 
+app.post('/bdi_ontology/sparQLQuery', bdi_ontology_routes.postSparQLQuery);
+
 /********** Global Level resource ********************************************************/
 
 app.get('/global_level/:artifactID/features', global_level_routes.getAllFeatures);

@@ -82,69 +82,60 @@ $(window).load(function() {
             .style('stroke','none');
 
         var simulation = d3.forceSimulation()
-            .force("charge", d3.forceManyBody().strength(-500))
+            .force("charge", d3.forceManyBody().strength(-550))
             .force("center", d3.forceCenter(width / 2, height / 2))
             .force("collide", d3.forceCollide().radius(function(d) { return d.r + 0.5; }).iterations(20))
             .force("x", d3.forceX(width / 2).strength(.05))
             .force("y", d3.forceY(height / 2).strength(.05))
-            .force("link", d3.forceLink().distance(120).strength(1));
+            .force("link", d3.forceLink().distance(140).strength(1));
 
-        link = svg.selectAll(".link")
+        var path = svg.selectAll(".link")
             .data(thisGraph.edges)
-            .enter()
-            .append("line")
-            .attr("class", "link")
+            .enter().append('svg:path')
+            .attr('id', function(d,i) { return 'edgepath'+i; })
+            .attr('stroke', "#aaa")
             .attr('marker-end','url(#arrowhead)')
+            .attr('class', 'link');
 
-        link.append("title")
-            .text(function (d) {return d.name;});
-
-        edgepaths = svg.selectAll(".edgepath")
-            .data(thisGraph.edges)
-            .enter()
-            .append('path')
-            .attr('class', 'edgepath')
-            .attr('id', function (d, i) {return 'edgepath' + i})
-            .style("pointer-events", "none");
-
-        edgelabels = svg.selectAll(".edgelabel")
+        var edgelabels = svg.selectAll(".edgelabel")
             .data(thisGraph.edges)
             .enter()
             .append('text')
             .style("pointer-events", "none")
             .attr('class', 'edgelabel')
-            .attr('id', function (d, i) {return 'edgelabel' + i})
-            .attr('font-size', 10)
+            .attr('id', function(d,i){return 'edgelabel'+i})
+            .attr('dx', function(d,i){ return euclidean(d.source.x,d.source.y,d.target.x,d.target.y)/3-2*d.name.length;})
+            .attr('dy', 20)
+            .attr('fill', '#aaa');
 
         edgelabels.append('textPath')
-            .attr('fill', '#aaa')
-            .attr('xlink:href', function (d, i) {return '#edgepath' + i})
-            .style("text-anchor", "middle")
+            .attr('xlink:href',function(d,i) {return '#edgepath'+i})
             .style("pointer-events", "none")
-            .attr("startOffset", "50%")
-            .text(function (d) {return d.name});
+            .attr("startOffset", "30%")
+            .text(function(d,i){ return d.name});
 
-        node = svg.selectAll(".node")
+        var node = svg.selectAll(".node")
             .data(thisGraph.nodes)
             .enter()
-            .append("g")
-            .attr("class", "node")
-            /*.call(d3.drag()
-                    .on("start", dragstarted)
-                    .on("drag", dragged)
-                    .on("end", dragended)
-            );*/
-
-        node.append("circle")
+            .append("circle")
             .attr("r", nodeRadius)
-            .style("fill", function (d) {return d.color;})
+            .attr("cx", 10)
+            .attr("cy", 10)
+            .style("fill", function(d) {
+                return d.color;
+            });
 
-        node.append("text")
-            .attr("dx", function(d) { return d.name.length/2 - 20})
-            .attr("dy", 30)
-            .attr('fill', '#000000')
-            .style("font-size", "10px")
-            .text(function (d) {return d.name;});
+        var nodeTexts = svg.selectAll("text.label")
+            .data(thisGraph.nodes)
+            .enter().append("text")
+            .attr("class", "label")
+            .attr("value", function (d) {
+                return d.name;
+            })
+            .text(function (d) {
+                return d.name;
+            });
+
 
         simulation
             .nodes(thisGraph.nodes)
@@ -154,16 +145,14 @@ $(window).load(function() {
             .links(thisGraph.edges);
 
         function ticked() {
-            link
-                .attr("x1", function (d) {return d.source.x;})
-                .attr("y1", function (d) {return d.source.y;})
-                .attr("x2", function (d) {return d.target.x;})
-                .attr("y2", function (d) {return d.target.y;});
+            node.attr("cx", function (d) { return d.x; })
+                .attr("cy", function (d) { return d.y; });
 
-            node
-                .attr("transform", function (d) {return "translate(" + d.x +  ", " + d.y + ")";});
+            nodeTexts.attr("transform", function (d) {
+                return "translate(" + (d.x - this.getBBox().width/2) + "," + (d.y + 25) + ")";
+            });
 
-            edgepaths.attr('d', function (d) {
+            path.attr('d', function (d) {
                 var deltaX = d.target.x - d.source.x,
                     deltaY = d.target.y - d.source.y,
                     dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
@@ -178,36 +167,18 @@ $(window).load(function() {
                 return 'M' + sourceX + ',' + sourceY + 'L' + targetX + ',' + targetY;
             });
 
-            edgelabels.attr('transform', function (d) {
-                if (d.target.x < d.source.x) {
-                    var bbox = this.getBBox();
-
-                    rx = bbox.x + bbox.width / 2;
-                    ry = bbox.y + bbox.height / 2;
-                    return 'rotate(180 ' + rx + ' ' + ry + ')';
+            edgelabels.attr('transform',function(d,i){
+                if (d.target.x<d.source.x){
+                    bbox = this.getBBox();
+                    rx = bbox.x+bbox.width/2;
+                    ry = bbox.y+bbox.height/2;
+                    return 'rotate(180 '+rx+' '+ry+')';
                 }
                 else {
                     return 'rotate(0)';
                 }
             });
         }
-
-      /*  function dragstarted(d) {
-            if (!d3.event.active) simulation.alphaTarget(0.3).restart()
-            d.fx = d.x;
-            d.fy = d.y;
-        }
-
-        function dragged(d) {
-            d.fx = d3.event.x;
-            d.fy = d3.event.y;
-        }
-
-        function dragended(d) {
-            if (!d3.event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-        }*/
     });
 
     /*
@@ -251,22 +222,35 @@ $(window).load(function() {
                 if (y1 < ymin) ymin = y1;
                 if (y1 > ymax) ymax = y1;
                 active.attr("d", line);
-                calculateArea();
+                calculateArea(d);
             });
 
       //  }
-
     }
 
-    function calculateArea() {
-        console.log(xmin + ", " + xmax + ", " + ymin + ", " + ymax);
-        var selection = [];
+    function calculateArea(d) {
+       // console.log(xmin + ", " + xmax + ", " + ymin + ", " + ymax);
+        selection = [];
 
         newNodes.forEach(function(e, i) {
             if (e.x < xmax && e.x > xmin && e.y < ymax && e.y > ymin) {
                 //console.log("inside area");
                 selection.push(e);
             }
+           /* var nxmin = 0,
+                nxmax = 0,
+                nymin = 0,
+                nymax = 0;
+            for(var i = 0; i < d.length; ++i) {
+                if (e.x < xmax && e.x > xmin && e.y < ymax && e.y > ymin) {
+                    if (e.x < d[0]) ++nxmin;
+                    //if (e.x > d[0]) ++nxmax;
+                    //if (e.y < d[1]) ++nymin;
+                    //if (e.y > d[1]) ++nymax;
+                }
+
+            }
+            if (nxmin%2 == 0) selection.push(e);*/
         });
 
         newEdges.forEach(function(e) {
@@ -281,4 +265,19 @@ $(window).load(function() {
 
         console.log(selection);
     }
+
+    $("#generateQuery").on("click", function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: '/bdi_ontology/sparQLQuery',
+            type: 'POST',
+            data: selection
+        }).done(function(res) {
+            console.log(res);
+            $("#algebraText").value = res;
+        }).fail(function(err) {
+            console.log("error "+JSON.stringify(err));
+        });
+    });
 });

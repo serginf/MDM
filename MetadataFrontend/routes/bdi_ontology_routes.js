@@ -144,3 +144,18 @@ exports.getGenerationStrategies = function (req, res, next) {
         }
     });
 };
+
+exports.postSparQLQuery = function (req, res) {
+    var query = req.body;
+    request.post({
+        url: config.METADATA_DATA_LAYER_URL + "bdi_ontology/sparQLQuery/",
+        body: JSON.stringify(query)
+    }, function done(error, response, body) {
+        //console.log("Got response "+error+" - "+response+" - "+body);
+        if (!error && response.statusCode == 200) {
+            res.status(200).json(JSON.parse(body));
+        } else {
+            res.status(500).send("Error posting SparQL query");
+        }
+    });
+};
