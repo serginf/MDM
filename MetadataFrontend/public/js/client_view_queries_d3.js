@@ -191,6 +191,8 @@ $(window).load(function() {
         ymin = Number.MAX_VALUE,
         ymax = Number.MIN_VALUE;
 
+    selection = [];
+
     var svg = d3.select("svg")
         .attr("pointer-events", "all")
         .call(d3.drag()
@@ -222,38 +224,37 @@ $(window).load(function() {
                 if (y1 < ymin) ymin = y1;
                 if (y1 > ymax) ymax = y1;
                 active.attr("d", line);
-                calculateArea(d);
-            });
 
+            });
+            calculateArea(d);
       //  }
     }
 
     function calculateArea(d) {
-       // console.log(xmin + ", " + xmax + ", " + ymin + ", " + ymax);
+        // console.log(xmin + ", " + xmax + ", " + ymin + ", " + ymax);
         selection = [];
 
-        newNodes.forEach(function(e, i) {
+        newNodes.forEach(function (e, i) {
             if (e.x < xmax && e.x > xmin && e.y < ymax && e.y > ymin) {
                 //console.log("inside area");
                 selection.push(e);
             }
-           /* var nxmin = 0,
-                nxmax = 0,
-                nymin = 0,
-                nymax = 0;
-            for(var i = 0; i < d.length; ++i) {
-                if (e.x < xmax && e.x > xmin && e.y < ymax && e.y > ymin) {
-                    if (e.x < d[0]) ++nxmin;
-                    //if (e.x > d[0]) ++nxmax;
-                    //if (e.y < d[1]) ++nymin;
-                    //if (e.y > d[1]) ++nymax;
-                }
-
-            }
-            if (nxmin%2 == 0) selection.push(e);*/
+            /* var nxmin = 0,
+                 nxmax = 0,
+                 nymin = 0,
+                 nymax = 0;
+             for(var i = 0; i < d.length; ++i) {
+                 if (e.x < xmax && e.x > xmin && e.y < ymax && e.y > ymin) {
+                     if (e.x < d[i][0]) ++nxmin;
+                     //if (e.x > d[0]) ++nxmax;
+                     //if (e.y < d[1]) ++nymin;
+                     //if (e.y > d[1]) ++nymax;
+                 }
+             }
+             if (nxmin%2 == 0) selection.push(e);*/
         });
 
-        newEdges.forEach(function(e) {
+        newEdges.forEach(function (e) {
             var s = false,
                 t = false;
             for (var i = 0; i < selection.length; ++i) {
@@ -266,18 +267,24 @@ $(window).load(function() {
         console.log(selection);
     }
 
-    $("#generateQuery").on("click", function(e) {
+        $("#generateQuery").on("click", function(e) {
         e.preventDefault();
 
-        $.ajax({
-            url: '/bdi_ontology/sparQLQuery',
-            type: 'POST',
-            data: selection
-        }).done(function(res) {
-            console.log(res);
-            $("#algebraText").value = res;
-        }).fail(function(err) {
-            console.log("error "+JSON.stringify(err));
-        });
+        console.log(selection);
+
+        if (selection.length == 0) alert("Select Query first");
+
+        else{
+            $.ajax({
+                url: '/bdi_ontology/sparQLQuery',
+                type: 'POST',
+                data: selection
+            }).done(function(res) {
+                console.log(res);
+                $('#algebraText').val(res);
+            }).fail(function(err) {
+                console.log("error "+JSON.stringify(err));
+            });
+        }
     });
 });
