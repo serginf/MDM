@@ -1,0 +1,21 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    script(src='/js/client_manage_data_sources.js')
+    link(rel='stylesheet', href='/stylesheets/manage_styles.css')
+
+
+block content
+    .container-fluid
+        .row
+            .col-lg-8.col-md-7.col-sm-6
+                h2 Manage Data Sources
+            table.table.table-striped.table-hover#dataSources
+                thead
+                    tr
+                        th #
+                        th Name
+                        th Type
+                        th #Wrappers
+                        th View Metadata
+                tbody

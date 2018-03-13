@@ -1,0 +1,31 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    script(src='/js/client_new_global_graph.js')
+
+block content
+
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 New Global Graph
+                    br
+
+            .container-fluid
+                .col-lg-8
+                    .card.bg-secondary.mb-3
+                        form#globalGraphForm
+                            .form-group#nameForm
+                                label.col-lg-4.col-form-label Name
+                                .col-lg-12
+                                    input#name.form-control(type='text', name='name', required='required')
+
+                            .form-group#defaultNamespaceForm
+                                label.col-lg-4.col-form-label Default namespace
+                                .col-lg-12
+                                    input#defaultNamespace.form-control(type='text', name='defaultNamespace', required='required')
+
+                            .form-group
+                                .col-lg-12.col-lg-offset-2
+                                    button#submitGlobalGraph.btn.btn-primary.btn-lg.btn-block(type="submit") Submit

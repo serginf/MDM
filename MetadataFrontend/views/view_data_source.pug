@@ -1,0 +1,88 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    script(src='/js/client_view_data_source.js')
+
+block content
+
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 View Data Source
+                    br
+
+                .col-lg-8
+                    .card.bg-secondary.mb-3
+                        form#dataSourceForm
+                            .form-group#idForm
+                                label.col-lg-4.col-form-label ID
+                                .col-lg-12
+                                    input#id.form-control(type='text', name='id', required='required', readonly="")
+
+                            .form-group#nameForm
+                                label.col-lg-4.col-form-label Name
+                                .col-lg-12
+                                    input#name.form-control(type='text', name='name', required='required', readonly="")
+
+                            .form-group#typeForm
+                                label.col-lg-4.col-form-label Type
+                                .col-lg-12
+                                    ul#typeTabs.nav.nav-tabs(role="tablist")
+                                        li.nav-item
+                                            a.text-primary#file-tab.nav-link(data-toggle="tab" href="#file" role="tab" aria-controls="profile" aria-selected="false") File
+                                        li.nav-item
+                                            a.text-primary#mongodb-tab.nav-link(data-toggle="tab" href="#mongodb" role="tab" aria-controls="home" aria-selected="true") MongoDB
+                                        li.nav-item
+                                            a.text-primary#restapi-tab.nav-link(data-toggle="tab" href="#restapi" role="tab" aria-controls="messages" aria-selected="false") REST API
+                                        li.nav-item
+                                            a.text-primary#sqldatabase-tab.nav-link(data-toggle="tab" href="#sqldatabase" role="tab" aria-controls="settings" aria-selected="false") SQL Database
+
+                            .tab-content
+                                #file.tab-pane(role="tabpanel" aria-labelledby="file-tab")
+                                    .form-group#file_pathForm
+                                        label.col-lg-4.col-form-label File path (with protocol)
+                                        .col-lg-12
+                                            input#file_path.form-control(type='text', name='file_path', required='required', readonly="")
+                                    .form-group#file_formatForm
+                                        label.col-lg-4.col-form-label Format
+                                        .col-lg-12
+                                            input#file_format.form-control(type='text', name='file_format', required='required', readonly="")
+
+                                #mongodb.tab-pane(role="tabpanel" aria-labelledby="mongodb-tab")
+                                    .form-group#mongodb_hostnameForm
+                                        label.col-lg-4.col-form-label Hostname
+                                        .col-lg-12
+                                            input#mongodb_hostname.form-control(type='text', name='mongodb_hostname', required='required', readonly="")
+                                    .form-group#mongodb_portForm
+                                        label.col-lg-4.col-form-label Port
+                                        .col-lg-12
+                                            input#mongodb_port.form-control(type='text', name='mongodb_port', required='required', readonly="")
+                                    .form-group#mongodb_usernameForm
+                                        label.col-lg-4.col-form-label Username
+                                        .col-lg-12
+                                            input#mongodb_username.form-control(type='text', name='mongodb_username', required='required', readonly="")
+                                    .form-group#mongodb_passwordForm
+                                        label.col-lg-4.col-form-label Password
+                                        .col-lg-12
+                                            input#mongodb_password.form-control(type='password', name='mongodb_password', required='required', readonly="")
+                                    .form-group#mongodb_databaseForm
+                                        label.col-lg-4.col-form-label Database
+                                        .col-lg-12
+                                            input#mongodb_database.form-control(type='text', name='mongodb_database', required='required', readonly="")
+
+                                #restapi.tab-pane(role="tabpanel" aria-labelledby="restapi-tab")
+                                    .form-group#restapi_urlForm
+                                        label.col-lg-4.col-form-label URL
+                                        .col-lg-12
+                                            input#restapi_url.form-control(type='text', name='restapi_url', required='required', readonly="")
+                                    .form-group#restapi_formatForm
+                                        label.col-lg-4.col-form-label Format
+                                        .col-lg-12
+                                            input#restapi_format.form-control(type='text', name='restapi_url', required='required', readonly="")
+
+                                #sqldatabase.tab-pane(role="tabpanel" aria-labelledby="sqldatabase-tab")
+                                    .form-group#sql_jdbcForm
+                                        label.col-lg-4.col-form-label JDBC
+                                        .col-lg-12
+                                            input#sql_jdbc.form-control(type='text', name='name', required='required', readonly="")

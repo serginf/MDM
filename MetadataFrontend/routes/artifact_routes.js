@@ -60,7 +60,7 @@ exports.deleteArtifact = function (req, res, next) {
         }
     });
 };
-
+/*
 exports.postTriple = function (req, res, next) {
     request.post({
         url: config.METADATA_DATA_LAYER_URL + "artifacts/"+encodeURIComponent(req.params.artifactID)+"/triple/"+
@@ -78,3 +78,4 @@ exports.postGraphicalGraph = function (req, res, next) {
         res.status(200).json("ok");
     });
 };
+*/

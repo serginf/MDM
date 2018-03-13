@@ -24,8 +24,12 @@ var fs = require('fs');
 
 var user_routes = require(__dirname+'/routes/user_routes');
 var artifact_routes = require(__dirname+'/routes/artifact_routes');
+var global_graph_routes = require(__dirname+'/routes/global_graph_routes');
+var data_source_routes = require(__dirname+'/routes/data_source_routes');
+
 var global_level_routes = require(__dirname+'/routes/global_level_routes');
 var bdi_ontology_routes = require(__dirname+'/routes/bdi_ontology_routes');
+
 var source_level_routes = require(__dirname+'/routes/source_level_routes');
 var release_routes = require(__dirname+'/routes/release_routes');
 var admin_routes = require(__dirname+'/routes/admin_routes');
@@ -88,8 +92,26 @@ app.get('/artifacts/:artifactType/:artifactID', artifact_routes.getArtifact);
 app.get('/artifacts/:artifactType/:artifactID/content', artifact_routes.getArtifactContent);
 app.get('/artifacts/:artifactType/:artifactID/graphical', artifact_routes.getArtifactGraphical);
 app.delete('/artifacts/:artifactType/:artifactID', artifact_routes.deleteArtifact);
-app.post('/artifacts/:artifactType/:artifactID/triple', artifact_routes.postTriple);
-app.post('/artifacts/:artifactType/:artifactID/graphicalGraph', artifact_routes.postGraphicalGraph);
+//app.post('/artifacts/:artifactType/:artifactID/triple', artifact_routes.postTriple);
+//app.post('/artifacts/:artifactType/:artifactID/graphicalGraph', artifact_routes.postGraphicalGraph);
+
+/********** Global Graph resource ********************************************************/
+
+app.get('/globalGraph/', global_graph_routes.getAllGlobalGraphs);
+app.get('/globalGraph/:globalGraphID', global_graph_routes.getGlobalGraph);
+app.get('/globalGraph/namedGraph/:namedGraph', global_graph_routes.getGlobalGraphFromNamedGraph);
+app.post('/globalGraph', global_graph_routes.postGlobalGraph);
+app.post('/globalGraph/:namedGraph/triple', global_graph_routes.postTriple);
+app.post('/globalGraph/:globalGraphID:/graphicalGraph', global_graph_routes.postGraphicalGraph);
+
+/********** Data Source resource ********************************************************/
+
+app.get('/dataSource/', data_source_routes.getAllDataSources);
+app.get('/dataSource/:dataSourceID', data_source_routes.getDataSource);
+app.post('/dataSource', data_source_routes.postDataSource);
+
+//app.post('/bdi_ontology/sparQLQuery', bdi_ontology_routes.postSparQLQuery);
+
 
 /********** BDI Ontology resource ********************************************************/
 
@@ -142,6 +164,42 @@ app.get('/registration', function(req, res) {
     res.setHeader('Last-Modified', (new Date()).toUTCString());
     res.render('register_user');
 });
+
+/********** Global graph section ***************************************************************/
+
+app.get('/new_global_graph', checkAuthenticated, function(req,res) {
+    res.render('new_global_graph', {user:req.session.passport.user});
+});
+
+app.get('/manage_global_graphs', checkAuthenticated, function(req,res) {
+    res.render('manage_global_graphs', {user:req.session.passport.user});
+});
+
+app.get('/view_global_graph', checkAuthenticated, function(req,res) {
+    res.render('view_global_graph', {user:req.session.passport.user});
+});
+
+app.get('/edit_global_graph', checkAuthenticated, function(req,res) {
+    res.render('edit_global_graph', {user:req.session.passport.user});
+});
+
+/********** Data Source section ***************************************************************/
+
+app.get('/new_data_source', checkAuthenticated, function(req,res) {
+    res.render('new_data_source', {user:req.session.passport.user});
+});
+
+app.get('/manage_data_sources', checkAuthenticated, function(req,res) {
+    res.render('manage_data_sources', {user:req.session.passport.user});
+});
+
+app.get('/view_data_source', checkAuthenticated, function(req,res) {
+    res.render('view_data_source', {user:req.session.passport.user});
+});
+
+
+
+
 
 /********** Releases section ***************************************************************/
 

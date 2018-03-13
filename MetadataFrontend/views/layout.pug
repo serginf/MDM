@@ -2,63 +2,77 @@ doctype html
 html
   head
     title="Bolster | MDM"
-    script(src='/js/jquery-2.2.3.min.js')
+    script(src='/js/jquery-3.3.1.min.js')
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous")
+    //script(src='/js/jquery-2.2.3.min.js')
     script(src='/js/underscore-1.8.3.min.js')
-    script(src='/js/bootswatch.js')
-    script(src='/js/bootstrap.js')
-    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
+    //script(src='/js/bootswatch.js')
+    //script(src='/js/bootstrap.js')
+    link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous")
     link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='/stylesheets/bootswatch.min.css')
+    script(src='/js/fontawesome-all.js')
+    //link(rel='stylesheet', href='/stylesheets/bootswatch.min.css')
     block headers
 
-  .navbar.navbar-default.navbar-fixed-top
-    .container
-      .navbar-header
-        a.navbar-brand(href='/') MDM
-        button.navbar-toggle(type='button', data-toggle='collapse', data-target='#navbar-main')
-          span.icon-bar
-          span.icon-bar
-          span.icon-bar
+  body
+    .navbar.navbar-expand-lg.fixed-top.navbar-dark.bg-dark
+      .container-fluid
+        #navbar-main.navbar-collapse.collapse.lead
+          .col-md-2
+            ul.nav.navbar-nav.navbar-left
+              li
+                a.lead.navbar-brand.navbar-left(href='/')
+                  h3 MDM
+          .col-md-8.align-self-center
+            .collapse.navbar-collapse
+              ul.navbar-nav
+                li.nav-item.dropdown
+                  a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
+                    | Global Graph
+                  .dropdown-menu(aria-labelledby="themes")
+                    a.dropdown-item.lead(href='/new_global_graph') Create
+                    a.dropdown-item.lead(href='/manage_global_graphs') Manage
 
-      #navbar-main.navbar-collapse.collapse
-        ul.nav.navbar-nav
-          li
-            h5
-              span.badge Data Management
+              ul.navbar-nav
+                li.nav-item.dropdown
+                  a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
+                    | Data Sources
+                  .dropdown-menu(aria-labelledby="themes")
+                    a.dropdown-item.lead(href='/new_data_source') Create
+                    a.dropdown-item.lead(href='/manage_data_sources') Manage
 
-        ul.nav.navbar-nav
-          li.dropdown
-            a.dropdown-toggle(data-toggle='dropdown', href='#')
-              | Releases
-              span.caret
-            ul.dropdown-menu(aria-labelledby='release')
-              li
-                a(href='/new_release') New Release
-              li
-                a(href='/manage_releases') Manage Releases
+              ul.navbar-nav
+                li.nav-item.dropdown
+                  a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
+                    | Wrappers
+                  .dropdown-menu(aria-labelledby="themes")
+                    a.dropdown-item.lead(href='/new_wrapper') Create
+                    a.dropdown-item.lead(href='/manage_wrappers') Manage
 
-        ul.nav.navbar-nav
-          li.dropdown
-            a.dropdown-toggle(data-toggle='dropdown', href='#')
-              | Big Data Integration Ontology
-              span.caret
-            ul.dropdown-menu(aria-labelledby='release')
-              li
-                a(href='/new_bdi_ontology') New BDI Ontology
-              li
-                a(href='/manage_bdi_ontologies') Manage BDI Ontologies
+              ul.navbar-nav
+                li.nav-item.dropdown
+                  a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
+                    | LAV Mappings
+                  .dropdown-menu(aria-labelledby="themes")
+                    a.dropdown-item.lead(href='/new_lav_mapping') Create
+                    a.dropdown-item.lead(href='/manage_lav_mappings') Manage
 
-        ul.nav.navbar-nav
-          li
-            h5
-              span.badge Data Analysis
-               
-        ul.nav.navbar-nav.navbar-right
-          li.dropdown
-            a.dropdown-toggle(data-toggle='dropdown', href='#')
-              | Signed in as #{user.username}
-              span.caret
-            ul.dropdown-menu(aria-labelledby='username')
-              li
-                a(href='/logout') Logout
+              ul.navbar-nav
+                li.nav-item.dropdown
+                  a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
+                    | Ontology-Mediated Queries
+                    span.caret
+                  .dropdown-menu(aria-labelledby="themes")
+                    a.dropdown-item.lead(href='/pose_omq') Pose query
+
+          .col-md-2
+            .collapse.navbar-collapse
+              ul.navbar-nav
+                li.nav-item.dropdown
+                  a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
+                    | Signed in as #{user.username}
+                  .dropdown-menu(aria-labelledby="themes")
+                    a.dropdown-item.lead(href='/logout') Logout
+
   block content

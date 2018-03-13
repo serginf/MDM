@@ -3,7 +3,7 @@
  */
 
 $(function() {
-    
+
     $('#userRegisterForm').submit(function(event) {
         var formData = new Object();
         formData.username = $('#username').val();

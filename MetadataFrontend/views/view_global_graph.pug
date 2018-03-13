@@ -1,0 +1,37 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    script(src='/js/client_view_global_graph.js')
+
+block content
+
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 View Global Graph
+                    br
+
+            .container-fluid
+                .col-lg-8
+                    .card.bg-secondary.mb-3
+                        form#globalGraphForm
+                            .form-group#idForm
+                                label.col-lg-4.col-form-label ID
+                                .col-lg-12
+                                    input#id.form-control(type='text', name='id', readonly="")
+
+                            .form-group#nameForm
+                                label.col-lg-4.col-form-label Name
+                                .col-lg-12
+                                    input#name.form-control(type='text', name='name', required='required',readonly='')
+
+                            .form-group#defaultNamespaceForm
+                                label.col-lg-4.col-form-label Default Namespace
+                                .col-lg-12
+                                    input#defaultNamespace.form-control(type='text', name='defaultNamespace', required='required', readonly='')
+
+                            .form-group#namedGraphForm
+                                label.col-lg-4.col-form-label Named Graph
+                                .col-lg-12
+                                    input#namedGraph.form-control(type='text', name='namedGraph', required='required', readonly='')

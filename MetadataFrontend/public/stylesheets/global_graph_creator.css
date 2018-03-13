@@ -1,0 +1,95 @@
+a:hover, a:visited, a:link, a:active {
+    color: black;
+    text-decoration: none;
+    border:0;
+}
+
+.normal {
+    font-weight: normal;
+}
+
+.thick {
+    font-weight: bold;
+}
+
+
+body{
+    overflow:hidden;
+}
+
+p{
+    text-align: center;
+    overflow: overlay;
+    position: relative;
+}
+
+body{
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /*background-color: rgb(248, 248, 248)*/
+}
+
+.conceptG text{
+    pointer-events: none;
+}
+
+marker{
+    fill: black;
+}
+
+circle {
+
+}
+
+g.conceptG circle{
+    fill: #F6FBFF;
+    stroke: #333;
+    stroke-width: 2px;
+}
+
+g.conceptG:hover circle{
+    fill: rgb(200, 238, 241);
+}
+
+g.selected circle{
+    fill: rgb(250, 232, 255);
+}
+g.selected:hover circle{
+    fill: rgb(250, 232, 255);
+}
+
+path.link {
+    fill: none;
+    stroke: black;
+    stroke-width: 6px;
+    cursor: default;
+}
+
+path.link:hover{
+    stroke: rgb(94, 196, 204);
+}
+
+g.connect-node circle{
+    fill: #BEFFFF;
+}
+
+path.link.hidden{
+    stroke-width: 0;
+}
+
+path.link.selected {
+    stroke: rgb(229, 172, 247);
+}
+
+text {
+    font-size: small;
+    fill: black;
+}
+
+textPath {
+    font-size: x-small;
+}

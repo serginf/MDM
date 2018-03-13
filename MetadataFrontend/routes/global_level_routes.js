@@ -1,4 +1,4 @@
-/**
+/**artifacts
  * Created by snadal on 7/06/16.
  */
 var fs = require('fs'),

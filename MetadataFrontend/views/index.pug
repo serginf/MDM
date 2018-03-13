@@ -1,15 +1,16 @@
 extends layout
 
 block content
-  .container
-    #banner
-      .row
-        .col-lg-8.col-md-7.col-sm-6
-          h1 Bolster | Metadata Management System
-      p
-        | The Metadata Management System (MDM) is responsible of providing the other components with the necessary information to describe and model raw data, as well as keeping the footprint about data usage. With this purpose, the MDM contains all the metadata artifacts needed to deal with data governance and assist data exploitation.
-      p
-        | The main artifact currently managed by the MDM is the Big Data Integration (BDI) ontology. The introduced ontology builds upon known ideas from data integration research and includes two layers in order to provide analysts with an integrated and format-agnostic view of the sources. We exploit this structure to handle the evolution of source schema via semi-automated transformations on the ontology upon service releases. Our approach is based on well known Semantic Web technologies, specifically RDF, which contrary to other schema definition languages (e.g., XSD) enable (a) reutilization of existing vocabularies, (b) self-description of data, and (c) publishing such data on the web.
-      p
-        | You can learn more about the API in
-        a(href="https://jsapi.apiary.io/previews/metadatamanagementsystem/reference")  https://jsapi.apiary.io/previews/metadatamanagementsystem/reference
+  .container-fluid
+    .jumbotron
+      h1.display-4 MDM: Governing Evolution in Big Data Ecosystems
+      p.lead
+        | On-demand integration of multiple data sources is a critical requirement in many Big Data settings. This has been coined as the data variety challenge, which refers to the complexity of dealing with an heterogeneous set of data sources to enable their integrated analysis. In Big Data settings, data sources are commonly represented by external REST APIs, which provide data in their original format and continously apply changes in their structure (i.e., schema). Thus, data analysts face the challenge to integrate such multiple sources, and then continuosly adapt their analytical processes to changes in the schema. To address this challenges we present the Metadata Management System, shortly MDM, a tool that supports data stewards and analysts to manage the integration and analysis of multiple heterogeneous sources under schema evolution. MDM adopts a vocabulary-based integration-oriented ontology to conceptualize the domain of interest and relies on local-as-view mappings to link it with the sources. MDM provides user-friendly mechanisms to manage the ontology and mappings. Finally, a query rewriting algorithm ensures that queries posed to the ontology are correctly resolved to the sources in the presence of multiple schema versions, a transparent process to data analysts.
+
+      //p.lead
+        | This work is partly supported by the H2020 SUPERSEDE project, funded by the EU Information and Communication Technologies Programme under grant agreement no 644018, and the GENESIS project, funded by the Spanish Ministerio de Ciencia e Innovación under project TIN2016-79269-R.
+        .row.justify-content-center
+          .col-4(style="padding-top: 50")
+            img(src="public/cropped-SupersedeLogo_outline.png" height="45")
+          .col-4
+            img(src="public/genesislogo.png" height="150")
