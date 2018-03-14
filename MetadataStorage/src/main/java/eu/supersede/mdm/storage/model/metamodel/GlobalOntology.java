@@ -1,11 +1,11 @@
-package eu.supersede.mdm.storage.model.bdi_ontology.metamodel;
+package eu.supersede.mdm.storage.model.metamodel;
 
-import eu.supersede.mdm.storage.model.bdi_ontology.Namespaces;
+import eu.supersede.mdm.storage.model.Namespaces;
 
 /**
- * Created by snadal on 22/11/16.
+ * Created by snadal on 6/06/17.
  */
-public enum GlobalLevel {
+public enum GlobalOntology {
 
     CONCEPT(Namespaces.G.val()+"Concept"),
     FEATURE(Namespaces.G.val()+"Feature"),
@@ -17,7 +17,7 @@ public enum GlobalLevel {
 
     private String element;
 
-    GlobalLevel(String element) {
+    GlobalOntology(String element) {
         this.element = element;
     }
 

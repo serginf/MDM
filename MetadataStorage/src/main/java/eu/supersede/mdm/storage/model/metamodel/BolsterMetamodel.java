@@ -1,4 +1,4 @@
-package eu.supersede.mdm.storage.model.bdi_ontology.metamodel;
+package eu.supersede.mdm.storage.model.metamodel;
 
 /**
  * Created by snadal on 15/12/16.

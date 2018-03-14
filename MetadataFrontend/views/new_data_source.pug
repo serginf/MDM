@@ -46,10 +46,10 @@ block content
                                         label.col-lg-4.col-form-label Format
                                         .col-lg-12
                                             select#file_format.form-control(type='text', name='file_format', required='required')
-                                                option(selected="" value="avro") Avro
+                                                option(selected="" value="avro") Avro (N/A)
                                                 option(value="parquet") Parquet
-                                                option(value="plaintext") Plain text
-                                                option(value="sequencefile") SequenceFile
+                                                option(value="plaintext") Plain text (N/A)
+                                                option(value="sequencefile") SequenceFile (N/A)
 
                                 #mongodb.tab-pane(role="tabpanel" aria-labelledby="mongodb-tab")
                                     .form-group#mongodb_hostnameForm
@@ -82,7 +82,7 @@ block content
                                         label.col-lg-4.col-form-label Format
                                         .col-lg-12
                                             select#restapi_format.form-control(type='text', name='restapi_url', required='required')
-                                                option(selected="" value="json") JSON
+                                                option(selected="" value="json") Flat JSON
                                                 option(value="yaml") YAML (N/A)
                                                 option(value="xml") XML (N/A)
 

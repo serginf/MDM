@@ -61,16 +61,12 @@ public class DataSourceResource {
     @POST
     @Path("dataSource/")
     @Consumes("text/plain")
-    public Response POST_globalGraph(String body) {
-        System.out.println("[POST /globalGraph/] body = " + body);
+    public Response POST_dataSource(String body) {
+        System.out.println("[POST /dataSource/] body = " + body);
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
-
         MongoClient client = Utils.getMongoDBClient();
-
         objBody.put("dataSourceID", UUID.randomUUID().toString());
-
         getDataSourcesCollection(client).insertOne(Document.parse(objBody.toJSONString()));
-
         client.close();
         return Response.ok(objBody.toJSONString()).build();
     }

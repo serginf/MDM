@@ -1,0 +1,23 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    script(src='/js/client_manage_wrappers.js')
+    link(rel='stylesheet', href='/stylesheets/manage_styles.css')
+
+
+block content
+    .container-fluid
+        .row
+            .col-lg-8.col-md-7.col-sm-6
+                h2 Manage Wrappers
+                br
+
+            table.table.table-striped.table-hover#wrappers
+                thead
+                    tr
+                        th #
+                        th Name
+                        th Data Source
+                        th View Metadata
+                        th View Source Graph
+                tbody

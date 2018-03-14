@@ -1,20 +1,17 @@
 package eu.supersede.mdm.storage.resources;
 
 import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.util.JSON;
+import eu.supersede.mdm.storage.model.Release;
 import eu.supersede.mdm.storage.parsers.OWLtoD3;
 import eu.supersede.mdm.storage.util.ConfigManager;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
-import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
@@ -22,12 +19,9 @@ import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.bson.Document;
 import scala.Tuple3;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -105,7 +99,7 @@ public class ReleaseResource {
 
         JSONObject content = new JSONObject();
         try {
-            content = eu.supersede.mdm.storage.model.bdi_ontology.Release.newRelease(objBody.getAsString("event"),objBody.getAsString("schemaVersion"),objBody.getAsString("jsonInstances"));
+            content = Release.newRelease(objBody.getAsString("event"),objBody.getAsString("schemaVersion"),objBody.getAsString("jsonInstances"));
         } catch (Exception e) {
             e.printStackTrace();
         }

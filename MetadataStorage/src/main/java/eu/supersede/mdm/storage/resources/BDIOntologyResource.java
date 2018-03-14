@@ -1,5 +1,5 @@
 package eu.supersede.mdm.storage.resources;
-
+/*
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
@@ -23,13 +23,14 @@ import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-
+*/
 /**
  * Created by snadal on 22/11/16.
  */
-@Path("metadataStorage")
-public class BDIOntologyResource {
 
+//@Path("metadataStorage")
+public class BDIOntologyResource {
+/**
     private MongoCollection<Document> getReleasesCollection(MongoClient client) {
         return client.getDatabase(ConfigManager.getProperty("system_metadata_db_name")).getCollection("releases");
     }
@@ -102,9 +103,8 @@ public class BDIOntologyResource {
     }
 
 
-    /**
-     * POST a BDI Ontology
-     */
+    //POST a BDI Ontology
+
     @POST @Path("bdi_ontology/")
     @Consumes("text/plain")
     public Response POST_BDI_ontology(String body) throws FileNotFoundException {
@@ -168,4 +168,5 @@ public class BDIOntologyResource {
         System.out.println("Query: " + body);
         return Response.ok(new Gson().toJson("SparQL Query")).build();
     }
+    */
 }

@@ -1,8 +1,7 @@
 package eu.supersede.mdm.storage.tests;
 
-import eu.supersede.mdm.storage.model.bdi_ontology.Namespaces;
-import eu.supersede.mdm.storage.model.bdi_ontology.metamodel.GlobalLevel;
-import eu.supersede.mdm.storage.util.ConfigManager;
+import eu.supersede.mdm.storage.model.Namespaces;
+import eu.supersede.mdm.storage.model.metamodel.GlobalLevel;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;

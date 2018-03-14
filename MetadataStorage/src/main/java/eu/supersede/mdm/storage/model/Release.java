@@ -1,6 +1,6 @@
-package eu.supersede.mdm.storage.model.bdi_ontology;
+package eu.supersede.mdm.storage.model;
 
-import eu.supersede.mdm.storage.model.bdi_ontology.metamodel.SourceLevel;
+import eu.supersede.mdm.storage.model.metamodel.SourceLevel;
 import eu.supersede.mdm.storage.parsers.JSON_to_SourceLevel;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.TempFiles;

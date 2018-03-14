@@ -1,7 +1,6 @@
-package eu.supersede.mdm.storage.model.bdi_ontology.metamodel;
+package eu.supersede.mdm.storage.model.metamodel;
 
-import eu.supersede.mdm.storage.model.bdi_ontology.Namespaces;
-import org.apache.jena.tdb.sys.Names;
+import eu.supersede.mdm.storage.model.Namespaces;
 
 /**
  * Created by snadal on 22/11/16.

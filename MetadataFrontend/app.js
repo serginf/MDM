@@ -26,6 +26,7 @@ var user_routes = require(__dirname+'/routes/user_routes');
 var artifact_routes = require(__dirname+'/routes/artifact_routes');
 var global_graph_routes = require(__dirname+'/routes/global_graph_routes');
 var data_source_routes = require(__dirname+'/routes/data_source_routes');
+var wrapper_routes = require(__dirname+'/routes/wrapper_routes');
 
 var global_level_routes = require(__dirname+'/routes/global_level_routes');
 var bdi_ontology_routes = require(__dirname+'/routes/bdi_ontology_routes');
@@ -109,6 +110,14 @@ app.post('/globalGraph/:globalGraphID:/graphicalGraph', global_graph_routes.post
 app.get('/dataSource/', data_source_routes.getAllDataSources);
 app.get('/dataSource/:dataSourceID', data_source_routes.getDataSource);
 app.post('/dataSource', data_source_routes.postDataSource);
+
+/********** Wrapper resource ********************************************************/
+
+app.get('/wrapper/', wrapper_routes.getAllWrappers);
+app.get('/wrapper/:wrapperID', wrapper_routes.getWrapper);
+app.post('/wrapper', wrapper_routes.postWrapper);
+app.get('/wrapper/preview/:dataSourceID/:query', wrapper_routes.previewWrapper);
+
 
 //app.post('/bdi_ontology/sparQLQuery', bdi_ontology_routes.postSparQLQuery);
 
@@ -195,6 +204,20 @@ app.get('/manage_data_sources', checkAuthenticated, function(req,res) {
 
 app.get('/view_data_source', checkAuthenticated, function(req,res) {
     res.render('view_data_source', {user:req.session.passport.user});
+});
+
+/********** Wrapper section ***************************************************************/
+
+app.get('/new_wrapper', checkAuthenticated, function(req,res) {
+    res.render('new_wrapper', {user:req.session.passport.user});
+});
+
+app.get('/manage_wrappers', checkAuthenticated, function(req,res) {
+    res.render('manage_wrappers', {user:req.session.passport.user});
+});
+
+app.get('/view_wrapper', checkAuthenticated, function(req,res) {
+    res.render('view_wrapper', {user:req.session.passport.user});
 });
 
 

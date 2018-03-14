@@ -1,0 +1,105 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    script(src='/js/client_new_wrapper.js')
+    link(rel='stylesheet', href='/stylesheets/highlight.js/default.min.css')
+    script(src='/js/highlight.js/highlight.min.js')
+
+block content
+
+    .container
+        .banner
+            .row
+                .col-lg-8.col-md-7.col-sm-6
+                    h2 New Wrapper
+                    br
+
+            .container-fluid
+                .col-lg-8
+                    .card.bg-secondary.mb-3
+                        form#wrapperForm
+                            #hiddenDiv(style="display:none")
+                                .form-group
+                                    #fields.control-group
+                                        label.control-label Attributes
+                                        .controls
+                                            form(role="form" autocomplete="off")
+                                                .entry.input-group.col-xs-3
+                                                    .input-group-prepend
+                                                        .input-group-text
+                                                            input#ids(type="checkbox" name="ids[]")
+                                                            | &nbsp;ID
+                                                    input.form-control(name="fields[]" type="text" placeholder="Type something")
+                                                    span.input-group-btn
+                                                        button.btn.btn-success.btn-add(type="button")
+                                                            span.fa.fa-plus
+
+                            .form-group#nameForm
+                                label.col-lg-4.col-form-label Name
+                                .col-lg-12
+                                    input#name.form-control(type='text', name='name', required='required')
+
+                            .form-group#dataSourceForm
+                                label.col-lg-4.col-form-label Data Source
+                                .col-lg-12
+                                    select#dataSource.form-control(type='text', name='dataSource', required='required')
+
+                            .form-group
+                                .control-group
+                                    label.col-lg-4.col-form-label Attributes
+                                    .col-lg-12
+                                        .controls
+                                            form(role="form" autocomplete="off")
+                                                .entry.input-group.col-xs-3
+                                                    .input-group-prepend
+                                                        .input-group-text
+                                                            input(type="checkbox" name="idSet[]")
+                                                            | &nbsp;ID
+                                                    input.form-control(name="attributeSet[]" type="text" placeholder="Type something")
+                                                    span.input-group-btn
+                                                        button.btn.btn-success.btn-add(type="button")
+                                                            span.fa.fa-plus
+
+                            .form-group#sparksqlQueryForm(style="display:none")
+                                label.col-lg-8.col-form-label SparkSQL Query (use data source name as table)
+                                .col-lg-12
+                                    form(role="form" autocomplete="off")
+                                        .entry.input-group.col-xs-3
+                                            input#sparksqlQuery.form-control(type='text', name='sparksqlQuery', required='required')
+                                            span.input-group-btn
+                                                button.btn.btn-success.btn-preview(type="button")
+                                                    span.fa.fa-search
+
+                            .form-group#mongodbQueryForm(style="display:none")
+                                label.col-lg-8.col-form-label MongoDB Query (MUPGL queries)
+                                .col-lg-12
+                                    input#mongodbQuery.form-control(type='text', name='mongodbQuery', required='required')
+
+                            .form-group#restapiQueryForm(style="display:none")
+                                label.col-lg-8.col-form-label REST API Parameters (path or query string)
+                                .col-lg-12
+                                    input#restapiQuery.form-control(type='text', name='restapiQuery', required='required')
+
+                            .form-group#sqlQueryForm(style="display:none")
+                                label.col-lg-8.col-form-label SQL Query
+                                .col-lg-12
+                                    input#sqlQuery.form-control(type='text', name='sqlQuery', required='required')
+
+                            .form-group
+                                .col-lg-12.col-lg-offset-2
+                                    button#submitWrapper.btn.btn-primary.btn-lg.btn-block(type="submit") Submit
+
+
+    #previewModal.modal.fade(tabindex="-1" role="dialog")
+        .modal-dialog.modal-lg.modal-dialog-centered(role="document",style="max-width: 75%;max-height: 75%")
+            .modal-content
+                .modal-header
+                    h5.modal-title Data preview (limited to 10 results)
+                    button.close(type="button" data-dismiss="modal" aria-label="Close")
+                        span(aria-hidden="true") ×
+                .modal-body(style="position:relative;text-align:center;")
+                    span#spinner.fa.fa-spinner.fa-spin(style="font-size: 128px;")
+                    table#dataTable.table.table-striped.table-hover(style="display:none")
+                        thead.thead-dark
+                            tr
+                        tbody
