@@ -9,6 +9,7 @@ $(function() {
     $.get("/dataSource/"+getParameterByName("dataSourceID"), function(data) {
         var dataSource = (data);
         $("#id").val(dataSource.dataSourceID);
+        $("#iri").val(dataSource.iri);
         $("#name").val(dataSource.name);
 
         switch (dataSource.type) {

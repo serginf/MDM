@@ -36,77 +36,20 @@ import java.util.UUID;
  * Created by snadal on 17/05/16.
  */
 @Path("metadataStorage")
-public class ArtifactResource {
-
-    private MongoCollection<Document> getArtifactsCollection(MongoClient client) {
-        return client.getDatabase(ConfigManager.getProperty("system_metadata_db_name")).getCollection("artifacts");
-    }
-
-    /** System Metadata **/
-    @GET @Path("artifacts/{artifactType}")
-    @Consumes(MediaType.TEXT_PLAIN)
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response GET_artifacts(@PathParam("artifactType") String artifactType) {
-        System.out.println("[GET /artifacts/"+artifactType);
-
-        MongoClient client = Utils.getMongoDBClient();
-
-        List<String> allArtifacts = Lists.newArrayList();
-        Document query = new Document("type",artifactType);
-        getArtifactsCollection(client).find(query).iterator().forEachRemaining(document -> allArtifacts.add(document.toJson()));
-        client.close();
-
-        return Response.ok((new Gson().toJson(allArtifacts))).build();
-    }
-
-    @POST @Path("artifacts/")
-    @Consumes("text/plain")
-    public Response POST_artifacts(String JSON_artifact) {
-        System.out.println("[POST /artifacts/] JSON_artifact = "+JSON_artifact);
-
-        MongoClient client = Utils.getMongoDBClient();
-        getArtifactsCollection(client).insertOne(Document.parse(JSON_artifact));
-        client.close();
-        return Response.ok().build();
-    }
-
-    /**
-     * Get the metadata of the artifact, e.g. name, type, ...
-     */
-    @GET @Path("artifacts/{artifactType}/{graph}/")
-    @Consumes(MediaType.TEXT_PLAIN)
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response GET_artifact(@PathParam("artifactType") String artifactType, @PathParam("graph") String graph) {
-        System.out.println("[GET /artifact/"+artifactType+"/"+graph);
-        try {
-            MongoClient client = Utils.getMongoDBClient();
-            Document query = new Document("graph", graph);
-            query.put("type", artifactType);
-            Document res = getArtifactsCollection(client).find(query).first();
-            client.close();
-            return Response.ok((res.toJson())).build();
-        } catch (Exception e ){
-            String ret = "";
-            for (StackTraceElement s : e.getStackTrace()) {
-                ret += s.toString()+"\n";
-            }
-            return Response.notModified(ret).build();
-        }
-    }
+public class GraphResource {
 
     /**
      * Get the content of the artifact, i.e. the triples
      */
-    @GET @Path("artifacts/{artifactType}/{graph}/content")
+    @GET @Path("graph/{iri}")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response GET_artifact_content(@PathParam("artifactType") String artifactType, @PathParam("graph") String graph) {
-        System.out.println("[GET /artifacts/"+artifactType+"/"+graph+"/content");
-
+    public Response GET_graph(@PathParam("iri") String iri) {
+        System.out.println("[GET /graph/"+iri);
         Dataset dataset = Utils.getTDBDataset();
         dataset.begin(ReadWrite.READ);
         String out = "";
-        try(QueryExecution qExec = QueryExecutionFactory.create("SELECT ?s ?p ?o ?g WHERE { GRAPH <"+graph+"> {?s ?p ?o} }",  dataset)) {
+        try(QueryExecution qExec = QueryExecutionFactory.create("SELECT ?s ?p ?o ?g WHERE { GRAPH <"+iri+"> {?s ?p ?o} }",  dataset)) {
             ResultSet rs = qExec.execSelect();
             out = ResultSetFormatter.asXMLString(rs);
         } catch (Exception e) {
@@ -115,13 +58,16 @@ public class ArtifactResource {
         }
         dataset.end();
         dataset.close();
-        return Response.ok((out)).build();
+        JSONObject res = new JSONObject();
+        res.put("rdf,",out);
+        return Response.ok(res.toJSONString()).build();
     }
 
     /**
-     * Get the graphical representation of the artifact
+     * Get the graphical representation of the graph
      */
-    @GET @Path("artifacts/{artifactType}/{graph}/graphical")
+    /*
+    @GET @Path("graph/{artifactType}/{graph}/graphical")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public Response GET_artifact_content_graphical(@PathParam("artifactType") String artifactType, @PathParam("graph") String graph) {
@@ -151,41 +97,28 @@ public class ArtifactResource {
         dataset.close();
         return Response.ok((JSON)).build();
     }
+    */
 
 
-    @POST @Path("artifacts/{graph}")
+    @POST @Path("graph/{iri}")
     @Consumes("text/plain")
-    public Response POST_artifacts(@PathParam("graph") String graph, String RDF) {
-        System.out.println("[POST /artifacts/"+graph);
-
-        System.out.println("the RDF is "+RDF);
-
+    public Response POST_graph(@PathParam("iri") String iri, String RDF) {
+        System.out.println("[POST /graph/"+iri);
         Dataset dataset = Utils.getTDBDataset();
-        System.out.println("Got TDB dataset");
         dataset.begin(ReadWrite.WRITE);
-
-        Model model = dataset.getNamedModel(graph);
-        System.out.println("Got Model");
-
+        Model model = dataset.getNamedModel(iri);
         OntModel ontModel = ModelFactory.createOntologyModel();
-        System.out.println("Got Ontmodel");
-
         /* Store RDF into a temporal file */
         String tempFileName = UUID.randomUUID().toString();
         String filePath = "";
-        System.out.println("tempFileName = "+tempFileName);
-
         try {
             File tempFile = File.createTempFile(tempFileName,".tmp");
-            System.out.println("Tempfile = "+tempFile);
             filePath = tempFile.getAbsolutePath();
-            System.out.println("artifact temp stored in "+filePath);
             Files.write(RDF.getBytes(),tempFile);
         } catch (IOException e) {
             e.printStackTrace();
             return Response.ok("Error: "+e.toString()).build();
         }
-
         model.add(FileManager.get().readModel(ontModel, filePath));
         model.commit();
         model.close();
@@ -195,17 +128,14 @@ public class ArtifactResource {
         return Response.ok().build();
     }
 
-    @POST @Path("artifacts/{graph}/triple/{s}/{p}/{o}")
+    @POST @Path("graph/{iri}/triple/{s}/{p}/{o}")
     @Consumes("text/plain")
-    public Response POST_triple(@PathParam("graph") String graph, @PathParam("s") String s, @PathParam("p") String p, @PathParam("o") String o) {
-        System.out.println("[POST /artifacts/"+graph+"/triple");
-
+    public Response POST_triple(@PathParam("iri") String iri, @PathParam("s") String s, @PathParam("p") String p, @PathParam("o") String o) {
+        System.out.println("[POST /graph/"+iri+"/triple");
         Dataset dataset = Utils.getTDBDataset();
         dataset.begin(ReadWrite.WRITE);
-
-        Model model = dataset.getNamedModel(graph);
-            RDFUtil.addTriple(model,s,p,o);
-
+        Model model = dataset.getNamedModel(iri);
+        RDFUtil.addTriple(model,s,p,o);
         model.commit();
         model.close();
         dataset.commit();
@@ -214,28 +144,7 @@ public class ArtifactResource {
         return Response.ok().build();
     }
 
-
-    @DELETE @Path("artifacts/{artifactType}/{graph}")
-    @Consumes("text/plain")
-    public Response DELETE_artifacts(@PathParam("artifactType") String artifactType, @PathParam("graph") String graph) {
-        System.out.println("[DELETE /artifacts/"+artifactType+"/"+graph);
-
-        Dataset dataset = Utils.getTDBDataset();
-        dataset.begin(ReadWrite.WRITE);
-
-        dataset.removeNamedModel(graph);
-
-        dataset.commit();
-        dataset.end();
-        dataset.close();
-
-        MongoClient client = Utils.getMongoDBClient();
-        getArtifactsCollection(client).deleteOne(new Document("graph",graph));
-        client.close();
-
-        return Response.ok().build();
-    }
-
+    /*
     @POST @Path("artifacts/{graph}/graphicalGraph")
     @Consumes("text/plain")
     public Response POST_graphicalGraph(@PathParam("graph") String graph, String body) {
@@ -253,5 +162,6 @@ public class ArtifactResource {
 
         return Response.ok().build();
     }
+    */
 
 }

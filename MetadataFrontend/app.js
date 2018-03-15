@@ -23,7 +23,7 @@ var fs = require('fs');
 /*****************************************************************************************/
 
 var user_routes = require(__dirname+'/routes/user_routes');
-var artifact_routes = require(__dirname+'/routes/artifact_routes');
+var graph_routes = require(__dirname+'/routes/graph_routes');
 var global_graph_routes = require(__dirname+'/routes/global_graph_routes');
 var data_source_routes = require(__dirname+'/routes/data_source_routes');
 var wrapper_routes = require(__dirname+'/routes/wrapper_routes');
@@ -86,13 +86,12 @@ app.get('/logout', function(req, res){
     res.redirect('/');
 });
 
-/********** Generic Artifact resource *****************************************************/
+/********** Generic RDF graph resource *****************************************************/
 
-app.get('/artifacts/:artifactType', artifact_routes.getArtifacts);
-app.get('/artifacts/:artifactType/:artifactID', artifact_routes.getArtifact);
-app.get('/artifacts/:artifactType/:artifactID/content', artifact_routes.getArtifactContent);
-app.get('/artifacts/:artifactType/:artifactID/graphical', artifact_routes.getArtifactGraphical);
-app.delete('/artifacts/:artifactType/:artifactID', artifact_routes.deleteArtifact);
+app.get('/graph/:iri', graph_routes.getGraph);
+app.get('/graph/:iri/graphical', graph_routes.getGraphGraphical);
+app.post('/graph', graph_routes.postGraph);
+app.post('/graph/:iri/triple', graph_routes.postTriple);
 //app.post('/artifacts/:artifactType/:artifactID/triple', artifact_routes.postTriple);
 //app.post('/artifacts/:artifactType/:artifactID/graphicalGraph', artifact_routes.postGraphicalGraph);
 

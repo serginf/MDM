@@ -15,15 +15,20 @@ block content
                 .col-lg-8
                     .card.bg-secondary.mb-3
                         form#dataSourceForm
+                            .form-group#nameForm
+                                label.col-lg-4.col-form-label Name
+                                .col-lg-12
+                                    input#name.form-control(type='text', name='name', required='required', readonly="")
+
                             .form-group#idForm
                                 label.col-lg-4.col-form-label ID
                                 .col-lg-12
                                     input#id.form-control(type='text', name='id', required='required', readonly="")
 
-                            .form-group#nameForm
-                                label.col-lg-4.col-form-label Name
+                            .form-group#iriForm
+                                label.col-lg-4.col-form-label IRI
                                 .col-lg-12
-                                    input#name.form-control(type='text', name='name', required='required', readonly="")
+                                    input#iri.form-control(type='text', name='iri', required='required', readonly="")
 
                             .form-group#typeForm
                                 label.col-lg-4.col-form-label Type

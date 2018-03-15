@@ -40,7 +40,13 @@ exports.postDataSource = function (req, res, next) {
             body: JSON.stringify(objDataSource)
         }, function done(error, response, body) {
             if (!error && response.statusCode == 200) {
-                res.status(200).json(JSON.parse(body));
+                console.log(body);
+                request.post({
+                    url: config.METADATA_DATA_LAYER_URL + "graph/"+encodeURIComponent(JSON.parse(body).iri),
+                    body: JSON.parse(body).rdf
+                }, function done(err, results) {
+                    res.status(200).json("ok");
+                });
             } else {
                 res.status(500).send("Error storing data source");
             }

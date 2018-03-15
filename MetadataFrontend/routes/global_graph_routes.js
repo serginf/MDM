@@ -70,6 +70,15 @@ exports.postGlobalGraph = function (req, res, next) {
     }
 };
 
+exports.postGraph = function (req, res, next) {
+    request.post({
+        url: config.METADATA_DATA_LAYER_URL + "globalGraph/"+encodeURIComponent(req.params.namedGraph)+"/triple/",
+        data: req.body
+    }, function done(err, results) {
+        res.status(200).json("ok");
+    });
+};
+
 exports.postTriple = function (req, res, next) {
     request.post({
         url: config.METADATA_DATA_LAYER_URL + "globalGraph/"+encodeURIComponent(req.params.namedGraph)+"/triple/",

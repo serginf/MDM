@@ -12,6 +12,10 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 /**
  * Created by snadal on 24/11/16.
  */
@@ -55,6 +59,23 @@ public class RDFUtil {
                 .replace(Namespaces.sup.val(),"")
                 .replace(Namespaces.rdfs.val(),"")
                 .replace(Namespaces.owl.val(),"");
+    }
+
+    public static String getRDFString (OntModel o) {
+        // Output RDF
+        String tempFileForO = TempFiles.getTempFile();
+        try {
+            o.write(new FileOutputStream(tempFileForO),"RDF/XML-ABBREV");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        String content = "";
+        try {
+            content = new String(java.nio.file.Files.readAllBytes(new java.io.File(tempFileForO).toPath()));
+        } catch (IOException exc) {
+            exc.printStackTrace();
+        }
+        return content;
     }
 
 
