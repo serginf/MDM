@@ -9,6 +9,7 @@ import eu.supersede.mdm.storage.parsers.OWLtoD3;
 import eu.supersede.mdm.storage.util.ConfigManager;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
@@ -45,6 +46,14 @@ public class AdminResource {
         System.out.println("[GET /admin/deleteAll/");
         MongoClient client = Utils.getMongoDBClient();
         client.getDatabase(ConfigManager.getProperty("system_metadata_db_name")).drop();
+
+        try {
+            FileUtils.deleteDirectory(new File(ConfigManager.getProperty("metadata_db_file") +
+                    ConfigManager.getProperty("metadata_db_name")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return Response.ok("OK").build();
     }
 

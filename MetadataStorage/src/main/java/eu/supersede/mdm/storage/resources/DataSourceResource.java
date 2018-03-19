@@ -5,8 +5,8 @@ import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import eu.supersede.mdm.storage.model.Namespaces;
-import eu.supersede.mdm.storage.model.metamodel.SourceLevel;
-import eu.supersede.mdm.storage.model.metamodel.SourceOntology;
+import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
+import eu.supersede.mdm.storage.parsers.OWLtoD3;
 import eu.supersede.mdm.storage.util.ConfigManager;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
@@ -15,9 +15,13 @@ import net.minidev.json.JSONValue;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.impl.PropertyImpl;
+import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.bson.Document;
+import scala.Tuple3;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -69,7 +73,7 @@ public class DataSourceResource {
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
         MongoClient client = Utils.getMongoDBClient();
         String dsName = objBody.getAsString("name").trim().replace(" ","");
-        String iri = SourceOntology.DATA_SOURCE.val()+"/"+dsName;
+        String iri = SourceGraph.DATA_SOURCE.val()+"/"+dsName;
         //Save metadata
         objBody.put("dataSourceID", UUID.randomUUID().toString());
         objBody.put("iri", iri);
@@ -77,10 +81,32 @@ public class DataSourceResource {
 
         //Save RDF
         OntModel S = ModelFactory.createOntologyModel();
-        RDFUtil.addTriple(S,iri, Namespaces.rdf.val()+"type", SourceOntology.DATA_SOURCE.val());
+        RDFUtil.addTriple(S,iri, Namespaces.rdf.val()+"type", SourceGraph.DATA_SOURCE.val());
         objBody.put("rdf",RDFUtil.getRDFString(S));
         client.close();
         return Response.ok(objBody.toJSONString()).build();
     }
 
+    /**
+     * Get the graphical representation of the data source
+     */
+    /*
+    @GET @Path("dataSource/{iri}/graphical")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response GET_artifact_content_graphical(@PathParam("iri") String iri) {
+        System.out.println("[GET /dataSource/"+iri+"/graphical");
+        Dataset dataset = Utils.getTDBDataset();
+        dataset.begin(ReadWrite.READ);
+        List<Tuple3<Resource,Property,Resource>> triples = Lists.newArrayList();
+        RDFUtil.runAQuery("SELECT * WHERE { GRAPH <"+iri+"> {?s ?p ?o} }",  dataset).forEachRemaining(triple -> {
+            triples.add(new Tuple3<>(new ResourceImpl(triple.get("s").toString()),
+                    new PropertyImpl(triple.get("p").toString()),new ResourceImpl(triple.get("o").toString())));
+        });
+        String JSON = OWLtoD3.parse(artifactType, triples);
+        dataset.end();
+        dataset.close();
+        return Response.ok((JSON)).build();
+    }
+    */
 }

@@ -18,19 +18,21 @@ block content
 
         .card.bg-secondary.mb-3
             .card-header
-                h4
-                    #theURL
-            .card-body
-                p.card-text(style='text-align: left')
-                    | This is the Global Graph editor (based on
-                    a(target="_blank" href="https://github.com/metacademy/directed-graph-creator")  directed-graph-creator&nbsp;
-                    | published under the MIT/X license). To manipulate the graph, select the appropriate class and apply the following operations:
-                    ul.list-inline
-                        li.list-inline-item (a) drag/scroll to translate/zoom the graph;
-                        li.list-inline-item (b) shift-click on graph to create a node;
-                        li.list-inline-item (c) shift-click on a node and then drag to another node to connect them with a directed edge;
-                        li.list-inline-item (d) shift-click on a node to change its title;
-                        li.list-inline-item (e) click on node or edge and press backspace/delete to delete
+                button.btn.btn-link(data-toggle="collapse" data-target="#instructions" aria-expanded="true" aria-controls="instructions")
+                    h5(style="color:black")
+                        #namedGraph
+            #instructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
+                .card-body
+                    p.card-text(style='text-align: left')
+                        | This is the Global Graph editor (based on
+                        a(target="_blank" href="https://github.com/metacademy/directed-graph-creator")  directed-graph-creator&nbsp;
+                        | published under the MIT/X license). To manipulate the graph, select the appropriate class and apply the following operations:
+                        ul.list-inline
+                            li.list-inline-item (a) drag/scroll to translate/zoom the graph;
+                            li.list-inline-item (b) shift-click on graph to create a node;
+                            li.list-inline-item (c) shift-click on a node and then drag to another node to connect them with a directed edge;
+                            li.list-inline-item (d) shift-click on a node to change its title;
+                            li.list-inline-item (e) click on node or edge and press backspace/delete to delete
 
         h4
             span.label Metadata Model:
@@ -53,9 +55,9 @@ block content
     //Used to load the graph
     //p#upload-input(hidden="") Upload
     div#toolbox
-        //input#upload-input(type="button" class="btn btn-primary btn-md" visibility="hidden")
-        input#download-input(type="button" class="btn btn-primary btn-md" value="Download")
-        input#delete-graph(type="button" class="btn btn-primary btn-md" value="Delete")
+        input.d-none#upload-input(type="button" class="btn btn-primary btn-md" value="Upload")
+        input.d-none#download-input(type="button" class="btn btn-primary btn-md" value="Download")
+        input.d-none#delete-graph(type="button" class="btn btn-primary btn-md" value="Delete")
 
     #graph
 

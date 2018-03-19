@@ -9,15 +9,13 @@ function euclidean(xA,yA,xB,yB) {
     return Math.sqrt(Math.pow(xB-xA,2)+Math.pow(yB-yA,2));
 }
 
-$(window).load(function() {
-
-    d3.json('/artifacts/SOURCE/'+encodeURIComponent(getParameterByName('graph'))+'/graphical', function (error, graph) {
-        console.log(JSON.stringify(graph));
+$(function() {
+    d3.json('/graph/SOURCE/'+encodeURIComponent(getParameterByName('iri'))+'/graphical', function (error, graph) {
         var width = $(window).width()*0.75;
         var height = $(window).height()*0.75;
-        var nodeRadius = 7;
+        var nodeRadius = 12;
 
-        outer = d3.select("#sourceLevelWrapper").append("svg")
+        outer = d3.select("#sourceGraphWrapper").append("svg")
             .attr("width", width)
             .attr("height", height)
             .attr("pointer-events", "all");

@@ -59,45 +59,30 @@ public class GraphResource {
         dataset.end();
         dataset.close();
         JSONObject res = new JSONObject();
-        res.put("rdf,",out);
+        res.put("rdf",out);
         return Response.ok(res.toJSONString()).build();
     }
 
     /**
      * Get the graphical representation of the graph
      */
-    /*
-    @GET @Path("graph/{artifactType}/{graph}/graphical")
+    @GET @Path("graph/{artifactType}/{iri}/graphical")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response GET_artifact_content_graphical(@PathParam("artifactType") String artifactType, @PathParam("graph") String graph) {
-        System.out.println("[GET /artifacts/"+artifactType+"/"+graph+"/graphical");
-
+    public Response GET_artifact_content_graphical(@PathParam("artifactType") String artifactType, @PathParam("iri") String iri) {
+        System.out.println("[GET /graph/"+artifactType+"/"+iri+"/graphical");
         Dataset dataset = Utils.getTDBDataset();
         dataset.begin(ReadWrite.READ);
         List<Tuple3<Resource,Property,Resource>> triples = Lists.newArrayList();
-        String out = "";
-        OntModel theModel = ModelFactory.createOntologyModel();
-        try(QueryExecution qExec = QueryExecutionFactory.create("SELECT * WHERE { GRAPH <"+graph+"> {?s ?p ?o} }",  dataset)) {
-            ResultSet rs = qExec.execSelect();
-
-            rs.forEachRemaining(triple -> {
-                triples.add(new Tuple3<Resource,Property,Resource>(new ResourceImpl(triple.get("s").toString()),
-                        new PropertyImpl(triple.get("p").toString()),new ResourceImpl(triple.get("o").toString())));
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.ok("Error: "+e.toString()).build();
-        }
-
+        RDFUtil.runAQuery("SELECT * WHERE { GRAPH <"+iri+"> {?s ?p ?o} }",  dataset).forEachRemaining(triple -> {
+            triples.add(new Tuple3<>(new ResourceImpl(triple.get("s").toString()),
+                    new PropertyImpl(triple.get("p").toString()),new ResourceImpl(triple.get("o").toString())));
+        });
         String JSON = OWLtoD3.parse(artifactType, triples);
-
         dataset.end();
         dataset.close();
         return Response.ok((JSON)).build();
     }
-    */
 
 
     @POST @Path("graph/{iri}")

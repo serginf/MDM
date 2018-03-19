@@ -5,7 +5,7 @@ import eu.supersede.mdm.storage.model.Namespaces;
 /**
  * Created by snadal on 6/06/17.
  */
-public enum GlobalOntology {
+public enum GlobalGraph {
 
     CONCEPT(Namespaces.G.val()+"Concept"),
     FEATURE(Namespaces.G.val()+"Feature"),
@@ -17,7 +17,7 @@ public enum GlobalOntology {
 
     private String element;
 
-    GlobalOntology(String element) {
+    GlobalGraph(String element) {
         this.element = element;
     }
 

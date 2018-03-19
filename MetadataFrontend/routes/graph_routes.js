@@ -27,7 +27,7 @@ exports.getGraph = function (req, res, next) {
 };
 
 exports.getGraphGraphical = function (req, res, next) {
-    request.get(config.METADATA_DATA_LAYER_URL + "graph/"+encodeURIComponent(req.params.iri)+"/graphical", function (error, response, body) {
+    request.get(config.METADATA_DATA_LAYER_URL + "graph/SOURCE/"+encodeURIComponent(req.params.iri)+"/graphical", function (error, response, body) {
         if (!error && response.statusCode == 200) {
             res.status(200).json(JSON.parse(body));
         } else {

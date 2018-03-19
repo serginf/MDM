@@ -46,19 +46,13 @@ function addTriple(s, p, o) {
             timeout: 5000
         }
     );
-
     var tripleObj = new Object();
-    tripleObj.s = s;
-    tripleObj.p = p;
-    tripleObj.o = o;
-
+    tripleObj.s = s;tripleObj.p = p;tripleObj.o = o;
     $.ajax({
         type: "POST",
-        url: '/artifacts/GLOBAL/' + encodeURIComponent(getParameterByName('graph')) + "/triple",
+        url: '/graph/' + encodeURIComponent(getParameterByName('namedGraph')) + "/triple",
         data: tripleObj
     });
-
-    //console.log('/artifacts/GLOBAL/' + encodeURIComponent(getParameterByName('graph')) + "/triple/");
 }
 
 $(function () {
@@ -224,7 +218,7 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
             });
             $.ajax({
                 type: "POST",
-                url: '/artifacts/GLOBAL/' + encodeURIComponent(getParameterByName('graph')) + "/graphicalGraph",
+                url: '/graph/' + encodeURIComponent(getParameterByName('graph')) + "/graphicalGraph",
                 data: {graphicalGraph: {"nodes": thisGraph.nodes,"edges": saveEdges} }
             });
             alert("saved graph");
@@ -232,8 +226,6 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
 
         // handle uploaded data
         d3.select("#upload-input").on("click", function () {
-            console.log("/artifacts/GLOBAL/"+encodeURIComponent(getParameterByName("graph")));
-
             $.get("/artifacts/GLOBAL/"+encodeURIComponent(getParameterByName("graph")), function(data) {
                 if (data.graphicalGraph) {
                     var graphicalGraph = JSON.parse(data.graphicalGraph);

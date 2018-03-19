@@ -89,7 +89,7 @@ app.get('/logout', function(req, res){
 /********** Generic RDF graph resource *****************************************************/
 
 app.get('/graph/:iri', graph_routes.getGraph);
-app.get('/graph/:iri/graphical', graph_routes.getGraphGraphical);
+app.get('/graph/:type/:iri/graphical', graph_routes.getGraphGraphical);
 app.post('/graph', graph_routes.postGraph);
 app.post('/graph/:iri/triple', graph_routes.postTriple);
 //app.post('/artifacts/:artifactType/:artifactID/triple', artifact_routes.postTriple);
@@ -101,8 +101,8 @@ app.get('/globalGraph/', global_graph_routes.getAllGlobalGraphs);
 app.get('/globalGraph/:globalGraphID', global_graph_routes.getGlobalGraph);
 app.get('/globalGraph/namedGraph/:namedGraph', global_graph_routes.getGlobalGraphFromNamedGraph);
 app.post('/globalGraph', global_graph_routes.postGlobalGraph);
-app.post('/globalGraph/:namedGraph/triple', global_graph_routes.postTriple);
-app.post('/globalGraph/:globalGraphID:/graphicalGraph', global_graph_routes.postGraphicalGraph);
+//app.post('/globalGraph/:namedGraph/triple', global_graph_routes.postTriple);
+app.post('/globalGraph/:globalGraphID/graphicalGraph', global_graph_routes.postGraphicalGraph);
 
 /********** Data Source resource ********************************************************/
 
@@ -205,6 +205,10 @@ app.get('/view_data_source', checkAuthenticated, function(req,res) {
     res.render('view_data_source', {user:req.session.passport.user});
 });
 
+app.get('/view_source_graph', checkAuthenticated, function(req,res) {
+    res.render('view_source_graph', {user:req.session.passport.user});
+});
+
 /********** Wrapper section ***************************************************************/
 
 app.get('/new_wrapper', checkAuthenticated, function(req,res) {
@@ -275,9 +279,7 @@ app.get('/manage_source_levels', checkAuthenticated, function(req,res) {
     res.render('manage_source_levels', {user:req.session.passport.user});
 });*/
 
-app.get('/view_source_level', checkAuthenticated, function(req,res) {
-    res.render('view_source_level', {user:req.session.passport.user});
-});
+
 
 
 /******* Queries section **************************************************************/

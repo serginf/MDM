@@ -17,10 +17,9 @@ $(function() {
         var dataSource = new Object();
         dataSource.name = $("#name").val();
         switch ($('.nav-tabs .active').attr('id')) {
-            case "file-tab":
-                dataSource.type = "file";
-                dataSource.file_path = $("#file_path").val();
-                dataSource.file_format = $("#file_format").val();
+            case "avro-tab":
+                dataSource.type = "avro";
+                dataSource.avro_path = $("#avro_path").val();
                 break;
 
             case "mongodb-tab":
@@ -30,6 +29,20 @@ $(function() {
                 dataSource.mongodb_username = $("#mongodb_username").val();
                 dataSource.mongodb_password = $("#mongodb_password").val();
                 dataSource.mongodb_database = $("#mongodb_database").val();
+                break;
+
+            case "neo4j-tab":
+                dataSource.type = "neo4j";
+                break;
+
+            case "parquet-tab":
+                dataSource.type = "parquet";
+                dataSource.parquet_path = $("#parquet_path").val();
+                break;
+
+            case "plaintext-tab":
+                dataSource.type = "plaintext";
+                dataSource.plaintext_path = $("#plaintext_path").val();
                 break;
 
             case "restapi-tab":

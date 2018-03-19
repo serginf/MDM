@@ -5,7 +5,7 @@ import eu.supersede.mdm.storage.model.Namespaces;
 /**
  * Created by snadal on 6/06/17.
  */
-public enum SourceOntology {
+public enum SourceGraph {
 
     DATA_SOURCE(Namespaces.S.val()+"DataSource"),
     WRAPPER(Namespaces.S.val()+"Wrapper"),
@@ -17,7 +17,7 @@ public enum SourceOntology {
 
     private String element;
 
-    SourceOntology(String element) {
+    SourceGraph(String element) {
         this.element = element;
     }
 

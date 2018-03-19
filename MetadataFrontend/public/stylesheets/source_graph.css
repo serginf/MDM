@@ -10,8 +10,8 @@
 }
 
 text.label {
-    font-size: x-small;
-    fill: white;
+    font-size: small;
+    fill: black;
 }
 
 textPath {

@@ -7,95 +7,78 @@ block headers
 
 block content
 
-    .container
-        .banner
-            .row
-                .col-lg-8.col-md-7.col-sm-6
-                    h2 View Wrapper
-                    br
+    .container-fluid
+        .row.justify-content-md-center
+            .col-lg-8.col-md-7.col-sm-6
+                h2 View Wrapper
+                br
 
-            .container-fluid
-                .col-lg-8
-                    .card.bg-secondary.mb-3
-                        form#wrapperForm
-                            #hiddenDiv(style="display:none")
-                                .form-group
-                                    #fields.control-group
-                                        label.control-label Attributes
-                                        .controls
-                                            form(role="form" autocomplete="off")
-                                                .entry.input-group.col-xs-3
-                                                    .input-group-prepend
-                                                        .input-group-text
-                                                            input#ids(type="checkbox" name="ids[]")
-                                                            | &nbsp;ID
-                                                    input.form-control(name="fields[]" type="text" placeholder="Type something")
-                                                    span.input-group-btn
-                                                        button.btn.btn-success.btn-add(type="button")
-                                                            span.fa.fa-plus
+            .col-lg-8
+                .card.bg-secondary.mb-3
+                    form#wrapperForm
+                            .form-group#idForm
+                                label.col-lg-4.col-form-label ID
+                                .col-lg-12
+                                    input#id.form-control(type='text', name='id', required='required', readonly="")
+
+                            .form-group#iriForm
+                                label.col-lg-4.col-form-label IRI
+                                .col-lg-12
+                                    input#iri.form-control(type='text', name='iri', required='required', readonly="")
 
                             .form-group#nameForm
                                 label.col-lg-4.col-form-label Name
                                 .col-lg-12
-                                    input#name.form-control(type='text', name='name', required='required',readonly='')
+                                    input#name.form-control(type='text', name='name', required='required', readonly="")
 
                             .form-group#dataSourceForm
                                 label.col-lg-4.col-form-label Data Source
                                 .col-lg-12
-                                    select#dataSource.form-control(type='text', name='dataSource', required='required',readonly='')
+                                    input#dataSource.form-control(type='text', name='dataSource', required='required', readonly="")
 
                             .form-group
-                                .control-group
-                                    label.col-lg-4.col-form-label Attributes
-                                    .col-lg-12
-                                        .controls
-                                            form(role="form" autocomplete="off")
-                                                .entry.input-group.col-xs-3
-                                                    .input-group-prepend
+                                label.col-lg-4.col-form-label Attributes
+                                .col-lg-12#controls
+                                            //form(role="form" autocomplete="off")
+                                                //.entry.input-group.col-xs-3
+                                                    //.input-group-prepend
                                                         .input-group-text
                                                             input(type="checkbox" name="idSet[]")
                                                             | &nbsp;ID
-                                                    input.form-control(name="attributeSet[]" type="text" placeholder="Type something")
-                                                    span.input-group-btn
-                                                        button.btn.btn-success.btn-add(type="button")
-                                                            span.fa.fa-plus
+                                                    input.form-control(name="attributeSet[]" type="text" placeholder="")
 
-                            .form-group#sparksqlQueryForm(style="display:none")
-                                label.col-lg-8.col-form-label SparkSQL Query (use data source name as table)
+                            .form-group#cypherQueryForm(style="display:none")
+                                label.col-lg-8.col-form-label Cypher query
                                 .col-lg-12
                                     form(role="form" autocomplete="off")
                                         .entry.input-group.col-xs-3
-                                            input#sparksqlQuery.form-control(type='text', name='sparksqlQuery', required='required',readonly='')
-                                            span.input-group-btn
-                                                button.btn.btn-success.btn-preview(type="button")
-                                                    span.fa.fa-search
+                                            input#cypherQuery.form-control(type='text', name='cypherQuery', required='required', readonly="")
+
+                            .form-group#fileseparatorForm(style="display:none")
+                                label.col-lg-8.col-form-label File separator
+                                .col-lg-12
+                                    form(role="form" autocomplete="off")
+                                        .entry.input-group.col-xs-3
+                                            input#fileseparator.form-control(type='text', name='fileseparator', required='required', readonly="")
+
+                            .form-group#sparksqlQueryForm(style="display:none")
+                                label.col-lg-8.col-form-label SparkSQL query (use data source name as table)
+                                .col-lg-12
+                                    form(role="form" autocomplete="off")
+                                        .entry.input-group.col-xs-3
+                                            input#sparksqlQuery.form-control(type='text', name='sparksqlQuery', required='required', readonly="")
 
                             .form-group#mongodbQueryForm(style="display:none")
-                                label.col-lg-8.col-form-label MongoDB Query
+                                label.col-lg-8.col-form-label MongoDB Query (MUPGL queries)
                                 .col-lg-12
-                                    input#mongodbQuery.form-control(type='text', name='mongodbQuery', required='required',readonly='')
+                                    input#mongodbQuery.form-control(type='text', name='mongodbQuery', required='required', readonly="")
+
+                            .form-group#restapiQueryForm(style="display:none")
+                                label.col-lg-8.col-form-label REST API Parameters (path or query string)
+                                .col-lg-12
+                                    input#restapiQuery.form-control(type='text', name='restapiQuery', required='required', readonly="")
 
                             .form-group#sqlQueryForm(style="display:none")
                                 label.col-lg-8.col-form-label SQL Query
                                 .col-lg-12
-                                    input#sqlQuery.form-control(type='text', name='sqlQuery', required='required',readonly='')
-
-                            //.input-group-prepend
-                                .input-group-text
-                                    input#ids(type="checkbox" name="ids[]")
-                                    | &nbsp;ID
-
-
-    #previewModal.modal.fade(tabindex="-1" role="dialog")
-        .modal-dialog.modal-lg.modal-dialog-centered(role="document",style="max-width: 75%;max-height: 75%")
-            .modal-content
-                .modal-header
-                    h5.modal-title Data preview (limited to 10 results)
-                    button.close(type="button" data-dismiss="modal" aria-label="Close")
-                        span(aria-hidden="true") ×
-                .modal-body(style="position:relative;text-align:center;")
-                    span#spinner.fa.fa-spinner.fa-spin(style="font-size: 128px;")
-                    table#dataTable.table.table-striped.table-hover(style="display:none")
-                        thead.thead-dark
-                            tr
-                        tbody
+                                    input#sqlQuery.form-control(type='text', name='sqlQuery', required='required', readonly="")

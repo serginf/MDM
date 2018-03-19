@@ -48,7 +48,7 @@ function addTriple(s, p, o) {
     tripleObj.s = s; tripleObj.p = p; tripleObj.o = o;
     $.ajax({
         type: "POST",
-        url: '/globalGraph/'+encodeURIComponent(currentGlobalGraph.namedGraph)+'/triple/',
+        url: '/graph/'+encodeURIComponent(currentGlobalGraph.namedGraph)+'/triple/',
         data: tripleObj
     });
 
@@ -85,7 +85,7 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
         async: false
     }).responseText);
 
-    $("#theURL").text("Named graph: " + currentGlobalGraph.namedGraph);
+    $("#namedGraph").text("Named graph: " + currentGlobalGraph.namedGraph);
 
     // TODO add user settings
     var consts = {
@@ -230,10 +230,7 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
 
         // handle uploaded data
         d3.select("#upload-input").on("click", function () {
-            alert("TO DO upload");
-            console.log("/artifacts/GLOBAL/"+encodeURIComponent(getParameterByName("graph")));
-
-            $.get("/artifacts/GLOBAL/"+encodeURIComponent(getParameterByName("graph")), function(data) {
+            $.get("/globalGraph/"+getParameterByName("globalGraphID"), function(data) {
                 if (data.graphicalGraph) {
                     var graphicalGraph = JSON.parse(data.graphicalGraph);
                     var jsonObj = graphicalGraph;
@@ -929,7 +926,7 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
     window.onbeforeunload = function () {
         $("#download-input").click();
        // return null;
-        return "Make sure to save your graph locally before leaving :-)";
+        return undefined;
     };
 
     var docEl = document.documentElement,

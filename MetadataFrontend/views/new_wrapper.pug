@@ -7,32 +7,30 @@ block headers
 
 block content
 
-    .container
-        .banner
-            .row
-                .col-lg-8.col-md-7.col-sm-6
-                    h2 New Wrapper
-                    br
+    .container-fluid
+        .row.justify-content-md-center
+            .col-lg-8.col-md-7.col-sm-6
+                h2 New Wrapper
+                br
 
-            .container-fluid
-                .col-lg-8
-                    .card.bg-secondary.mb-3
-                        form#wrapperForm
+            .col-lg-8
+                .card.bg-secondary.mb-3
+                    form#wrapperForm
                             #hiddenDiv(style="display:none")
                                 .form-group
-                                    #fields.control-group
-                                        label.control-label Attributes
-                                        .controls
-                                            form(role="form" autocomplete="off")
-                                                .entry.input-group.col-xs-3
-                                                    .input-group-prepend
-                                                        .input-group-text
-                                                            input#ids(type="checkbox" name="ids[]")
-                                                            | &nbsp;ID
-                                                    input.form-control(name="fields[]" type="text" placeholder="Type something")
-                                                    span.input-group-btn
-                                                        button.btn.btn-success.btn-add(type="button")
-                                                            span.fa.fa-plus
+                                #fields.control-group
+                                            label.control-label Attributes
+                                            .controls
+                                                form(role="form" autocomplete="off")
+                                                    .entry.input-group.col-xs-3
+                                                        //.input-group-prepend
+                                                            .input-group-text
+                                                                input#ids(type="checkbox" name="ids[]")
+                                                                | &nbsp;ID
+                                                        input.form-control(name="fields[]" type="text" placeholder="")
+                                                        span.input-group-btn
+                                                            button.btn.btn-success.btn-add(type="button")
+                                                                span.fa.fa-plus
 
                             .form-group#nameForm
                                 label.col-lg-4.col-form-label Name
@@ -51,17 +49,37 @@ block content
                                         .controls
                                             form(role="form" autocomplete="off")
                                                 .entry.input-group.col-xs-3
-                                                    .input-group-prepend
+                                                    //.input-group-prepend
                                                         .input-group-text
                                                             input(type="checkbox" name="idSet[]")
                                                             | &nbsp;ID
-                                                    input.form-control(name="attributeSet[]" type="text" placeholder="Type something")
+                                                    input.form-control(name="attributeSet[]" type="text" placeholder="")
                                                     span.input-group-btn
                                                         button.btn.btn-success.btn-add(type="button")
                                                             span.fa.fa-plus
 
+                            .form-group#cypherQueryForm(style="display:none")
+                                label.col-lg-8.col-form-label Cypher query
+                                .col-lg-12
+                                    form(role="form" autocomplete="off")
+                                        .entry.input-group.col-xs-3
+                                            input#cypherQuery.form-control(type='text', name='cypherQuery', required='required')
+                                            span.input-group-btn
+                                                button.btn.btn-success.btn-preview(type="button")
+                                                    span.fa.fa-search
+
+                            .form-group#fileseparatorForm(style="display:none")
+                                label.col-lg-8.col-form-label File separator
+                                .col-lg-12
+                                    form(role="form" autocomplete="off")
+                                        .entry.input-group.col-xs-3
+                                            input#fileseparator.form-control(type='text', name='fileseparator', required='required')
+                                            span.input-group-btn
+                                                button.btn.btn-success.btn-preview(type="button")
+                                                    span.fa.fa-search
+
                             .form-group#sparksqlQueryForm(style="display:none")
-                                label.col-lg-8.col-form-label SparkSQL Query (use data source name as table)
+                                label.col-lg-8.col-form-label SparkSQL query (use data source name as table)
                                 .col-lg-12
                                     form(role="form" autocomplete="off")
                                         .entry.input-group.col-xs-3

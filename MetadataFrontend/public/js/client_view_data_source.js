@@ -13,10 +13,9 @@ $(function() {
         $("#name").val(dataSource.name);
 
         switch (dataSource.type) {
-            case "file":
-                $("#file-tab").addClass("active"); $("#file").addClass("active");
-                $("#file_path").val(dataSource.file_path);
-                $("#file_format").val(dataSource.file_format);
+            case "avro":
+                $("#avro-tab").addClass("active"); $("#avro").addClass("active");
+                $("#avro_path").val(dataSource.avro_path);
                 break;
             case "mongodb":
                 $("#mongodb-tab").addClass("active"); $("#mongodb").addClass("active");
@@ -25,6 +24,17 @@ $(function() {
                 $("#mongodb_username").val(dataSource.mongodb_username);
                 $("#mongodb_password").val(dataSource.mongodb_password);
                 $("#mongodb_database").val(dataSource.mongodb_database);
+                break;
+            case "neo4j":
+                $("#neo4j-tab").addClass("active"); $("#neo4j").addClass("active");
+                break;
+            case "parquet":
+                $("#parquet-tab").addClass("active"); $("#parquet").addClass("active");
+                $("#parquet_path").val(dataSource.parquet_path);
+                break;
+            case "plaintext":
+                $("#plaintext-tab").addClass("active"); $("#plaintext").addClass("active");
+                $("#plaintext_path").val(dataSource.plaintext_path);
                 break;
             case "restapi":
                 $("#restapi-tab").addClass("active"); $("#restapi").addClass("active");

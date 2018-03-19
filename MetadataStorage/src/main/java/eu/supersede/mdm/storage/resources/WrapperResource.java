@@ -4,12 +4,20 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import eu.supersede.mdm.storage.model.Namespaces;
+import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
-import eu.supersede.mdm.storage.model.omq.wrapper_implementations.SparkSQL_Wrapper;
+import eu.supersede.mdm.storage.model.omq.wrapper_implementations.*;
 import eu.supersede.mdm.storage.util.ConfigManager;
+import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
+import jdk.nashorn.internal.runtime.Source;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.bson.Document;
 
 import javax.ws.rs.*;
@@ -67,12 +75,38 @@ public class WrapperResource {
         System.out.println("[POST /wrapper/] body = " + body);
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
         MongoClient client = Utils.getMongoDBClient();
+        //Metadata for the wrapper
         objBody.put("wrapperID", UUID.randomUUID().toString());
+        String wrapperName = objBody.getAsString("name").trim().replace(" ","");
+        String wIRI = SourceGraph.WRAPPER.val()+"/"+wrapperName;
+        objBody.put("iri",wIRI);
+
         getWrappersCollection(client).insertOne(Document.parse(objBody.toJSONString()));
+
+        //Update the data source with the new wrapper
         getDataSourcesCollection(client).findOneAndUpdate(
                 new Document().append("dataSourceID",objBody.getAsString("dataSourceID")),
                 new Document().append("$push", new Document().append("wrappers",objBody.getAsString("wrapperID")))
         );
+
+        //RDF - we use as named graph THE SAME as the data source
+        String dsIRI = getDataSourcesCollection(client).
+                find(new Document().append("dataSourceID",objBody.getAsString("dataSourceID"))).first()
+                .getString("iri");
+        Model S = Utils.getTDBDataset().getNamedModel(dsIRI);
+
+        RDFUtil.addTriple(S,wIRI,Namespaces.rdf.val()+"type",SourceGraph.WRAPPER.val());
+        RDFUtil.addTriple(S,dsIRI,SourceGraph.HAS_WRAPPER.val(),wIRI);
+        ((JSONArray)objBody.get("attributes")).forEach(attribute -> {
+            String attName = ((JSONObject)attribute).getAsString("name");
+            String attIRI = SourceGraph.ATTRIBUTE.val()+"/"+attName.trim().replace(" ","");
+            RDFUtil.addTriple(S,attIRI,Namespaces.rdf.val()+"type",SourceGraph.ATTRIBUTE.val());
+            RDFUtil.addTriple(S,wIRI,SourceGraph.HAS_ATTRIBUTE.val(),attIRI);
+            //if (Boolean.parseBoolean(((JSONObject)attribute).getAsString("isID"))) {
+            //    RDFUtil.addTriple(S,attIRI,Namespaces.rdfs.val()+"subClassOf",Namespaces.sc.val()+"identifier");
+            //}
+        });
+
         client.close();
         return Response.ok(objBody.toJSONString()).build();
     }
@@ -89,21 +123,41 @@ public class WrapperResource {
 
         Wrapper w = null;
 
-        if (ds.getString("type").equals("file")) {
-            if (ds.getString("file_format").equals("parquet")) {
+        switch (ds.getString("type")) {
+            case "avro":
                 w = new SparkSQL_Wrapper("preview");
-                ((SparkSQL_Wrapper)w).setPath(ds.getString("file_path"));
+                ((SparkSQL_Wrapper)w).setPath(ds.getString("avro_path"));
                 ((SparkSQL_Wrapper)w).setTableName(ds.getString("name"));
                 ((SparkSQL_Wrapper)w).setSparksqlQuery(query);
-            }
+                break;
+            case "mongodb":
+                w = new MongoDB_Wrapper("preview");
+
+                break;
+            case "neo4j":
+                w = new Neo4j_Wrapper("preview");
+
+                break;
+            case "plaintext":
+                w = new PlainText_Wrapper("preview");
+
+                break;
+            case "parquet":
+                w = new SparkSQL_Wrapper("preview");
+                ((SparkSQL_Wrapper)w).setPath(ds.getString("parquet_path"));
+                ((SparkSQL_Wrapper)w).setTableName(ds.getString("name"));
+                ((SparkSQL_Wrapper)w).setSparksqlQuery(query);
+                break;
+            case "restapi":
+                w = new REST_API_Wrapper("preview");
+
+                break;
+            case "sql":
+                w = new SQL_Wrapper("preview");
+
+                break;
 
         }
-        /*else if (ds.getString("type").equals("mongodb")) {
-
-        }
-        else if (ds.getString("type")) {
-
-        }*/
 
         client.close();
         return Response.ok((w.preview())).build();

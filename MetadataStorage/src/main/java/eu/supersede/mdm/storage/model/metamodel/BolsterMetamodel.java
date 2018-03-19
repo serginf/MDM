@@ -10,7 +10,7 @@ public class BolsterMetamodel {
      */
     public static boolean contains(String type, String elem) {
         if (type.equals("SOURCE")) {
-            for (SourceLevel s : SourceLevel.values()) {
+            for (SourceGraph s : SourceGraph.values()) {
                 if (s.val().equals(elem)) return true;
             }
             return false;
@@ -21,7 +21,7 @@ public class BolsterMetamodel {
             }
             return false;
         }
-        if (type.equals("BDI_ONTOLOGY")) {
+        /*if (type.equals("BDI_ONTOLOGY")) {
             for (GlobalLevel g : GlobalLevel.values()) {
                 if (g.val().equals(elem)) return true;
             }
@@ -32,7 +32,7 @@ public class BolsterMetamodel {
                 if (g.val().equals(elem)) return true;
             }
             return false;
-        }
+        }*/
         return false;
     }
 

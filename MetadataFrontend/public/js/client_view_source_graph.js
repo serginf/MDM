@@ -5,14 +5,11 @@ function getParameterByName(name) {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-$(window).load(function() {
-    $.get("/artifacts/SOURCE/"+encodeURIComponent(getParameterByName("graph")), function(data) {
-        $("#theTitle").text(data.name);
-        $("#theURL").text(data.graph);
-    });
+$(function() {
+    $("#theTitle").text(getParameterByName("iri"));
 
-    $.get("/artifacts/SOURCE/"+encodeURIComponent(getParameterByName("graph"))+"/content", function(data) {
-        $("#xml").text((data));
+    $.get("/graph/"+encodeURIComponent(getParameterByName("iri")), function(data) {
+        $("#xml").text(data.rdf);
         $('pre code').each(function(i, block) {
             hljs.highlightBlock(block);
         });

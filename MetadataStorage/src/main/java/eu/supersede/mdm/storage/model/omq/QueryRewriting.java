@@ -4,9 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import eu.supersede.mdm.storage.model.Namespaces;
-import eu.supersede.mdm.storage.model.metamodel.GlobalOntology;
-import eu.supersede.mdm.storage.model.metamodel.SourceOntology;
-import eu.supersede.mdm.storage.model.omq.Walk;
+import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
+import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.model.omq.relational_operators.EquiJoin;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Projection;
 import eu.supersede.mdm.storage.model.omq.relational_operators.RelationalOperator;
@@ -77,7 +76,7 @@ public class QueryRewriting {
         DirectedAcyclicGraph<String,String> conceptsGraph = new DirectedAcyclicGraph<String, String>(String.class);
         PHI_p.getList().forEach(t -> {
             // Add only concepts so its easier to populate later the list of concepts
-            if (!t.getPredicate().getURI().equals(GlobalOntology.HAS_FEATURE.val())) {
+            if (!t.getPredicate().getURI().equals(GlobalGraph.HAS_FEATURE.val())) {
                 try {
                     conceptsGraph.addVertex(t.getSubject().getURI());
                     conceptsGraph.addVertex(t.getObject().getURI());
@@ -94,17 +93,17 @@ public class QueryRewriting {
         concepts.forEach(c -> {
             ResultSet IDs = RDFUtil.runAQuery("SELECT ?t " +
                     "WHERE { GRAPH ?g {" +
-                    "<"+c+"> <"+GlobalOntology.HAS_FEATURE.val()+"> ?t . " +
+                    "<"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?t . " +
                     "?t <"+ Namespaces.rdfs.val()+"subClassOf> <"+ Namespaces.sc.val()+"identifier> " +
                     "} }", T);
             IDs.forEachRemaining(id -> {
 
                 if (!PHI_p.getList().contains(Triple.create(NodeFactory.createURI(c),
-                        NodeFactory.createURI(GlobalOntology.HAS_FEATURE.val()),id.get("t").asNode()))) {
+                        NodeFactory.createURI(GlobalGraph.HAS_FEATURE.val()),id.get("t").asNode()))) {
 
                     PHI_p.add(Triple.create(NodeFactory.createURI(c),
-                            NodeFactory.createURI(GlobalOntology.HAS_FEATURE.val()), id.get("t").asNode()));
-                    RDFUtil.addTriple(PHI_o, c, GlobalOntology.HAS_FEATURE.val(), id.get("t").asResource().getURI());
+                            NodeFactory.createURI(GlobalGraph.HAS_FEATURE.val()), id.get("t").asNode()));
+                    RDFUtil.addTriple(PHI_o, c, GlobalGraph.HAS_FEATURE.val(), id.get("t").asResource().getURI());
                 }
             });
         });
@@ -117,7 +116,7 @@ public class QueryRewriting {
         concepts.forEach(c -> {
             Map<Wrapper,Set<Walk>> PartialWalksPerWrapper = Maps.newHashMap();
             ResultSet resultSetFeatures = RDFUtil.runAQuery("SELECT ?f " +
-                    "WHERE {<"+c+"> <"+GlobalOntology.HAS_FEATURE.val()+"> ?f }",PHI_o);
+                    "WHERE {<"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?f }",PHI_o);
         /** 4 Unfold LAV mappings **/
             //Convert the resultset to set
             Set<String> features = Sets.newHashSet();
@@ -125,7 +124,7 @@ public class QueryRewriting {
 
             features.forEach(f -> {
                 ResultSet wrappers = RDFUtil.runAQuery("SELECT ?g " +
-                        "WHERE { GRAPH ?g { <"+c+"> <"+ GlobalOntology.HAS_FEATURE.val()+"> <"+f+"> } }",T);
+                        "WHERE { GRAPH ?g { <"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> <"+f+"> } }",T);
         /** 5 Find attributes in S **/
                 wrappers.forEachRemaining(wRes -> {
                     String w = wRes.get("g").asResource().getURI();
@@ -133,7 +132,7 @@ public class QueryRewriting {
                     if (!w.equals(Namespaces.T.val())) {
                         ResultSet rsAttr = RDFUtil.runAQuery("SELECT ?a " +
                                 "WHERE { GRAPH ?g { ?a <"+Namespaces.owl.val()+"sameAs> <"+f+"> . " +
-                                "<"+w+"> <"+ SourceOntology.HAS_ATTRIBUTE.val()+"> ?a } }", T);
+                                "<"+w+"> <"+ SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }", T);
                         String attribute = rsAttr.nextSolution().get("a").asResource().getURI();
 
                         if (!PartialWalksPerWrapper.containsKey(new Wrapper(w))) {
@@ -267,7 +266,7 @@ public class QueryRewriting {
         /** 10 Discover join attribute **/
                     if (!wrappersFromLtoR.isEmpty()) {
                         String f_ID = RDFUtil.runAQuery("SELECT ?t WHERE { " +
-                                "GRAPH ?g { <"+next._1+"> <"+GlobalOntology.HAS_FEATURE.val()+"> ?t . " +
+                                "GRAPH ?g { <"+next._1+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?t . " +
                                 "?t <"+Namespaces.rdfs.val()+"subClassOf> <"+Namespaces.sc.val()+"identifier> } }",T)
                                 .nextSolution().get("t").asResource().getURI();
 
@@ -276,12 +275,12 @@ public class QueryRewriting {
 
                         String att_right = RDFUtil.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
                                 "?a <"+Namespaces.owl.val()+"sameAs> <"+f_ID+"> . " +
-                                "<"+wrapperWithIDright.getWrapper()+"> <"+SourceOntology.HAS_ATTRIBUTE.val()+"> ?a } }",T)
+                                "<"+wrapperWithIDright.getWrapper()+"> <"+ SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }",T)
                                 .nextSolution().get("a").asResource().getURI();
                         wrappersFromLtoR.forEach(w -> {
                             String att_left = RDFUtil.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
                                     "?a <"+Namespaces.owl.val()+"sameAs> <"+f_ID+"> . " +
-                                    "<"+w.getWrapper()+"> <"+SourceOntology.HAS_ATTRIBUTE.val()+"> ?a } }",T)
+                                    "<"+w.getWrapper()+"> <"+ SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }",T)
                                     .nextSolution().get("a").asResource().getURI();
 
                             EquiJoin join = new EquiJoin(att_left,att_right);
@@ -309,7 +308,7 @@ public class QueryRewriting {
                     }
                     else if (!wrappersFromRtoL.isEmpty()) {
                         String f_ID = RDFUtil.runAQuery("SELECT ?t WHERE { " +
-                                "GRAPH ?g { <"+current._1+"> <"+GlobalOntology.HAS_FEATURE.val()+"> ?t . " +
+                                "GRAPH ?g { <"+current._1+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?t . " +
                                 "?t <"+Namespaces.rdfs.val()+"subClassOf> <"+Namespaces.sc.val()+"identifier> } }",T)
                                 .nextSolution().get("t").asResource().getURI();
 
@@ -318,13 +317,13 @@ public class QueryRewriting {
 
                         String att_left = RDFUtil.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
                                 "?a <"+Namespaces.owl.val()+"sameAs> <"+f_ID+"> . " +
-                                "<"+wrapperWithIDleft.getWrapper()+"> <"+SourceOntology.HAS_ATTRIBUTE.val()+"> ?a } }",T)
+                                "<"+wrapperWithIDleft.getWrapper()+"> <"+ SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }",T)
                                 .nextSolution().get("a").asResource().getURI();
 
                         wrappersFromRtoL.forEach(w -> {
                             String att_right = RDFUtil.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
                                     "?a <"+Namespaces.owl.val()+"sameAs> <"+f_ID+"> . " +
-                                    "<"+w.getWrapper()+"> <"+SourceOntology.HAS_ATTRIBUTE.val()+"> ?a } }",T)
+                                    "<"+w.getWrapper()+"> <"+ SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }",T)
                                     .nextSolution().get("a").asResource().getURI();
 
                             EquiJoin join = new EquiJoin(att_left,att_right);

@@ -34,10 +34,13 @@ $(function(){
     $(document).on('click', '.btn-preview', function(e) {
         $("#previewModal").modal("show");
         var query;
-        if (currDataSource.type == "file") query = $("#sparksqlQuery").val();
+        if (currDataSource.type == "avro") query = $("#sparksqlQuery").val();
         else if (currDataSource.type == "mongodb") query = $("#mongodbQuery").val();
-        else if (currDataSource.type == "sqldatabase") query = $("#sqlQuery").val();
+        else if (currDataSource.type == "neo4j") query = $("#cypherQuery").val();
+        else if (currDataSource.type == "parquet") query = $("#sparksqlQuery").val();
+        else if (currDataSource.type == "plaintext") query = $("#fileseparator").val();
         else if (currDataSource.type == "restapi") query = $("#restapiQuery").val();
+        else if (currDataSource.type == "sqldatabase") query = $("#sqlQuery").val();
         $.get("/wrapper/preview/"+encodeURIComponent(currDataSource.dataSourceID)+"/"+encodeURIComponent(query), function(data) {
             $("#spinner").hide();
             $('input[name^="attributeSet"]').each(function() {
@@ -51,6 +54,13 @@ $(function(){
                 });
             });
         });
+        //reset modal when hidden
+        $('#previewModal').on('hidden.bs.modal', function (e) {
+            $('#dataTable').find('thead > tr').remove();
+            $('#dataTable').find('tbody > tr').remove();
+            $('#dataTable').hide();
+            $("#spinner").show();
+        })
     });
 });
 
@@ -66,11 +76,16 @@ $(function() {
             for (var i=0;i<dataSources.length;++i) {
                 if(dataSources[i].dataSourceID == $(this).val()) currDataSource = dataSources[i];
             }
-            $("#sparksqlQueryForm").hide(); $("#mongodbQueryForm").hide(); $("#restapiQueryForm").hide(); $("#sqlQueryForm").hide();
-            if (currDataSource.type == "file") $("#sparksqlQueryForm").show();
-            if (currDataSource.type == "mongodb") $("#mongodbQueryForm").show();
-            if (currDataSource.type == "restapi") $("#restapiQueryForm").show();
-            if (currDataSource.type == "sqldatabase") $("#sqlQueryForm").show();
+            $("#sparksqlQueryForm").hide(); $("#mongodbQueryForm").hide(); $("#cypherQueryForm").hide(); $("#fileseparatorForm").hide();
+            $("#restapiQueryForm").hide(); $("#sqlQueryForm").hide();
+
+            if (currDataSource.type == "avro") query = $("#sparksqlQueryForm").show();
+            else if (currDataSource.type == "mongodb") query = $("#mongodbQueryForm").show();
+            else if (currDataSource.type == "neo4j") query = $("#cypherQueryForm").show();
+            else if (currDataSource.type == "parquet") query = $("#sparksqlQueryForm").show();
+            else if (currDataSource.type == "plaintext") query = $("#fileseparatorForm").val();
+            else if (currDataSource.type == "restapi") query = $("#restapiQueryForm").show();
+            else if (currDataSource.type == "sqldatabase") query = $("#sqlQueryForm").show();
         });
         $("#dataSource").trigger("change");
     });
@@ -91,10 +106,13 @@ $(function() {
             wrapper.attributes.push(attribute);
         });
 
-        if (currDataSource.type == "file") wrapper.query = $("#sparksqlQuery").val();
+        if (currDataSource.type == "avro") wrapper.query = $("#sparksqlQuery").val();
         else if (currDataSource.type == "mongodb") wrapper.query = $("#mongodbQuery").val();
-        else if (currDataSource.type == "sqldatabase") wrapper.query = $("#sqlQuery").val();
+        else if (currDataSource.type == "neo4j") wrapper.query = $("#cypherQuery").val();
+        else if (currDataSource.type == "parquet") wrapper.query = $("#sparksqlQuery").val();
+        else if (currDataSource.type == "plaintext") wrapper.query = $("#fileseparator").val();
         else if (currDataSource.type == "restapi") wrapper.query = $("#restapiQuery").val();
+        else if (currDataSource.type == "sqldatabase") query = $("#sqlQuery").val();
 
         $.ajax({
             url: '/wrapper',
