@@ -1,0 +1,32 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    script(src='/js/client_new_lav_mapping.js')
+    script(src='/js/highlight.js/highlight.min.js')
+
+block content
+
+    .container-fluid
+        .row.justify-content-md-center
+            .col-lg-8.col-md-7.col-sm-6
+                h2 New LAV Mapping
+                br
+
+            .col-lg-10
+                .card.bg-secondary.mb-3
+                    form#LAVMappingForm
+                        .row
+                            .col-md-6
+                                .form-group#wrapperForm
+                                    label.col-lg-4.col-form-label Wrapper
+                                    .col-lg-12
+                                        select#wrapper.form-control(type='text', name='name', required='required')
+                            .col-md-6
+                                .form-group#globalGraphForm
+                                    label.col-lg-4.col-form-label Global Graph
+                                    .col-lg-12
+                                        select#globalGraph.form-control(type='text', name='name', required='required')
+
+                        .form-group
+                            .col-lg-12.col-lg-offset-2
+                                button#submitLAVMapping.btn.btn-primary.btn-lg.btn-block(type="submit") Submit

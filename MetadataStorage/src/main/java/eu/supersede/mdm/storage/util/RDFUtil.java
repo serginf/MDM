@@ -48,6 +48,15 @@ public class RDFUtil {
         return null;
     }
 
+    public static ResultSet runAQuery(String sparqlQuery, Model o) {
+        try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), o)) {
+            return ResultSetFactory.copyResults(qExec.execSelect());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // Short name
     public static String nn(String s) {
         return noNamespace(s);
@@ -62,6 +71,23 @@ public class RDFUtil {
     }
 
     public static String getRDFString (OntModel o) {
+        // Output RDF
+        String tempFileForO = TempFiles.getTempFile();
+        try {
+            o.write(new FileOutputStream(tempFileForO),"RDF/XML-ABBREV");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        String content = "";
+        try {
+            content = new String(java.nio.file.Files.readAllBytes(new java.io.File(tempFileForO).toPath()));
+        } catch (IOException exc) {
+            exc.printStackTrace();
+        }
+        return content;
+    }
+
+    public static String getRDFString (Model o) {
         // Output RDF
         String tempFileForO = TempFiles.getTempFile();
         try {

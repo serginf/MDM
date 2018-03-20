@@ -4,11 +4,15 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import eu.supersede.mdm.storage.model.Namespaces;
+import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.util.ConfigManager;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
+import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -71,6 +75,20 @@ public class GlobalGraphResource {
         Document res = getGlobalGraphCollection(client).find(query).first();
         client.close();
         return Response.ok((res.toJson())).build();
+    }
+
+    @GET
+    @Path("globalGraph/{namedGraph}/features")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response GET_featuresForGlobalGraph(@PathParam("namedGraph") String namedGraph) {
+        System.out.println("[GET /globalGraph/features/] namedGraph = "+namedGraph);
+        JSONArray features = new JSONArray();
+        String SPARQL = "SELECT ?f WHERE { ?f <"+Namespaces.rdf.val()+"type> <"+GlobalGraph.FEATURE.val()+"> }";
+        RDFUtil.runAQuery(SPARQL,Utils.getTDBDataset().getNamedModel(namedGraph)).forEachRemaining(t -> {
+            features.add(t.get("f").asNode().getURI());
+        });
+        return Response.ok(features.toJSONString()).build();
     }
 
     @POST @Path("globalGraph/")

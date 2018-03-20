@@ -18,7 +18,7 @@ exports.getGlobalGraph = function (req, res, next) {
 };
 
 exports.getGlobalGraphFromNamedGraph = function (req, res, next) {
-    request.get(config.METADATA_DATA_LAYER_URL + "globalGraph/namedGraph/"+req.params.namedGraph, function (error, response, body) {
+    request.get(config.METADATA_DATA_LAYER_URL + "globalGraph/namedGraph/"+encodeURIComponent(req.params.namedGraph), function (error, response, body) {
         if (!error && response.statusCode == 200) {
             res.status(200).json(JSON.parse(body));
         } else {
@@ -44,6 +44,16 @@ exports.getAllGlobalGraphs = function (req, res, next) {
             res.status(200).json(JSON.parse(body));
         } else {
             res.status(500).send("Error retrieving list of global graphs");
+        }
+    });
+};
+
+exports.getFeaturesForGraph = function (req, res, next) {
+    request.get(config.METADATA_DATA_LAYER_URL + "globalGraph/"+encodeURIComponent(req.params.namedGraph)+"/features", function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.status(200).json(JSON.parse(body));
+        } else {
+            res.status(500).send("Error retrieving list of features for the global graph");
         }
     });
 };

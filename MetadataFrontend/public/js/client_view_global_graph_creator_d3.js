@@ -517,7 +517,7 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
                 // Set namespace
                 d.namespace = Global[current_metamodel_element.attr('id').toUpperCase()].iri;
                 // Set full IRI
-                d.iri = Global[current_metamodel_element.attr('id').toUpperCase()].iri + "/" + this.textContent;
+                d.iri = /*Global[current_metamodel_element.attr('id').toUpperCase()].iri + "/" +*/ this.textContent;
 
                 addTriple(d.iri, Namespaces.rdf + "type", d.namespace);
 

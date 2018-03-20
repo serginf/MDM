@@ -27,6 +27,9 @@ var graph_routes = require(__dirname+'/routes/graph_routes');
 var global_graph_routes = require(__dirname+'/routes/global_graph_routes');
 var data_source_routes = require(__dirname+'/routes/data_source_routes');
 var wrapper_routes = require(__dirname+'/routes/wrapper_routes');
+var lav_mapping_routes = require(__dirname+'/routes/lav_mapping_routes');
+
+
 
 var global_level_routes = require(__dirname+'/routes/global_level_routes');
 var bdi_ontology_routes = require(__dirname+'/routes/bdi_ontology_routes');
@@ -100,6 +103,7 @@ app.post('/graph/:iri/triple', graph_routes.postTriple);
 app.get('/globalGraph/', global_graph_routes.getAllGlobalGraphs);
 app.get('/globalGraph/:globalGraphID', global_graph_routes.getGlobalGraph);
 app.get('/globalGraph/namedGraph/:namedGraph', global_graph_routes.getGlobalGraphFromNamedGraph);
+app.get('/globalGraph/:namedGraph/features', global_graph_routes.getFeaturesForGraph);
 app.post('/globalGraph', global_graph_routes.postGlobalGraph);
 //app.post('/globalGraph/:namedGraph/triple', global_graph_routes.postTriple);
 app.post('/globalGraph/:globalGraphID/graphicalGraph', global_graph_routes.postGraphicalGraph);
@@ -116,6 +120,13 @@ app.get('/wrapper/', wrapper_routes.getAllWrappers);
 app.get('/wrapper/:wrapperID', wrapper_routes.getWrapper);
 app.post('/wrapper', wrapper_routes.postWrapper);
 app.get('/wrapper/preview/:dataSourceID/:query', wrapper_routes.previewWrapper);
+
+/********** Wrapper resource ********************************************************/
+
+app.get('/LAVMapping/', lav_mapping_routes.getAllLAVMappings);
+app.get('/LAVMapping/:LAVMappingID', lav_mapping_routes.getLAVMapping);
+app.post('/LAVMapping', lav_mapping_routes.postLAVMapping);
+
 
 
 //app.post('/bdi_ontology/sparQLQuery', bdi_ontology_routes.postSparQLQuery);
@@ -223,6 +234,23 @@ app.get('/view_wrapper', checkAuthenticated, function(req,res) {
     res.render('view_wrapper', {user:req.session.passport.user});
 });
 
+/********** LAV mapping section ************************************************************/
+
+app.get('/new_lav_mapping', checkAuthenticated, function(req,res) {
+    res.render('new_lav_mapping', {user:req.session.passport.user});
+});
+
+app.get('/manage_lav_mappings', checkAuthenticated, function(req,res) {
+    res.render('manage_lav_mappings', {user:req.session.passport.user});
+});
+
+app.get('/view_lav_mapping', checkAuthenticated, function(req,res) {
+    res.render('view_lav_mapping', {user:req.session.passport.user});
+});
+
+/*app.get('/view_lav_mapping', checkAuthenticated, function(req,res) {
+    res.render('view_lav_mapping', {user:req.session.passport.user});
+});*/
 
 
 

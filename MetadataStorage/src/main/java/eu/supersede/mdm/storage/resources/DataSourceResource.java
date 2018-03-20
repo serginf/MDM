@@ -15,6 +15,7 @@ import net.minidev.json.JSONValue;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
@@ -80,9 +81,15 @@ public class DataSourceResource {
         getDataSourcesCollection(client).insertOne(Document.parse(objBody.toJSONString()));
 
         //Save RDF
-        OntModel S = ModelFactory.createOntologyModel();
+        Dataset ds = Utils.getTDBDataset();
+        ds.begin(ReadWrite.WRITE);
+        Model S = ds.getNamedModel(iri);
+        //OntModel S = ModelFactory.createOntologyModel();
         RDFUtil.addTriple(S,iri, Namespaces.rdf.val()+"type", SourceGraph.DATA_SOURCE.val());
+
         objBody.put("rdf",RDFUtil.getRDFString(S));
+
+        S.close();
         client.close();
         return Response.ok(objBody.toJSONString()).build();
     }
