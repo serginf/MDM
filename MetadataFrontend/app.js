@@ -120,6 +120,8 @@ app.get('/wrapper/', wrapper_routes.getAllWrappers);
 app.get('/wrapper/:wrapperID', wrapper_routes.getWrapper);
 app.post('/wrapper', wrapper_routes.postWrapper);
 app.get('/wrapper/preview/:dataSourceID/:query', wrapper_routes.previewWrapper);
+app.get('/wrapper/:namedGraph/attributes', wrapper_routes.getAttributesForGraph);
+
 
 /********** Wrapper resource ********************************************************/
 

@@ -21,16 +21,26 @@ import java.io.IOException;
  */
 public class RDFUtil {
 
-    public static void addTriple(OntModel model, String s, String p, String o) {
-        model.add(new ResourceImpl(s), new PropertyImpl(p), new ResourceImpl(o));
+    public static void addTriple(String namedGraph, String s, String p, String o) {
+        Dataset ds = Utils.getTDBDataset();
+        ds.begin(ReadWrite.WRITE);
+        Model graph = ds.getNamedModel(namedGraph);
+        graph.add(new ResourceImpl(s), new PropertyImpl(p), new ResourceImpl(o));
+        graph.commit();
+        graph.close();
+        ds.commit();
+        ds.close();
     }
-
+/*
     public static void addTriple(Model model, String s, String p, String o) {
         System.out.println("inserting triple <"+s+", "+p+", "+o+">");
         model.add(new ResourceImpl(s), new PropertyImpl(p), new ResourceImpl(o));
     }
+*/
 
-    public static ResultSet runAQuery(String sparqlQuery, Dataset ds) {
+    public static ResultSet runAQuery(String sparqlQuery, String namedGraph) {
+        Dataset ds = Utils.getTDBDataset();
+        ds.begin(ReadWrite.READ);
         try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), ds)) {
             return ResultSetFactory.copyResults(qExec.execSelect());
         } catch (Exception e) {
@@ -38,7 +48,7 @@ public class RDFUtil {
         }
         return null;
     }
-
+/*
     public static ResultSet runAQuery(String sparqlQuery, OntModel o) {
         try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), o)) {
             return ResultSetFactory.copyResults(qExec.execSelect());
@@ -56,7 +66,7 @@ public class RDFUtil {
         }
         return null;
     }
-
+*/
     // Short name
     public static String nn(String s) {
         return noNamespace(s);
@@ -70,11 +80,15 @@ public class RDFUtil {
                 .replace(Namespaces.owl.val(),"");
     }
 
-    public static String getRDFString (OntModel o) {
+    public static String getRDFString (String namedGraph) {
+        Dataset ds = Utils.getTDBDataset();
+        ds.begin(ReadWrite.READ);
+        Model graph = ds.getNamedModel(namedGraph);
+
         // Output RDF
         String tempFileForO = TempFiles.getTempFile();
         try {
-            o.write(new FileOutputStream(tempFileForO),"RDF/XML-ABBREV");
+            graph.write(new FileOutputStream(tempFileForO),"RDF/XML-ABBREV");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -84,9 +98,13 @@ public class RDFUtil {
         } catch (IOException exc) {
             exc.printStackTrace();
         }
+
+        graph.close();
+        ds.close();
+
         return content;
     }
-
+/*
     public static String getRDFString (Model o) {
         // Output RDF
         String tempFileForO = TempFiles.getTempFile();
@@ -103,6 +121,6 @@ public class RDFUtil {
         }
         return content;
     }
-
+*/
 
 }

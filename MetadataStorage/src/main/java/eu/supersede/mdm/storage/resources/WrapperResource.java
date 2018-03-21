@@ -12,16 +12,9 @@ import eu.supersede.mdm.storage.model.omq.wrapper_implementations.*;
 import eu.supersede.mdm.storage.util.ConfigManager;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
-import jdk.nashorn.internal.runtime.Source;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.Dataset;
-import org.apache.jena.query.ReadWrite;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.shared.Lock;
 import org.bson.Document;
 
 import javax.ws.rs.*;
@@ -98,29 +91,17 @@ public class WrapperResource {
                 find(new Document().append("dataSourceID",objBody.getAsString("dataSourceID"))).first()
                 .getString("iri");
 
-        Dataset ds = Utils.getTDBDataset();
-        ds.begin(ReadWrite.WRITE);
-        Model S = ds.getNamedModel(dsIRI);
-
-        try {
-
-            RDFUtil.addTriple(S, wIRI, Namespaces.rdf.val() + "type", SourceGraph.WRAPPER.val()); S.commit();
-            RDFUtil.addTriple(S, dsIRI, SourceGraph.HAS_WRAPPER.val(), wIRI); S.commit();
-            ((JSONArray) objBody.get("attributes")).forEach(attribute -> {
-                String attName = ((JSONObject) attribute).getAsString("name");
-                String attIRI = SourceGraph.ATTRIBUTE.val() + "/" + attName.trim().replace(" ", "");
-                RDFUtil.addTriple(S, attIRI, Namespaces.rdf.val() + "type", SourceGraph.ATTRIBUTE.val()); S.commit();
-                RDFUtil.addTriple(S, wIRI, SourceGraph.HAS_ATTRIBUTE.val(), attIRI); S.commit();
+        RDFUtil.addTriple(dsIRI, wIRI, Namespaces.rdf.val() + "type", SourceGraph.WRAPPER.val());
+        RDFUtil.addTriple(dsIRI, dsIRI, SourceGraph.HAS_WRAPPER.val(), wIRI);
+        ((JSONArray) objBody.get("attributes")).forEach(attribute -> {
+            String attName = ((JSONObject) attribute).getAsString("name");
+            String attIRI = SourceGraph.ATTRIBUTE.val() + "/" + attName.trim().replace(" ", "");
+            RDFUtil.addTriple(dsIRI, attIRI, Namespaces.rdf.val() + "type", SourceGraph.ATTRIBUTE.val());
+            RDFUtil.addTriple(dsIRI, wIRI, SourceGraph.HAS_ATTRIBUTE.val(), attIRI);
                 //if (Boolean.parseBoolean(((JSONObject)attribute).getAsString("isID"))) {
                 //    RDFUtil.addTriple(S,attIRI,Namespaces.rdfs.val()+"subClassOf",Namespaces.sc.val()+"identifier");
                 //}
-            });
-        } catch (Exception exc) {
-            System.out.println("erroraco");
-            exc.printStackTrace();
-        } finally {
-            S.close();
-        }
+        });
 
         client.close();
         return Response.ok(objBody.toJSONString()).build();
@@ -178,20 +159,18 @@ public class WrapperResource {
         return Response.ok((w.preview())).build();
     }
 
-    /*
     @GET
-    @Path("wrapper/{namedGraph}/features")
+    @Path("wrapper/{iri}/attributes")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response GET_featuresForGlobalGraph(@PathParam("namedGraph") String namedGraph) {
-        System.out.println("[GET /globalGraph/features/] namedGraph = "+namedGraph);
-        JSONArray features = new JSONArray();
-        String SPARQL = "SELECT ?f WHERE { ?f <"+Namespaces.rdf.val()+"type> <"+ GlobalGraph.FEATURE.val()+"> }";
-        RDFUtil.runAQuery(SPARQL,Utils.getTDBDataset().getNamedModel(namedGraph)).forEachRemaining(t -> {
-            features.add(t.get("f").asNode().getURI());
+    public Response GET_attributesForWrapper(@PathParam("iri") String iri) {
+        System.out.println("[GET /wrapper/attributes/] iri = "+iri);
+        JSONArray attributes = new JSONArray();
+        String SPARQL = "SELECT ?a WHERE { GRAPH ?g { <"+iri+"> <"+SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }";
+        RDFUtil.runAQuery(SPARQL,iri).forEachRemaining(t -> {
+            attributes.add(t.get("a").asNode().getURI());
         });
-        return Response.ok(features.toJSONString()).build();
+        return Response.ok(attributes.toJSONString()).build();
     }
-    */
 
 }

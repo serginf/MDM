@@ -84,8 +84,8 @@ public class GlobalGraphResource {
     public Response GET_featuresForGlobalGraph(@PathParam("namedGraph") String namedGraph) {
         System.out.println("[GET /globalGraph/features/] namedGraph = "+namedGraph);
         JSONArray features = new JSONArray();
-        String SPARQL = "SELECT ?f WHERE { ?f <"+Namespaces.rdf.val()+"type> <"+GlobalGraph.FEATURE.val()+"> }";
-        RDFUtil.runAQuery(SPARQL,Utils.getTDBDataset().getNamedModel(namedGraph)).forEachRemaining(t -> {
+        String SPARQL = "SELECT ?f WHERE { GRAPH ?g { ?f <"+Namespaces.rdf.val()+"type> <"+GlobalGraph.FEATURE.val()+"> } }";
+        RDFUtil.runAQuery(SPARQL,namedGraph).forEachRemaining(t -> {
             features.add(t.get("f").asNode().getURI());
         });
         return Response.ok(features.toJSONString()).build();
@@ -119,12 +119,7 @@ public class GlobalGraphResource {
     public Response POST_triple(@PathParam("namedGraph") String namedGraph, String body/*, @PathParam("s") String s, @PathParam("p") String p, @PathParam("o") String o*/) {
         System.out.println("[POST /globalGraph/"+namedGraph+"/triple] body = "+body);
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
-        Dataset dataset = Utils.getTDBDataset();
-        dataset.begin(ReadWrite.WRITE);
-        Model model = dataset.getNamedModel(namedGraph);
-        RDFUtil.addTriple(model,objBody.getAsString("s"),objBody.getAsString("p"),objBody.getAsString("o"));
-        model.commit(); model.close();
-        dataset.commit(); dataset.end(); dataset.close();
+        RDFUtil.addTriple(namedGraph,objBody.getAsString("s"),objBody.getAsString("p"),objBody.getAsString("o"));
         return Response.ok().build();
     }
 

@@ -59,3 +59,13 @@ exports.previewWrapper = function (req, res, next) {
         }
     });
 };
+
+exports.getAttributesForGraph = function (req, res, next) {
+    request.get(config.METADATA_DATA_LAYER_URL + "wrapper/"+encodeURIComponent(req.params.namedGraph)+"/attributes", function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.status(200).json(JSON.parse(body));
+        } else {
+            res.status(500).send("Error retrieving list of attributes for the wrapper");
+        }
+    });
+};

@@ -14,6 +14,7 @@ import org.apache.jena.tdb.TDBFactory;
 public class JenaTDB_Test {
 
     public static void main(String[] args) throws Exception {
+        /*
         Dataset dataset = TDBFactory.createDataset("/home/snadal/Desktop/BolsterMetadataStorage");
         dataset.begin(ReadWrite.WRITE);
         Model model = dataset.getDefaultModel();
@@ -23,7 +24,7 @@ public class JenaTDB_Test {
         dataset.commit();
         dataset.end();
         dataset.close();
-
+*/
     }
 
 }

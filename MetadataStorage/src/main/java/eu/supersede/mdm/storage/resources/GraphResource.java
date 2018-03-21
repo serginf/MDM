@@ -71,16 +71,12 @@ public class GraphResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response GET_artifact_content_graphical(@PathParam("artifactType") String artifactType, @PathParam("iri") String iri) {
         System.out.println("[GET /graph/"+artifactType+"/"+iri+"/graphical");
-        Dataset dataset = Utils.getTDBDataset();
-        dataset.begin(ReadWrite.READ);
         List<Tuple3<Resource,Property,Resource>> triples = Lists.newArrayList();
-        RDFUtil.runAQuery("SELECT * WHERE { GRAPH <"+iri+"> {?s ?p ?o} }",  dataset).forEachRemaining(triple -> {
+        RDFUtil.runAQuery("SELECT * WHERE { GRAPH <"+iri+"> {?s ?p ?o} }",  iri).forEachRemaining(triple -> {
             triples.add(new Tuple3<>(new ResourceImpl(triple.get("s").toString()),
                     new PropertyImpl(triple.get("p").toString()),new ResourceImpl(triple.get("o").toString())));
         });
         String JSON = OWLtoD3.parse(artifactType, triples);
-        dataset.end();
-        dataset.close();
         return Response.ok((JSON)).build();
     }
 
@@ -117,15 +113,7 @@ public class GraphResource {
     @Consumes("text/plain")
     public Response POST_triple(@PathParam("iri") String iri, @PathParam("s") String s, @PathParam("p") String p, @PathParam("o") String o) {
         System.out.println("[POST /graph/"+iri+"/triple");
-        Dataset dataset = Utils.getTDBDataset();
-        dataset.begin(ReadWrite.WRITE);
-        Model model = dataset.getNamedModel(iri);
-        RDFUtil.addTriple(model,s,p,o);
-        model.commit();
-        model.close();
-        dataset.commit();
-        dataset.end();
-        dataset.close();
+        RDFUtil.addTriple(iri,s,p,o);
         return Response.ok().build();
     }
 

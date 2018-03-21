@@ -80,16 +80,10 @@ public class DataSourceResource {
         objBody.put("iri", iri);
         getDataSourcesCollection(client).insertOne(Document.parse(objBody.toJSONString()));
 
-        //Save RDF
-        Dataset ds = Utils.getTDBDataset();
-        ds.begin(ReadWrite.WRITE);
-        Model S = ds.getNamedModel(iri);
-        //OntModel S = ModelFactory.createOntologyModel();
-        RDFUtil.addTriple(S,iri, Namespaces.rdf.val()+"type", SourceGraph.DATA_SOURCE.val());
+        RDFUtil.addTriple(iri, iri, Namespaces.rdf.val()+"type", SourceGraph.DATA_SOURCE.val());
 
-        objBody.put("rdf",RDFUtil.getRDFString(S));
+        objBody.put("rdf",RDFUtil.getRDFString(iri));
 
-        S.close();
         client.close();
         return Response.ok(objBody.toJSONString()).build();
     }

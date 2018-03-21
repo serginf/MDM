@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 public class QueryRewriting {
 
-    private Dataset T;
+    //private Dataset T;
 
     private Set<String> PI;
 
@@ -46,7 +46,8 @@ public class QueryRewriting {
     private BasicPattern PHI_p; //PHI_pattern
     private OntModel PHI_o; // PHI_ontology
 
-    public QueryRewriting(String SPARQL, Dataset d) {
+    public QueryRewriting(String SPARQL/*, String PHI_o*/) {
+        /*
         T = d;
 
         // Compile the SPARQL using ARQ and generate its <pi,phi> representation
@@ -63,14 +64,14 @@ public class QueryRewriting {
         PHI_p.getList().forEach(t ->
             RDFUtil.addTriple(PHI_o, t.getSubject().getURI(), t.getPredicate().getURI(), t.getObject().getURI())
         );
+        */
     }
 
     public Set<Walk> rewrite() {
+        /*
 
-        /**
-         * Query expansion
-         */
-        /** 1 Identify query-related concepts **/
+        // Query expansion
+        // 1 Identify query-related concepts
         List<String> concepts = Lists.newArrayList();
         // First, create a graph of the pattern in order to obtain its topological sort
         DirectedAcyclicGraph<String,String> conceptsGraph = new DirectedAcyclicGraph<String, String>(String.class);
@@ -89,7 +90,7 @@ public class QueryRewriting {
         // Now, iterate using a topological sort adding the concepts to the list of concepts
         conceptsGraph.iterator().forEachRemaining(vertex -> concepts.add(vertex));
 
-        /** 2 Expand Q_G with IDs **/
+        // 2 Expand Q_G with IDs
         concepts.forEach(c -> {
             ResultSet IDs = RDFUtil.runAQuery("SELECT ?t " +
                     "WHERE { GRAPH ?g {" +
@@ -108,16 +109,14 @@ public class QueryRewriting {
             });
         });
 
-        /**
-         * Intra-concept generation
-         */
+        // Intra-concept generation
         List<Tuple2<String,Set<Walk>>> partialWalks = Lists.newArrayList();
-        /** 3 Identify queried features **/
+        // 3 Identify queried features
         concepts.forEach(c -> {
             Map<Wrapper,Set<Walk>> PartialWalksPerWrapper = Maps.newHashMap();
             ResultSet resultSetFeatures = RDFUtil.runAQuery("SELECT ?f " +
                     "WHERE {<"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?f }",PHI_o);
-        /** 4 Unfold LAV mappings **/
+        // 4 Unfold LAV mappings
             //Convert the resultset to set
             Set<String> features = Sets.newHashSet();
             resultSetFeatures.forEachRemaining(f -> features.add(f.get("f").asResource().getURI()));
@@ -125,7 +124,7 @@ public class QueryRewriting {
             features.forEach(f -> {
                 ResultSet wrappers = RDFUtil.runAQuery("SELECT ?g " +
                         "WHERE { GRAPH ?g { <"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> <"+f+"> } }",T);
-        /** 5 Find attributes in S **/
+        // 5 Find attributes in S
                 wrappers.forEachRemaining(wRes -> {
                     String w = wRes.get("g").asResource().getURI();
                     // Distinguish the ontology named graph
@@ -149,7 +148,7 @@ public class QueryRewriting {
                     }
                 });
             });
-        /** 6 Prune output **/
+        // 6 Prune output
             PartialWalksPerWrapper.forEach((wrapper,walk) -> {
                 Walk mergedWalk = new Walk();
                 mergedWalk.getOperators().add(0, new Projection());
@@ -195,9 +194,7 @@ public class QueryRewriting {
         System.out.println("Output of phase #2");
         partialWalks.forEach(pw -> System.out.println(pw));
 
-        /**
-         * Inter-concept generation
-         */
+        // Inter-concept generation
         Tuple2<String,Set<Walk>> current = partialWalks.get(0);
         for (int i = 1; i < partialWalks.size(); ++i) {
             if (i==2) {
@@ -210,7 +207,7 @@ public class QueryRewriting {
             System.out.println("current = "+current);
             System.out.println("next = "+next);
 
-        /** 7 Compute cartesian product **/
+        // 7 Compute cartesian product
             for (List<Walk> CP : Sets.cartesianProduct(current._2,next._2)) {
                 Walk CP_left = CP.get(0);
                 Walk CP_right = CP.get(1);
@@ -224,7 +221,7 @@ public class QueryRewriting {
 
                 Walk mergedWalk = new Walk(CP_left);
 
-        /** 8 Merge walks **/
+        // 8 Merge walks
                 if (!Sets.intersection(wrappersLeft,wrappersRight).isEmpty()) {
                     for (int j = 1; j < CP_right.getOperators().size(); ++j) {
                         RelationalOperator op_cpright = CP_right.getOperators().get(j);
@@ -244,7 +241,7 @@ public class QueryRewriting {
                     CP_right.getOperators().forEach(op -> mergedWalk.getOperators().add(op));
                 }
 
-        /** 9 Discover join wrappers **/
+        // 9 Discover join wrappers
 
                 if (Sets.intersection(wrappersLeft,wrappersRight).isEmpty()) {
                     Set<Wrapper> wrappersFromLtoR = Sets.newHashSet();
@@ -263,7 +260,7 @@ public class QueryRewriting {
                                     wrappersFromRtoL.add(new Wrapper(w.get("g").asResource().getURI()));
                             });
 
-        /** 10 Discover join attribute **/
+        // 10 Discover join attribute
                     if (!wrappersFromLtoR.isEmpty()) {
                         String f_ID = RDFUtil.runAQuery("SELECT ?t WHERE { " +
                                 "GRAPH ?g { <"+next._1+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?t . " +
@@ -361,6 +358,8 @@ public class QueryRewriting {
         }
 
         return current._2;
+        */
+        return null;
     }
 
 }
