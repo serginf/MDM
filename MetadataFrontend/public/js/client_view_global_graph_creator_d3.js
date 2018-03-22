@@ -58,9 +58,8 @@ $(function () {
     // Set color for the metamodel selectors
     //, style="background-color: #33CCCC"
     $("#"+(Global.CONCEPT.name)).css("background-color",Global.CONCEPT.color);
+    $("#"+(Global.FEATURE_ID.name)).css("background-color",Global.FEATURE_ID.color);
     $("#"+(Global.FEATURE.name)).css("background-color",Global.FEATURE.color);
-    $("#"+(Global.INTEGRITY_CONSTRAINT.name)).css("background-color",Global.INTEGRITY_CONSTRAINT.color);
-    $("#"+(Global.DATATYPE.name)).css("background-color",Global.DATATYPE.color);
 });
 
 $(function () {
@@ -519,7 +518,12 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
                 // Set full IRI
                 d.iri = /*Global[current_metamodel_element.attr('id').toUpperCase()].iri + "/" +*/ this.textContent;
 
+                d.isID = Global[current_metamodel_element.attr('id').toUpperCase()].isID;
+
                 addTriple(d.iri, Namespaces.rdf + "type", d.namespace);
+                if (d.isID) {
+                    addTriple(d.iri, Namespaces.rdfs + "subClassOf", Namespaces.sc+"identifier");
+                }
 
                 d.color = Global[current_metamodel_element.attr('id').toUpperCase()].color;
 
@@ -547,10 +551,11 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
 
         if (mouseDownNode !== d) {
             // we're in a different node: create new edge for mousedown edge and add to graph
-            var newEdge = {source: mouseDownNode, target: d, title: "new relation"};
+            var newEdge = {source: mouseDownNode, target: d, title: currentGlobalGraph.defaultNamespace};
 
-            if (newEdge.source.namespace == Global.CONCEPT.iri && newEdge.target.namespace == Global.FEATURE.iri) {
-                newEdge.title = "hasFeature";
+            if (newEdge.source.namespace == Global.CONCEPT.iri &&
+                    (newEdge.target.namespace == Global.FEATURE.iri || newEdge.target.namespace == Global.FEATURE_ID.iri)) {
+                newEdge.title = Global.HAS_FEATURE.iri;
             }
             else if (newEdge.source.namespace == Global.CONCEPT.iri && newEdge.target.namespace == Global.CONCEPT.iri) {
                 //TODO aresta nova
@@ -582,7 +587,9 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
             var edgeType = getGlobalEdge(newEdge.source.namespace, newEdge.target.namespace);
 
             if (!(newEdge.source.namespace == Global.CONCEPT.iri && newEdge.target.namespace == Global.CONCEPT.iri)) {
-                if (edgeType != null) addTriple(newEdge.source.iri, edgeType, newEdge.target.iri);
+                if (edgeType != null) {
+                    addTriple(newEdge.source.iri, edgeType, newEdge.target.iri);
+                }
                 else {
                     errorNotification("You can't create edges from " + newEdge.source.namespace + " to " + newEdge.target.namespace);
                     thisGraph.edges.splice(thisGraph.edges.indexOf(newEdge), 1);
@@ -590,8 +597,6 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
                     thisGraph.updateGraph();
                 }
             }
-
-            //alert(JSON.stringify(newEdge));
 
         } else {
             // we're in the same node
@@ -663,7 +668,7 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
                 // Set localName
                 //console.log(this.tsextContent);
                 d.title = this.textContent;
-                addTriple(d.source.iri, "http://www.BDIOntology.com/global/" + d.title, d.target.iri);
+                addTriple(d.source.iri, "http://www.BDIOntology.com/Global/" + d.title, d.target.iri);
                 d3.select(this.parentElement).remove();
                 thisGraph.updateGraph();
             });

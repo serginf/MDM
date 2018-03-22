@@ -28,9 +28,10 @@ exports.getAllDataSources = function (req, res, next) {
 };
 
 exports.postDataSource = function (req, res, next) {
+    console.log(req.body);
     if (!(req.body.hasOwnProperty('name')) || req.body.name==null ||
         !(req.body.hasOwnProperty('type')) || req.body.type==null){
-        res.status(400).json({msg: "(Bad Request) data format: {name}"});
+        res.status(400).json({msg: "(Bad Request) data format: {name, type}"});
     } else {
         var objDataSource = req.body;
         objDataSource.wrappers = new Array();

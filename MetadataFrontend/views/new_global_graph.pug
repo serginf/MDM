@@ -5,16 +5,22 @@ block headers
 
 block content
 
-    .container
-        .banner
-            .row
-                .col-lg-8.col-md-7.col-sm-6
-                    h2 New Global Graph
-                    br
+    .container-fluid
+        .card.bg-secondary.mb-3
+            .card-header
+                .row
+                    .col-md-11
+                        h2(style="color:black")
+                            | New Global Graph
+                    .col-md-1
+                        button.btn.btn-link(data-toggle="collapse" data-target="#instructions")#instructionsButton
+                            i.fas.fa-chevron-circle-down.fa-3x(style="color:black")
+            #instructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
+                .card-body
+                    p.card-text(style='text-align: left')
+                        | bla bla bla
 
-            .container-fluid
-                .col-lg-8
-                    .card.bg-secondary.mb-3
+        .card.bg-secondary.mb-3
                         form#globalGraphForm
                             .form-group#nameForm
                                 label.col-lg-4.col-form-label Name

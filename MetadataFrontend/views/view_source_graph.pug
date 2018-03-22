@@ -11,15 +11,28 @@ block headers
     script(src='/js/highlight/highlight.pack.js')
 block content
 
-    .container
-        .banner
-            .row
-                .col-lg-8.col-md-7.col-sm-6
-                    h2 View Source Graph
-                    h3
-                        #theTitle
-                    h4
-                        #theURL
+    .container-fluid
+        .card.bg-secondary.mb-3
+            .card-header
+                .row
+                    .col-md-11
+                        h2(style="color:black")
+                            | View Source Graph
+                    .col-md-1
+                        button.btn.btn-link(data-toggle="collapse" data-target="#instructions")#instructionsButton
+                            i.fas.fa-chevron-circle-down.fa-3x(style="color:black")
+            #instructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
+                .card-body
+                    p.card-text(style='text-align: left')
+                        | This is the Global Graph editor (based on
+                        a(target="_blank" href="https://github.com/metacademy/directed-graph-creator")  directed-graph-creator&nbsp;
+                        | published under the MIT/X license). To manipulate the graph, select the appropriate class and apply the following operations:
+                        ul.list-inline
+                            li.list-inline-item (a) drag/scroll to translate/zoom the graph;
+                            li.list-inline-item (b) shift-click on graph to create a node;
+                            li.list-inline-item (c) shift-click on a node and then drag to another node to connect them with a directed edge;
+                            li.list-inline-item (d) shift-click on a node to change its title;
+                            li.list-inline-item (e) click on node or edge and press backspace/delete to delete
 
         h5
             span.label Metadata Model

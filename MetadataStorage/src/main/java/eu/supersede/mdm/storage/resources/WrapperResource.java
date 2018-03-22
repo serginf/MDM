@@ -5,11 +5,11 @@ import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import eu.supersede.mdm.storage.model.Namespaces;
-import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
 import eu.supersede.mdm.storage.model.omq.wrapper_implementations.*;
 import eu.supersede.mdm.storage.util.ConfigManager;
+import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONArray;
@@ -29,14 +29,6 @@ import java.util.UUID;
 @Path("metadataStorage")
 public class WrapperResource {
 
-    private MongoCollection<Document> getWrappersCollection(MongoClient client) {
-        return client.getDatabase(ConfigManager.getProperty("system_metadata_db_name")).getCollection("wrappers");
-    }
-
-    private MongoCollection<Document> getDataSourcesCollection(MongoClient client) {
-        return client.getDatabase(ConfigManager.getProperty("system_metadata_db_name")).getCollection("dataSources");
-    }
-
     @GET
     @Path("wrapper/")
     @Consumes(MediaType.TEXT_PLAIN)
@@ -46,7 +38,7 @@ public class WrapperResource {
 
         MongoClient client = Utils.getMongoDBClient();
         List<String> wrappers = Lists.newArrayList();
-        getWrappersCollection(client).find().iterator().forEachRemaining(document -> wrappers.add(document.toJson()));
+        MongoCollections.getWrappersCollection(client).find().iterator().forEachRemaining(document -> wrappers.add(document.toJson()));
         client.close();
         return Response.ok(new Gson().toJson(wrappers)).build();
     }
@@ -60,7 +52,7 @@ public class WrapperResource {
 
         MongoClient client = Utils.getMongoDBClient();
         Document query = new Document("wrapperID", wrapperID);
-        Document res = getWrappersCollection(client).find(query).first();
+        Document res = MongoCollections.getWrappersCollection(client).find(query).first();
         client.close();
         return Response.ok((res.toJson())).build();
     }
@@ -78,16 +70,16 @@ public class WrapperResource {
         String wIRI = SourceGraph.WRAPPER.val()+"/"+wrapperName;
         objBody.put("iri",wIRI);
 
-        getWrappersCollection(client).insertOne(Document.parse(objBody.toJSONString()));
+        MongoCollections.getWrappersCollection(client).insertOne(Document.parse(objBody.toJSONString()));
 
         //Update the data source with the new wrapper
-        getDataSourcesCollection(client).findOneAndUpdate(
+        MongoCollections.getDataSourcesCollection(client).findOneAndUpdate(
                 new Document().append("dataSourceID",objBody.getAsString("dataSourceID")),
                 new Document().append("$push", new Document().append("wrappers",objBody.getAsString("wrapperID")))
         );
 
         //RDF - we use as named graph THE SAME as the data source
-        String dsIRI = getDataSourcesCollection(client).
+        String dsIRI = MongoCollections.getDataSourcesCollection(client).
                 find(new Document().append("dataSourceID",objBody.getAsString("dataSourceID"))).first()
                 .getString("iri");
 
@@ -95,7 +87,7 @@ public class WrapperResource {
         RDFUtil.addTriple(dsIRI, dsIRI, SourceGraph.HAS_WRAPPER.val(), wIRI);
         ((JSONArray) objBody.get("attributes")).forEach(attribute -> {
             String attName = ((JSONObject) attribute).getAsString("name");
-            String attIRI = SourceGraph.ATTRIBUTE.val() + "/" + attName.trim().replace(" ", "");
+            String attIRI = dsIRI + "/" + attName.trim().replace(" ", "");
             RDFUtil.addTriple(dsIRI, attIRI, Namespaces.rdf.val() + "type", SourceGraph.ATTRIBUTE.val());
             RDFUtil.addTriple(dsIRI, wIRI, SourceGraph.HAS_ATTRIBUTE.val(), attIRI);
                 //if (Boolean.parseBoolean(((JSONObject)attribute).getAsString("isID"))) {
@@ -115,7 +107,7 @@ public class WrapperResource {
         System.out.println("[GET /GET_preview/] dataSourceID = " + dataSourceID+", query = "+query);
         MongoClient client = Utils.getMongoDBClient();
 
-        Document ds = getDataSourcesCollection(client).find(new Document("dataSourceID", dataSourceID)).first();
+        Document ds = MongoCollections.getDataSourcesCollection(client).find(new Document("dataSourceID", dataSourceID)).first();
 
         Wrapper w = null;
 

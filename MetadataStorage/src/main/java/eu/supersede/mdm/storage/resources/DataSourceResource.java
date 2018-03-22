@@ -8,6 +8,7 @@ import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.parsers.OWLtoD3;
 import eu.supersede.mdm.storage.util.ConfigManager;
+import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONObject;
@@ -36,10 +37,6 @@ import java.util.UUID;
 @Path("metadataStorage")
 public class DataSourceResource {
 
-    private MongoCollection<Document> getDataSourcesCollection(MongoClient client) {
-        return client.getDatabase(ConfigManager.getProperty("system_metadata_db_name")).getCollection("dataSources");
-    }
-
     @GET
     @Path("dataSource/")
     @Consumes(MediaType.TEXT_PLAIN)
@@ -48,7 +45,7 @@ public class DataSourceResource {
         System.out.println("[GET /GET_dataSource/]");
         MongoClient client = Utils.getMongoDBClient();
         List<String> dataSources = Lists.newArrayList();
-        getDataSourcesCollection(client).find().iterator().forEachRemaining(document -> dataSources.add(document.toJson()));
+        MongoCollections.getDataSourcesCollection(client).find().iterator().forEachRemaining(document -> dataSources.add(document.toJson()));
         client.close();
         return Response.ok(new Gson().toJson(dataSources)).build();
     }
@@ -61,7 +58,7 @@ public class DataSourceResource {
         System.out.println("[GET /dataSource/] dataSourceID = " + dataSourceID);
         MongoClient client = Utils.getMongoDBClient();
         Document query = new Document("dataSourceID", dataSourceID);
-        Document res = getDataSourcesCollection(client).find(query).first();
+        Document res = MongoCollections.getDataSourcesCollection(client).find(query).first();
         client.close();
         return Response.ok((res.toJson())).build();
     }
@@ -78,7 +75,7 @@ public class DataSourceResource {
         //Save metadata
         objBody.put("dataSourceID", UUID.randomUUID().toString());
         objBody.put("iri", iri);
-        getDataSourcesCollection(client).insertOne(Document.parse(objBody.toJSONString()));
+        MongoCollections.getDataSourcesCollection(client).insertOne(Document.parse(objBody.toJSONString()));
 
         RDFUtil.addTriple(iri, iri, Namespaces.rdf.val()+"type", SourceGraph.DATA_SOURCE.val());
 

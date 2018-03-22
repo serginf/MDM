@@ -7,36 +7,44 @@ block headers
 block content
 
     .container-fluid
-        .row.justify-content-md-center
-            .col-lg-8.col-md-7.col-sm-6
-                h2 New LAV Mapping
-                br
+        .card.bg-secondary.mb-3
+            .card-header
+                .row
+                    .col-md-11
+                        h2(style="color:black")
+                            | New LAV Mapping (owl:sameAs)
+                    .col-md-1
+                        button.btn.btn-link(data-toggle="collapse" data-target="#instructions")#instructionsButton
+                            i.fas.fa-chevron-circle-down.fa-3x(style="color:black")
+            #instructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
+                .card-body
+                    p.card-text(style='text-align: left')
+                        | bla bla bla
 
-            .col-lg-10
-                .card.bg-secondary.mb-3
-                    form#LAVMappingForm
-                        .row
-                            .col-md-6
-                                .form-group#wrapperForm
-                                    label.col-lg-4.col-form-label Wrapper
-                                    .col-lg-12
-                                        select#wrapper.form-control(type='text', name='name', required='required')
-                            .col-md-6
-                                .form-group#globalGraphForm
-                                    label.col-lg-4.col-form-label Global Graph
-                                    .col-lg-12
-                                        select#globalGraph.form-control(type='text', name='name', required='required')
-
-                        .row
-                            .col-md-6
-                                .form-group#attributesForm
-                                    label.col-lg-4.col-form-label Attributes
-                                    .col-lg-12#attributes
-                            .col-md-6
-                                .form-group#featuresForm
-                                    label.col-lg-4.col-form-label Features
-                                    .col-lg-12#features
-
-                        .form-group
-                            .col-lg-12.col-lg-offset-2
-                                button#submitLAVMapping.btn.btn-primary.btn-lg.btn-block(type="submit") Submit
+        .card.bg-secondary.mb-3
+            form#LAVMappingForm
+                .row
+                    .col-md-6
+                        .form-group#wrapperForm
+                            label.col-lg-4.col-form-label Wrapper
+                            .col-lg-12
+                                select#wrapper.form-control(type='text', name='name', required='required')
+                    .col-md-6
+                        .form-group#globalGraphForm
+                            label.col-lg-4.col-form-label Global Graph
+                            .col-lg-12
+                                select#globalGraph.form-control(type='text', name='name', required='required')
+                
+                .row
+                    .col-md-6
+                        .form-group#attributesForm
+                            label.col-lg-4.col-form-label Attributes
+                            .col-lg-12#attributes
+                    .col-md-6
+                        .form-group#featuresForm
+                            label.col-lg-4.col-form-label Features
+                            .col-lg-12#features
+                
+                .form-group
+                    .col-lg-12.col-lg-offset-2
+                        button#submitLAVMapping.btn.btn-primary.btn-lg.btn-block(type="submit") Submit

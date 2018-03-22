@@ -9,6 +9,16 @@ function getParameterByName(name) {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
+function checkSelected(val) {
+    var ret = false;
+    $(".variable_priority option:selected").each(function() {
+        if ($(this).val() === val) {
+            ret = true;
+        }
+    });
+    return ret;
+}
+
 var globalGraphs = [];
 var wrappers = [];
 
@@ -16,6 +26,7 @@ var currGlobalGraph;
 var currWrapper;
 
 var currFeatures = [];
+var currAttributes = [];
 
 $(function() {
     $.get("/wrapper", function(data) {
@@ -38,6 +49,18 @@ $(function() {
                 }
                 $.get("/globalGraph/"+encodeURIComponent(currGlobalGraph.namedGraph)+"/features", function(features) {
                     currFeatures = features;
+                    var i = 0;
+                    _.each(currAttributes,function(attribute) {
+                        $("#features"+i).empty().end();
+                        var j = 1;
+                        $('#features'+i).append($('<option>', { value:"feature0", text:"" } ));
+                        _.each(currFeatures,function(feature) {
+                            $('#features'+i).append($('<option>', { value:"feature"+j, text:feature } ));
+                            ++j;
+                        });
+                        ++i;
+                    });
+
                 });
             });
 
@@ -49,12 +72,12 @@ $(function() {
                     if(wrappers[i].wrapperID == $(this).val()) currWrapper = wrappers[i];
                 }
                 $.get("/wrapper/"+encodeURIComponent(currWrapper.iri)+"/attributes", function(attributes) {
+                    currAttributes = attributes;
                     var i = 0;
                     _.each(attributes,function(attribute) {
-                        $('#attributes').append($('<input class="form-control" id="attr'+i+'" type="text" required="required" readonly="">').val(attribute));
+                        $('#attributes').append($('<input class="form-control" id="attribute'+i+'" type="text" required="required" readonly="">').val(attribute));
 
-                        //
-                        $('#features').append($('<select class="form-control" id="features'+i+'" type="text" name="name" required="required"></select>'));
+                        $('#features').append($('<select class="form-control variable_priority unique required" id="features'+i+'" type="text" name="features[]" required="required"></select>'));
                         var j = 1;
                         $('#features'+i).append($('<option>', { value:"feature0", text:"" } ));
                         _.each(currFeatures,function(feature) {
@@ -63,24 +86,19 @@ $(function() {
                         });
                         ++i;
                     });
-                    //Update features when one is selected
-                    for (i = 0; i < $('#attributes input').length; ++i) {
-                        console.log("modifying features"+i);
-                        $('#features'+i).change(function(handler) {
-                            for (var j = 0; j < $('#attributes input').length; ++j) {
-                                if (handler.currentTarget.id != "features"+j) {
-                                    console.log(handler.currentTarget.id + " - " + "features"+j + " -- "+$(this).val());
-                                    $('#features'+j+' option[value="'+$(this).val()+'"]').remove();
-                                }
+                    $('.variable_priority').change(function() {
+                        $('option', this).each(function() {
+                            if (checkSelected($(this).val()) && $(this).val() != "feature0") {
+                                $('.variable_priority option[value=' + $(this).val() + ']').attr('disabled', true);
+                            } else {
+                                $('.variable_priority option[value=' + $(this).val() + ']').removeAttr('disabled');
                             }
                         });
-                    }
+                    });
                 });
             });
-
             $("#wrapper").trigger("change");
             $("#globalGraph").trigger("change");
-
         });
     });
 
@@ -90,8 +108,23 @@ $(function() {
 
         var lav_mapping = new Object();
 
+        lav_mapping.wrapperID = currWrapper.wrapperID;
+        lav_mapping.globalGraphID = currGlobalGraph.globalGraphID;
+
+        lav_mapping.sameAs = new Array();
+        for (var i = 0; i < $('#attributes input').length; ++i) {
+            var from = $('#attribute' + i).val();
+            var to = $('#features' + i+' option:selected').text();
+            if (to != "") {
+                var oneMapTo = new Object();
+                oneMapTo.attribute = from;
+                oneMapTo.feature = to;
+                lav_mapping.sameAs.push(oneMapTo);
+            }
+        }
+
         $.ajax({
-            url: '/LAVMapping',
+            url: '/LAVMapping/sameAs',
             method: "POST",
             data: lav_mapping
         }).done(function() {

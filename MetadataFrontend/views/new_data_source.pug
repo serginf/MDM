@@ -9,100 +9,108 @@ block headers
 block content
 
     .container-fluid
-        .row.justify-content-md-center
-            .col-lg-8.col-md-7.col-sm-6
-                h2 New Data Source
-                br
+        .card.bg-secondary.mb-3
+            .card-header
+                .row
+                    .col-md-11
+                        h2(style="color:black")
+                            | New Source Graph
+                    .col-md-1
+                        button.btn.btn-link(data-toggle="collapse" data-target="#instructions")#instructionsButton
+                            i.fas.fa-chevron-circle-down.fa-3x(style="color:black")
+            #instructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
+                .card-body
+                    p.card-text(style='text-align: left')
+                        | bla bla bla
 
-            .col-lg-8
-                .card.bg-secondary.mb-3
-                    form#dataSourceForm
-                            .form-group#nameForm
-                                label.col-lg-4.col-form-label Name
-                                .col-lg-12
-                                    input#name.form-control(type='text', name='name', required='required')
-
-                            .form-group#typeForm
-                                label.col-lg-4.col-form-label Type
-                                .col-lg-12
-                                    ul#typeTabs.nav.nav-tabs(role="tablist")
-                                        li.nav-item
-                                            a.text-primary#avro-tab.nav-link.active(data-toggle="tab" href="#avro" role="tab" aria-controls="profile" aria-selected="false") Avro
-                                        li.nav-item
-                                            a.text-primary#mongodb-tab.nav-link(data-toggle="tab" href="#mongodb" role="tab" aria-controls="home" aria-selected="true") MongoDB
-                                        li.nav-item
-                                            a.text-primary#neo4j-tab.nav-link(data-toggle="tab" href="#neo4j" role="tab" aria-controls="home" aria-selected="true") Neo4j
-                                        li.nav-item
-                                            a.text-primary#parquet-tab.nav-link(data-toggle="tab" href="#parquet" role="tab" aria-controls="home" aria-selected="true") Parquet
-                                        li.nav-item
-                                            a.text-primary#restapi-tab.nav-link(data-toggle="tab" href="#restapi" role="tab" aria-controls="messages" aria-selected="false") REST API
-                                        li.nav-item
-                                            a.text-primary#plaintext-tab.nav-link(data-toggle="tab" href="#plaintext" role="tab" aria-controls="messages" aria-selected="false") Plain Text
-                                        li.nav-item
-                                            a.text-primary#sqldatabase-tab.nav-link(data-toggle="tab" href="#sqldatabase" role="tab" aria-controls="settings" aria-selected="false") SQL Database
-
-                            .tab-content
-                                #avro.tab-pane.active
-                                    .form-group#avro_pathForm
-                                        label.col-lg-4.col-form-label Avro path (with protocol)
-                                        .col-lg-12
-                                            input#file_path.form-control(type='text', name='avro_path', required='required')
-
-                                #mongodb.tab-pane(role="tabpanel" aria-labelledby="mongodb-tab")
-                                    .form-group#mongodb_hostnameForm
-                                        label.col-lg-4.col-form-label Hostname
-                                        .col-lg-12
-                                            input#mongodb_hostname.form-control(type='text', name='mongodb_hostname', required='required')
-                                    .form-group#mongodb_portForm
-                                        label.col-lg-4.col-form-label Port
-                                        .col-lg-12
-                                            input#mongodb_port.form-control(type='text', name='mongodb_port', required='required')
-                                    .form-group#mongodb_usernameForm
-                                        label.col-lg-4.col-form-label Username
-                                        .col-lg-12
-                                            input#mongodb_username.form-control(type='text', name='mongodb_username', required='required')
-                                    .form-group#mongodb_passwordForm
-                                        label.col-lg-4.col-form-label Password
-                                        .col-lg-12
-                                            input#mongodb_password.form-control(type='password', name='mongodb_password', required='required')
-                                    .form-group#mongodb_databaseForm
-                                        label.col-lg-4.col-form-label Database
-                                        .col-lg-12
-                                            input#mongodb_database.form-control(type='text', name='mongodb_database', required='required')
-
-                                #neo4j.tab-pane
-
-                                #parquet.tab-pane
-                                    .form-group#parquet_pathForm
-                                        label.col-lg-4.col-form-label Parquet path (with protocol)
-                                        .col-lg-12
-                                            input#parquet_path.form-control(type='text', name='parquet_path', required='required')
-
-                                #restapi.tab-pane(role="tabpanel" aria-labelledby="restapi-tab")
-                                    .form-group#restapi_urlForm
-                                        label.col-lg-4.col-form-label URL
-                                        .col-lg-12
-                                            input#restapi_url.form-control(type='text', name='restapi_url', required='required')
-                                    .form-group#restapi_formatForm
-                                        label.col-lg-4.col-form-label Format
-                                        .col-lg-12
-                                            select#restapi_format.form-control(type='text', name='restapi_url', required='required')
-                                                option(selected="" value="json") Flat JSON
-                                                option(value="yaml") YAML (N/A)
-                                                option(value="xml") XML (N/A)
-
-                                #plaintext.tab-pane
-                                    .form-group#plaintext_pathForm
-                                        label.col-lg-4.col-form-label File path (with protocol)
-                                        .col-lg-12
-                                            input#plaintext_path.form-control(type='text', name='plaintext_path', required='required')
-
-                                #sqldatabase.tab-pane(role="tabpanel" aria-labelledby="sqldatabase-tab")
-                                    .form-group#sql_jdbcForm
-                                        label.col-lg-4.col-form-label JDBC
-                                        .col-lg-12
-                                            input#sql_jdbc.form-control(type='text', name='name', required='required')
-
-                            .form-group
-                                .col-lg-12.col-lg-offset-2
-                                    button#submitDataSource.btn.btn-primary.btn-lg.btn-block(type="submit") Submit
+        .card.bg-secondary.mb-3
+            form#dataSourceForm
+                .form-group#nameForm
+                    label.col-lg-4.col-form-label Name
+                    .col-lg-12
+                        input#name.form-control(type='text', name='name', required='required')
+                
+                .form-group#typeForm
+                    label.col-lg-4.col-form-label Type
+                    .col-lg-12
+                        ul#typeTabs.nav.nav-tabs(role="tablist")
+                            li.nav-item
+                                a.text-primary#avro-tab.nav-link.active(data-toggle="tab" href="#avro" role="tab" aria-controls="profile" aria-selected="false") Avro
+                            li.nav-item
+                                a.text-primary#mongodb-tab.nav-link(data-toggle="tab" href="#mongodb" role="tab" aria-controls="home" aria-selected="true") MongoDB
+                            li.nav-item
+                                a.text-primary#neo4j-tab.nav-link(data-toggle="tab" href="#neo4j" role="tab" aria-controls="home" aria-selected="true") Neo4j
+                            li.nav-item
+                                a.text-primary#parquet-tab.nav-link(data-toggle="tab" href="#parquet" role="tab" aria-controls="home" aria-selected="true") Parquet
+                            li.nav-item
+                                a.text-primary#restapi-tab.nav-link(data-toggle="tab" href="#restapi" role="tab" aria-controls="messages" aria-selected="false") REST API
+                            li.nav-item
+                                a.text-primary#plaintext-tab.nav-link(data-toggle="tab" href="#plaintext" role="tab" aria-controls="messages" aria-selected="false") Plain Text
+                            li.nav-item
+                                a.text-primary#sqldatabase-tab.nav-link(data-toggle="tab" href="#sqldatabase" role="tab" aria-controls="settings" aria-selected="false") SQL Database
+                
+                .tab-content
+                    #avro.tab-pane.active
+                        .form-group#avro_pathForm
+                            label.col-lg-4.col-form-label Avro path (with protocol)
+                            .col-lg-12
+                                input#file_path.form-control(type='text', name='avro_path', required='required')
+                
+                    #mongodb.tab-pane(role="tabpanel" aria-labelledby="mongodb-tab")
+                        .form-group#mongodb_hostnameForm
+                            label.col-lg-4.col-form-label Hostname
+                            .col-lg-12
+                                input#mongodb_hostname.form-control(type='text', name='mongodb_hostname', required='required')
+                        .form-group#mongodb_portForm
+                            label.col-lg-4.col-form-label Port
+                            .col-lg-12
+                                input#mongodb_port.form-control(type='text', name='mongodb_port', required='required')
+                        .form-group#mongodb_usernameForm
+                            label.col-lg-4.col-form-label Username
+                            .col-lg-12
+                                input#mongodb_username.form-control(type='text', name='mongodb_username', required='required')
+                        .form-group#mongodb_passwordForm
+                            label.col-lg-4.col-form-label Password
+                            .col-lg-12
+                                input#mongodb_password.form-control(type='password', name='mongodb_password', required='required')
+                        .form-group#mongodb_databaseForm
+                            label.col-lg-4.col-form-label Database
+                            .col-lg-12
+                                input#mongodb_database.form-control(type='text', name='mongodb_database', required='required')
+                
+                    #neo4j.tab-pane
+                
+                    #parquet.tab-pane
+                        .form-group#parquet_pathForm
+                            label.col-lg-4.col-form-label Parquet path (with protocol)
+                            .col-lg-12
+                                input#parquet_path.form-control(type='text', name='parquet_path', required='required')
+                
+                    #restapi.tab-pane(role="tabpanel" aria-labelledby="restapi-tab")
+                        .form-group#restapi_urlForm
+                            label.col-lg-4.col-form-label URL
+                            .col-lg-12
+                                input#restapi_url.form-control(type='text', name='restapi_url', required='required')
+                        .form-group#restapi_formatForm
+                            label.col-lg-4.col-form-label Format
+                            .col-lg-12
+                                select#restapi_format.form-control(type='text', name='restapi_url', required='required')
+                                    option(selected="" value="json") Flat JSON
+                                    option(value="yaml") YAML (N/A)
+                                    option(value="xml") XML (N/A)
+                
+                    #plaintext.tab-pane
+                        .form-group#plaintext_pathForm
+                            label.col-lg-4.col-form-label File path (with protocol)
+                            .col-lg-12
+                                input#plaintext_path.form-control(type='text', name='plaintext_path', required='required')
+                
+                    #sqldatabase.tab-pane(role="tabpanel" aria-labelledby="sqldatabase-tab")
+                        .form-group#sql_jdbcForm
+                            label.col-lg-4.col-form-label JDBC
+                            .col-lg-12
+                                input#sql_jdbc.form-control(type='text', name='name', required='required')
+                
+                .form-group
+                    .col-lg-12.col-lg-offset-2
+                        button#submitDataSource.btn.btn-primary.btn-lg.btn-block(type="submit") Submit

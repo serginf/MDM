@@ -22,6 +22,7 @@ import java.io.IOException;
 public class RDFUtil {
 
     public static void addTriple(String namedGraph, String s, String p, String o) {
+        System.out.println("Adding triple: [namedGraph] "+namedGraph+", [s] "+s+", [p] "+p+", [o] "+o);
         Dataset ds = Utils.getTDBDataset();
         ds.begin(ReadWrite.WRITE);
         Model graph = ds.getNamedModel(namedGraph);

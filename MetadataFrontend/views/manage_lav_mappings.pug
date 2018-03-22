@@ -1,7 +1,7 @@
 extends layout
 block headers
     link(rel='stylesheet', href='/stylesheets/loading.css')
-    script(src='/js/client_manage_data_sources.js')
+    script(src='/js/client_manage_lav_mappings.js')
     link(rel='stylesheet', href='/stylesheets/manage_styles.css')
 
 
@@ -12,7 +12,7 @@ block content
                 .row
                     .col-md-11
                         h2(style="color:black")
-                            | Manage Data Sources
+                            | Manage LAV Mappings
                     .col-md-1
                         button.btn.btn-link(data-toggle="collapse" data-target="#instructions")#instructionsButton
                             i.fas.fa-chevron-circle-down.fa-3x(style="color:black")
@@ -23,13 +23,12 @@ block content
 
         .card.bg-secondary.mb-3
             form
-                table.table.table-hover#dataSources
+                table.table.table-hover#LAVMappings
                     thead
                         tr
                             th #
-                            th Name
-                            th Type
-                            th #Wrappers
-                            th View Metadata
-                            th View Source Graph
+                            th Wrapper
+                            th Global Graph
+                            th owl:sameAs
+                            th Covered Subgraph
                     tbody

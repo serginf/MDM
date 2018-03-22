@@ -1,0 +1,37 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    link(rel='stylesheet', href='/stylesheets/global_graph.css')
+    script(src="/js/d3.v4.min.js")
+    //script(src='/js/d3.min.js')
+    //script(src='/js/cola.d3.min.js')
+    script(src='/js/client_view_lav_mapping_subgraph.js')
+    script(src='/js/client_view_lav_mapping_subgraph_d3.js')
+
+    link(rel='stylesheet', href='/js/highlight/styles/railscasts.css')
+    script(src='/js/highlight/highlight.pack.js')
+block content
+
+    .container-fluid
+        .banner
+            .row
+                .col-lg-6.col-md-8.col-sm-6
+                    h2 View LAV Mapping Subgraph
+                    h3
+                        #theTitle
+                    h4
+                        #theURL
+                .col-md-2
+                .col-md-2
+                    button#clearSelectionButton.btn.btn-primary.btn-lg.btn-block(type='submit') Clear Selection
+                .col-md-2
+                    button#saveButton.btn.btn-primary.btn-lg.btn-block(type='submit') Save Subgraph
+        svg(width=960, height=600)#globalGraphSVG
+
+    //.row
+        .col.col-md-8
+            svg(width=960, height=600)#globalGraphSVG
+
+        //.col.col-md-4
+            button#generateQuery.btn.btn-primary.btn-lg.btn-block(type='submit') Generate SPARQL
+            input.textarea#algebraText(readonly="", size=40)

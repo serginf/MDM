@@ -7,6 +7,7 @@ import com.mongodb.client.MongoCollection;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.util.ConfigManager;
+import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONArray;
@@ -31,10 +32,6 @@ import java.util.UUID;
 @Path("metadataStorage")
 public class GlobalGraphResource {
 
-    private MongoCollection<Document> getGlobalGraphCollection(MongoClient client) {
-        return client.getDatabase(ConfigManager.getProperty("system_metadata_db_name")).getCollection("globalGraphs");
-    }
-
     @GET
     @Path("globalGraph/")
     @Consumes(MediaType.TEXT_PLAIN)
@@ -44,7 +41,7 @@ public class GlobalGraphResource {
 
         MongoClient client = Utils.getMongoDBClient();
         List<String> globalGraphs = Lists.newArrayList();
-        getGlobalGraphCollection(client).find().iterator().forEachRemaining(document -> globalGraphs.add(document.toJson()));
+        MongoCollections.getGlobalGraphCollection(client).find().iterator().forEachRemaining(document -> globalGraphs.add(document.toJson()));
         client.close();
         return Response.ok(new Gson().toJson(globalGraphs)).build();
     }
@@ -58,7 +55,7 @@ public class GlobalGraphResource {
 
         MongoClient client = Utils.getMongoDBClient();
         Document query = new Document("globalGraphID",globalGraphID);
-        Document res = getGlobalGraphCollection(client).find(query).first();
+        Document res = MongoCollections.getGlobalGraphCollection(client).find(query).first();
         client.close();
         return Response.ok((res.toJson())).build();
     }
@@ -72,7 +69,7 @@ public class GlobalGraphResource {
 
         MongoClient client = Utils.getMongoDBClient();
         Document query = new Document("namedGraph",namedGraph);
-        Document res = getGlobalGraphCollection(client).find(query).first();
+        Document res = MongoCollections.getGlobalGraphCollection(client).find(query).first();
         client.close();
         return Response.ok((res.toJson())).build();
     }
@@ -84,7 +81,7 @@ public class GlobalGraphResource {
     public Response GET_featuresForGlobalGraph(@PathParam("namedGraph") String namedGraph) {
         System.out.println("[GET /globalGraph/features/] namedGraph = "+namedGraph);
         JSONArray features = new JSONArray();
-        String SPARQL = "SELECT ?f WHERE { GRAPH ?g { ?f <"+Namespaces.rdf.val()+"type> <"+GlobalGraph.FEATURE.val()+"> } }";
+        String SPARQL = "SELECT ?f WHERE { GRAPH <"+namedGraph+"> { ?f <"+Namespaces.rdf.val()+"type> <"+GlobalGraph.FEATURE.val()+"> } }";
         RDFUtil.runAQuery(SPARQL,namedGraph).forEachRemaining(t -> {
             features.add(t.get("f").asNode().getURI());
         });
@@ -107,7 +104,7 @@ public class GlobalGraphResource {
 
         objBody.put("namedGraph", namedGraph+UUID.randomUUID().toString());
 
-        getGlobalGraphCollection(client).insertOne(Document.parse(objBody.toJSONString()));
+        MongoCollections.getGlobalGraphCollection(client).insertOne(Document.parse(objBody.toJSONString()));
 
         client.close();
         return Response.ok(objBody.toJSONString()).build();
@@ -128,7 +125,7 @@ public class GlobalGraphResource {
     public Response POST_graphicalGraph(@PathParam("globalGraphID") String globalGraphID, String body) {
         System.out.println("[POST /globalGraph/"+globalGraphID+"/graphicalGraph");
         MongoClient client = Utils.getMongoDBClient();
-        MongoCollection<Document> globalGraphCollection = getGlobalGraphCollection(client);
+        MongoCollection<Document> globalGraphCollection = MongoCollections.getGlobalGraphCollection(client);
         globalGraphCollection.findOneAndUpdate(
                 new Document().append("globalGraphID",globalGraphID),
                 new Document().append("$set", new Document().append("graphicalGraph",body))

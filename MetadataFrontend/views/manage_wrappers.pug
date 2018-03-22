@@ -7,16 +7,27 @@ block headers
 
 block content
     .container-fluid
-        .row
-            .col-lg-8.col-md-7.col-sm-6
-                h2 Manage Wrappers
-                br
+        .card.bg-secondary.mb-3
+            .card-header
+                .row
+                    .col-md-11
+                        h2(style="color:black")
+                            | Manage Data Sources
+                    .col-md-1
+                        button.btn.btn-link(data-toggle="collapse" data-target="#instructions")#instructionsButton
+                            i.fas.fa-chevron-circle-down.fa-3x(style="color:black")
+            #instructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
+                .card-body
+                    p.card-text(style='text-align: left')
+                        | bla bla bla
 
-            table.table.table-striped.table-hover#wrappers
-                thead
-                    tr
-                        th #
-                        th Name
-                        th Data Source
-                        th View Metadata
-                tbody
+        .card.bg-secondary.mb-3
+            form
+                table.table.table-hover#wrappers
+                    thead
+                        tr
+                            th #
+                            th Name
+                            th Data Source
+                            th View Metadata
+                    tbody

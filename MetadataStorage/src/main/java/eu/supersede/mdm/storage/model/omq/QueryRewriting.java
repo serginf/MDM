@@ -113,7 +113,7 @@ public class QueryRewriting {
         List<Tuple2<String,Set<Walk>>> partialWalks = Lists.newArrayList();
         // 3 Identify queried features
         concepts.forEach(c -> {
-            Map<Wrapper,Set<Walk>> PartialWalksPerWrapper = Maps.newHashMap();
+            Map<Wrapper,Set<Walk>> PartialWalksPerWrapper = º.newHashMap();
             ResultSet resultSetFeatures = RDFUtil.runAQuery("SELECT ?f " +
                     "WHERE {<"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?f }",PHI_o);
         // 4 Unfold LAV mappings

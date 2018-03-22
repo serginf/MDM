@@ -9,50 +9,48 @@ const Namespaces = {
     rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     rdfs:"http://www.w3.org/2000/01/rdf-schema#",
     dct: "http://purl.org/dc/terms/",
-    dcat: "http://www.w3.org/ns/dcat#"
+    dcat: "http://www.w3.org/ns/dcat#",
+    sc: "http://schema.org/"
 };
 
 const Global = {
     CONCEPT: {
         iri: Namespaces.G+"Concept",
         name: "Concept",
-        color: "#33CCCC"
+        color: "#33CCCC",
+        isID: false
     },
     HAS_RELATION: {
         iri: Namespaces.G+"hasRelation",
         name: "hasRelation",
-        color: "#33CCCC"
+        color: "#33CCCC",
+        isID: false
     },
     FEATURE: {
         iri: Namespaces.G+"Feature",
         name: "Feature",
-        color: "#D7DF01"
+        color: "#D7DF01",
+        isID: false
+    },
+    FEATURE_ID: {
+        iri: Namespaces.G+"Feature",
+        name: "Feature_ID",
+        color: "#FF6600",
+        isID: true
     },
     HAS_FEATURE: {
         iri: Namespaces.G+"hasFeature",
         name: "hasFeature",
-        color: "#D7DF01"
-    },
-    INTEGRITY_CONSTRAINT: {
-        iri: Namespaces.G+"IntegrityConstraint",
-        name: "IntegrityConstraint",
-        color: "#CC99FF"
-    },
-    HAS_INTEGRITY_CONSTRAINT: {
-        iri: Namespaces.G+"hasConstraint",
-        name: "hasConstraint",
-        color: "#CC99FF"
-    },
-    DATATYPE: {
-        iri: Namespaces.rdfs+"Datatype",
-        name: "Datatype",
-        color: "#FF6600"
-    },
+        color: "#D7DF01",
+        isID: false
+    }
+    /*
     HAS_DATATYPE: {
         iri: Namespaces.G+"hasDatatype",
         name: "hasDatatype",
         color: "#FF6600"
     }
+    */
 };
 
 const Source = {
@@ -66,30 +64,10 @@ const Source = {
         name: "SchemaVersion",
         color: "#FECB98"
     },
-    MEDIA_TYPE: {
-        iri: Namespaces.S+"mediaType",
-        name: "mediaType",
-        color: "#808000"
-    },
-    EMBEDDED_OBJECT: {
-        iri: Namespaces.S+"EmbeddedObject",
-        name: "EmbeddedObject",
-        color: "#993366"
-    },
-    ARRAY: {
-        iri: Namespaces.S+"Array",
-        name: "Array",
-        color: "#00FF00"
-    },
     ATTRIBUTE: {
         iri: Namespaces.rdfs+"Attribute",
         name: "Attribute",
         color: "#00CCFF"
-    },
-    KAFKA_TOPIC: {
-        iri: Namespaces.S+"KafkaTopic",
-        name: "KafkaTopic",
-        color: "#F7819F"
     }
 }
 

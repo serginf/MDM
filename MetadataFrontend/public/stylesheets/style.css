@@ -149,3 +149,7 @@ svg.line-graph .legend {
 .x.axis path {
   display: none;
 }
+
+a {
+  color: black;
+}

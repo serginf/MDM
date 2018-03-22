@@ -28,6 +28,7 @@ var global_graph_routes = require(__dirname+'/routes/global_graph_routes');
 var data_source_routes = require(__dirname+'/routes/data_source_routes');
 var wrapper_routes = require(__dirname+'/routes/wrapper_routes');
 var lav_mapping_routes = require(__dirname+'/routes/lav_mapping_routes');
+var omq_routes = require(__dirname+'/routes/omq_routes');
 
 
 
@@ -123,44 +124,18 @@ app.get('/wrapper/preview/:dataSourceID/:query', wrapper_routes.previewWrapper);
 app.get('/wrapper/:namedGraph/attributes', wrapper_routes.getAttributesForGraph);
 
 
-/********** Wrapper resource ********************************************************/
+/********** LAV Mapping resource ********************************************************/
 
 app.get('/LAVMapping/', lav_mapping_routes.getAllLAVMappings);
 app.get('/LAVMapping/:LAVMappingID', lav_mapping_routes.getLAVMapping);
-app.post('/LAVMapping', lav_mapping_routes.postLAVMapping);
+app.post('/LAVMapping/sameAs', lav_mapping_routes.postLAVMappingSameAs);
+app.post('/LAVMapping/subgraph', lav_mapping_routes.postLAVMappingSubgraph);
 
+/********** OMQ resource ********************************************************/
 
+app.post('/OMQ/fromGraphicalToSPARQL', omq_routes.postFromGraphicalToSPARQL);
+app.post('/OMQ/fromSPARQLtoRA', omq_routes.postFromSPARQLToGraphical);
 
-//app.post('/bdi_ontology/sparQLQuery', bdi_ontology_routes.postSparQLQuery);
-
-
-/********** BDI Ontology resource ********************************************************/
-
-app.get('/bdi_ontology/:bdi_ontologyID', bdi_ontology_routes.getBDIOntology);
-app.get('/bdi_ontology/graph/:graph', bdi_ontology_routes.getBDIOntologyFromGraph);
-app.get('/bdi_ontology', bdi_ontology_routes.getAllBDIOntologies);
-app.post('/bdi_ontology', bdi_ontology_routes.postBDIOntology);
-
-app.get('/bdi_ontology_generation_strategies', bdi_ontology_routes.getGenerationStrategies);
-
-app.post('/bdi_ontology/sparQLQuery', bdi_ontology_routes.postSparQLQuery);
-
-/********** Global Level resource ********************************************************/
-
-app.get('/global_level/:artifactID/features', global_level_routes.getAllFeatures);
-
-//app.post('/globalLevel', global_level_routes.postGlobalLevel);
-
-/********** Source Level resource ********************************************************/
-
-app.post('/sourceLevel', source_level_routes.postSourceLevel);
-
-/********** Release resource *************************************************************/
-
-app.get('/release/:releaseID/attributes', release_routes.getReleaseAttributes);
-app.get('/release/:releaseID', release_routes.getRelease);
-app.get('/release', release_routes.getAllReleases);
-app.post('/release', release_routes.postRelease);
 
 /********** Admin resource *************************************************************/
 
@@ -246,77 +221,20 @@ app.get('/manage_lav_mappings', checkAuthenticated, function(req,res) {
     res.render('manage_lav_mappings', {user:req.session.passport.user});
 });
 
-app.get('/view_lav_mapping', checkAuthenticated, function(req,res) {
-    res.render('view_lav_mapping', {user:req.session.passport.user});
+app.get('/view_lav_mapping_sameAs', checkAuthenticated, function(req,res) {
+    res.render('view_lav_mapping_sameAs', {user:req.session.passport.user});
 });
 
-/*app.get('/view_lav_mapping', checkAuthenticated, function(req,res) {
-    res.render('view_lav_mapping', {user:req.session.passport.user});
-});*/
-
-
-
-
-/********** Releases section ***************************************************************/
-
-app.get('/new_release', checkAuthenticated, function(req,res) {
-    res.render('new_release', {user:req.session.passport.user});
+app.get('/view_lav_mapping_subgraph', checkAuthenticated, function(req,res) {
+    res.render('view_lav_mapping_subgraph', {user:req.session.passport.user});
 });
 
-app.get('/manage_releases', checkAuthenticated, function(req,res) {
-    res.render('manage_releases', {user:req.session.passport.user});
+/********** OMQ section ************************************************************/
+
+app.get('/pose_omq', checkAuthenticated, function(req,res) {
+    res.render('pose_omq', {user:req.session.passport.user});
 });
 
-app.get('/view_release', checkAuthenticated, function(req,res) {
-    res.render('view_release', {user:req.session.passport.user});
-});
-
-/********** BDI Ontology section ***********************************************************/
-
-app.get('/new_bdi_ontology', checkAuthenticated, function(req,res) {
-    res.render('new_bdi_ontology', {user:req.session.passport.user});
-});
-
-app.get('/manage_bdi_ontologies', checkAuthenticated, function(req,res) {
-    res.render('manage_bdi_ontologies', {user:req.session.passport.user});
-});
-
-app.get('/view_bdi_ontology', checkAuthenticated, function(req,res) {
-    res.render('view_bdi_ontology', {user:req.session.passport.user});
-});
-
-/********** Global Level section *******************************************************/
-/*
-app.get('/new_global_level', checkAuthenticated, function(req,res) {
-    res.render('new_global_level', {user:req.session.passport.user});
-});
-
-app.get('/manage_global_levels', checkAuthenticated, function(req,res) {
-    res.render('manage_global_levels', {user:req.session.passport.user});
-});
-*/
-app.get('/view_global_level', checkAuthenticated, function(req,res) {
-    res.render('view_global_level', {user:req.session.passport.user});
-});
-
-/********** Source Level section ******************************************************/
-/*
-app.get('/new_source_level', checkAuthenticated, function(req,res) {
-    res.render('new_source_level', {user:req.session.passport.user});
-});
-
-app.get('/manage_source_levels', checkAuthenticated, function(req,res) {
-    res.render('manage_source_levels', {user:req.session.passport.user});
-});*/
-
-
-
-
-/******* Queries section **************************************************************/
-
-app.get('/view_queries', checkAuthenticated, function (req, res) {
-   res.render('view_queries', {user:req.session.passport.user});
-});
 
 /**********************************   END   ********************************************/
 
