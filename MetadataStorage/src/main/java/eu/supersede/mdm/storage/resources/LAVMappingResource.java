@@ -85,16 +85,17 @@ public class LAVMappingResource {
         System.out.println("[POST /LAVMapping/subgraph/] body = "+body);
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
         MongoClient client = Utils.getMongoDBClient();
-        objBody.put("LAVMappingID", UUID.randomUUID().toString());
-        MongoCollections.getLAVMappingCollection(client).insertOne(Document.parse(objBody.toJSONString()));
+
+        Document objMapping = MongoCollections.getLAVMappingCollection(client).find
+                (new Document("LAVMappingID",objBody.getAsString("LAVMappingID"))).first();
 
         Document wrapper = MongoCollections.getWrappersCollection(client)
-                .find(new Document("wrapperID",objBody.getAsString("wrapperID"))).first();
+                .find(new Document("wrapperID",objMapping.getString("wrapperID"))).first();
         Document globalGraph = MongoCollections.getDataSourcesCollection(client)
-                .find(new Document("globalGraphID",objBody.getAsString("globalGraphID"))).first();
+                .find(new Document("globalGraphID",objMapping.getString("globalGraphID"))).first();
         String wIRI = wrapper.getString("iri");
 
-        ((JSONArray)objBody.get("subgraph")).forEach(selectedElement -> {
+        ((JSONArray)objBody.get("selection")).forEach(selectedElement -> {
             JSONObject objSelectedElement = (JSONObject)selectedElement;
             if (objSelectedElement.containsKey("target")) {
                 String sourceIRI = ((JSONObject)objSelectedElement.get("source")).getAsString("iri");

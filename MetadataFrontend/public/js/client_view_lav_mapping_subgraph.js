@@ -6,5 +6,7 @@ function getParameterByName(name) {
 }
 
 $(function() {
-
+    $.get("/LAVMapping/"+getParameterByName("LAVMappingID"), function(data) {
+        drawGraph(data.globalGraphID);
+    });
 });

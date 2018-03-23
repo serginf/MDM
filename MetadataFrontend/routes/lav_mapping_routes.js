@@ -46,9 +46,8 @@ exports.postLAVMappingSameAs = function (req, res, next) {
 
 exports.postLAVMappingSubgraph = function (req, res, next) {
     if (!(req.body.hasOwnProperty('selection')) || req.body.selection==null ||
-        !(req.body.hasOwnProperty('wrapperID')) || req.body.wrapperID==null ||
-        !(req.body.hasOwnProperty('globalGraphID')) || req.body.globalGraphID==null){
-        res.status(400).json({msg: "(Bad Request) data format: {selection,wrapperID,globalGraphID}"});
+        !(req.body.hasOwnProperty('LAVMappingID')) || req.body.LAVMappingID==null){
+        res.status(400).json({msg: "(Bad Request) data format: {selection,LAVMappingID}"});
     } else {
         var objLAVMappingMapsTo = req.body;
         request.post({

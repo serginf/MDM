@@ -11,14 +11,15 @@ import eu.supersede.mdm.storage.model.omq.relational_operators.Projection;
 import eu.supersede.mdm.storage.model.omq.relational_operators.RelationalOperator;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
 import eu.supersede.mdm.storage.util.RDFUtil;
+import eu.supersede.mdm.storage.util.Utils;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.Dataset;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryFactory;
-import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.impl.PropertyImpl;
+import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.apache.jena.sparql.algebra.Algebra;
 import org.apache.jena.sparql.algebra.Op;
 import org.apache.jena.sparql.algebra.op.OpBGP;
@@ -36,7 +37,28 @@ import java.util.stream.Collectors;
 
 public class QueryRewriting {
 
-    //private Dataset T;
+    //Used for adding triples in-memory
+    private void addTriple(Model model, String s, String p, String o) {
+        model.add(new ResourceImpl(s), new PropertyImpl(p), new ResourceImpl(o));
+    }
+    private ResultSet runAQuery(String sparqlQuery, Dataset ds) {
+        try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), ds)) {
+            return ResultSetFactory.copyResults(qExec.execSelect());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    private ResultSet runAQuery(String sparqlQuery, OntModel o) {
+        try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), o)) {
+            return ResultSetFactory.copyResults(qExec.execSelect());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private Dataset T;
 
     private Set<String> PI;
 
@@ -46,9 +68,8 @@ public class QueryRewriting {
     private BasicPattern PHI_p; //PHI_pattern
     private OntModel PHI_o; // PHI_ontology
 
-    public QueryRewriting(String SPARQL/*, String PHI_o*/) {
-        /*
-        T = d;
+    public QueryRewriting(String SPARQL) {
+        T = Utils.getTDBDataset(); T.begin(ReadWrite.READ);
 
         // Compile the SPARQL using ARQ and generate its <pi,phi> representation
         Query q = QueryFactory.create(SPARQL);
@@ -62,13 +83,11 @@ public class QueryRewriting {
         this.PHI_p = ((OpBGP)((OpJoin)((OpProject)ARQ).getSubOp()).getRight()).getPattern();
         PHI_o = ModelFactory.createOntologyModel();
         PHI_p.getList().forEach(t ->
-            RDFUtil.addTriple(PHI_o, t.getSubject().getURI(), t.getPredicate().getURI(), t.getObject().getURI())
+            this.addTriple(PHI_o, t.getSubject().getURI(), t.getPredicate().getURI(), t.getObject().getURI())
         );
-        */
     }
 
     public Set<Walk> rewrite() {
-        /*
 
         // Query expansion
         // 1 Identify query-related concepts
@@ -92,7 +111,7 @@ public class QueryRewriting {
 
         // 2 Expand Q_G with IDs
         concepts.forEach(c -> {
-            ResultSet IDs = RDFUtil.runAQuery("SELECT ?t " +
+            ResultSet IDs = this.runAQuery("SELECT ?t " +
                     "WHERE { GRAPH ?g {" +
                     "<"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?t . " +
                     "?t <"+ Namespaces.rdfs.val()+"subClassOf> <"+ Namespaces.sc.val()+"identifier> " +
@@ -104,7 +123,6 @@ public class QueryRewriting {
 
                     PHI_p.add(Triple.create(NodeFactory.createURI(c),
                             NodeFactory.createURI(GlobalGraph.HAS_FEATURE.val()), id.get("t").asNode()));
-                    RDFUtil.addTriple(PHI_o, c, GlobalGraph.HAS_FEATURE.val(), id.get("t").asResource().getURI());
                 }
             });
         });
@@ -113,8 +131,8 @@ public class QueryRewriting {
         List<Tuple2<String,Set<Walk>>> partialWalks = Lists.newArrayList();
         // 3 Identify queried features
         concepts.forEach(c -> {
-            Map<Wrapper,Set<Walk>> PartialWalksPerWrapper = º.newHashMap();
-            ResultSet resultSetFeatures = RDFUtil.runAQuery("SELECT ?f " +
+            Map<Wrapper,Set<Walk>> PartialWalksPerWrapper = Maps.newHashMap();
+            ResultSet resultSetFeatures = this.runAQuery("SELECT ?f " +
                     "WHERE {<"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?f }",PHI_o);
         // 4 Unfold LAV mappings
             //Convert the resultset to set
@@ -122,14 +140,14 @@ public class QueryRewriting {
             resultSetFeatures.forEachRemaining(f -> features.add(f.get("f").asResource().getURI()));
 
             features.forEach(f -> {
-                ResultSet wrappers = RDFUtil.runAQuery("SELECT ?g " +
+                ResultSet wrappers = this.runAQuery("SELECT ?g " +
                         "WHERE { GRAPH ?g { <"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> <"+f+"> } }",T);
         // 5 Find attributes in S
                 wrappers.forEachRemaining(wRes -> {
                     String w = wRes.get("g").asResource().getURI();
                     // Distinguish the ontology named graph
-                    if (!w.equals(Namespaces.T.val())) {
-                        ResultSet rsAttr = RDFUtil.runAQuery("SELECT ?a " +
+                    if (!w.equals(Namespaces.T.val()) && w.contains("Wrapper")/*last min bugfix*/) {
+                        ResultSet rsAttr = this.runAQuery("SELECT ?a " +
                                 "WHERE { GRAPH ?g { ?a <"+Namespaces.owl.val()+"sameAs> <"+f+"> . " +
                                 "<"+w+"> <"+ SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }", T);
                         String attribute = rsAttr.nextSolution().get("a").asResource().getURI();
@@ -168,7 +186,7 @@ public class QueryRewriting {
                     w.getOperators().forEach(op -> {
                         if (op instanceof Projection) {
                             ((Projection)op).getProjectedAttributes().forEach(a -> {
-                                RDFUtil.runAQuery("SELECT ?f " +
+                                this.runAQuery("SELECT ?f " +
                                         "WHERE { GRAPH ?g " +
                                         "{<"+a+"> <"+Namespaces.owl.val()+"sameAs> ?f } }",T).forEachRemaining(featureInWalk -> {
                                     featuresInWalk.add(featureInWalk.get("f").asResource().getURI());
@@ -245,7 +263,7 @@ public class QueryRewriting {
 
                 if (Sets.intersection(wrappersLeft,wrappersRight).isEmpty()) {
                     Set<Wrapper> wrappersFromLtoR = Sets.newHashSet();
-                    RDFUtil.runAQuery("SELECT ?g " +
+                    this.runAQuery("SELECT ?g " +
                         "WHERE { GRAPH ?g { <"+current._1+"> ?x <"+next._1+">}}", T).
                             forEachRemaining(w -> {
                                 if (!w.get("g").asResource().getURI().equals(Namespaces.T.val())) {
@@ -253,7 +271,7 @@ public class QueryRewriting {
                                 }
                             });
                     Set<Wrapper> wrappersFromRtoL = Sets.newHashSet();
-                    RDFUtil.runAQuery("SELECT ?g " +
+                    this.runAQuery("SELECT ?g " +
                             "WHERE { GRAPH ?g { <"+next._1+"> ?x <"+current._1+">}}", T).
                             forEachRemaining(w -> {
                                 if (!w.get("g").asResource().getURI().equals(Namespaces.T.val()))
@@ -262,7 +280,7 @@ public class QueryRewriting {
 
         // 10 Discover join attribute
                     if (!wrappersFromLtoR.isEmpty()) {
-                        String f_ID = RDFUtil.runAQuery("SELECT ?t WHERE { " +
+                        String f_ID = this.runAQuery("SELECT ?t WHERE { " +
                                 "GRAPH ?g { <"+next._1+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?t . " +
                                 "?t <"+Namespaces.rdfs.val()+"subClassOf> <"+Namespaces.sc.val()+"identifier> } }",T)
                                 .nextSolution().get("t").asResource().getURI();
@@ -270,12 +288,12 @@ public class QueryRewriting {
                         // find wrapper with ID
                         Wrapper wrapperWithIDright = (Wrapper)CP_right.getOperators().get(1);
 
-                        String att_right = RDFUtil.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
+                        String att_right = this.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
                                 "?a <"+Namespaces.owl.val()+"sameAs> <"+f_ID+"> . " +
                                 "<"+wrapperWithIDright.getWrapper()+"> <"+ SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }",T)
                                 .nextSolution().get("a").asResource().getURI();
                         wrappersFromLtoR.forEach(w -> {
-                            String att_left = RDFUtil.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
+                            String att_left = this.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
                                     "?a <"+Namespaces.owl.val()+"sameAs> <"+f_ID+"> . " +
                                     "<"+w.getWrapper()+"> <"+ SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }",T)
                                     .nextSolution().get("a").asResource().getURI();
@@ -304,7 +322,7 @@ public class QueryRewriting {
                         });
                     }
                     else if (!wrappersFromRtoL.isEmpty()) {
-                        String f_ID = RDFUtil.runAQuery("SELECT ?t WHERE { " +
+                        String f_ID = this.runAQuery("SELECT ?t WHERE { " +
                                 "GRAPH ?g { <"+current._1+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?t . " +
                                 "?t <"+Namespaces.rdfs.val()+"subClassOf> <"+Namespaces.sc.val()+"identifier> } }",T)
                                 .nextSolution().get("t").asResource().getURI();
@@ -312,13 +330,13 @@ public class QueryRewriting {
                         // find wrapper with ID
                         Wrapper wrapperWithIDleft = (Wrapper)CP_left.getOperators().get(1);
 
-                        String att_left = RDFUtil.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
+                        String att_left = this.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
                                 "?a <"+Namespaces.owl.val()+"sameAs> <"+f_ID+"> . " +
                                 "<"+wrapperWithIDleft.getWrapper()+"> <"+ SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }",T)
                                 .nextSolution().get("a").asResource().getURI();
 
                         wrappersFromRtoL.forEach(w -> {
-                            String att_right = RDFUtil.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
+                            String att_right = this.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
                                     "?a <"+Namespaces.owl.val()+"sameAs> <"+f_ID+"> . " +
                                     "<"+w.getWrapper()+"> <"+ SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }",T)
                                     .nextSolution().get("a").asResource().getURI();
@@ -358,8 +376,6 @@ public class QueryRewriting {
         }
 
         return current._2;
-        */
-        return null;
     }
 
 }

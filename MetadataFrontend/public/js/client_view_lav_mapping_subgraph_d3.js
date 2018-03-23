@@ -9,7 +9,7 @@ function euclidean(xA,yA,xB,yB) {
     return Math.sqrt(Math.pow(xB-xA,2)+Math.pow(yB-yA,2));
 }
 
-$(function() {
+function drawGraph(globalGraphID) {
     var width = $(window).width()*0.75;
     var height = $(window).height()*0.75;
     var nodeRadius = 9;
@@ -28,7 +28,7 @@ $(function() {
         .append('g')
         .attr('id', 'markers');*/
 
-    d3.json('/globalGraph/'+getParameterByName('globalGraphID'), function (error, graph) {
+    d3.json('/globalGraph/'+globalGraphID, function (error, graph) {
         var thisGraph = new Object();
         var jsonObj = JSON.parse(graph.graphicalGraph);
 
@@ -293,8 +293,7 @@ $(function() {
             });
             */
             subGraph.selection = selection;
-            subGraph.wrapperID = getParameterByName("wrapperID");
-            subGraph.globalGraphID = getParameterByName("globalGraphID");
+            subGraph.LAVMappingID = getParameterByName("LAVMappingID");
             $.ajax({
                 url: '/LAVMapping/subgraph',
                 type: 'POST',
@@ -306,4 +305,4 @@ $(function() {
             });
         }
     });
-});
+}

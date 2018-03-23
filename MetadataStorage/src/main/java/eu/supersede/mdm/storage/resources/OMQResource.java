@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import eu.supersede.mdm.storage.model.Namespaces;
+import eu.supersede.mdm.storage.model.omq.QueryRewriting;
+import eu.supersede.mdm.storage.model.omq.Walk;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
@@ -16,6 +18,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -31,17 +34,17 @@ public class OMQResource {
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
         String select = "SELECT ";
         String values = "VALUES (";
-        String constants = "{";
+        String constants = "{(";
 
         JSONArray projectedFeatures =(JSONArray)objBody.get("projectedFeatures");
         for (int i = 0; i < projectedFeatures.size(); ++i) {
             select += "?v"+(i+1)+" ";
             values += "?v"+(i+1)+" ";
-            constants += projectedFeatures.get(i)+" ";
+            constants += "<"+projectedFeatures.get(i)+"> ";
         }
 
         values = values.substring(0,values.length()-1)+")";
-        constants = constants.substring(0,constants.length()-1)+"}";
+        constants = constants.substring(0,constants.length()-1)+")}";
 
         String pattern = "";
         for (Object selectionElement : ((JSONArray)objBody.get("selection"))) {
@@ -49,8 +52,8 @@ public class OMQResource {
             if (selectedElement.containsKey("source")) {
                 JSONObject source = (JSONObject)selectedElement.get("source");
                 JSONObject target = (JSONObject)selectedElement.get("target");
-                pattern += source.getAsString("iri") + " " + selectedElement.getAsString("name") + " " +
-                        target.getAsString("iri") + " .\n";
+                pattern += "<"+source.getAsString("iri") + "> <" + selectedElement.getAsString("name") + "> <" +
+                        target.getAsString("iri") + "> .\n";
             }
         }
         pattern = pattern.substring(0,pattern.length()-2)+"\n";
@@ -67,8 +70,14 @@ public class OMQResource {
         System.out.println("[POST /omq/fromSPARQLToRA/] body = "+body);
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
 
+        String SPARQL = objBody.getAsString("sparql");
+        //String namedGraph = objBody.getAsString("namedGraph");
+        QueryRewriting qr = new QueryRewriting(SPARQL.replace("\n"," "));
+        Set<Walk> walks = qr.rewrite();
+        //System.out.println(walks);
+
         JSONObject out = new JSONObject();
-        out.put("ra","");
+        out.put("ra",walks.toString());
         return Response.ok(out.toJSONString()).build();
     }
 }

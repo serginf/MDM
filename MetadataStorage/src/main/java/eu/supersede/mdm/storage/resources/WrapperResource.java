@@ -120,7 +120,10 @@ public class WrapperResource {
                 break;
             case "mongodb":
                 w = new MongoDB_Wrapper("preview");
+                ((MongoDB_Wrapper)w).setConnectionString(ds.getString("mongodb_connectionString"));
+                ((MongoDB_Wrapper)w).setDatabase(ds.getString("mongodb_database"));
 
+                ((MongoDB_Wrapper)w).setMongodbQuery(query);
                 break;
             case "neo4j":
                 w = new Neo4j_Wrapper("preview");
@@ -138,6 +141,7 @@ public class WrapperResource {
                 break;
             case "restapi":
                 w = new REST_API_Wrapper("preview");
+                ((REST_API_Wrapper)w).setUrl(ds.getString("restapi_url"));
 
                 break;
             case "sql":

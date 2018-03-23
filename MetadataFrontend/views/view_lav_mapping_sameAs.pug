@@ -1,8 +1,7 @@
 extends layout
 block headers
     link(rel='stylesheet', href='/stylesheets/loading.css')
-    script(src='/js/client_new_lav_mapping.js')
-    script(src='/js/highlight.js/highlight.min.js')
+    script(src='/js/client_view_lav_mapping_sameAs.js')
 
 block content
 
@@ -19,7 +18,7 @@ block content
                 #instructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
                     .card-body
                         p.card-text(style='text-align: left')
-                            | bla bla bla
+                            | LAV mappings are encoded as part of the ontology. We represent them as two components, (a) a subgraph of the global graph, one per wrapper, and (b) a function linking attributes from the source graph to features in the global. The former are achieved thanks to RDF named graphs, which allow to identify subsets of other RDF graphs identified by an URI. In this case, the URI will be the one for the wrapper. The latter are achieved via the owl:sameAs property. Note that, traditionally, the definition of LAV mappings was a difficult task even for IT people. However, in MDM LAV mappings can be easily asserted through the interface: each wrapper must map to a named graph (i.e., a subset of the global graph), and a set of owl:sameAs from attributes to features. The task consists on first selecting a wrapper, and then, with the mouse, drawing a contour around the set of elements in the global graph that this wrapper is populating (including concept relations).
 
             .card.bg-secondary.mb-3
                     form#LAVMappingForm
@@ -28,12 +27,12 @@ block content
                                 .form-group#wrapperForm
                                     label.col-lg-4.col-form-label Wrapper
                                     .col-lg-12
-                                        select#wrapper.form-control(type='text', name='name', required='required')
+                                        input#wrapper.form-control(type='text', name='name', required='required', readonly="")
                             .col-md-6
                                 .form-group#globalGraphForm
                                     label.col-lg-4.col-form-label Global Graph
                                     .col-lg-12
-                                        select#globalGraph.form-control(type='text', name='name', required='required')
+                                        input#globalGraph.form-control(type='text', name='name', required='required', readonly="")
 
                         .row
                             .col-md-6

@@ -18,7 +18,7 @@ block content
             #instructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
                 .card-body
                     p.card-text(style='text-align: left')
-                        | bla bla bla
+                        | Data sources represent external endpoints where to fetch data from. We support connection to classic databases (e.g., SQL databases), NOSQL stores (e.g., document stores) and REST APIs.
 
         .card.bg-secondary.mb-3
             form#dataSourceForm
@@ -65,21 +65,9 @@ block content
                 
                     #mongodb.tab-pane(role="tabpanel" aria-labelledby="mongodb-tab")
                         .form-group#mongodb_hostnameForm
-                            label.col-lg-4.col-form-label Hostname
+                            label.col-lg-4.col-form-label Connection string
                             .col-lg-12
-                                input#mongodb_hostname.form-control(type='text', name='mongodb_hostname', required='required', readonly='')
-                        .form-group#mongodb_portForm
-                            label.col-lg-4.col-form-label Port
-                            .col-lg-12
-                                input#mongodb_port.form-control(type='text', name='mongodb_port', required='required', readonly='')
-                        .form-group#mongodb_usernameForm
-                            label.col-lg-4.col-form-label Username
-                            .col-lg-12
-                                input#mongodb_username.form-control(type='text', name='mongodb_username', required='required', readonly='')
-                        .form-group#mongodb_passwordForm
-                            label.col-lg-4.col-form-label Password
-                            .col-lg-12
-                                input#mongodb_password.form-control(type='password', name='mongodb_password', required='required', readonly='')
+                                input#mongodb_connectionString.form-control(type='text', name='mongodb_hostname', required='required', readonly='')
                         .form-group#mongodb_databaseForm
                             label.col-lg-4.col-form-label Database
                             .col-lg-12

@@ -52,6 +52,8 @@ $(function() {
             theme: "bootstrap"
         });
         $("#generateRelationalAlgebraButton").addClass("invisible");
+        $("#relationalAlgebraArea").addClass("invisible");
+
     });
 });
 
@@ -95,8 +97,14 @@ $(function() {
             method: "POST",
             data: sparql_omq
         }).done(function (res) {
-            console.log(res);
-            alert(res);
+            $("#relationalAlgebraAreaForm")
+                .append($('<h4 id="labelGeneratedRelationalAlgebra">Generated Relational Algebra</h4>'))
+                .append($('<pre id="text">').append($('<code class="" id="relationalAlgebraArea">')));
+            $("#relationalAlgebraArea").text(res.ra);
+            $('pre code').each(function(i, block) {
+                hljs.highlightBlock(block);
+            });
+            $("#executeQueryButton").removeClass("invisible");
         }).fail(function (err) {
             alert("error " + JSON.stringify(err));
         });

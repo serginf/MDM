@@ -24,10 +24,7 @@ $(function() {
 
             case "mongodb-tab":
                 dataSource.type = "mongodb";
-                dataSource.mongodb_hostname = $("#mongodb_hostname").val();
-                dataSource.mongodb_port = $("#mongodb_port").val();
-                dataSource.mongodb_username = $("#mongodb_username").val();
-                dataSource.mongodb_password = $("#mongodb_password").val();
+                dataSource.mongodb_connectionString = $("#mongodb_connectionString").val();
                 dataSource.mongodb_database = $("#mongodb_database").val();
                 break;
 

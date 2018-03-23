@@ -19,10 +19,7 @@ $(function() {
                 break;
             case "mongodb":
                 $("#mongodb-tab").addClass("active"); $("#mongodb").addClass("active");
-                $("#mongodb_hostname").val(dataSource.mongodb_hostname);
-                $("#mongodb_port").val(dataSource.mongodb_port);
-                $("#mongodb_username").val(dataSource.mongodb_username);
-                $("#mongodb_password").val(dataSource.mongodb_password);
+                $("#mongodb_connectionString").val(dataSource.mongodb_connectionString);
                 $("#mongodb_database").val(dataSource.mongodb_database);
                 break;
             case "neo4j":
