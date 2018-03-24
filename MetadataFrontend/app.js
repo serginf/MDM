@@ -135,6 +135,7 @@ app.post('/LAVMapping/subgraph', lav_mapping_routes.postLAVMappingSubgraph);
 
 app.post('/OMQ/fromGraphicalToSPARQL', omq_routes.postFromGraphicalToSPARQL);
 app.post('/OMQ/fromSPARQLtoRA', omq_routes.postFromSPARQLToGraphical);
+app.post('/OMQ/fromSQLtoDATA', omq_routes.postFromSQLToData);
 
 
 /********** Admin resource *************************************************************/

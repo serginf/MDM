@@ -41,3 +41,22 @@ exports.postFromSPARQLToGraphical = function (req, res, next) {
         });
     }
 };
+
+exports.postFromSQLToData = function (req, res, next) {
+    if (!(req.body.hasOwnProperty('sql')) || req.body.sql==null ||
+        !(req.body.hasOwnProperty('wrappers')) || req.body.wrappers==null){
+        res.status(400).json({msg: "(Bad Request) data format: {sql,wrappers}"});
+    } else {
+        var objFromSQLToData = req.body;
+        request.post({
+            url: config.METADATA_DATA_LAYER_URL + "omq/fromSQLToData",
+            body: JSON.stringify(objFromSQLToData)
+        }, function done(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                res.status(200).json(JSON.parse(body));
+            } else {
+                res.status(500).send("Error getting data");
+            }
+        });
+    }
+};

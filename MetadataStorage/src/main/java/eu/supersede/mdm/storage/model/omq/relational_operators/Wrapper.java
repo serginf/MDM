@@ -41,4 +41,5 @@ public class Wrapper extends RelationalOperator {
     public String preview() throws Exception {
         throw new Exception("Can't preview a generic wrapper, need to call an implementation subclass");
     };
+
 }

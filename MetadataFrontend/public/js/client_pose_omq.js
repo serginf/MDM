@@ -8,6 +8,8 @@ function getParameterByName(name) {
 var globalGraphs = [];
 var currGlobalGraph;
 
+var currOMQ;
+
 $(function() {
     $.get("/globalGraph", function(data) {
         _.each(data, function(element) {
@@ -101,6 +103,8 @@ $(function() {
                 .append($('<h4 id="labelGeneratedRelationalAlgebra">Generated Relational Algebra</h4>'))
                 .append($('<pre id="text">').append($('<code class="" id="relationalAlgebraArea">')));
             $("#relationalAlgebraArea").text(res.ra);
+            currOMQ = res;
+            console.log(currOMQ);
             $('pre code').each(function(i, block) {
                 hljs.highlightBlock(block);
             });
@@ -110,3 +114,10 @@ $(function() {
         });
     });
 });
+
+$(function() {
+    $("#executeQueryButton").on("click", function (e) {
+
+    });
+});
+

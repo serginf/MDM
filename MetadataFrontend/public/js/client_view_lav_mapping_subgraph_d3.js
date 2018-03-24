@@ -279,19 +279,7 @@ function drawGraph(globalGraphID) {
         if (selection.length == 0) alert("Select subgraph first");
         else{
             var subGraph = new Object();
-            /*
-            subGraph.triples = new Array();
-            _.each(selection, function(graphElement) {
-                if (graphElement.hasOwnProperty("target")) {
-                    //it is an edge
-                    var triple = new Object();
-                    triple.s = graphElement.source.iri;
-                    triple.p = graphElement.name;
-                    triple.o = graphElement.target.iri;
-                    subGraph.triples.push(triple);
-                }
-            });
-            */
+            console.log(selection);
             subGraph.selection = selection;
             subGraph.LAVMappingID = getParameterByName("LAVMappingID");
             $.ajax({

@@ -106,6 +106,11 @@ public class QueryRewriting {
                 }
             }
         });
+        // This is required when only one concept is queried, where all edges are hasFeature
+        if (concepts.isEmpty()) {
+            concepts.add(PHI_p.getList().get(0).getSubject().getURI());
+        }
+
         // Now, iterate using a topological sort adding the concepts to the list of concepts
         conceptsGraph.iterator().forEachRemaining(vertex -> concepts.add(vertex));
 
@@ -195,7 +200,8 @@ public class QueryRewriting {
                         }
                     });
                 });
-                if (featuresInWalk.equals(features)) {
+                if (features.equals(featuresInWalk)) {
+                //if (featuresInWalk.equals(features)) {
                     boolean found = false;
                     for (Tuple2<String,Set<Walk>> pw : partialWalks) {
                         if (pw._1.equals(c)) {
@@ -266,7 +272,8 @@ public class QueryRewriting {
                     this.runAQuery("SELECT ?g " +
                         "WHERE { GRAPH ?g { <"+current._1+"> ?x <"+next._1+">}}", T).
                             forEachRemaining(w -> {
-                                if (!w.get("g").asResource().getURI().equals(Namespaces.T.val())) {
+                                if (w.get("g").asResource().getURI().contains("Wrapper")) {/*last min bugfix*/
+                                //if (!w.get("g").asResource().getURI().equals(Namespaces.T.val())) {
                                     wrappersFromLtoR.add(new Wrapper(w.get("g").asResource().getURI()));
                                 }
                             });
@@ -274,8 +281,10 @@ public class QueryRewriting {
                     this.runAQuery("SELECT ?g " +
                             "WHERE { GRAPH ?g { <"+next._1+"> ?x <"+current._1+">}}", T).
                             forEachRemaining(w -> {
-                                if (!w.get("g").asResource().getURI().equals(Namespaces.T.val()))
+                                if (w.get("g").asResource().getURI().contains("Wrapper")) {/*last min bugfix*/
+                                    //if (!w.get("g").asResource().getURI().equals(Namespaces.T.val()))
                                     wrappersFromRtoL.add(new Wrapper(w.get("g").asResource().getURI()));
+                                }
                             });
 
         // 10 Discover join attribute
