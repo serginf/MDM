@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by snadal on 22/11/16.
@@ -65,7 +66,7 @@ public class WrapperResource {
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
         MongoClient client = Utils.getMongoDBClient();
         //Metadata for the wrapper
-        objBody.put("wrapperID", UUID.randomUUID().toString());
+        objBody.put("wrapperID", UUID.randomUUID().toString().replace("-",""));
         String wrapperName = objBody.getAsString("name").trim().replace(" ","");
         String wIRI = SourceGraph.WRAPPER.val()+"/"+wrapperName;
         objBody.put("iri",wIRI);
@@ -99,60 +100,23 @@ public class WrapperResource {
         return Response.ok(objBody.toJSONString()).build();
     }
 
-    @GET
-    @Path("wrapper/preview/{dataSourceID}/{query}")
+    @POST
+    @Path("wrapper/preview/")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response GET_preview(@PathParam("dataSourceID") String dataSourceID,@PathParam("query") String query) throws Exception {
-        System.out.println("[GET /GET_preview/] dataSourceID = " + dataSourceID+", query = "+query);
+    public Response POST_preview(String body) throws Exception {
+        System.out.println("[POST /preview/] body = " + body);
+        JSONObject objBody = (JSONObject) JSONValue.parse(body);
+        String dataSourceID = objBody.getAsString("dataSourceID");
+        String query = objBody.getAsString("query");
+        List<String> attributes = ((JSONArray)JSONValue.parse(objBody.getAsString("attributes")))
+                .stream().map(a -> (String)a).collect(Collectors.toList());
+
         MongoClient client = Utils.getMongoDBClient();
-
         Document ds = MongoCollections.getDataSourcesCollection(client).find(new Document("dataSourceID", dataSourceID)).first();
-
-        Wrapper w = null;
-
-        switch (ds.getString("type")) {
-            case "avro":
-                w = new SparkSQL_Wrapper("preview");
-                ((SparkSQL_Wrapper)w).setPath(ds.getString("avro_path"));
-                ((SparkSQL_Wrapper)w).setTableName(ds.getString("name"));
-                ((SparkSQL_Wrapper)w).setSparksqlQuery(query);
-                break;
-            case "mongodb":
-                w = new MongoDB_Wrapper("preview");
-                ((MongoDB_Wrapper)w).setConnectionString(ds.getString("mongodb_connectionString"));
-                ((MongoDB_Wrapper)w).setDatabase(ds.getString("mongodb_database"));
-
-                ((MongoDB_Wrapper)w).setMongodbQuery(query);
-                break;
-            case "neo4j":
-                w = new Neo4j_Wrapper("preview");
-
-                break;
-            case "plaintext":
-                w = new PlainText_Wrapper("preview");
-
-                break;
-            case "parquet":
-                w = new SparkSQL_Wrapper("preview");
-                ((SparkSQL_Wrapper)w).setPath(ds.getString("parquet_path"));
-                ((SparkSQL_Wrapper)w).setTableName(ds.getString("name"));
-                ((SparkSQL_Wrapper)w).setSparksqlQuery(query);
-                break;
-            case "restapi":
-                w = new REST_API_Wrapper("preview");
-                ((REST_API_Wrapper)w).setUrl(ds.getString("restapi_url"));
-
-                break;
-            case "sql":
-                w = new SQL_Wrapper("preview");
-
-                break;
-
-        }
-
+        Wrapper w = Wrapper.specializeWrapper(ds,query);
         client.close();
-        return Response.ok((w.preview())).build();
+        return Response.ok((w.preview(attributes))).build();
     }
 
     @GET

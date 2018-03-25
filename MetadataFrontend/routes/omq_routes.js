@@ -44,8 +44,9 @@ exports.postFromSPARQLToGraphical = function (req, res, next) {
 
 exports.postFromSQLToData = function (req, res, next) {
     if (!(req.body.hasOwnProperty('sql')) || req.body.sql==null ||
-        !(req.body.hasOwnProperty('wrappers')) || req.body.wrappers==null){
-        res.status(400).json({msg: "(Bad Request) data format: {sql,wrappers}"});
+        !(req.body.hasOwnProperty('wrappers')) || req.body.wrappers==null ||
+        !(req.body.hasOwnProperty('features')) || req.body.features==null){
+        res.status(400).json({msg: "(Bad Request) data format: {sql,wrappers, features}"});
     } else {
         var objFromSQLToData = req.body;
         request.post({

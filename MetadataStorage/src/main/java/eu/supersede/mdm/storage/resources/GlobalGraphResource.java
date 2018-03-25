@@ -96,13 +96,13 @@ public class GlobalGraphResource {
 
         MongoClient client = Utils.getMongoDBClient();
 
-        objBody.put("globalGraphID", UUID.randomUUID().toString());
+        objBody.put("globalGraphID", UUID.randomUUID().toString().replace("-",""));
 
         String namedGraph =
                 objBody.getAsString("defaultNamespace").charAt(objBody.getAsString("defaultNamespace").length()-1) == '/' ?
                 objBody.getAsString("defaultNamespace") : objBody.getAsString("defaultNamespace") + "/";
 
-        objBody.put("namedGraph", namedGraph+UUID.randomUUID().toString());
+        objBody.put("namedGraph", namedGraph+UUID.randomUUID().toString().replace("-",""));
 
         MongoCollections.getGlobalGraphCollection(client).insertOne(Document.parse(objBody.toJSONString()));
 

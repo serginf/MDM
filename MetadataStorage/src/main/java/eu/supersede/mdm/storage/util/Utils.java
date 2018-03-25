@@ -1,10 +1,13 @@
 package eu.supersede.mdm.storage.util;
 
+import com.almworks.sqlite4java.SQLiteConnection;
+import com.almworks.sqlite4java.SQLiteException;
 import com.mongodb.MongoClient;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.tdb.TDBFactory;
 
 import javax.servlet.ServletContext;
+import java.io.File;
 
 /**
  * Created by snadal on 17/05/16.
@@ -26,5 +29,15 @@ public class Utils {
         }
         System.out.println("An error has occurred obtaining TDB dataset");
         return null;
+    }
+
+    public static SQLiteConnection getSQLiteConnection() {
+        SQLiteConnection conn = new SQLiteConnection(new File(ConfigManager.getProperty("sqlite_db")));
+        try {
+            conn.open(true);
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
+        return conn;
     }
 }

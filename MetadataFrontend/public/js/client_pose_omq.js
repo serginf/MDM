@@ -117,7 +117,41 @@ $(function() {
 
 $(function() {
     $("#executeQueryButton").on("click", function (e) {
+        $("#dataModal").modal("show");
+        $("#spinner").show();
 
+        var sql_omq = new Object();
+        sql_omq.sql = currOMQ.sql
+        sql_omq.wrappers = currOMQ.wrappers;
+        sql_omq.features = $('#projectedFeatures').val();
+
+        $.ajax({
+            url: '/OMQ/fromSQLtoDATA',
+            method: "POST",
+            data: sql_omq
+        }).done(function(data) {
+            $("#spinner").hide();
+            _.each($('#projectedFeatures').val(), function(f) {
+                $('#dataTable').find('thead > tr').append($('<td>').text(f));
+            });
+            $('#dataTable').show();
+            _.each(data.data,function(row) {
+                $('#dataTable').find('tbody').append($('<tr>'));
+                _.each(row,function(item) {
+                    $('#dataTable').find('tbody > tr:last').append($('<td>').text(item.value));
+                });
+            });
+        }).fail(function(err) {
+            alert("error "+JSON.stringify(err));
+        });
+
+        //reset modal when hidden
+        $('#dataModal').on('hidden.bs.modal', function (e) {
+            $('#dataTable').find('thead > tr').remove();
+            $('#dataTable').find('tbody > tr').remove();
+            $('#dataTable').hide();
+            $("#spinner").show();
+        });
     });
 });
 

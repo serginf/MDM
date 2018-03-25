@@ -61,7 +61,7 @@ public class LAVMappingResource {
         System.out.println("[POST /LAVMapping/mapsTo/] body = "+body);
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
         MongoClient client = Utils.getMongoDBClient();
-        objBody.put("LAVMappingID", UUID.randomUUID().toString());
+        objBody.put("LAVMappingID", UUID.randomUUID().toString().replace("-",""));
         MongoCollections.getLAVMappingCollection(client).insertOne(Document.parse(objBody.toJSONString()));
 
         Document wrapper = MongoCollections.getWrappersCollection(client)

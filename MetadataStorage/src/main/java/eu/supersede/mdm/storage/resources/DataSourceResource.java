@@ -13,17 +13,7 @@ import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.Dataset;
-import org.apache.jena.query.ReadWrite;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.impl.PropertyImpl;
-import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.bson.Document;
-import scala.Tuple3;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -73,7 +63,7 @@ public class DataSourceResource {
         String dsName = objBody.getAsString("name").trim().replace(" ","");
         String iri = SourceGraph.DATA_SOURCE.val()+"/"+dsName;
         //Save metadata
-        objBody.put("dataSourceID", UUID.randomUUID().toString());
+        objBody.put("dataSourceID", UUID.randomUUID().toString().replace("-",""));
         objBody.put("iri", iri);
         MongoCollections.getDataSourcesCollection(client).insertOne(Document.parse(objBody.toJSONString()));
 

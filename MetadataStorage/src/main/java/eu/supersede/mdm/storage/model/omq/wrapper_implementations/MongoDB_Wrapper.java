@@ -8,6 +8,8 @@ import net.minidev.json.JSONObject;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.util.List;
+
 public class MongoDB_Wrapper extends Wrapper {
 
     private String connectionString;
@@ -39,7 +41,7 @@ public class MongoDB_Wrapper extends Wrapper {
     }
 
     @Override
-    public String preview() throws Exception {
+    public String preview(List<String> attributes) throws Exception {
         MongoClient mongoClient = new MongoClient(/*this.connectionString*/"localhost");
         MongoDatabase db = mongoClient.getDatabase(this.database);
 

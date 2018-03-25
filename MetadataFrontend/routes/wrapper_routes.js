@@ -50,14 +50,24 @@ exports.postWrapper = function (req, res, next) {
 };
 
 exports.previewWrapper = function (req, res, next) {
-    request.get(config.METADATA_DATA_LAYER_URL + "wrapper/preview/"+encodeURIComponent(req.params.dataSourceID)
-            +"/"+encodeURIComponent(req.params.query), function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            res.status(200).json(JSON.parse(body));
-        } else {
-            res.status(500).send("Error previewing query");
-        }
-    });
+    if (!(req.body.hasOwnProperty('dataSourceID')) || req.body.dataSourceID==null ||
+        !(req.body.hasOwnProperty('query')) || req.body.query==null ||
+        !(req.body.hasOwnProperty('attributes')) || req.body.attributes==null){
+        res.status(400).json({msg: "(Bad Request) data format: {dataSourceID, attributes, query}"});
+    } else {
+        var objPreview = req.body;
+
+        request.post({
+            url: config.METADATA_DATA_LAYER_URL + "wrapper/preview",
+            body: JSON.stringify(objPreview)
+        }, function done(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                res.status(200).json(JSON.parse(body));
+            } else {
+                res.status(500).send("Error previewing query");
+            }
+        });
+    }
 };
 
 exports.getAttributesForGraph = function (req, res, next) {

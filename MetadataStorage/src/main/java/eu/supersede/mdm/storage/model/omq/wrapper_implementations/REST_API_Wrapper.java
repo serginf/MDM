@@ -14,6 +14,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.List;
 
 public class REST_API_Wrapper extends Wrapper {
 
@@ -31,7 +32,8 @@ public class REST_API_Wrapper extends Wrapper {
         super(name);
     }
 
-    public String preview() throws Exception {
+    @Override
+    public String preview(List<String> attributes) throws Exception {
         JSONArray data = new JSONArray();
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -50,8 +52,15 @@ public class REST_API_Wrapper extends Wrapper {
         String responseBody = httpClient.execute(httpGet, responseHandler);
         if (responseBody != null) {
             JSONArray resp = (JSONArray)JSONValue.parse(responseBody);
-            for (int i = 0; i < resp.size() && i < 5; ++i) {
-                data.add(resp.get(i));
+            for (int i = 0; i < resp.size() && i < 10; ++i) {
+                JSONArray arr = new JSONArray();
+                for (int j = 0; j < attributes.size(); ++j) {
+                    JSONObject datum = new JSONObject();
+                    datum.put("attribute",attributes.get(j));
+                    datum.put("value",((JSONObject)resp.get(i)).getAsString(attributes.get(j)));
+                    arr.add(datum);
+                }
+                data.add(arr);
             }
         }
         JSONObject res = new JSONObject(); res.put("data",data);

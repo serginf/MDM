@@ -12,11 +12,14 @@ import eu.supersede.mdm.storage.model.omq.relational_operators.Projection;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
+import eu.supersede.mdm.storage.util.SQLiteUtils;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.bson.Document;
+import scala.Tuple2;
+import scala.Tuple3;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -24,7 +27,7 @@ import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by snadal on 22/11/16.
@@ -140,18 +143,38 @@ public class OMQResource {
         System.out.println("[POST /omq/fromSQLToData/] body = "+body);
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
 
+        String SQL = objBody.getAsString("sql");
+        List<String> features = ((JSONArray)objBody.get("features")).stream().map(f -> f.toString()).collect(Collectors.toList());
+
         MongoClient client = Utils.getMongoDBClient();
+        // Structure with wrapper obj, wrapper ID and list of attributes
+        List<Tuple3<Wrapper,String,List<String>>> wrappers = Lists.newArrayList();
         ((JSONArray)objBody.get("wrappers")).forEach(wID -> {
             String strWrapperID = (String)wID;
             Document wrapper = MongoCollections.getWrappersCollection(client).find(new Document("wrapperID",strWrapperID)).first();
             Document ds = MongoCollections.getDataSourcesCollection(client).find(new Document("dataSourceID", wrapper.getString("dataSourceID"))).first();
-
-
+            List<String> attributes = Lists.newArrayList();
+            ((List<Document>)wrapper.get("attributes")).forEach(a -> {
+                attributes.add(a.getString("name"));
+            });
+            wrappers.add(new Tuple3<>(Wrapper.specializeWrapper(ds,wrapper.getString("query")),strWrapperID,attributes));
         });
 
+        JSONArray data = new JSONArray();
+
+        wrappers.forEach(w -> {
+            SQLiteUtils.createTable(w._2(),w._3());
+            try {
+                w._1().populate(w._2(),w._3());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            SQLiteUtils.executeSelect(SQL,features).forEach(d -> data.add(d));
+        });
 
         client.close();
         JSONObject out = new JSONObject();
+        out.put("data",data);
         return Response.ok(out.toJSONString()).build();
     }
 
