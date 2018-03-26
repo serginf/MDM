@@ -100,7 +100,7 @@ $(function() {
             data: sparql_omq
         }).done(function (res) {
             $("#relationalAlgebraAreaForm")
-                .append($('<h4 id="labelGeneratedRelationalAlgebra">Generated Relational Algebra</h4>'))
+                .append($('<h4 id="labelGeneratedRelationalAlgebra">Rewritten query over the wrappers</h4>'))
                 .append($('<pre id="text">').append($('<code class="" id="relationalAlgebraArea">')));
             $("#relationalAlgebraArea").text(res.ra);
             currOMQ = res;
@@ -115,10 +115,10 @@ $(function() {
     });
 });
 
-$(function() {
-    $("#executeQueryButton").on("click", function (e) {
+$(function(){
+    $(document).on('click', '.btn-query', function(e) {
         $("#dataModal").modal("show");
-        $("#spinner").show();
+        //$("#spinner").show();
 
         var sql_omq = new Object();
         sql_omq.sql = currOMQ.sql
@@ -132,7 +132,7 @@ $(function() {
         }).done(function(data) {
             $("#spinner").hide();
             _.each($('#projectedFeatures').val(), function(f) {
-                $('#dataTable').find('thead > tr').append($('<td>').text(f));
+                $('#dataTable').find('thead > tr').append($('<td>').append($('<b>').text(f)));
             });
             $('#dataTable').show();
             _.each(data.data,function(row) {

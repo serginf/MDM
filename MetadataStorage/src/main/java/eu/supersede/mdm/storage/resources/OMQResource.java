@@ -85,7 +85,7 @@ public class OMQResource {
         //System.out.println(walks);
 
         JSONObject out = new JSONObject();
-        out.put("ra",RDFUtil.nn(walks.toString()));
+        out.put("ra",RDFUtil.nn(walks.stream().map(w -> w.toString()).collect(Collectors.joining("\nU\n"))));
 
         HashMap<String,String> wrapperIriToID = Maps.newHashMap(); //used to map wrapper IRIs to IDs
         //Populate data here
@@ -120,7 +120,11 @@ public class OMQResource {
                 }
                 else if (op instanceof EquiJoin) {
                     EquiJoin equiJoin = (EquiJoin)op;
-                    where.append(equiJoin.getLeft_attribute()+" = "+equiJoin.getRight_attribute()+" AND ");
+                    where.append(
+                            RDFUtil.nn(equiJoin.getLeft_attribute()).split("/")[RDFUtil.nn(equiJoin.getLeft_attribute()).split("/").length-1]+
+                            " = "+
+                            RDFUtil.nn(equiJoin.getRight_attribute()).split("/")[RDFUtil.nn(equiJoin.getRight_attribute()).split("/").length-1]+
+                            " AND ");
                 }
             });
             SQL.append(select.substring(0,select.length()-1));
@@ -169,8 +173,8 @@ public class OMQResource {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            SQLiteUtils.executeSelect(SQL,features).forEach(d -> data.add(d));
         });
+        SQLiteUtils.executeSelect(SQL,features).forEach(d -> data.add(d));
 
         client.close();
         JSONObject out = new JSONObject();

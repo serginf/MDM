@@ -41,25 +41,26 @@ public class SQLiteUtils {
     }
 
     public static void insertData(String table, JSONArray data) {
+        SQLiteConnection conn = Utils.getSQLiteConnection();
+
         data.forEach(tuple -> {
             String SQL = "INSERT INTO "+table+" ";
             StringBuilder schema = new StringBuilder("(");
             StringBuilder values = new StringBuilder("(");
             ((JSONArray)tuple).forEach(datum -> {
                 schema.append(((JSONObject)datum).getAsString("attribute")+",");
-                values.append("'"+((JSONObject)datum).getAsString("value")+"',");
+                values.append("'"+((JSONObject)datum).getAsString("value").replace("'","")+"',");
             });
             SQL += schema.substring(0,schema.length()-1)+") VALUES "+values.substring(0,values.length()-1)+");";
-            SQLiteConnection conn = Utils.getSQLiteConnection();
+
             try {
                 SQLiteStatement stmt = conn.prepare(SQL);
                 stmt.step();
             } catch (SQLiteException e) {
                 e.printStackTrace();
-            } finally {
-                conn.dispose();
             }
         });
+        conn.dispose();
     }
 
     public static JSONArray executeSelect(String sql,List<String> features) {

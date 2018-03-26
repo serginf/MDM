@@ -96,7 +96,7 @@ $(function() {
             else if (currDataSource.type == "mongodb") query = $("#mongodbQueryForm").show();
             else if (currDataSource.type == "neo4j") query = $("#cypherQueryForm").show();
             else if (currDataSource.type == "parquet") query = $("#sparksqlQueryForm").show();
-            else if (currDataSource.type == "plaintext") query = $("#fileseparatorForm").val();
+            else if (currDataSource.type == "plaintext") query = $("#fileseparatorForm").show();
             else if (currDataSource.type == "restapi") query = $("#restapiQueryForm").show();
             else if (currDataSource.type == "sqldatabase") query = $("#sqlQueryForm").show();
         });

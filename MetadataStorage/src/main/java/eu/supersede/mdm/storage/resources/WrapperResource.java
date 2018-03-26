@@ -66,7 +66,7 @@ public class WrapperResource {
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
         MongoClient client = Utils.getMongoDBClient();
         //Metadata for the wrapper
-        objBody.put("wrapperID", UUID.randomUUID().toString().replace("-",""));
+        objBody.put("wrapperID", "w"+UUID.randomUUID().toString().replace("-",""));
         String wrapperName = objBody.getAsString("name").trim().replace(" ","");
         String wIRI = SourceGraph.WRAPPER.val()+"/"+wrapperName;
         objBody.put("iri",wIRI);

@@ -77,11 +77,11 @@ block content
                                                     span.fa.fa-search
 
                             .form-group#fileseparatorForm(style="display:none")
-                                label.col-lg-8.col-form-label File separator
+                                label.col-lg-8.col-form-label (No Filtering)
                                 .col-lg-12
                                     form(role="form" autocomplete="off")
                                         .entry.input-group.col-xs-3
-                                            input#fileseparator.form-control(type='text', name='fileseparator', required='required')
+                                            input#fileseparator.form-control(type='text', name='fileseparator', required='required', readonly="", value="-")
                                             span.input-group-btn
                                                 button.btn.btn-success.btn-preview(type="button")
                                                     span.fa.fa-search

@@ -72,6 +72,7 @@ public class Wrapper extends RelationalOperator {
                 break;
             case "plaintext":
                 w = new PlainText_Wrapper("preview");
+                ((PlainText_Wrapper)w).setPath(ds.getString("plaintext_path"));
 
                 break;
             case "parquet":
