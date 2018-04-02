@@ -20,6 +20,7 @@ import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.apache.jena.util.FileManager;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import scala.Tuple3;
 
 import javax.servlet.ServletContext;
@@ -53,6 +54,25 @@ public class AdminResource {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return Response.ok("OK").build();
+    }
+
+    @GET @Path("admin/demoPrepare")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response GET_admin_demoprepare() {
+        /*System.out.println("[GET /admin/demoPrepare/");
+        MongoClient client = Utils.getMongoDBClient();
+        Bson command = new Document("eval","db.copyDatabase(\"edbt_copy\",\"MDM_MetadataStorage\",\"127.0.0.1\")");
+        client.getDatabase("edbt_copy").runCommand(command);
+
+        try {
+            FileUtils.copyDirectory(new File("/home/snadal/UPC/Projects/MDM/MetadataStorage/MDM_TDBMDM_TDB_edbt"),
+                    new File("/home/snadal/UPC/Projects/MDM/MetadataStorage/MDM_TDBMDM_TDB"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
 
         return Response.ok("OK").build();
     }

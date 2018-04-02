@@ -141,6 +141,8 @@ app.post('/OMQ/fromSQLtoDATA', omq_routes.postFromSQLToData);
 /********** Admin resource *************************************************************/
 
 app.get('/admin/deleteAll', admin_routes.deleteAll);
+app.get('/admin/demoPrepare', admin_routes.demoPrepare);
+
 
 /*****************************************************************************************/
 /*****************************************************************************************/

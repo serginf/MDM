@@ -10,7 +10,7 @@ function euclidean(xA,yA,xB,yB) {
 }
 
 function drawGraph(globalGraphID) {
-    var width = $(window).width()*0.75;
+    var width = $(window).width()*0.45;
     var height = $(window).height()*0.75;
     var nodeRadius = 9;
 
@@ -110,7 +110,10 @@ function drawGraph(globalGraphID) {
             .attr('xlink:href',function(d,i) {return '#edgepath'+i})
             .style("pointer-events", "none")
             .attr("startOffset", "30%")
-            .text(function(d,i){ return d.name});
+            .attr("value", function (d) {
+                return d.name;
+            })
+            .text(function(d,i){ return d.name.substring(d.name.lastIndexOf("/")+1,d.name.length);});
 
         var node = svg.selectAll(".node")
             .data(thisGraph.nodes)
@@ -131,7 +134,7 @@ function drawGraph(globalGraphID) {
                 return d.name;
             })
             .text(function (d) {
-                return d.name;
+                return d.name.substring(d.name.lastIndexOf("/")+1,d.name.length);
             });
 
 
