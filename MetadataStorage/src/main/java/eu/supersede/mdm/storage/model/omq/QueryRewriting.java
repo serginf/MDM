@@ -87,6 +87,10 @@ public class QueryRewriting {
         );
     }
 
+    public void aggregationStep() {
+        System.out.println("A");
+    }
+
     public Set<Walk> rewrite() {
 
         // Query expansion
