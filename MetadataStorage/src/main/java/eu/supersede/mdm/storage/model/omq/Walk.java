@@ -1,9 +1,11 @@
 package eu.supersede.mdm.storage.model.omq;
 
 import com.google.common.collect.Lists;
+import eu.supersede.mdm.storage.model.omq.relational_operators.EquiJoin;
 import eu.supersede.mdm.storage.model.omq.relational_operators.RelationalOperator;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Walk {
 
@@ -27,17 +29,17 @@ public class Walk {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Walk walk = (Walk) o;
-
-        return getOperators().equals(walk.getOperators());
+        if (o instanceof Walk) {
+            final Walk other = (Walk)o;
+            return Objects.equals(operators,other.operators) ;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public int hashCode() {
-        return getOperators().hashCode();
+        return Objects.hash(operators);
     }
 
     @Override

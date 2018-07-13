@@ -13,7 +13,14 @@ public enum GlobalGraph {
     INTEGRITY_CONSTRAINT(Namespaces.G.val()+"IntegrityConstraint"),
     HAS_INTEGRITY_CONSTRAINT(Namespaces.G.val()+"hasConstraint"),
     DATATYPE(Namespaces.rdfs.val()+"Datatype"),
-    HAS_DATATYPE(Namespaces.G.val()+"hasDatatype");
+    HAS_DATATYPE(Namespaces.G.val()+"hasDatatype"),
+
+
+    PART_OF(Namespaces.G.val()+"partOf"),
+    AGGREGATION_FUNCTION(Namespaces.G.val()+"aggregationFunction"),
+    HAS_AGGREGATION_FUNCTION(Namespaces.G.val()+"hasAggregationFunction");
+
+
 
     private String element;
 

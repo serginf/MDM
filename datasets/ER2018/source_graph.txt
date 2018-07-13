@@ -1,0 +1,44 @@
+#Wrapper for time dimension
+sup:Wrapper_Time rdf:type S:Wrapper
+sup:hId rdf:type S:Attribute
+sup:mId rdf:type S:Attribute
+sup:sId rdf:type S:Attribute
+sup:Wrapper_Time S:hasAttribute sup:hId
+sup:Wrapper_Time S:hasAttribute sup:mId
+sup:Wrapper_Time S:hasAttribute sup:sId
+sup:hId owl:sameAs sup:hourId
+sup:mId owl:sameAs sup:minuteId
+sup:sId owl:sameAs sup:secondId
+#Wrapper for InfoMonitor for VideoPlayer section
+sup:Wrapper_im_vp rdf:type S:Wrapper
+sup:im_vp_idMonitor rdf:type S:Attribute
+sup:im_vp_lagratio rdf:type S:Attribute
+sup:im_vp_second rdf:type S:Attribute
+sup:Wrapper_im_vp S:hasAttribute sup:im_vp_idMonitor
+sup:Wrapper_im_vp S:hasAttribute sup:im_vp_lagratio
+sup:Wrapper_im_vp S:hasAttribute sup:im_vp_second
+#sup:im_vp_idMonitor owl:sameAs
+sup:im_vp_lagratio owl:sameAs sup:lagRatio
+sup:im_vp_second owl:sameAs sup:secondId
+#Wrapper for InfoMonitor for UserProfile section
+sup:Wrapper_im_up rdf:type S:Wrapper
+sup:im_up_idMonitor rdf:type S:Attribute
+sup:im_up_lagratio rdf:type S:Attribute
+sup:im_up_minute rdf:type S:Attribute
+sup:Wrapper_im_up S:hasAttribute sup:im_up_idMonitor
+sup:Wrapper_im_up S:hasAttribute sup:im_up_lagratio
+sup:Wrapper_im_up S:hasAttribute sup:im_up_minute
+#sup:imup_idMonitor owl:sameAs
+sup:im_up_lagratio owl:sameAs sup:lagRatio
+sup:im_up_minute owl:sameAs sup:minuteId
+#Wrapper for InfoMonitor for Statistics section
+sup:Wrapper_im_s rdf:type S:Wrapper
+sup:im_s_idMonitor rdf:type S:Attribute
+sup:im_s_lagratio rdf:type S:Attribute
+sup:im_s_hour rdf:type S:Attribute
+sup:Wrapper_im_s S:hasAttribute sup:im_s_idMonitor
+sup:Wrapper_im_s S:hasAttribute sup:im_s_lagratio
+sup:Wrapper_im_s S:hasAttribute sup:im_s_hour
+#sup:im_s_idMonitor owl:sameAs
+sup:im_s_lagratio owl:sameAs sup:lagRatio
+sup:im_s_hour owl:sameAs sup:hourId

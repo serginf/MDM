@@ -3,63 +3,24 @@
  * by 'snadal' at '11/10/16 10:22 AM' with Gradle 2.10
  */
 
-apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'war'
 //apply plugin: 'jetty'
-apply plugin: 'maven-publish'
 
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-            url 'http://supersede.es.atos.net:10080/artifactory/libs-snapshot'
-            name = 'maven-supersede-snapshot'
-            credentials {
-                username = "${artifactory_user}"
-                password = "${artifactory_password}"
-            }
-        }
-        maven {
-            url 'http://supersede.es.atos.net:10080/artifactory/libs-release'
-            name = 'maven-supersede-release'
-            credentials {
-                username = "${artifactory_user}"
-                password = "${artifactory_password}"
-            }
-        }
+        jcenter()
     }
     dependencies {
-        //classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.7.RELEASE")
-        //Check for the latest version here: http://plugins.gradle.org/plugin/com.jfrog.artifactory
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
-
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
     }
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
 
-/*
-jar {
-    dependsOn configurations.runtime
-    zip64 true
-    from {
-        (configurations.runtime - configurations.provided).collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    } {
-        exclude "META-INF/*.SF"
-        exclude "META-INF/*.DSA"
-        exclude "META-INF/*.RSA"
-    }
-    manifest {
-        /*attributes 'Main-Class': 'eu.supersede.mdm.storage.ApacheMain'*/
- /*       attributes 'Main-Class': 'eu.supersede.mdm.storage.tests.JenaTDB_Test'
-    }
-}
-*/
 
 shadowJar {
     baseName = 'MetadataStorage-0.0.1-SNAPSHOT'
@@ -73,16 +34,6 @@ shadowJar {
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
-
-
-repositories {
-    // Use 'jcenter' for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
-    //jcenter()
-    mavenCentral()
-    add buildscript.repositories.getByName ("maven-supersede-snapshot")
-    add buildscript.repositories.getByName ("maven-supersede-release")
-}
 
 configurations {
     providedRuntime
@@ -98,18 +49,6 @@ configurations {
     // check for updates every build
     //resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     //resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
-}
-
-group = 'eu.supersede.mdm.storage'
-version = '0.1.0-SNAPSHOT'
-jar {
-    baseName = 'MetadataStorage'
-    version = '0.0.1-SNAPSHOT'
-}
-
-war{
-    baseName = 'MetadataStorage'
-    version = '0.0.1-SNAPSHOT'
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -130,7 +69,7 @@ dependencies {
     // Jersey core Servlet 3.x implementation
     compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.24.1'
 
-    compile 'com.google.guava:guava:20.0'
+    compile 'com.google.guava:guava:jar:25.1-jre'
     compile 'org.mongodb:mongo-java-driver:3.4.0-rc1'
     compile 'net.minidev:json-smart:2.2.1'
     compile ('org.apache.jena:apache-jena-libs:3.1.1') {
@@ -153,63 +92,8 @@ dependencies {
 
     testCompile 'junit:junit:3.8.2'
 }
-
+/*
 task wrapper(type: Wrapper) {
     gradleVersion = '3.2'
 }
-
-// Test execution JVM properties
-tasks.withType(Test){
-    systemProperty 'is.admin.user', System.getProperty ('is.admin.user', 'admin@atos.supersede.eu')
-    systemProperty 'is.admin.passwd', System.getProperty ('is.admin.passwd', 'rtgWCyrc')
-    systemProperty 'supersede.if.properties', System.getProperty ('supersede.if.properties', 'if.properties')
-}
-
-// Test execution filter
-test {
-    filter {
-        includeTestsMatching "*MailProxyTest"
-        includeTestsMatching "*FEDataStoreProxyTest"
-        includeTestsMatching "*IFAuthenticationManagerTest"
-    }
-}
-
-allprojects {
-    apply plugin: "com.jfrog.artifactory"
-}
-
-artifactory {
-    contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
-    String repo = version.endsWith('SNAPSHOT') ? 'libs-snapshot-local' : 'libs-release-local'
-    publish {
-        repository {
-            repoKey = repo
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
-            maven = true
-        }
-        defaults {
-            publications ('mavenJava')
-        }
-    }
-    resolve {
-        repository {
-            repoKey = 'libs-snapshot'
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
-            maven = true
-        }
-    }
-}
-
-artifactoryPublish {
-    dependsOn jar
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-}
+*/

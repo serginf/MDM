@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import eu.supersede.mdm.storage.util.RDFUtil;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class Projection extends RelationalOperator {
@@ -33,17 +34,17 @@ public class Projection extends RelationalOperator {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Projection that = (Projection) o;
-
-        return getProjectedAttributes().equals(that.getProjectedAttributes());
+        if (o instanceof Projection) {
+            final Projection other = (Projection)o;
+            return Objects.equals(projectedAttributes,other.projectedAttributes);
+        } else {
+            return false;
+        }
     }
 
     @Override
     public int hashCode() {
-        return getProjectedAttributes().hashCode();
+        return Objects.hash(projectedAttributes);
     }
 
     @Override

@@ -1,5 +1,9 @@
 package eu.supersede.mdm.storage.model.omq.relational_operators;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import java.util.Objects;
+
 public class EquiJoin extends RelationalOperator {
 
     private String left_attribute;
@@ -30,20 +34,18 @@ public class EquiJoin extends RelationalOperator {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        EquiJoin equiJoin = (EquiJoin) o;
-
-        if (!getLeft_attribute().equals(equiJoin.getLeft_attribute())) return false;
-        return getRight_attribute().equals(equiJoin.getRight_attribute());
+        if (o instanceof EquiJoin) {
+            final EquiJoin other = (EquiJoin)o;
+            return Objects.equals(left_attribute,other.left_attribute) &&
+                    Objects.equals(right_attribute, other.right_attribute);
+        } else {
+            return false;
+        }
     }
 
     @Override
     public int hashCode() {
-        int result = getLeft_attribute().hashCode();
-        result = 31 * result + getRight_attribute().hashCode();
-        return result;
+        return Objects.hash(left_attribute,right_attribute);
     }
 
     @Override

@@ -1,0 +1,8 @@
+#Mappings for time dimension
+sup:Wrapper_Time-6,7,8,9,10,11,32,33,34,36,37,39,40,41
+#Mappings for InfoMonitor for VideoPlayer section (second level)
+sup:Wrapper_im_vp-4,5,8,11,12,15,20,23,28,29,34,41
+#Mappings for InfoMonitor for UserProfile section (minute level)
+sup:Wrapper_im_up-3,5,7,10,12,14,21,24,27,30,33,40
+#Mappings for InfoMonitor for Statistics section (hour level)
+sup:Wrapper_im_s-2,5,6,9,12,13,22,25,26,31,32,39

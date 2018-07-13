@@ -5,6 +5,7 @@ import eu.supersede.mdm.storage.util.RDFUtil;
 import org.bson.Document;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Wrapper extends RelationalOperator {
 
@@ -24,17 +25,17 @@ public class Wrapper extends RelationalOperator {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Wrapper wrapper1 = (Wrapper) o;
-
-        return getWrapper().equals(wrapper1.getWrapper());
+        if (o instanceof Wrapper) {
+            final Wrapper other = (Wrapper)o;
+            return Objects.equals(wrapper,other.wrapper);
+        } else {
+            return false;
+        }
     }
 
     @Override
     public int hashCode() {
-        return getWrapper().hashCode();
+        return Objects.hash(wrapper);
     }
 
     @Override

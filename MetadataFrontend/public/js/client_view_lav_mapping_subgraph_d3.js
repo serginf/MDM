@@ -65,10 +65,10 @@ function drawGraph(globalGraphID) {
             node,
             link;
 
-        svg.append('defs').append('marker')
-            .attr('id', 'arrowhead')
+        svg.append('defs').append('svg:marker')
+            .attr('id', 'end-arrow')
             .attr('viewBox','-0 -5 10 10')
-            .attr('refX', 13)
+            .attr('refX', 8)
             .attr('refY', 0)
             .attr('orient', 'auto')
             .attr('markerWidth', 6)
@@ -92,7 +92,7 @@ function drawGraph(globalGraphID) {
             .enter().append('svg:path')
             .attr('id', function(d,i) { return 'edgepath'+i; })
             .attr('stroke', "#aaa")
-            .attr('marker-end','url(#arrowhead)')
+            .attr('marker-end','url(#end-arrow)')
             .attr('class', 'link');
 
         var edgelabels = svg.selectAll(".edgelabel")
@@ -124,6 +124,12 @@ function drawGraph(globalGraphID) {
             .attr("cy", 10)
             .style("fill", function(d) {
                 return d.color;
+            })
+            .attr("x",function(d) {
+                return d.x;
+            })
+            .attr("y",function(d) {
+                return d.y;
             });
 
         var nodeTexts = svg.selectAll("text.label")
@@ -283,6 +289,7 @@ function drawGraph(globalGraphID) {
         else{
             var subGraph = new Object();
             console.log(selection);
+            /*
             subGraph.selection = selection;
             subGraph.LAVMappingID = getParameterByName("LAVMappingID");
             $.ajax({
@@ -294,6 +301,7 @@ function drawGraph(globalGraphID) {
             }).fail(function(err) {
                 console.log("error "+JSON.stringify(err));
             });
+            */
         }
     });
 }
