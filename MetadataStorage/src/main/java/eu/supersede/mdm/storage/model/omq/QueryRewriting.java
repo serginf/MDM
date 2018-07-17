@@ -8,9 +8,11 @@ import eu.supersede.mdm.storage.model.omq.relational_operators.EquiJoin;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Projection;
 import eu.supersede.mdm.storage.model.omq.relational_operators.RelationalOperator;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
+import eu.supersede.mdm.storage.util.KeyedTuple2;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Tuple2;
 import eu.supersede.mdm.storage.util.Utils;
+import jdk.nashorn.internal.objects.Global;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.ontology.OntModel;
@@ -96,9 +98,11 @@ public class QueryRewriting {
 
     public Set<Walk> rewrite() {
 
-        // Query expansion
+        // ***************************************
+        // Phase 1 : Query expansion
+        // ***************************************
+
         // 1 Identify query-related concepts
-        //List<String> concepts = Lists.newArrayList();
         // First, create a graph of the pattern in order to obtain its topological sort
         DirectedAcyclicGraph<String,String> conceptsGraph = new DirectedAcyclicGraph<String, String>(String.class);
         PHI_p.getList().forEach(t -> {
@@ -107,20 +111,12 @@ public class QueryRewriting {
                 conceptsGraph.addVertex(t.getSubject().getURI());
                 conceptsGraph.addVertex(t.getObject().getURI());
                 conceptsGraph.addEdge(t.getSubject().getURI(), t.getObject().getURI(), t.getPredicate().getURI());
-                /*try {
-                    conceptsGraph.addVertex(t.getSubject().getURI());
-                    conceptsGraph.addVertex(t.getObject().getURI());
-                    conceptsGraph.addDagEdge(t.getSubject().getURI(), t.getObject().getURI(), t.getPredicate().getURI());
-                } catch (DirectedAcyclicGraph.CycleFoundException e) {
-                    e.printStackTrace();
-                }*/
             }
         });
-        System.out.println(conceptsGraph);
         // This is required when only one concept is queried, where all edges are hasFeature
-        /*if (concepts.isEmpty()) {
-            concepts.add(PHI_p.getList().get(0).getSubject().getURI());
-        }*/
+        if (conceptsGraph.vertexSet().isEmpty()) {
+            conceptsGraph.addVertex(PHI_p.getList().get(0).getSubject().getURI());
+        }
 
         // Now, iterate using a topological sort adding the concepts to the list of concepts
         //conceptsGraph.iterator().forEachRemaining(vertex -> concepts.add(vertex));
@@ -131,17 +127,20 @@ public class QueryRewriting {
                     "WHERE { GRAPH ?g {" +
                     "<"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?t . " +
                     "?t <"+ Namespaces.rdfs.val()+"subClassOf> <"+ Namespaces.sc.val()+"identifier> " +
-                    "} }", PHI_o);
+                    "} }", T);
             IDs.forEachRemaining(id -> {
                 if (!PHI_p.getList().contains(Triple.create(NodeFactory.createURI(c),
                         NodeFactory.createURI(GlobalGraph.HAS_FEATURE.val()),id.get("t").asNode()))) {
                     PHI_p.add(Triple.create(NodeFactory.createURI(c),
                             NodeFactory.createURI(GlobalGraph.HAS_FEATURE.val()), id.get("t").asNode()));
+                    this.addTriple(PHI_o, c, GlobalGraph.HAS_FEATURE.val(), id.get("t").asNode().getURI());
                 }
             });
         });
 
-        // Intra-concept generation
+        // ***************************************
+        // Phase 2 : Intra-concept generation
+        // ***************************************
         List<Tuple2<String,Set<Walk>>> partialWalks = Lists.newArrayList();
         // 3 Identify queried features
         conceptsGraph.iterator().forEachRemaining(c -> {
@@ -229,13 +228,13 @@ public class QueryRewriting {
         });
 
         // Technical-impromptu, convert the list of partialWalks to a DAG-based structure
-        DirectedAcyclicGraph<Tuple2<String,Set<Walk>>,String> partialWalksGraph = new DirectedAcyclicGraph<>(String.class);
-        partialWalks.forEach(v -> partialWalksGraph.addVertex(v));
+        DirectedAcyclicGraph<KeyedTuple2<String,Set<Walk>>,String> partialWalksGraph = new DirectedAcyclicGraph<>(String.class);
+        partialWalks.forEach(v -> partialWalksGraph.addVertex(new KeyedTuple2<String,Set<Walk>>(v._1,v._2)));
         conceptsGraph.vertexSet().iterator().forEachRemaining(sourceConcept -> {
-            Tuple2<String,Set<Walk>> sourceVertex = partialWalksGraph.vertexSet().stream().
+            KeyedTuple2<String,Set<Walk>> sourceVertex = partialWalksGraph.vertexSet().stream().
                     filter(pwVertex -> pwVertex._1.equals(sourceConcept)).collect(Collectors.toList()).get(0);
             Graphs.neighborListOf(conceptsGraph,sourceConcept).forEach(targetConcept -> {
-                Tuple2<String,Set<Walk>> targetVertex = partialWalksGraph.vertexSet().stream().
+                KeyedTuple2<String,Set<Walk>> targetVertex = partialWalksGraph.vertexSet().stream().
                         filter(pwVertex -> pwVertex._1.equals(targetConcept)).collect(Collectors.toList()).get(0);
                 if (conceptsGraph.containsEdge(sourceConcept,targetConcept)) {
                     partialWalksGraph.addEdge(sourceVertex, targetVertex, UUID.randomUUID().toString());
@@ -248,21 +247,29 @@ public class QueryRewriting {
             });
         });
 
-        System.out.println("PartialWalksGraphs output of phase #2");
-        System.out.println("Vertex:");
-        partialWalksGraph.vertexSet().stream().forEach(System.out::println);
-        System.out.println("Edges:");
-        partialWalksGraph.edgeSet().stream().forEach(e -> System.out.println(partialWalksGraph.getEdgeSource(e) + " --> " + partialWalksGraph.getEdgeTarget(e)));
+        // ***************************************
+        // Phase 3 : Inter-concept generation
+        // ***************************************
+        KeyedTuple2<String,Set<Walk>> res = Iterables.getFirst(partialWalksGraph,null);
 
-        Tuple2<String,Set<Walk>> res = Iterables.getFirst(partialWalksGraph,null);
+        List<KeyedTuple2<String,Set<Walk>>> partialWalksGraphTopologicalSort = Lists.newArrayList(partialWalksGraph.iterator());
 
-        // Inter-concept generation
-        List<Tuple2<String,Set<Walk>>> partialWalksGraphTopologicalSort = Lists.newArrayList(partialWalksGraph.iterator());
+        Map<String,String> renamings = Maps.newHashMap();
 
-        partialWalksGraphTopologicalSort.forEach(sourceVertex -> {
-        //partialWalksGraph.iterator().forEachRemaining(sourceVertex -> {
-            Graphs.neighborListOf(partialWalksGraph,sourceVertex).forEach(targetVertex -> {
-                if (!partialWalksGraph.containsEdge(sourceVertex,targetVertex)) return;
+        for (KeyedTuple2<String,Set<Walk>> srcVertex : partialWalksGraphTopologicalSort) {
+            // Apply renamings
+            KeyedTuple2<String,Set<Walk>> sourceVertex = new KeyedTuple2<>(getMostFreshVariableName(renamings,srcVertex._1),srcVertex._2);
+
+            System.out.println("PartialWalksGraphs in iteration");
+            System.out.println("Vertex:");
+            partialWalksGraph.vertexSet().stream().forEach(System.out::println);
+            System.out.println("Edges:");
+            partialWalksGraph.edgeSet().stream().forEach(e -> System.out.println(partialWalksGraph.getEdgeSource(e) + " --> " + partialWalksGraph.getEdgeTarget(e)));
+
+            System.out.println("Analyzing sourceVertex "+sourceVertex);
+
+            for (KeyedTuple2<String,Set<Walk>> targetVertex : Graphs.neighborListOf(partialWalksGraph,sourceVertex)) {
+                if (!partialWalksGraph.containsEdge(sourceVertex,targetVertex)) continue;
 
                 Set<Walk> joined = Sets.newHashSet();
                 for (List<Walk> CP : Sets.cartesianProduct(sourceVertex._2,targetVertex._2)) {
@@ -276,26 +283,30 @@ public class QueryRewriting {
                             CP_right.getOperators().stream().filter(op -> op instanceof Wrapper).map(w -> (Wrapper)w).collect(Collectors.toList())
                     );
 
-                    Walk mergedWalk = new Walk(CP_left);
+                    //CP_right is targetVertex
+                    Walk mergedWalk = new Walk(CP_right);
 
                     // 8 Merge walks
                     if (!Sets.intersection(wrappersLeft,wrappersRight).isEmpty()) {
-                        for (int j = 1; j < CP_right.getOperators().size(); ++j) {
-                            RelationalOperator op_cpright = CP_right.getOperators().get(j);
-                            if (op_cpright instanceof Wrapper) {
+                        for (int j = 1; j < CP_left.getOperators().size(); ++j) {
+                            RelationalOperator op_cpleft = CP_left.getOperators().get(j);
+                            if (op_cpleft instanceof Wrapper) {
                                 for (int k = 1; k < mergedWalk.getOperators().size(); ++k) {
                                     RelationalOperator op_mw = mergedWalk.getOperators().get(k);
-                                    if (op_mw instanceof Wrapper && op_cpright.equals(op_mw) ) {
+                                    if (op_mw instanceof Wrapper && op_cpleft.equals(op_mw) ) {
                                         ((Projection)mergedWalk.getOperators().get(k-1)).getProjectedAttributes().addAll(
-                                                ((Projection)CP_right.getOperators().get(j-1)).getProjectedAttributes()
+                                                ((Projection)CP_left.getOperators().get(j-1)).getProjectedAttributes()
                                         );
                                     }
                                 }
                             }
                         }
                     } else {
-                        CP_right.getOperators().forEach(op -> mergedWalk.getOperators().add(op));
+                        CP_left.getOperators().forEach(op -> mergedWalk.getOperators().add(op));
                     }
+
+                    System.out.println("SEMPRE HAURIA D'ENTRAR AL PRIMER IF PER EL TOPOSORT");
+                    System.exit(0);
 
                     // 9 Discover join wrappers
                     if (Sets.intersection(wrappersLeft,wrappersRight).isEmpty()) {
@@ -405,31 +416,51 @@ public class QueryRewriting {
                             });
                         }
                     }
-                    joined.add(mergedWalk);
+                    // Check that the mergedWalk contains all requested features
+                    Set<String> allQueriedFeatures = PHI_p.getList().stream().filter(t -> t.getPredicate().getURI().equals(GlobalGraph.HAS_FEATURE.val())).map(t -> t.getObject().getURI()).collect(Collectors.toSet());
+                    Set<String> allFeaturesInMergedWalk = mergedWalk.getOperators().stream()
+                            .filter(o -> o instanceof Projection)
+                            .flatMap(p -> ((Projection)p).getProjectedAttributes().stream())
+                            .map(a -> {
+                                return this.runAQuery("SELECT ?f WHERE { GRAPH ?g {" +
+                                        "<"+a+"> <"+Namespaces.owl.val()+"sameAs> ?f } }",T)
+                                        .nextSolution().get("f").asResource().getURI();
+                            })
+                            .collect(Collectors.toSet());
+
+                    if (allQueriedFeatures.equals(allFeaturesInMergedWalk)) joined.add(mergedWalk);
                 }
 
                 //Update the graph replacing targetVertex._1 for joined
-                boolean removed = partialWalksGraph.removeVertex(sourceVertex);
-                Tuple2<String,Set<Walk>> newVertex = new Tuple2<String,Set<Walk>>(targetVertex._1,joined);
+                partialWalksGraph.removeVertex(sourceVertex);
+
+                String variableName = getMostFreshVariableName(renamings,targetVertex._1);
+                String freshVariableName = variableName + "\'";
+                renamings.put(variableName,freshVariableName);
+
+                KeyedTuple2<String,Set<Walk>> newVertex = new KeyedTuple2<>(freshVariableName,joined);
                 partialWalksGraph.addVertex(newVertex);
-                System.out.println("Add new vertex "+newVertex);
                 Graphs.neighborListOf(partialWalksGraph, targetVertex).forEach(neighbor -> {
-                    if (!sourceVertex.equals(neighbor)) {
-                        partialWalksGraph.addEdge(newVertex, neighbor, UUID.randomUUID().toString());
-                        /*try {
-                            partialWalksGraph.addDagEdge(newVertex, neighbor, UUID.randomUUID().toString());
-                        } catch (DirectedAcyclicGraph.CycleFoundException e) {
-                            e.printStackTrace();
-                        }*/
+                    if (!targetVertex.equals(neighbor)) {
+                        if (partialWalksGraph.containsEdge(targetVertex,neighbor)) {
+                            partialWalksGraph.addEdge(newVertex, neighbor, UUID.randomUUID().toString());
+                        }
+                        else if (partialWalksGraph.containsEdge(neighbor,targetVertex)) {
+                            partialWalksGraph.addEdge(neighbor, newVertex, UUID.randomUUID().toString());
+                        }
                     }
                 });
                 partialWalksGraph.removeVertex(targetVertex);
 
-                //current = new Tuple2<>(next._1, joined);
-            });
-        });
-
+                res = newVertex;
+            }
+        }
         return res._2;
+    }
+
+    private String getMostFreshVariableName(Map<String,String> renamings, String V) {
+        if (renamings.containsKey(V)) return getMostFreshVariableName(renamings,renamings.get(V));
+        return V;
     }
 
 }

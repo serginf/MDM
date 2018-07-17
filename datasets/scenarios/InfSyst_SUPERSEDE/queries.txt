@@ -1,0 +1,10 @@
+#Q3 - for each applicationId all its lagRatio instances
+SELECT ?x ?y
+WHERE {
+	VALUES (?x ?y) { ( sup:applicationId sup:lagRatio ) }
+	sc:SoftwareApplication G:hasFeature sup:applicationId .
+	sc:SoftwareApplication sup:hasMonitor sup:Monitor .
+	sup:InfoMonitor sup:generatesQoS sup:Monitor .
+	sup:InfoMonitor G:hasFeature sup:lagRatio
+}
+#

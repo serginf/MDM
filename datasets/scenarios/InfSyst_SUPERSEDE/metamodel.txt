@@ -1,0 +1,16 @@
+#GlobalGraph
+G:Concept rdf:type rdfs:Class 
+G:Feature rdf:type rdfs:Class 
+G:hasFeature rdf:type rdf:Property 
+G:hasFeature rdfs:domain G:Concept 
+G:hasFeature rdfs:range G:Feature 
+#SourceGraph
+S:DataSource rdf:type rdfs:Class
+S:Wrapper rdf:type rdfs:Class
+S:Attribute rdf:type rdfs:Class
+S:hasWrapper rdf:type rdf:Property
+S:hasWrapper rdfs:domain S:DataSource
+S:hasWrapper rdfs:range S:Wrapper
+S:hasAttribute rdf:type rdf:Property
+S:hasAttribute rdfs:domain S:Wrapper
+S:hasAttribute rdfs:range S:Attribute

@@ -1,0 +1,36 @@
+#Nodes
+sup:DataGatheringTool rdf:type G:Concept
+sc:SoftwareApplication rdf:type G:Concept
+sup:applicationId rdf:type G:Feature
+sup:Monitor rdf:type G:Concept
+sup:monitorId rdf:type G:Feature
+sc:name rdf:type G:Feature
+sup:InfoMonitor rdf:type G:Concept
+sup:monitorTimestamp rdf:type G:Feature
+sup:lagRatio rdf:type G:Feature
+sup:bitRate rdf:type G:Feature
+sup:FeedbackGathering rdf:type G:Concept
+sup:feedbackGatheringId rdf:type G:Feature
+sc:Language rdf:type G:Feature
+duv:UserFeedback rdf:type G:Feature
+dct:description rdf:type G:Feature
+#Edges
+sup:Monitor rdfs:subClassOf sup:DataGatheringTool
+sup:FeedbackGathering rdfs:subClassOf sup:DataGatheringTool
+sc:SoftwareApplication sup:hasMonitor sup:Monitor
+sc:SoftwareApplication sup:hasFGTool sup:FeedbackGathering
+sup:InfoMonitor sup:generatesQoS sup:Monitor
+duv:UserFeedback sup:generatesOpinion sup:FeedbackGathering
+sup:Monitor G:hasFeature sc:name
+sup:Monitor G:hasFeature sup:monitorId
+sup:FeedbackGathering G:hasFeature sc:Language
+sup:FeedbackGathering G:hasFeature sup:feedbackGatheringId
+sc:SoftwareApplication G:hasFeature sup:applicationId
+sup:InfoMonitor G:hasFeature sup:monitorTimestamp
+sup:InfoMonitor G:hasFeature sup:lagRatio
+sup:InfoMonitor G:hasFeature sup:bitRate
+duv:UserFeedback G:hasFeature dct:description
+#IDs
+sup:monitorId rdfs:subClassOf sc:identifier
+sup:applicationId rdfs:subClassOf sc:identifier
+sup:feedbackGatheringId rdfs:subClassOf sc:identifier

@@ -1,0 +1,27 @@
+#Wrapper for VoD_API_Monitor
+sup:Wrapper_1 rdf:type S:Wrapper
+sup:D1/VoDmonitorId rdf:type S:Attribute
+sup:D1/VoDmonitorId owl:sameAs sup:monitorId
+sup:D1/lagRatio rdf:type S:Attribute
+sup:D1/lagRatio owl:sameAs sup:lagRatio
+sup:Wrapper_1 S:hasAttribute sup:D1/VoDmonitorId
+sup:Wrapper_1 S:hasAttribute sup:D1/lagRatio
+#Wrapper for FeedbackGathering
+sup:Wrapper_2 rdf:type S:Wrapper
+sup:D2/FGId rdf:type S:Attribute
+sup:D2/FGId owl:sameAs sup:feedbackGatheringId
+sup:D2/tweet rdf:type S:Attribute
+sup:D2/tweet owl:sameAs dct:description
+sup:Wrapper_2 S:hasAttribute sup:D2/FGId
+sup:Wrapper_2 S:hasAttribute sup:D2/tweet
+#Wrapper for join table
+sup:Wrapper_3 rdf:type S:Wrapper
+sup:D3/MonitorId rdf:type S:Attribute
+sup:D3/MonitorId owl:sameAs sup:monitorId
+sup:D3/TargetApp rdf:type S:Attribute
+sup:D3/TargetApp owl:sameAs sup:applicationId
+sup:D3/FeedbackId rdf:type S:Attribute
+sup:D3/FeedbackId owl:sameAs sup:feedbackGatheringId
+sup:Wrapper_3 S:hasAttribute sup:D3/MonitorId
+sup:Wrapper_3 S:hasAttribute sup:D3/TargetApp
+sup:Wrapper_3 S:hasAttribute sup:D3/FeedbackId
