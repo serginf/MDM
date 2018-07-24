@@ -50,6 +50,6 @@ public class EquiJoin extends RelationalOperator {
 
     @Override
     public String toString() {
-        return left_attribute + " ⋈ " + right_attribute+" ";
+        return left_attribute + " = " + right_attribute+" ";
     }
 }

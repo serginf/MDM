@@ -2,8 +2,8 @@ package eu.supersede.mdm.storage.tests;
 
 import com.google.common.collect.Lists;
 import eu.supersede.mdm.storage.ApacheMain;
-import eu.supersede.mdm.storage.model.omq.QueryRewriting;
-import eu.supersede.mdm.storage.model.omq.Walk;
+import eu.supersede.mdm.storage.model.omq.ConjunctiveQuery;
+import eu.supersede.mdm.storage.model.omq.QueryRewriting_SimpleGraph;
 import eu.supersede.mdm.storage.util.Tuple2;
 
 import java.util.List;
@@ -22,9 +22,10 @@ public class ConjunctiveQuery_Tests {
         List<Tuple2<String,String>> queries = TestUtils.getQueries("/Users/snadal/UPC/Projects/MDM/datasets/scenarios/InfSyst_SUPERSEDE/queries.txt",prefixes);
         queries.forEach(query -> {
             System.out.println(query._1);
-            List<Walk> walks = Lists.newArrayList(new QueryRewriting(query._2).rewrite());
-            for (int i = 0; i < walks.size(); ++i) {
-                System.out.println("    [" + (i + 1) + "/" + (walks.size()) + "]: " + walks.get(i));
+            //List<Walk> walks = Lists.newArrayList(new QueryRewriting_DAG(query._2).rewrite());
+            List<ConjunctiveQuery> CQs = Lists.newArrayList(new QueryRewriting_SimpleGraph(query._2).rewrite());
+            for (int i = 0; i < CQs.size(); ++i) {
+                System.out.println("    [" + (i + 1) + "/" + (CQs.size()) + "]: " + CQs.get(i));
             }
         });
         TestUtils.deleteTDB();

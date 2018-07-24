@@ -5,14 +5,12 @@ import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.model.omq.relational_operators.EquiJoin;
-import eu.supersede.mdm.storage.model.omq.relational_operators.Projection;
+import eu.supersede.mdm.storage.model.omq.relational_operators.ProjectionSet_OLD;
 import eu.supersede.mdm.storage.model.omq.relational_operators.RelationalOperator;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
 import eu.supersede.mdm.storage.util.KeyedTuple2;
-import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Tuple2;
 import eu.supersede.mdm.storage.util.Utils;
-import jdk.nashorn.internal.objects.Global;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.ontology.OntModel;
@@ -37,7 +35,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class QueryRewriting {
+public class QueryRewriting_DAG {
 
     //Used for adding triples in-memory
     private void addTriple(Model model, String s, String p, String o) {
@@ -70,7 +68,7 @@ public class QueryRewriting {
     private BasicPattern PHI_p; //PHI_pattern
     private OntModel PHI_o; // PHI_ontology
 
-    public QueryRewriting(String SPARQL) {
+    public QueryRewriting_DAG(String SPARQL) {
         T = Utils.getTDBDataset(); T.begin(ReadWrite.READ);
 
         // Compile the SPARQL using ARQ and generate its <pi,phi> representation
@@ -174,7 +172,7 @@ public class QueryRewriting {
                             PartialWalksPerWrapper.put(new Wrapper(w), Sets.newHashSet());
                         }
                         Walk walk = new Walk();
-                        walk.getOperators().add(new Projection(attribute));
+                        walk.getOperators().add(new ProjectionSet_OLD(attribute));
                         walk.getOperators().add(new Wrapper(w));
 
                         Set<Walk> currentSet = PartialWalksPerWrapper.get(new Wrapper(w));
@@ -187,13 +185,13 @@ public class QueryRewriting {
         // 6 Prune output
             PartialWalksPerWrapper.forEach((wrapper,walk) -> {
                 Walk mergedWalk = new Walk();
-                mergedWalk.getOperators().add(0, new Projection());
+                mergedWalk.getOperators().add(0, new ProjectionSet_OLD());
                 mergedWalk.getOperators().add(1, wrapper);
                 walk.forEach(w -> {
                     w.getOperators().forEach(op -> {
-                        if (op instanceof Projection) {
-                            ((Projection)op).getProjectedAttributes().forEach(att -> {
-                                ((Projection)mergedWalk.getOperators().get(0)).getProjectedAttributes().add(att);
+                        if (op instanceof ProjectionSet_OLD) {
+                            ((ProjectionSet_OLD)op).getProjectedAttributes().forEach(att -> {
+                                ((ProjectionSet_OLD)mergedWalk.getOperators().get(0)).getProjectedAttributes().add(att);
                             });
                         }
                     });
@@ -202,8 +200,8 @@ public class QueryRewriting {
                 Set<String> featuresInWalk = Sets.newHashSet();
                 walk.forEach(w -> {
                     w.getOperators().forEach(op -> {
-                        if (op instanceof Projection) {
-                            ((Projection)op).getProjectedAttributes().forEach(a -> {
+                        if (op instanceof ProjectionSet_OLD) {
+                            ((ProjectionSet_OLD)op).getProjectedAttributes().forEach(a -> {
                                 this.runAQuery("SELECT ?f " +
                                         "WHERE { GRAPH ?g " +
                                         "{<"+a+"> <"+Namespaces.owl.val()+"sameAs> ?f } }",T).forEachRemaining(featureInWalk -> {
@@ -294,8 +292,8 @@ public class QueryRewriting {
                                 for (int k = 1; k < mergedWalk.getOperators().size(); ++k) {
                                     RelationalOperator op_mw = mergedWalk.getOperators().get(k);
                                     if (op_mw instanceof Wrapper && op_cpleft.equals(op_mw) ) {
-                                        ((Projection)mergedWalk.getOperators().get(k-1)).getProjectedAttributes().addAll(
-                                                ((Projection)CP_left.getOperators().get(j-1)).getProjectedAttributes()
+                                        ((ProjectionSet_OLD)mergedWalk.getOperators().get(k-1)).getProjectedAttributes().addAll(
+                                                ((ProjectionSet_OLD)CP_left.getOperators().get(j-1)).getProjectedAttributes()
                                         );
                                     }
                                 }
@@ -419,8 +417,8 @@ public class QueryRewriting {
                     // Check that the mergedWalk contains all requested features
                     Set<String> allQueriedFeatures = PHI_p.getList().stream().filter(t -> t.getPredicate().getURI().equals(GlobalGraph.HAS_FEATURE.val())).map(t -> t.getObject().getURI()).collect(Collectors.toSet());
                     Set<String> allFeaturesInMergedWalk = mergedWalk.getOperators().stream()
-                            .filter(o -> o instanceof Projection)
-                            .flatMap(p -> ((Projection)p).getProjectedAttributes().stream())
+                            .filter(o -> o instanceof ProjectionSet_OLD)
+                            .flatMap(p -> ((ProjectionSet_OLD)p).getProjectedAttributes().stream())
                             .map(a -> {
                                 return this.runAQuery("SELECT ?f WHERE { GRAPH ?g {" +
                                         "<"+a+"> <"+Namespaces.owl.val()+"sameAs> ?f } }",T)

@@ -5,3 +5,5 @@ S http://www.essi.upc.edu/~snadal/BDIOntology/Source/
 sup http://www.supersede.eu/
 owl http://www.w3.org/2002/07/owl#
 sc http://schema.org/
+duv http://www.w3.org/ns/duv#
+dct http://purl.org/dc/terms/

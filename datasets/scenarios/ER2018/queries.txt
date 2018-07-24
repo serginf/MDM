@@ -1,11 +1,9 @@
-#Q2 (test graph shape InfoMonitor -> Hour <- Minute )
-SELECT ?l ?h ?m 
+#Q1 - paper query (no Section included)
+SELECT ?lr ?hour
 WHERE { 
-	VALUES (?l ?h ?m) { ( sup:lagRatio sup:hourId sup:minuteId ) }
+	VALUES (?lr ?hour) { ( sup:lagRatio sup:hourId ) }
 	sup:InfoMonitor G:hasFeature sup:lagRatio . 
 	sup:InfoMonitor sup:hasDate sup:Hour .
-	sup:Hour G:hasFeature sup:hourId .
-	sup:Minute G:partOf sup:Hour .
-	sup:Minute G:hasFeature sup:minuteId
+	sup:Hour G:hasFeature sup:hourId
 }
 #

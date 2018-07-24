@@ -8,6 +8,11 @@ apply plugin: 'maven'
 apply plugin: 'war'
 //apply plugin: 'jetty'
 
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
 buildscript {
     repositories {
         mavenCentral()
@@ -90,7 +95,6 @@ dependencies {
 
     compile files('lib/sqlite4java-392/sqlite4java.jar')
 
-    testCompile 'junit:junit:3.8.2'
 }
 /*
 task wrapper(type: Wrapper) {

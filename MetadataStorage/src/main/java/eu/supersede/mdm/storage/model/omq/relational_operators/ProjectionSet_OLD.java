@@ -1,24 +1,22 @@
 package eu.supersede.mdm.storage.model.omq.relational_operators;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import eu.supersede.mdm.storage.util.RDFUtil;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class Projection extends RelationalOperator {
+public class ProjectionSet_OLD extends RelationalOperator {
 
-    public Projection() {
+    public ProjectionSet_OLD() {
         this.projectedAttributes = Sets.newHashSet();
     }
 
-    public Projection(String s) {
+    public ProjectionSet_OLD(String s) {
         this.projectedAttributes = Sets.newHashSet(s);
     }
 
-    public Projection(Set<String> s) {
+    public ProjectionSet_OLD(Set<String> s) {
         this.projectedAttributes = s;
     }
 
@@ -34,8 +32,8 @@ public class Projection extends RelationalOperator {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Projection) {
-            final Projection other = (Projection)o;
+        if (o instanceof ProjectionSet_OLD) {
+            final ProjectionSet_OLD other = (ProjectionSet_OLD)o;
             return Objects.equals(projectedAttributes,other.projectedAttributes);
         } else {
             return false;

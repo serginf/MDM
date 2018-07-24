@@ -2,13 +2,11 @@ package eu.supersede.mdm.storage.resources;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 import com.mongodb.MongoClient;
-import eu.supersede.mdm.storage.model.Namespaces;
-import eu.supersede.mdm.storage.model.omq.QueryRewriting;
+import eu.supersede.mdm.storage.model.omq.QueryRewriting_DAG;
 import eu.supersede.mdm.storage.model.omq.Walk;
 import eu.supersede.mdm.storage.model.omq.relational_operators.EquiJoin;
-import eu.supersede.mdm.storage.model.omq.relational_operators.Projection;
+import eu.supersede.mdm.storage.model.omq.relational_operators.ProjectionSet_OLD;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
@@ -18,11 +16,9 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.bson.Document;
-import scala.Tuple2;
 import scala.Tuple3;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.List;
@@ -80,7 +76,7 @@ public class OMQResource {
 
         String SPARQL = objBody.getAsString("sparql");
         //String namedGraph = objBody.getAsString("namedGraph");
-        QueryRewriting qr = new QueryRewriting(SPARQL.replace("\n"," "));
+        QueryRewriting_DAG qr = new QueryRewriting_DAG(SPARQL.replace("\n"," "));
         Set<Walk> walks = qr.rewrite();
         //System.out.println(walks);
 
@@ -110,8 +106,8 @@ public class OMQResource {
             StringBuilder from = new StringBuilder(" FROM ");
             StringBuilder where = new StringBuilder(" WHERE ");
             w.getOperators().forEach(op -> {
-                if (op instanceof Projection) {
-                    Projection projection = (Projection)op;
+                if (op instanceof ProjectionSet_OLD) {
+                    ProjectionSet_OLD projection = (ProjectionSet_OLD)op;
                     projection.getProjectedAttributes().forEach(p -> select.append(RDFUtil.nn(p).split("/")[RDFUtil.nn(p).split("/").length-1]+","));
                 }
                 else if (op instanceof Wrapper) {
