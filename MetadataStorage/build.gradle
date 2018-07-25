@@ -74,7 +74,7 @@ dependencies {
     // Jersey core Servlet 3.x implementation
     compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.24.1'
 
-    compile 'com.google.guava:guava:jar:25.1-jre'
+    compile group: 'com.google.guava', name: 'guava', version: '25.1-jre'
     compile 'org.mongodb:mongo-java-driver:3.4.0-rc1'
     compile 'net.minidev:json-smart:2.2.1'
     compile ('org.apache.jena:apache-jena-libs:3.1.1') {

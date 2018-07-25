@@ -13,6 +13,7 @@ import eu.supersede.mdm.storage.model.omq.relational_operators.RelationalOperato
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
 import eu.supersede.mdm.storage.util.KeyedTuple2;
 import eu.supersede.mdm.storage.util.Tuple2;
+import eu.supersede.mdm.storage.util.Tuple3;
 import eu.supersede.mdm.storage.util.Utils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.jena.graph.NodeFactory;
@@ -38,16 +39,20 @@ import org.jgrapht.Graphs;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.SimpleGraph;
 
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class QueryRewriting_SimpleGraph {
 
+    private static void addTriple(BasicPattern pattern, String s, String p, String o) {
+        pattern.add(new Triple(new ResourceImpl(s).asNode(), new PropertyImpl(p).asNode(), new ResourceImpl(o).asNode()));
+    }
     //Used for adding triples in-memory
-    private void addTriple(Model model, String s, String p, String o) {
+    private static void addTriple(Model model, String s, String p, String o) {
         model.add(new ResourceImpl(s), new PropertyImpl(p), new ResourceImpl(o));
     }
-    private ResultSet runAQuery(String sparqlQuery, Dataset ds) {
+    private static ResultSet runAQuery(String sparqlQuery, Dataset ds) {
         try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), ds)) {
             return ResultSetFactory.copyResults(qExec.execSelect());
         } catch (Exception e) {
@@ -55,7 +60,7 @@ public class QueryRewriting_SimpleGraph {
         }
         return null;
     }
-    private ResultSet runAQuery(String sparqlQuery, InfModel o) {
+    private static ResultSet runAQuery(String sparqlQuery, InfModel o) {
         try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), o)) {
             return ResultSetFactory.copyResults(qExec.execSelect());
         } catch (Exception e) {
@@ -64,68 +69,137 @@ public class QueryRewriting_SimpleGraph {
         return null;
     }
 
-    private Dataset T;
-    private Set<String> PI;
-    // We keep two representations of Q_G.\varphi to simplify its manipulation
-    //  1) As a pattern to easily access its triples as a list
-    //  2) As an ontology so it can be queried via SPARQL
-    private BasicPattern PHI_p; //PHI_pattern
-    private InfModel PHI_o; // PHI_ontology
+    private static OntModel ontologyFromPattern(BasicPattern PHI_p) {
+        OntModel o = ModelFactory.createOntologyModel();
+        PHI_p.getList().forEach(t ->
+                addTriple(o, t.getSubject().getURI(), t.getPredicate().getURI(), t.getObject().getURI())
+        );
+        return o;
+    }
 
-    public QueryRewriting_SimpleGraph(String SPARQL) {
-        T = Utils.getTDBDataset(); T.begin(ReadWrite.READ);
-
+    public static Tuple3<Set<String>, BasicPattern, InfModel> parseSPARQL(String SPARQL, Dataset T) {
         // Compile the SPARQL using ARQ and generate its <pi,phi> representation
         Query q = QueryFactory.create(SPARQL);
         Op ARQ = Algebra.compile(q);
 
-        PI = Sets.newHashSet();
+        Set<String> PI = Sets.newHashSet();
         ((OpTable)((OpJoin)((OpProject)ARQ).getSubOp()).getLeft()).getTable().rows().forEachRemaining(r -> {
             r.vars().forEachRemaining(v -> PI.add(r.get(v).getURI()));
         });
 
-        this.PHI_p = ((OpBGP)((OpJoin)((OpProject)ARQ).getSubOp()).getRight()).getPattern();
-        OntModel PHI_o_ontmodel = ModelFactory.createOntologyModel();
-        PHI_p.getList().forEach(t ->
-            this.addTriple(PHI_o_ontmodel, t.getSubject().getURI(), t.getPredicate().getURI(), t.getObject().getURI())
-        );
+        BasicPattern PHI_p = ((OpBGP)((OpJoin)((OpProject)ARQ).getSubOp()).getRight()).getPattern();
+        OntModel PHI_o_ontmodel = ontologyFromPattern(PHI_p);
         Reasoner reasoner = ReasonerRegistry.getTransitiveReasoner(); //RDFS entailment subclass+superclass
-        PHI_o = ModelFactory.createInfModel(reasoner,PHI_o_ontmodel);
+        InfModel PHI_o = ModelFactory.createInfModel(reasoner,PHI_o_ontmodel);
+
+        return new Tuple3<>(PI,PHI_p,PHI_o);
     }
 
-    public Set<Walk> rewriteAggregations() {
+    public static Set<Walk> rewriteToUnionOfConjunctiveAggregateQueries(Tuple3<Set<String>, BasicPattern, InfModel> queryStructure, Dataset T) {
+        Set<String> PI = queryStructure._1;
+        BasicPattern PHI_p = queryStructure._2;
+        InfModel PHI_o = queryStructure._3;
+
         //Define G_virtual as a copy of G
         InfModel G_virtual = ModelFactory.createOntologyModel();
         PHI_p.getList().forEach(t ->
-            this.addTriple(G_virtual, t.getSubject().getURI(), t.getPredicate().getURI(), t.getObject().getURI())
+            addTriple(G_virtual, t.getSubject().getURI(), t.getPredicate().getURI(), t.getObject().getURI())
         );
 
         //Retrieve aggregable features (i.e., those that have an aggregation function)
         Set<String> aggregableFeatures = Sets.newHashSet();
-        PI.forEach(f -> {
-            this.runAQuery("SELECT ?f WHERE { GRAPH ?g {" +
-                "?f <"+ GlobalGraph.HAS_AGGREGATION_FUNCTION.val()+"> ?t } }", T).forEachRemaining(s -> {
-                aggregableFeatures.add(s.get("f").toString());
-            });
+        runAQuery("SELECT ?f WHERE { GRAPH ?g {" +
+            "?f <"+ GlobalGraph.HAS_AGGREGATION_FUNCTION.val()+"> ?t } }", T).forEachRemaining(f -> {
+                String feature = f.get("f").toString();
+                    if (PI.contains(feature)) aggregableFeatures.add(feature);
         });
+
         aggregableFeatures.forEach(f -> {
             //Get parent concept of f
-            String parentConcept = this.runAQuery("SELECT ?c WHERE { GRAPH ?g { " +
-                    "?c <"+GlobalGraph.HAS_FEATURE.val()+"> <"+f+"> } }",T).next().toString();
-            System.out.println(parentConcept + " is parent of "+f);
+            String parentConcept = runAQuery("SELECT ?c WHERE { GRAPH ?g { " +
+                    "?c <"+GlobalGraph.HAS_FEATURE.val()+"> <"+f+"> } }",T).next().get("c").toString();
 
-            //identify the member concepts related to each parent concept
+            //identify the member concepts related to each parent concept (adjacentParents)
+            Set<String> adjacentParents = Sets.newHashSet();
+            runAQuery("SELECT ?n WHERE { GRAPH ?g { ?n <"+GlobalGraph.PART_OF.val()+">+ <"+parentConcept+"> } } ", T)
+                .forEachRemaining(adjacentParent -> adjacentParents.add(adjacentParent.get("n").toString()));
+
+            Set<String> aggregableNeighbours = Sets.newHashSet();
+            runAQuery("SELECT ?n WHERE { GRAPH ?g { " +
+                    "{ <"+parentConcept+"> ?p ?n . " +
+                    "?n <"+GlobalGraph.PART_OF.val()+">+ ?top } UNION "+
+                    "{ <"+parentConcept+"> ?p ?n . " +
+                    "?bottom <"+ GlobalGraph.PART_OF.val()+">+ ?n } } }", T)
+                .forEachRemaining(aggregableNeighbour -> aggregableNeighbours.add(aggregableNeighbour.get("n").toString()));
+
+            //identify regular neighbours in the query
+            Set<String> regularNeighbours = Sets.newHashSet();
+            runAQuery("SELECT ?n WHERE { GRAPH ?g {" +
+                    "<"+parentConcept+"> ?p ?n } } ",PHI_o)
+                .forEachRemaining(regularNeighbour -> {
+                    String URI_regularNeighbour = regularNeighbour.get("n").toString();
+                    if (!aggregableFeatures.contains(URI_regularNeighbour)
+                            && !aggregableNeighbours.contains(URI_regularNeighbour)
+                            && !adjacentParents.contains(URI_regularNeighbour)
+                            && /*tweak to avoid including rdf:type*/!URI_regularNeighbour.contains(GlobalGraph.CONCEPT.val())) {
+                        regularNeighbours.add(URI_regularNeighbour);
+                        //expand with subclasses from the query pattern
+                        /*runAQuery("SELECT ?sc WHERE { " +
+                            "?sc <"+Namespaces.rdfs.val()+"subClassOf>+ <"+URI_regularNeighbour+"> }",PHI_o)
+                            .forEachRemaining(sc -> regularNeighbours.add(sc.get("sc").toString()));*/
+
+                    }
+                });
+
+            adjacentParents.forEach(par -> {
+                //Generate MatchQuery Qm
+                BasicPattern matchQuery = new BasicPattern();
+                Set<Tuple3<String,String,String>> patternTriples = Sets.newHashSet(); //used to avoid some duplicate triples that appear
+
+                patternTriples.add(new Tuple3<>(par,GlobalGraph.HAS_FEATURE.val(),f));
+                regularNeighbours.forEach(regularNeighbour -> {
+                    runAQuery("SELECT ?p WHERE { GRAPH ?g { <"+par+"> ?p <"+regularNeighbour+"> } }",T).forEachRemaining(prop -> {
+                        patternTriples.add(new Tuple3<>(par,prop.get("p").toString(),regularNeighbour));
+                    });
+                });
+                aggregableNeighbours.forEach(aggregableNeighbour -> {
+                    runAQuery("SELECT ?p ?y WHERE { GRAPH ?g { <"+par+"> ?p ?y . ?y <"+GlobalGraph.PART_OF.val()+">+ <"+aggregableNeighbour+"> } }",T)
+                        .forEachRemaining(t -> {
+                            patternTriples.add(new Tuple3<>(par,t.get("p").toString(),t.get("y").toString()));
+                            //go up one at a time until in the top level (e.g., Hour)
+                            //we rely on automatic expansion of IDs later
+                            String currentLevel = t.get("y").toString();
+                            while (!currentLevel.equals(aggregableNeighbour)) {
+                                String top = runAQuery("SELECT DISTINCT ?t WHERE { GRAPH ?g { <"+currentLevel+"> <"+GlobalGraph.PART_OF.val()+"> ?t } }",T)
+                                    .next().get("t").toString();
+                                patternTriples.add(new Tuple3<>(currentLevel,GlobalGraph.PART_OF.val(),top));
+                                currentLevel = top;
+                            }
+                        });
+                });
+                patternTriples.forEach(triple -> addTriple(matchQuery,triple._1,triple._2,triple._3));
+
+                //Call rewriteConjunctiveQuery with the matchQuery generated
+                Tuple3<Set<String>,BasicPattern,InfModel> CQqueryStructure = new Tuple3<>(PI,matchQuery,ontologyFromPattern(matchQuery));
+                rewriteToUnionOfConjunctiveQueries(CQqueryStructure,T).forEach(System.out::println);
+
+            });
+
 
         });
 
         return null;
         /*
-        Set<Walk> out = this.rewrite();
+        Set<Walk> out = rewrite();
         return out;*/
     }
 
     @SuppressWarnings("Duplicates")
-    public Set<ConjunctiveQuery> rewrite() {
+    public static Set<ConjunctiveQuery> rewriteToUnionOfConjunctiveQueries(Tuple3<Set<String>, BasicPattern, InfModel> queryStructure, Dataset T) {
+        Set<String> PI = queryStructure._1;
+        BasicPattern PHI_p = queryStructure._2;
+        InfModel PHI_o = queryStructure._3;
+
         // ***************************************
         // Phase 1 : Query expansion
         // ***************************************
@@ -148,7 +222,7 @@ public class QueryRewriting_SimpleGraph {
         // 2 Expand Q_G with IDs
         conceptsGraph.vertexSet().forEach(c -> {
             //Give me the feature ID for concept c
-            ResultSet IDs = this.runAQuery("SELECT ?t " +
+            ResultSet IDs = runAQuery("SELECT ?t " +
                     "WHERE { GRAPH ?g {" +
                     "<"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?t . " +
                     "?t <"+ Namespaces.rdfs.val()+"subClassOf> <"+ Namespaces.sc.val()+"identifier> " +
@@ -158,7 +232,7 @@ public class QueryRewriting_SimpleGraph {
                         NodeFactory.createURI(GlobalGraph.HAS_FEATURE.val()),id.get("t").asNode()))) {
                     PHI_p.add(Triple.create(NodeFactory.createURI(c),
                             NodeFactory.createURI(GlobalGraph.HAS_FEATURE.val()), id.get("t").asNode()));
-                    this.addTriple(PHI_o, c, GlobalGraph.HAS_FEATURE.val(), id.get("t").asNode().getURI());
+                    addTriple(PHI_o, c, GlobalGraph.HAS_FEATURE.val(), id.get("t").asNode().getURI());
                 }
             });
         });
@@ -172,21 +246,21 @@ public class QueryRewriting_SimpleGraph {
         // 3 Identify queried features
         conceptsGraph.vertexSet().forEach(c -> {
             Map<Wrapper,Set<ConjunctiveQuery>> CQsPerWrapper = Maps.newHashMap();
-            ResultSet resultSetFeatures = this.runAQuery("SELECT ?f " +
+            ResultSet resultSetFeatures = runAQuery("SELECT ?f " +
                     "WHERE {<"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?f }",PHI_o);
         // 4 Unfold LAV mappings
             Set<String> features = Sets.newHashSet();
             resultSetFeatures.forEachRemaining(f -> features.add(f.get("f").asResource().getURI()));
 
             features.forEach(f -> {
-                ResultSet wrappers = this.runAQuery("SELECT ?g " +
+                ResultSet wrappers = runAQuery("SELECT ?g " +
                         "WHERE { GRAPH ?g { <"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> <"+f+"> } }",T);
         // 5 Find attributes in S
                 wrappers.forEachRemaining(wRes -> {
                     String w = wRes.get("g").asResource().getURI();
                     // Distinguish the ontology named graph
                     if (!w.equals(Namespaces.T.val()) && w.contains("Wrapper")/*last min bugfix*/) {
-                        ResultSet rsAttr = this.runAQuery("SELECT ?a " +
+                        ResultSet rsAttr = runAQuery("SELECT ?a " +
                                 "WHERE { GRAPH ?g { ?a <"+Namespaces.owl.val()+"sameAs> <"+f+"> . " +
                                 "<"+w+"> <"+ SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }", T);
                         String attribute = rsAttr.nextSolution().get("a").asResource().getURI();
@@ -215,7 +289,7 @@ public class QueryRewriting_SimpleGraph {
                 Set<String> featuresInCQ = Sets.newHashSet();
                 CQs.forEach(w -> {
                     w.getProjections().forEach(projection -> {
-                        this.runAQuery("SELECT ?f " +
+                        runAQuery("SELECT ?f " +
                                 "WHERE { GRAPH ?g " +
                                 "{<"+projection+"> <"+Namespaces.owl.val()+"sameAs> ?f } }",T).forEachRemaining(featureInWalk -> {
                             featuresInCQ.add(featureInWalk.get("f").asResource().getURI());
@@ -262,7 +336,7 @@ public class QueryRewriting_SimpleGraph {
                     //Find ID features for the current set of wrappers in both ends
                     Map<String,Tuple2<Set<Wrapper>,Set<Wrapper>>> IDs_and_their_wrappers = Maps.newHashMap();
                     for (Wrapper w : CP.get(0).getWrappers()) {
-                        ResultSet rs = this.runAQuery("SELECT ?f WHERE { " +
+                        ResultSet rs = runAQuery("SELECT ?f WHERE { " +
                                 "GRAPH <"+w.getWrapper()+"> { ?f <"+Namespaces.rdfs.val()+"subClassOf> <"+Namespaces.sc.val()+"identifier> } }",T);
                         while (rs.hasNext()) {
                             String ID = rs.next().get("f").toString();
@@ -273,7 +347,7 @@ public class QueryRewriting_SimpleGraph {
                         }
                     }
                     for (Wrapper w : CP.get(1).getWrappers()) {
-                        ResultSet rs = this.runAQuery("SELECT ?f WHERE { " +
+                        ResultSet rs = runAQuery("SELECT ?f WHERE { " +
                                 "GRAPH <"+w.getWrapper()+"> { ?f <"+Namespaces.rdfs.val()+"subClassOf> <"+Namespaces.sc.val()+"identifier> } }",T);
                         while (rs.hasNext()) {
                             String ID = rs.next().get("f").toString();
@@ -289,11 +363,11 @@ public class QueryRewriting_SimpleGraph {
                             Wrapper wrapperA = wrapper_combination.get(0);
                             Wrapper wrapperB = wrapper_combination.get(1);
 
-                            String attA = this.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
+                            String attA = runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
                                     "?a <"+Namespaces.owl.val()+"sameAs> <"+feature+"> . " +
                                     "<"+wrapperA.getWrapper()+"> <"+SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }",T)
                                     .nextSolution().get("a").asResource().getURI();
-                            String attB = this.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
+                            String attB = runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
                                     "?a <"+Namespaces.owl.val()+"sameAs> <"+feature+"> . " +
                                     "<"+wrapperB.getWrapper()+"> <"+SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }",T)
                                     .nextSolution().get("a").asResource().getURI();
