@@ -1,0 +1,22 @@
+#Nodes
+sc:SoftwareApplication rdf:type G:Concept
+sup:applicationId rdf:type G:Feature
+sup:Monitor rdf:type G:Concept
+sup:monitorId rdf:type G:Feature
+sc:name rdf:type G:Feature
+sup:InfoMonitor rdf:type G:Concept
+sup:lagRatio rdf:type G:Feature
+sup:Section rdf:type G:Concept
+sup:VideoPlayer rdf:type G:Concept
+#Edges
+sc:SoftwareApplication sup:hasMonitor sup:Monitor
+sup:InfoMonitor sup:generatesQoS sup:Monitor
+sup:Monitor G:hasFeature sc:name
+sup:Monitor G:hasFeature sup:monitorId
+sc:SoftwareApplication G:hasFeature sup:applicationId
+sup:InfoMonitor G:hasFeature sup:lagRatio
+sup:InfoMonitor sup:hasSection sup:Section
+sup:VideoPlayer rdfs:subClassOf sup:Section
+#IDs
+sup:monitorId rdfs:subClassOf sc:identifier
+sup:applicationId rdfs:subClassOf sc:identifier

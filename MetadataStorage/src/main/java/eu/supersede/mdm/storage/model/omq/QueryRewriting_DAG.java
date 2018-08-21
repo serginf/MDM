@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Deprecated
 public class QueryRewriting_DAG {
 
     //Used for adding triples in-memory

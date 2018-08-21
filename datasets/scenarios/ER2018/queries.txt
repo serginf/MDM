@@ -4,6 +4,8 @@ WHERE {
 	VALUES (?lr ?hour) { ( sup:lagRatio sup:hourId ) }
 	sup:InfoMonitor G:hasFeature sup:lagRatio . 
 	sup:InfoMonitor sup:hasDate sup:Hour .
-	sup:Hour G:hasFeature sup:hourId
+	sup:Hour G:hasFeature sup:hourId .
+	sup:InfoMonitor sup:hasSection sup:Section .
+	sup:VideoPlayer rdfs:subClassOf sup:Section
 }
 #

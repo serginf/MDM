@@ -43,6 +43,7 @@ public class EquiJoin extends RelationalOperator {
         }
     }
 
+
     @Override
     public int hashCode() {
         return Objects.hash(left_attribute,right_attribute);

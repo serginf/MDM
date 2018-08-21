@@ -1,9 +1,12 @@
 package eu.supersede.mdm.storage.model.omq;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import eu.supersede.mdm.storage.model.omq.relational_operators.EquiJoin;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -62,8 +65,11 @@ public class ConjunctiveQuery {
 
     @Override
     public String toString() {
+        List<String> sortedProjections = Lists.newArrayList(projections);
+        Collections.sort(sortedProjections);
+
         return "ConjunctiveQuery{" +
-                "projections=" + projections +
+                "projections=" + sortedProjections +
                 ", joinConditions=" + joinConditions +
                 ", wrappers=" + wrappers +
                 '}';

@@ -1,0 +1,24 @@
+#Wrapper for InfoMonitor for Section
+sup:Wrapper_1 rdf:type S:Wrapper
+sup:W1/VoDmonitorId rdf:type S:Attribute
+sup:W1/VoDmonitorId owl:sameAs sup:monitorId
+sup:W1/lagRatio rdf:type S:Attribute
+sup:W1/lagRatio owl:sameAs sup:lagRatio
+sup:Wrapper_1 S:hasAttribute sup:W1/VoDmonitorId
+sup:Wrapper_1 S:hasAttribute sup:W1/lagRatio
+#Wrapper for InfoMonitor for VideoPlayer section
+sup:Wrapper_2 rdf:type S:Wrapper
+sup:W2/VoDmonitorId rdf:type S:Attribute
+sup:W2/VoDmonitorId owl:sameAs sup:monitorId
+sup:W2/lagRatio rdf:type S:Attribute
+sup:W2/lagRatio owl:sameAs sup:lagRatio
+sup:Wrapper_2 S:hasAttribute sup:W2/VoDmonitorId
+sup:Wrapper_2 S:hasAttribute sup:W2/lagRatio
+#Wrapper for join table
+sup:Wrapper_3 rdf:type S:Wrapper
+sup:W3/MonitorId rdf:type S:Attribute
+sup:W3/MonitorId owl:sameAs sup:monitorId
+sup:W3/TargetApp rdf:type S:Attribute
+sup:W3/TargetApp owl:sameAs sup:applicationId
+sup:Wrapper_3 S:hasAttribute sup:W3/MonitorId
+sup:Wrapper_3 S:hasAttribute sup:W3/TargetApp

@@ -1,0 +1,31 @@
+#Going to VideoPlayer (should not use W1)
+SELECT ?x ?y
+WHERE {
+	VALUES (?x ?y) { ( sup:applicationId sup:lagRatio ) }
+	sc:SoftwareApplication G:hasFeature sup:applicationId .
+	sc:SoftwareApplication sup:hasMonitor sup:Monitor .
+	sup:InfoMonitor sup:generatesQoS sup:Monitor .
+	sup:InfoMonitor G:hasFeature sup:lagRatio .
+	sup:InfoMonitor sup:hasSection sup:Section .
+	sup:VideoPlayer rdfs:subClassOf sup:Section
+}
+#Going to Section (should use W1 and W2)
+SELECT ?x ?y
+WHERE {
+	VALUES (?x ?y) { ( sup:applicationId sup:lagRatio ) }
+	sc:SoftwareApplication G:hasFeature sup:applicationId .
+	sc:SoftwareApplication sup:hasMonitor sup:Monitor .
+	sup:InfoMonitor sup:generatesQoS sup:Monitor .
+	sup:InfoMonitor G:hasFeature sup:lagRatio .
+	sup:InfoMonitor sup:hasSection sup:Section
+}
+#Same as InfSyst
+SELECT ?x ?y
+WHERE {
+	VALUES (?x ?y) { ( sup:applicationId sup:lagRatio ) }
+	sc:SoftwareApplication G:hasFeature sup:applicationId .
+	sc:SoftwareApplication sup:hasMonitor sup:Monitor .
+	sup:InfoMonitor sup:generatesQoS sup:Monitor .
+	sup:InfoMonitor G:hasFeature sup:lagRatio
+}
+#
