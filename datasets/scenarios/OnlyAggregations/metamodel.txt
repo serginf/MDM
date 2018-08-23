@@ -1,0 +1,32 @@
+#GlobalGraph
+G:Concept rdf:type rdfs:Class 
+G:MemberConcept rdf:type rdfs:Class 
+G:Feature rdf:type rdfs:Class 
+G:IdentifierFeature rdf:type rdfs:Class 
+G:AggregationFunction rdf:type rdfs:Class 
+G:IdentifierFeature rdfs:subClassOf G:Feature 
+G:MemberConcept rdfs:subClassOf G:Concept 
+G:IdentifierFeature rdfs:subClassOf G:Feature 
+G:MemberConcept rdfs:subClassOf G:Concept 
+G:partOf rdf:type rdf:Property 
+G:partOf rdfs:domain G:Concept 
+G:partOf rdfs:range G:Concept 
+G:association rdf:type rdf:Property 
+G:association rdfs:domain G:Concept 
+G:association rdfs:range G:Concept 
+G:hasFeature rdf:type rdf:Property 
+G:hasFeature rdfs:domain G:Concept 
+G:hasFeature rdfs:range G:Feature 
+G:hasAggregationFunction rdf:type rdf:Property 
+G:hasAggregationFunction rdfs:domain G:Feature 
+G:hasAggregationFunction rdfs:range G:AggregationFunction
+#SourceGraph
+S:DataSource rdf:type rdfs:Class
+S:Wrapper rdf:type rdfs:Class
+S:Attribute rdf:type rdfs:Class
+S:hasWrapper rdf:type rdf:Property
+S:hasWrapper rdfs:domain S:DataSource
+S:hasWrapper rdfs:range S:Wrapper
+S:hasAttribute rdf:type rdf:Property
+S:hasAttribute rdfs:domain S:Wrapper
+S:hasAttribute rdfs:range S:Attribute

@@ -1,4 +1,4 @@
-#Q2 - for each applicationId all its lagRatio (from monitor) and description (from feedback) instances
+#Q1 - for each applicationId all its lagRatio (from monitor) and description (from feedback) instances
 SELECT ?x ?y ?z
 WHERE {
 	VALUES (?x ?y ?z) { ( sup:applicationId sup:lagRatio dct:description ) }
@@ -10,11 +10,19 @@ WHERE {
 	duv:UserFeedback sup:generatesOpinion sup:FeedbackGathering .
 	duv:UserFeedback G:hasFeature dct:description
 }
-#Q1 - for each applicationId all its lagRatio instances
+#Q2 - for each applicationId all its lagRatio instances
 SELECT ?x ?y
 WHERE {
 	VALUES (?x ?y) { ( sup:applicationId sup:lagRatio ) }
 	sc:SoftwareApplication G:hasFeature sup:applicationId .
+	sc:SoftwareApplication sup:hasMonitor sup:Monitor .
+	sup:InfoMonitor sup:generatesQoS sup:Monitor .
+	sup:InfoMonitor G:hasFeature sup:lagRatio
+}
+#Q3 - for each SoftwareApplication all its lagRatio instances (same as #2 but with ID expansion)
+SELECT ?x ?y
+WHERE {
+	VALUES (?x ?y) { ( sc:SoftwareApplication sup:lagRatio ) }
 	sc:SoftwareApplication sup:hasMonitor sup:Monitor .
 	sup:InfoMonitor sup:generatesQoS sup:Monitor .
 	sup:InfoMonitor G:hasFeature sup:lagRatio

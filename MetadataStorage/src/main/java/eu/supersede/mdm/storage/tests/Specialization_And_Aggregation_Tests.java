@@ -10,7 +10,7 @@ import org.apache.jena.query.ReadWrite;
 import java.util.List;
 import java.util.Map;
 
-public class ConjunctiveAggregateQuery_Tests {
+public class Specialization_And_Aggregation_Tests {
     private static String basePath = "/home/snadal/UPC/Projects/MDM/";
 
     public static void main(String[] args) throws Exception {

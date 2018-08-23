@@ -1,0 +1,31 @@
+#Nodes
+sup:InfoMonitor rdf:type G:Concept
+sup:InfoMonitorMin rdf:type G:MemberConcept
+sup:InfoMonitorSec rdf:type G:MemberConcept
+sup:lagRatio rdf:type G:Feature
+sup:Hour rdf:type G:Concept
+sup:Minute rdf:type G:Concept
+sup:Second rdf:type G:Concept
+sup:hourId rdf:type G:Feature
+sup:minuteId rdf:type G:Feature
+sup:secondId rdf:type G:Feature
+G:Sum rdf:type G:AggregationFunction
+#Edges
+sup:InfoMonitorSec G:partOf sup:InfoMonitorMin
+sup:InfoMonitorMin G:partOf sup:InfoMonitor
+sup:InfoMonitorSec sup:hasDate sup:Second
+sup:InfoMonitorMin sup:hasDate sup:Minute
+sup:InfoMonitor sup:hasDate sup:Hour
+sup:InfoMonitorSec G:hasFeature sup:lagRatio
+sup:InfoMonitorMin G:hasFeature sup:lagRatio
+sup:InfoMonitor G:hasFeature sup:lagRatio
+sup:Hour G:hasFeature sup:hourId
+sup:Minute G:hasFeature sup:minuteId
+sup:Second G:hasFeature sup:secondId
+sup:lagRatio G:hasAggregationFunction G:Sum
+sup:Second G:partOf sup:Minute
+sup:Minute G:partOf sup:Hour
+#IDs
+sup:hourId rdfs:subClassOf sc:identifier
+sup:minuteId rdfs:subClassOf sc:identifier
+sup:secondId rdfs:subClassOf sc:identifier

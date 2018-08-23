@@ -1,10 +1,13 @@
 package eu.supersede.mdm.storage.model.omq;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
+import eu.supersede.mdm.storage.model.omq.relational_operators.AggregatedAttribute;
+import eu.supersede.mdm.storage.model.omq.relational_operators.AggregationFunctions;
 import eu.supersede.mdm.storage.model.omq.relational_operators.EquiJoin;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
 import eu.supersede.mdm.storage.util.KeyedTuple2;
@@ -103,7 +106,7 @@ public class QueryRewriting_SimpleGraph {
         return new Tuple3<>(PI,PHI_p,PHI_o);
     }
 
-    public static Set<Walk> rewriteToUnionOfConjunctiveAggregateQueries(Tuple3<Set<String>, BasicPattern, InfModel> queryStructure, Dataset T) {
+    public static Set<ConjunctiveAggregateQuery> rewriteToUnionOfConjunctiveAggregateQueries(Tuple3<Set<String>, BasicPattern, InfModel> queryStructure, Dataset T) {
         Set<String> PI = queryStructure._1;
         BasicPattern PHI_p = queryStructure._2;
         InfModel PHI_o = queryStructure._3;
@@ -189,7 +192,27 @@ public class QueryRewriting_SimpleGraph {
 
                 //Call rewriteConjunctiveQuery with the matchQuery generated
                 Tuple3<Set<String>,BasicPattern,InfModel> CQqueryStructure = new Tuple3<>(PI,matchQuery,ontologyFromPattern(matchQuery));
-                rewriteToUnionOfConjunctiveQueries(CQqueryStructure,T).forEach(System.out::println);
+                Set<ConjunctiveQuery> UCQs = rewriteToUnionOfConjunctiveQueries(CQqueryStructure,T);
+
+                UCQs.forEach(cq -> {
+                    ConjunctiveAggregateQuery CAQ = new ConjunctiveAggregateQuery(cq);
+
+                    //Traverse projected attributes, the feature goes to the aggregated function the rest of attributes go to the group by set
+                    cq.getProjections().forEach(attribute -> {
+                        if (runAQuery("SELECT ?f WHERE { GRAPH ?g { <"+attribute+"> <"+Namespaces.owl.val()+"sameAs> ?f } }",T)
+                                .next().get("f").toString().equals(f)) {
+                            CAQ.getAggregatedAttributes().add(new AggregatedAttribute(AggregationFunctions.SUM,attribute));
+                        } else {
+                            CAQ.getGroupBy().add(attribute);
+                        }
+                    });
+                    System.out.println("From CQ : ");
+                    System.out.println(cq);
+                    System.out.println("Generated CAQ : ");
+                    System.out.println(CAQ);
+                });
+
+
                 System.out.println("###################################################");
 
             });
@@ -197,10 +220,7 @@ public class QueryRewriting_SimpleGraph {
 
         });
 
-        return null;
-        /*
-        Set<Walk> out = rewrite();
-        return out;*/
+        return Sets.newHashSet();
     }
 
     @SuppressWarnings("Duplicates")
@@ -221,7 +241,7 @@ public class QueryRewriting_SimpleGraph {
             if (!t.getPredicate().getURI().equals(GlobalGraph.HAS_FEATURE.val())) {
                 conceptsGraph.addVertex(t.getSubject().getURI());
                 conceptsGraph.addVertex(t.getObject().getURI());
-                conceptsGraph.addEdge(t.getSubject().getURI(), t.getObject().getURI(),/*, t.getPredicate().getURI()*/UUID.randomUUID().toString());
+                conceptsGraph.addEdge(t.getSubject().getURI(), t.getObject().getURI(), UUID.randomUUID().toString());
             }
         });
         // This is required when only one concept is queried, where all edges are hasFeature
@@ -309,8 +329,6 @@ public class QueryRewriting_SimpleGraph {
                 });
             }
         // 6 Prune output
-            //partialCQsGraph.addVertex(new KeyedTuple2<>(c,Sets.newHashSet()));
-
             CQsPerWrapper.forEach((wrapper,CQs) -> {
                 ConjunctiveQuery mergedCQ = new ConjunctiveQuery();
                 mergedCQ.setWrappers(Sets.newHashSet(wrapper));
@@ -334,10 +352,7 @@ public class QueryRewriting_SimpleGraph {
                             cq._2().add(mergedCQ);
                         }
                     }
-                    if (!found) {
-                        //partialCQsGraph.removeVertex(new KeyedTuple2<>(c,null));
-                        partialCQsGraph.addVertex(new KeyedTuple2<>(c,Sets.newHashSet(mergedCQ)));
-                    }
+                    if (!found) partialCQsGraph.addVertex(new KeyedTuple2<>(c,Sets.newHashSet(mergedCQ)));
                 }
             });
         });
@@ -346,7 +361,7 @@ public class QueryRewriting_SimpleGraph {
         conceptsGraph.edgeSet().forEach(edge -> {
             KeyedTuple2<String,Set<ConjunctiveQuery>> source = partialCQsGraph.vertexSet().stream().filter(v -> v.equals(conceptsGraph.getEdgeSource(edge))).findFirst().get();
             KeyedTuple2<String,Set<ConjunctiveQuery>> target = partialCQsGraph.vertexSet().stream().filter(v -> v.equals(conceptsGraph.getEdgeTarget(edge))).findFirst().get();
-            partialCQsGraph.addEdge(source,target,/*UUID.randomUUID().toString()*/conceptsGraph.getEdge(source._1,target._1));
+            partialCQsGraph.addEdge(source, target, conceptsGraph.getEdge(source._1,target._1));
         });
 
         // ***************************************
@@ -366,79 +381,82 @@ public class QueryRewriting_SimpleGraph {
                     //The partial CQs do not share any wrapper, must discover how to join them, this will add new equijoins
 
                     //First, let's check if the two sets of wrappers might generate non-minimal queries. If so, we can dismiss them.
-                    if (!minimal(Sets.union(CP.get(0).getWrappers(),CP.get(1).getWrappers()),PHI_p,T)) continue;
+                    if (minimal(Sets.union(CP.get(0).getWrappers(),CP.get(1).getWrappers()),PHI_p,T)) {
 
-                    //This conceptSource and conceptTarget are obtained from the original graph, we can only join
-                    //the two partialCQs using the IDs of these two concepts -- see the queries next
-                    String conceptSource = conceptsGraph.getEdgeSource(edge);
-                    String conceptTarget = conceptsGraph.getEdgeTarget(edge);
+                        //This conceptSource and conceptTarget are obtained from the original graph, we can only join
+                        //the two partialCQs using the IDs of these two concepts -- see the queries next
+                        String conceptSource = conceptsGraph.getEdgeSource(edge);
+                        String conceptTarget = conceptsGraph.getEdgeTarget(edge);
 
-                    //Find ID features for the current set of wrappers in both ends
-                    Map<String,Tuple2<Set<Wrapper>,Set<Wrapper>>> IDs_and_their_wrappers = Maps.newHashMap();
-                    for (Wrapper w : CP.get(0).getWrappers()) {
-                        //Union should be OK, otherwise we would have not have entered the if that says that both collections of wrappers are disjoint
-                        ResultSet rs = runAQuery("SELECT ?f WHERE { GRAPH <"+w.getWrapper()+"> {" +
-                                "{ " +
-                                    "?f <"+Namespaces.rdfs.val()+"subClassOf> <"+Namespaces.sc.val()+"identifier> . " +
-                                    "<"+conceptSource+"> <"+GlobalGraph.HAS_FEATURE.val()+"> ?f } " +
-                                "UNION { " +
-                                    "?f <"+Namespaces.rdfs.val()+"subClassOf> <"+Namespaces.sc.val()+"identifier> . " +
-                                    "<"+conceptTarget+"> <"+GlobalGraph.HAS_FEATURE.val()+"> ?f } " +
-                                "} }",T);
-                        while (rs.hasNext()) {
-                            String ID = rs.next().get("f").toString();
-                            if (!IDs_and_their_wrappers.containsKey(ID)) IDs_and_their_wrappers.put(ID,new Tuple2<>(Sets.newHashSet(),Sets.newHashSet()));
-                            Set<Wrapper> wrappersForID = IDs_and_their_wrappers.get(ID)._1;
-                            wrappersForID.add(w);
-                            IDs_and_their_wrappers.put(ID,new Tuple2<>(wrappersForID,IDs_and_their_wrappers.get(ID)._2));
+                        //Find ID features for the current set of wrappers in both ends
+                        Map<String, Tuple2<Set<Wrapper>, Set<Wrapper>>> IDs_and_their_wrappers = Maps.newHashMap();
+                        for (Wrapper w : CP.get(0).getWrappers()) {
+                            //Union should be OK, otherwise we would have not have entered the if that says that both collections of wrappers are disjoint
+                            ResultSet rs = runAQuery("SELECT ?f WHERE { GRAPH <" + w.getWrapper() + "> {" +
+                                    "{ " +
+                                    "?f <" + Namespaces.rdfs.val() + "subClassOf> <" + Namespaces.sc.val() + "identifier> . " +
+                                    "<" + conceptSource + "> <" + GlobalGraph.HAS_FEATURE.val() + "> ?f } " +
+                                    "UNION { " +
+                                    "?f <" + Namespaces.rdfs.val() + "subClassOf> <" + Namespaces.sc.val() + "identifier> . " +
+                                    "<" + conceptTarget + "> <" + GlobalGraph.HAS_FEATURE.val() + "> ?f } " +
+                                    "} }", T);
+                            while (rs.hasNext()) {
+                                String ID = rs.next().get("f").toString();
+                                if (!IDs_and_their_wrappers.containsKey(ID))
+                                    IDs_and_their_wrappers.put(ID, new Tuple2<>(Sets.newHashSet(), Sets.newHashSet()));
+                                Set<Wrapper> wrappersForID = IDs_and_their_wrappers.get(ID)._1;
+                                wrappersForID.add(w);
+                                IDs_and_their_wrappers.put(ID, new Tuple2<>(wrappersForID, IDs_and_their_wrappers.get(ID)._2));
+                            }
                         }
-                    }
-                    for (Wrapper w : CP.get(1).getWrappers()) {
-                        ResultSet rs = runAQuery("SELECT ?f WHERE { GRAPH <"+w.getWrapper()+"> {" +
-                                "{ " +
-                                    "?f <"+Namespaces.rdfs.val()+"subClassOf> <"+Namespaces.sc.val()+"identifier> . " +
-                                    "<"+conceptSource+"> <"+GlobalGraph.HAS_FEATURE.val()+"> ?f } " +
-                                "UNION { " +
-                                    "?f <"+Namespaces.rdfs.val()+"subClassOf> <"+Namespaces.sc.val()+"identifier> . " +
-                                    "<"+conceptTarget+"> <"+GlobalGraph.HAS_FEATURE.val()+"> ?f } " +
-                                "} }",T);
-                        while (rs.hasNext()) {
-                            String ID = rs.next().get("f").toString();
-                            if (!IDs_and_their_wrappers.containsKey(ID)) IDs_and_their_wrappers.put(ID,new Tuple2<>(Sets.newHashSet(),Sets.newHashSet()));
-                            Set<Wrapper> wrappersForID = IDs_and_their_wrappers.get(ID)._2;
-                            wrappersForID.add(w);
-                            IDs_and_their_wrappers.put(ID,new Tuple2<>(IDs_and_their_wrappers.get(ID)._1,wrappersForID));
+                        for (Wrapper w : CP.get(1).getWrappers()) {
+                            ResultSet rs = runAQuery("SELECT ?f WHERE { GRAPH <" + w.getWrapper() + "> {" +
+                                    "{ " +
+                                    "?f <" + Namespaces.rdfs.val() + "subClassOf> <" + Namespaces.sc.val() + "identifier> . " +
+                                    "<" + conceptSource + "> <" + GlobalGraph.HAS_FEATURE.val() + "> ?f } " +
+                                    "UNION { " +
+                                    "?f <" + Namespaces.rdfs.val() + "subClassOf> <" + Namespaces.sc.val() + "identifier> . " +
+                                    "<" + conceptTarget + "> <" + GlobalGraph.HAS_FEATURE.val() + "> ?f } " +
+                                    "} }", T);
+                            while (rs.hasNext()) {
+                                String ID = rs.next().get("f").toString();
+                                if (!IDs_and_their_wrappers.containsKey(ID))
+                                    IDs_and_their_wrappers.put(ID, new Tuple2<>(Sets.newHashSet(), Sets.newHashSet()));
+                                Set<Wrapper> wrappersForID = IDs_and_their_wrappers.get(ID)._2;
+                                wrappersForID.add(w);
+                                IDs_and_their_wrappers.put(ID, new Tuple2<>(IDs_and_their_wrappers.get(ID)._1, wrappersForID));
+                            }
                         }
-                    }
-                    IDs_and_their_wrappers.entrySet().forEach(entry -> {
-                        String feature = entry.getKey();
-                        //Different ways of doing the join
-                        Sets.cartesianProduct(entry.getValue()._1, entry.getValue()._2).forEach(wrapper_combination -> {
+                        IDs_and_their_wrappers.entrySet().forEach(entry -> {
+                            String feature = entry.getKey();
+                            //Different ways of doing the join
+                            Sets.cartesianProduct(entry.getValue()._1, entry.getValue()._2).forEach(wrapper_combination -> {
 
-                            Wrapper wrapperA = wrapper_combination.get(0);
-                            Wrapper wrapperB = wrapper_combination.get(1);
+                                Wrapper wrapperA = wrapper_combination.get(0);
+                                Wrapper wrapperB = wrapper_combination.get(1);
 
-                            String attA = runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
-                                    "?a <"+Namespaces.owl.val()+"sameAs> <"+feature+"> . " +
-                                    "<"+wrapperA.getWrapper()+"> <"+SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }",T)
-                                    .nextSolution().get("a").asResource().getURI();
-                            String attB = runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
-                                    "?a <"+Namespaces.owl.val()+"sameAs> <"+feature+"> . " +
-                                    "<"+wrapperB.getWrapper()+"> <"+SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }",T)
-                                    .nextSolution().get("a").asResource().getURI();
+                                String attA = runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
+                                        "?a <" + Namespaces.owl.val() + "sameAs> <" + feature + "> . " +
+                                        "<" + wrapperA.getWrapper() + "> <" + SourceGraph.HAS_ATTRIBUTE.val() + "> ?a } }", T)
+                                        .nextSolution().get("a").asResource().getURI();
+                                String attB = runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
+                                        "?a <" + Namespaces.owl.val() + "sameAs> <" + feature + "> . " +
+                                        "<" + wrapperB.getWrapper() + "> <" + SourceGraph.HAS_ATTRIBUTE.val() + "> ?a } }", T)
+                                        .nextSolution().get("a").asResource().getURI();
 
-                            ConjunctiveQuery mergedCQ = new ConjunctiveQuery();
-                            mergedCQ.getProjections().addAll(CP.get(0).getProjections());
-                            mergedCQ.getProjections().addAll(CP.get(1).getProjections());
-                            mergedCQ.getJoinConditions().addAll(CP.get(0).getJoinConditions());
-                            mergedCQ.getJoinConditions().addAll(CP.get(1).getJoinConditions());
-                            mergedCQ.getWrappers().addAll(CP.get(0).getWrappers());
-                            mergedCQ.getWrappers().addAll(CP.get(1).getWrappers());
-                            mergedCQ.getJoinConditions().add(new EquiJoin(attA,attB));
+                                ConjunctiveQuery mergedCQ = new ConjunctiveQuery();
+                                mergedCQ.getProjections().addAll(CP.get(0).getProjections());
+                                mergedCQ.getProjections().addAll(CP.get(1).getProjections());
+                                mergedCQ.getJoinConditions().addAll(CP.get(0).getJoinConditions());
+                                mergedCQ.getJoinConditions().addAll(CP.get(1).getJoinConditions());
+                                mergedCQ.getWrappers().addAll(CP.get(0).getWrappers());
+                                mergedCQ.getWrappers().addAll(CP.get(1).getWrappers());
+                                mergedCQ.getJoinConditions().add(new EquiJoin(attA, attB));
 
-                            joinedVertex._2.add(mergedCQ);
+                                joinedVertex._2.add(mergedCQ);
+                            });
                         });
-                    });
+                    }
                 } else {
                     ConjunctiveQuery mergedCQ = new ConjunctiveQuery();
                     mergedCQ.getProjections().addAll(CP.get(0).getProjections());
@@ -475,7 +493,21 @@ public class QueryRewriting_SimpleGraph {
             partialCQsGraph.removeVertex(source);
             partialCQsGraph.removeVertex(target);
         }
-        return partialCQsGraph.vertexSet().stream().findFirst().get()._2;
+
+        //Final step (NEW FROM INF SYST!!), prune projected features that have not been requested.
+        Set<ConjunctiveQuery> UCQs = Sets.newHashSet();
+        partialCQsGraph.vertexSet().stream().findFirst().get()._2.forEach(cq -> {
+            Set<String> prunedProjections = Sets.newHashSet();
+            cq.getProjections().forEach(attribute -> {
+                runAQuery("SELECT ?f WHERE { GRAPH ?g " +
+                        "{<"+attribute+"> <"+Namespaces.owl.val()+"sameAs> ?f } }",T).forEachRemaining(f -> {
+                    if (PI.contains(f.get("f").toString())) prunedProjections.add(attribute);
+                });
+            });
+            UCQs.add(new ConjunctiveQuery(prunedProjections,cq.getJoinConditions(),cq.getWrappers()));
+        });
+        return UCQs;
+        //return partialCQsGraph.vertexSet().stream().findFirst().get()._2;
     }
 
 
