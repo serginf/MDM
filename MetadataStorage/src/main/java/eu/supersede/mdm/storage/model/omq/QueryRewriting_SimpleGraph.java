@@ -336,15 +336,15 @@ public class QueryRewriting_SimpleGraph {
                 CQs.forEach(CQ -> mergedCQ.getProjections().addAll(CQ.getProjections()));
 
                 Set<String> featuresInCQ = Sets.newHashSet();
-                CQs.forEach(w -> {
-                    w.getProjections().forEach(projection -> {
+                CQs.forEach(cq -> {
+                    cq.getProjections().forEach(projection -> {
                         runAQuery("SELECT ?f WHERE { GRAPH ?g " +
                                 "{<"+projection+"> <"+Namespaces.owl.val()+"sameAs> ?f } }",T).forEachRemaining(featureInWalk -> {
                             featuresInCQ.add(featureInWalk.get("f").asResource().getURI());
                         });
                     });
                 });
-                if (features.equals(featuresInCQ)) {
+                /*if (features.equals(featuresInCQ)) {
                     boolean found = false;
                     for (Tuple2<String,Set<ConjunctiveQuery>> cq : partialCQsGraph.vertexSet()) {
                         if (cq._1.equals(c)) {
@@ -352,8 +352,8 @@ public class QueryRewriting_SimpleGraph {
                             cq._2().add(mergedCQ);
                         }
                     }
-                    if (!found) partialCQsGraph.addVertex(new KeyedTuple2<>(c,Sets.newHashSet(mergedCQ)));
-                }
+                    if (!found)*/ partialCQsGraph.addVertex(new KeyedTuple2<>(c,Sets.newHashSet(mergedCQ)));
+                //  }
             });
         });
 
