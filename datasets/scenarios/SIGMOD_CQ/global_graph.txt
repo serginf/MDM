@@ -1,0 +1,57 @@
+#Nodes
+sup:C1 rdf:type G:Concept
+sup:C2 rdf:type G:Concept
+sup:C3 rdf:type G:Concept
+sup:C4 rdf:type G:Concept
+sup:C5 rdf:type G:Concept
+sup:C6 rdf:type G:Concept
+sup:F1id rdf:type G:Feature
+sup:F11 rdf:type G:Feature
+sup:F12 rdf:type G:Feature
+sup:F2id rdf:type G:Feature
+sup:F21 rdf:type G:Feature
+sup:F22 rdf:type G:Feature
+sup:F3id rdf:type G:Feature
+sup:F31 rdf:type G:Feature
+sup:F32 rdf:type G:Feature
+sup:F4id rdf:type G:Feature
+sup:F41 rdf:type G:Feature
+sup:F42 rdf:type G:Feature
+sup:F5id rdf:type G:Feature
+sup:F51 rdf:type G:Feature
+sup:F52 rdf:type G:Feature
+sup:F6id rdf:type G:Feature
+sup:F61 rdf:type G:Feature
+sup:F62 rdf:type G:Feature
+#Edges
+sup:C1 G:hasFeature sup:F1id
+sup:C1 G:hasFeature sup:F11
+sup:C1 G:hasFeature sup:F12
+sup:C2 G:hasFeature sup:F2id
+sup:C2 G:hasFeature sup:F21
+sup:C2 G:hasFeature sup:F22
+sup:C3 G:hasFeature sup:F3id
+sup:C3 G:hasFeature sup:F31
+sup:C3 G:hasFeature sup:F32
+sup:C4 G:hasFeature sup:F4id
+sup:C4 G:hasFeature sup:F41
+sup:C4 G:hasFeature sup:F42
+sup:C5 G:hasFeature sup:F5id
+sup:C5 G:hasFeature sup:F51
+sup:C5 G:hasFeature sup:F52
+sup:C6 G:hasFeature sup:F6id
+sup:C6 G:hasFeature sup:F61
+sup:C6 G:hasFeature sup:F62
+#IDs
+sup:F1id rdfs:subClassOf sc:identifier
+sup:F2id rdfs:subClassOf sc:identifier
+sup:F3id rdfs:subClassOf sc:identifier
+sup:F4id rdfs:subClassOf sc:identifier
+sup:F5id rdfs:subClassOf sc:identifier
+sup:F6id rdfs:subClassOf sc:identifier
+#Concepts relationships
+sup:C1 sup:hasC sup:C2
+sup:C2 sup:hasC sup:C3
+sup:C3 sup:hasC sup:C4
+sup:C4 sup:hasC sup:C5
+sup:C5 sup:hasC sup:C6

@@ -1,0 +1,67 @@
+#Q1
+SELECT ?a
+WHERE {
+	VALUES ( ?a ) { ( sup:F11 ) }
+	sup:C1 G:hasFeature sup:F11 
+}
+#Q2
+SELECT ?a ?b
+WHERE {
+	VALUES ( ?a ?b ) { ( sup:F11 sup:F21 ) }
+	sup:C1 G:hasFeature sup:F11 .
+	sup:C1 sup:hasC sup:C2 .
+	sup:C2 G:hasFeature sup:F21
+}
+#Q3
+SELECT ?a ?b ?c
+WHERE {
+	VALUES ( ?a ?b ?c ) { ( sup:F11 sup:F21 sup:F31 ) }
+	sup:C1 G:hasFeature sup:F11 .
+	sup:C1 sup:hasC sup:C2 .
+	sup:C2 G:hasFeature sup:F21 .
+	sup:C2 sup:hasC sup:C3 .
+	sup:C3 G:hasFeature sup:F31
+}
+#Q4
+SELECT ?a ?b ?c ?d
+WHERE {
+	VALUES ( ?a ?b ?c ?d ) { ( sup:F11 sup:F21 sup:F31 sup:F41 ) }
+	sup:C1 G:hasFeature sup:F11 .
+	sup:C1 sup:hasC sup:C2 .
+	sup:C2 G:hasFeature sup:F21 .
+	sup:C2 sup:hasC sup:C3 .
+	sup:C3 G:hasFeature sup:F31 .
+	sup:C3 sup:hasC sup:C4 .
+	sup:C4 G:hasFeature sup:F41
+}
+#Q5
+SELECT ?a ?b ?c ?d ?e
+WHERE {
+	VALUES ( ?a ?b ?c ?d ?e ) { ( sup:F11 sup:F21 sup:F31 sup:F41 sup:F51 ) }
+	sup:C1 G:hasFeature sup:F11 .
+	sup:C1 sup:hasC sup:C2 .
+	sup:C2 G:hasFeature sup:F21 .
+	sup:C2 sup:hasC sup:C3 .
+	sup:C3 G:hasFeature sup:F31 .
+	sup:C3 sup:hasC sup:C4 .
+	sup:C4 G:hasFeature sup:F41 .
+	sup:C4 sup:hasC sup:C5 .
+	sup:C5 G:hasFeature sup:F51
+}
+#Q6
+SELECT ?a ?b ?c ?d ?e ?f
+WHERE {
+	VALUES ( ?a ?b ?c ?d ?e ?f ) { ( sup:F11 sup:F21 sup:F31 sup:F41 sup:F51 sup:F61 ) }
+	sup:C1 G:hasFeature sup:F11 .
+	sup:C1 sup:hasC sup:C2 .
+	sup:C2 G:hasFeature sup:F21 .
+	sup:C2 sup:hasC sup:C3 .
+	sup:C3 G:hasFeature sup:F31 .
+	sup:C3 sup:hasC sup:C4 .
+	sup:C4 G:hasFeature sup:F41 .
+	sup:C4 sup:hasC sup:C5 .
+	sup:C5 G:hasFeature sup:F51 .
+	sup:C5 sup:hasC sup:C6 .
+	sup:C6 G:hasFeature sup:F61
+}
+#

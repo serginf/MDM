@@ -1,0 +1,6 @@
+#Mappings for time dimension
+sup:Wrapper_Time-5,6,24,39,45,46
+#Mappings for Monitor
+sup:Wrapper_Mon-7,8,9,10,11,12,26,27,28,29,30,40,41
+#Mappings for apps
+sup:Wrapper_apps-11,12,13,14,30,31,32,41
