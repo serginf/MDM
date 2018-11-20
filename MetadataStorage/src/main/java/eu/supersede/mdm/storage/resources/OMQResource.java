@@ -1,15 +1,9 @@
 package eu.supersede.mdm.storage.resources;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mongodb.MongoClient;
-import eu.supersede.mdm.storage.model.omq.QueryRewriting_DAG;
-import eu.supersede.mdm.storage.model.omq.Walk;
-import eu.supersede.mdm.storage.model.omq.relational_operators.EquiJoin;
-import eu.supersede.mdm.storage.model.omq.relational_operators.ProjectionSet_OLD;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
 import eu.supersede.mdm.storage.util.MongoCollections;
-import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.SQLiteUtils;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONArray;
@@ -20,9 +14,7 @@ import scala.Tuple3;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -67,7 +59,8 @@ public class OMQResource {
         return Response.ok(out.toJSONString()).build();
     }
 
-
+    //20181106 - Commented to replace rewriting algorithm
+/**
     @POST @Path("omq/fromSPARQLToRA")
     @Consumes("text/plain")
     public Response POST_omq_fromSPARQLToRA(String body) {
@@ -136,6 +129,7 @@ public class OMQResource {
         out.put("sql",SQLstr);
         return Response.ok(out.toJSONString()).build();
     }
+**/
 
     @POST @Path("omq/fromSQLToData")
     @Consumes("text/plain")

@@ -1,6 +1,8 @@
 package eu.supersede.mdm.storage.util;
 
+import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
@@ -22,7 +24,7 @@ import java.io.IOException;
 public class RDFUtil {
 
     public static void addTriple(String namedGraph, String s, String p, String o) {
-        System.out.println("Adding triple: [namedGraph] "+namedGraph+", [s] "+s+", [p] "+p+", [o] "+o);
+        //System.out.println("Adding triple: [namedGraph] "+namedGraph+", [s] "+s+", [p] "+p+", [o] "+o);
         Dataset ds = Utils.getTDBDataset();
         ds.begin(ReadWrite.WRITE);
         Model graph = ds.getNamedModel(namedGraph);
@@ -32,12 +34,6 @@ public class RDFUtil {
         ds.commit();
         ds.close();
     }
-/*
-    public static void addTriple(Model model, String s, String p, String o) {
-        System.out.println("inserting triple <"+s+", "+p+", "+o+">");
-        model.add(new ResourceImpl(s), new PropertyImpl(p), new ResourceImpl(o));
-    }
-*/
 
     public static ResultSet runAQuery(String sparqlQuery, String namedGraph) {
         Dataset ds = Utils.getTDBDataset();
@@ -49,8 +45,16 @@ public class RDFUtil {
         }
         return null;
     }
-/*
-    public static ResultSet runAQuery(String sparqlQuery, OntModel o) {
+
+    public static ResultSet runAQuery(String sparqlQuery, Dataset ds) {
+        try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), ds)) {
+            return ResultSetFactory.copyResults(qExec.execSelect());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static ResultSet runAQuery(String sparqlQuery, InfModel o) {
         try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), o)) {
             return ResultSetFactory.copyResults(qExec.execSelect());
         } catch (Exception e) {
@@ -59,15 +63,6 @@ public class RDFUtil {
         return null;
     }
 
-    public static ResultSet runAQuery(String sparqlQuery, Model o) {
-        try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), o)) {
-            return ResultSetFactory.copyResults(qExec.execSelect());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-*/
     // Short name
     public static String nn(String s) {
         return noNamespace(s);
@@ -105,23 +100,21 @@ public class RDFUtil {
 
         return content;
     }
-/*
-    public static String getRDFString (Model o) {
-        // Output RDF
-        String tempFileForO = TempFiles.getTempFile();
-        try {
-            o.write(new FileOutputStream(tempFileForO),"RDF/XML-ABBREV");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+
+    public static String convertToURI(String name) {
+        //If it is a semantic annotation, add the right URI
+        if (name.equals("hasFeature")) {
+            return GlobalGraph.HAS_FEATURE.val();
         }
-        String content = "";
-        try {
-            content = new String(java.nio.file.Files.readAllBytes(new java.io.File(tempFileForO).toPath()));
-        } catch (IOException exc) {
-            exc.printStackTrace();
+        else if (name.equals("subClass") || name.equals("subClassOf")) {
+            return Namespaces.rdfs.val()+"subClassOf";
         }
-        return content;
+        else if (name.equals("ID") || name.equals("identifier")) {
+            return Namespaces.sc.val() + "identifier";
+        }
+
+        //Otherwise, just add the SUPERSEDE one
+        return Namespaces.sup.val()+name;
     }
-*/
 
 }

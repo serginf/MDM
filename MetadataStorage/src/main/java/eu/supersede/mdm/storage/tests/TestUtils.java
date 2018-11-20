@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Tuple2;
 import org.apache.commons.io.FileUtils;
+import org.apache.jena.tdb.TDBFactory;
 
 import java.io.File;
 import java.io.IOException;

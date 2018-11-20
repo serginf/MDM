@@ -4,9 +4,8 @@
  */
 
 apply plugin: 'idea'
+apply plugin: 'java'
 apply plugin: 'maven'
-apply plugin: 'war'
-//apply plugin: 'jetty'
 
 repositories {
     mavenCentral()
@@ -24,15 +23,17 @@ buildscript {
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'java'
-
 
 shadowJar {
+    zip64 true
     baseName = 'MetadataStorage-0.0.1-SNAPSHOT'
     classifier = null
     version = null
     manifest {
-        attributes 'Main-Class': 'eu.supersede.mdm.storage.ApacheMain'
+        //attributes 'Main-Class': 'eu.supersede.mdm.storage.ApacheMain'
+
+        //For experiments
+        attributes 'Main-Class': 'eu.supersede.mdm.storage.tests.SIGMOD.ExperimentsRunner'
     }
     append 'META-INF/services/org.apache.jena.system.JenaSubsystemLifecycle'
 }
@@ -74,7 +75,7 @@ dependencies {
     // Jersey core Servlet 3.x implementation
     compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.24.1'
 
-    compile group: 'com.google.guava', name: 'guava', version: '25.1-jre'
+    compile 'com.google.guava:guava:25.1-jre'
     compile 'org.mongodb:mongo-java-driver:3.4.0-rc1'
     compile 'net.minidev:json-smart:2.2.1'
     compile ('org.apache.jena:apache-jena-libs:3.1.1') {
@@ -82,7 +83,7 @@ dependencies {
     }
     compile 'com.google.code.gson:gson:2.8.0'
     /*compile 'org.scala-lang:scala-library:2.12.0'*/
-    compile 'org.jgrapht:jgrapht-core:1.0.0'
+    compile 'org.jgrapht:jgrapht-core:1.2.0'
 
     compile 'org.apache.curator:curator-framework:2.3.0'
     compile 'org.slf4j:slf4j-api:1.7.6'
@@ -96,8 +97,3 @@ dependencies {
     compile files('lib/sqlite4java-392/sqlite4java.jar')
 
 }
-/*
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.2'
-}
-*/
