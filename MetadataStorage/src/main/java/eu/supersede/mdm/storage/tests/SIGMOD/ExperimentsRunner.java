@@ -53,7 +53,7 @@ public class ExperimentsRunner {
         IntegrationGraph clique = ExperimentsGenerator.generateCliqueGraphOfConcepts(CLIQUE_SIZE);
         //Here Q=G
         IntegrationGraph Q = ExperimentsGenerator.getConnectedRandomSubgraph(clique,1,false);
-        for (int i = 1; i <= MAX_EDGES_IN_QUERY; ++i) {
+        for (int i = 2; i <= MAX_EDGES_IN_QUERY; ++i) {
             //IntegrationGraph Q_withFeatures = ExperimentsGenerator.addFeatures(Q,UPPER_BOUND_FEATURES_IN_G,COVERED_FEATURES_QUERY);
             //Q_withFeatures.registerRDFDataset("http://www.essi.upc.edu/~snadal/SIGMOD_ontology");
             /*for (int j = 1; j <= MAX_WRAPPERS; ++j) {
