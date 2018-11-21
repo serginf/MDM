@@ -6,6 +6,7 @@ import eu.supersede.mdm.storage.model.omq.ConjunctiveQuery;
 import eu.supersede.mdm.storage.model.omq.QueryRewriting_SIGMOD;
 import eu.supersede.mdm.storage.model.omq.QueryRewriting_SimpleGraph;
 import eu.supersede.mdm.storage.tests.TestUtils;
+import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Tuple2;
 import eu.supersede.mdm.storage.util.Utils;
 import org.apache.jena.query.Dataset;
@@ -17,7 +18,7 @@ import java.util.Set;
 
 public class ExperimentsRunner {
 
-    private static int CLIQUE_SIZE = 25;
+    private static int CLIQUE_SIZE = 50;
     private static int UPPER_BOUND_FEATURES_IN_G = 15; //How many features at most per concept (excluding ID)
 
     private static int MAX_EDGES_IN_QUERY = 25; //The number of edges in G computed as a subgraph of the clique
@@ -35,27 +36,27 @@ public class ExperimentsRunner {
             CLIQUE_SIZE=Integer.parseInt(args[0]);
             UPPER_BOUND_FEATURES_IN_G=Integer.parseInt(args[1]);
             MAX_EDGES_IN_QUERY=Integer.parseInt(args[2]);
-            CLIQUE_SIZE=Integer.parseInt(args[3]);
+            MAX_WRAPPERS=Integer.parseInt(args[3]);
             COVERED_FEATURES_QUERY=Float.parseFloat(args[4]);
             COVERED_FEATURES_WRAPPER=Float.parseFloat(args[5]);
         }
 
         ApacheMain.configPath = basePath + "MetadataStorage/config.sergi.properties";
-        //TestUtils.deleteTDB();
+        TestUtils.deleteTDB();
         Map<String, String> prefixes = TestUtils.populatePrefixes(basePath + "datasets/scenarios/SIGMOD_CQ/prefixes.txt");
         TestUtils.populateTriples("http://www.essi.upc.edu/~snadal/SIGMOD_ontology", basePath + "datasets/scenarios/SIGMOD_CQ/metamodel.txt", prefixes);
 
         Random random = new Random(System.currentTimeMillis());
         ApacheMain.configPath = basePath + "MetadataStorage/config.sergi.properties";
-        TestUtils.deleteTDB();
+
         //Generate a clique of concepts
         IntegrationGraph clique = ExperimentsGenerator.generateCliqueGraphOfConcepts(CLIQUE_SIZE);
         //Here Q=G
-        IntegrationGraph Q = ExperimentsGenerator.getConnectedRandomSubgraph(clique,2,false);
-        for (int i = 2; i < MAX_EDGES_IN_QUERY; ++i) {
-            IntegrationGraph Q_withFeatures = ExperimentsGenerator.addFeatures(Q,UPPER_BOUND_FEATURES_IN_G,COVERED_FEATURES_QUERY);
-            Q_withFeatures.registerRDFDataset("http://www.essi.upc.edu/~snadal/SIGMOD_ontology");
-            for (int j = 1; j <= MAX_WRAPPERS; ++j) {
+        IntegrationGraph Q = ExperimentsGenerator.getConnectedRandomSubgraph(clique,1,false);
+        for (int i = 1; i <= MAX_EDGES_IN_QUERY; ++i) {
+            //IntegrationGraph Q_withFeatures = ExperimentsGenerator.addFeatures(Q,UPPER_BOUND_FEATURES_IN_G,COVERED_FEATURES_QUERY);
+            //Q_withFeatures.registerRDFDataset("http://www.essi.upc.edu/~snadal/SIGMOD_ontology");
+            /*for (int j = 1; j <= MAX_WRAPPERS; ++j) {
                 IntegrationGraph W = ExperimentsGenerator.getConnectedRandomSubgraphFromDAG(Q,random.nextInt(i)+1);
                 IntegrationGraph W_withFeatures = ExperimentsGenerator.addFeatures(W,UPPER_BOUND_FEATURES_IN_G,COVERED_FEATURES_WRAPPER);
                 ExperimentsGenerator.registerWrapper(W_withFeatures,"http://www.essi.upc.edu/~snadal/SIGMOD_ontology");
@@ -69,9 +70,26 @@ public class ExperimentsRunner {
                 System.out.println(i+";"+j+";"+CQs._1+";"+CQs._2.size()+";"+(b-a));
                 T.end();
                 T.close();
-            }
-            TestUtils.deleteTDB();
+            }*/
+            //TestUtils.deleteTDB();
             ExperimentsGenerator.expandWithOneEdge(Q,clique);
         }
+        IntegrationGraph Q_withFeatures = ExperimentsGenerator.addFeatures(Q,UPPER_BOUND_FEATURES_IN_G,COVERED_FEATURES_QUERY);
+        Q_withFeatures.registerRDFDataset("http://www.essi.upc.edu/~snadal/SIGMOD_ontology");
+        for (int j = 1; j <= MAX_WRAPPERS; ++j) {
+            IntegrationGraph W = ExperimentsGenerator.getConnectedRandomSubgraphFromDAG(Q,random.nextInt(MAX_EDGES_IN_QUERY)+1);
+            IntegrationGraph W_withFeatures = ExperimentsGenerator.addFeatures(W,UPPER_BOUND_FEATURES_IN_G,COVERED_FEATURES_WRAPPER);
+            ExperimentsGenerator.registerWrapper(W_withFeatures,"http://www.essi.upc.edu/~snadal/SIGMOD_ontology");
+        }
+        Dataset T = Utils.getTDBDataset();
+        T.begin(ReadWrite.READ);
+        long a = System.currentTimeMillis();
+        Tuple2<Integer, Set<ConjunctiveQuery>> CQs = QueryRewriting_SIGMOD.rewriteToUnionOfConjunctiveQueries(QueryRewriting_SimpleGraph.parseSPARQL(ExperimentsGenerator.convertToSPARQL(Q_withFeatures,prefixes), T), T);
+        long b = System.currentTimeMillis();
+        //edges in query; number of covering wrappers;
+        System.out.println(MAX_EDGES_IN_QUERY+";"+MAX_WRAPPERS+";"+CQs._1+";"+CQs._2.size()+";"+(b-a));
+        T.end();
+        T.close();
+
     }
 }
