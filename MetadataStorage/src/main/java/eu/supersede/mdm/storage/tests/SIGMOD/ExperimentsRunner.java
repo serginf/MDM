@@ -88,6 +88,7 @@ public class ExperimentsRunner {
         long b = System.currentTimeMillis();
         //edges in query; number of covering wrappers;
         System.out.println(MAX_EDGES_IN_QUERY+";"+MAX_WRAPPERS+";"+CQs._1+";"+CQs._2.size()+";"+(b-a));
+        //System.out.println(CQs);
         T.end();
         T.close();
 

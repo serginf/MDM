@@ -9,6 +9,7 @@ import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.util.GraphUtil;
 import eu.supersede.mdm.storage.util.RDFUtil;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.jgrapht.alg.interfaces.SpanningTreeAlgorithm;
 import org.jgrapht.alg.spanning.KruskalMinimumSpanningTree;
 import org.jgrapht.generate.CompleteGraphGenerator;
@@ -100,7 +101,9 @@ public class ExperimentsGenerator {
         Set<RelationshipEdge> usedEdges = Sets.newHashSet();
         Set<RelationshipEdge> candidateEdges = Sets.newHashSet(G.edgeSet());
         for (int i=0; i < coveredEdges; ++i) {
-            RelationshipEdge randEdge = candidateEdges.stream().findAny().get();
+            RelationshipEdge randEdge = (RelationshipEdge)
+                    Lists.newArrayList(candidateEdges.toArray()).get(rand.nextInt(candidateEdges.size()));
+            //RelationshipEdge randEdge = candidateEdges.stream().findAny().get();
 
             res.addVertex(G.getEdgeSource(randEdge));
             res.addVertex(G.getEdgeTarget(randEdge));
@@ -130,12 +133,12 @@ public class ExperimentsGenerator {
     }
 
     public static void registerWrapper(IntegrationGraph W, String namedGraph) {
-        String wrapperName = "Wrapper_"+ UUID.randomUUID();
+        String wrapperName = "Wrapper_"+ /*UUID.randomUUID()*/RandomStringUtils.randomAlphabetic(3);
         RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(wrapperName), Namespaces.rdf.val()+"type", SourceGraph.WRAPPER.val());
         //sameAs
         W.vertexSet().forEach(v -> {
             if (v.contains("Feature")) {
-                String attributeName = UUID.randomUUID().toString();
+                String attributeName = /*UUID.randomUUID().toString()*/RandomStringUtils.randomAlphabetic(3);
                 RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(attributeName), Namespaces.rdf.val()+"type", SourceGraph.ATTRIBUTE.val());
                 RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(wrapperName), SourceGraph.HAS_ATTRIBUTE.val(), RDFUtil.convertToURI(attributeName));
                 RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(attributeName), Namespaces.owl.val() + "sameAs", RDFUtil.convertToURI(v));
