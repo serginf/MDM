@@ -87,7 +87,7 @@ public class ExperimentsRunner {
         Tuple2<Integer, Set<ConjunctiveQuery>> CQs = QueryRewriting_SIGMOD.rewriteToUnionOfConjunctiveQueries(QueryRewriting_SimpleGraph.parseSPARQL(ExperimentsGenerator.convertToSPARQL(Q_withFeatures,prefixes), T), T);
         long b = System.currentTimeMillis();
         //edges in query; number of covering wrappers;
-        System.out.println(MAX_EDGES_IN_QUERY+";"+MAX_WRAPPERS+";"+CQs._1+";"+CQs._2.size()+";"+(b-a));
+        System.out.println(UPPER_BOUND_FEATURES_IN_G+";"+MAX_EDGES_IN_QUERY+";"+MAX_WRAPPERS+";"+CQs._1+";"+CQs._2.size()+";"+(b-a));
         //System.out.println(CQs);
         T.end();
         T.close();
