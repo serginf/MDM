@@ -1,6 +1,7 @@
 package eu.supersede.mdm.storage.util;
 
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
@@ -17,6 +18,7 @@ import org.apache.jena.rdf.model.impl.ResourceImpl;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by snadal on 24/11/16.
@@ -34,6 +36,21 @@ public class RDFUtil {
         ds.commit();
         ds.close();
     }
+
+    public static void addBatchOfTriples(String namedGraph, List<Tuple3<String,String,String>> triples) {
+        //System.out.println("Adding triple: [namedGraph] "+namedGraph+", [s] "+s+", [p] "+p+", [o] "+o);
+        Dataset ds = Utils.getTDBDataset();
+        ds.begin(ReadWrite.WRITE);
+        Model graph = ds.getNamedModel(namedGraph);
+        for (Tuple3<String,String,String> t : triples) {
+            graph.add(new ResourceImpl(t._1), new PropertyImpl(t._2), new ResourceImpl(t._3));
+        }
+        graph.commit();
+        graph.close();
+        ds.commit();
+        ds.close();
+    }
+
 
     public static ResultSet runAQuery(String sparqlQuery, String namedGraph) {
         Dataset ds = Utils.getTDBDataset();

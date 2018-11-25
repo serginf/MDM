@@ -9,6 +9,7 @@ import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.util.GraphUtil;
 import eu.supersede.mdm.storage.util.RDFUtil;
+import eu.supersede.mdm.storage.util.Tuple3;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jgrapht.alg.interfaces.SpanningTreeAlgorithm;
 import org.jgrapht.alg.spanning.KruskalMinimumSpanningTree;
@@ -134,16 +135,23 @@ public class ExperimentsGenerator {
 
     public static void registerWrapper(IntegrationGraph W, String namedGraph) {
         String wrapperName = "Wrapper_"+ /*UUID.randomUUID()*/RandomStringUtils.randomAlphabetic(3);
-        RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(wrapperName), Namespaces.rdf.val()+"type", SourceGraph.WRAPPER.val());
+        List<Tuple3<String,String,String>> triples = Lists.newArrayList();
+
+        //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(wrapperName), Namespaces.rdf.val()+"type", SourceGraph.WRAPPER.val());
+        triples.add(new Tuple3<>(RDFUtil.convertToURI(wrapperName), Namespaces.rdf.val()+"type", SourceGraph.WRAPPER.val()));
         //sameAs
         W.vertexSet().forEach(v -> {
             if (v.contains("Feature")) {
                 String attributeName = /*UUID.randomUUID().toString()*/RandomStringUtils.randomAlphabetic(3);
-                RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(attributeName), Namespaces.rdf.val()+"type", SourceGraph.ATTRIBUTE.val());
-                RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(wrapperName), SourceGraph.HAS_ATTRIBUTE.val(), RDFUtil.convertToURI(attributeName));
-                RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(attributeName), Namespaces.owl.val() + "sameAs", RDFUtil.convertToURI(v));
+                //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(attributeName), Namespaces.rdf.val()+"type", SourceGraph.ATTRIBUTE.val());
+                triples.add(new Tuple3<>(RDFUtil.convertToURI(attributeName), Namespaces.rdf.val()+"type", SourceGraph.ATTRIBUTE.val()));
+                //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(wrapperName), SourceGraph.HAS_ATTRIBUTE.val(), RDFUtil.convertToURI(attributeName));
+                triples.add(new Tuple3<>(RDFUtil.convertToURI(wrapperName), SourceGraph.HAS_ATTRIBUTE.val(), RDFUtil.convertToURI(attributeName)));
+                //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(attributeName), Namespaces.owl.val() + "sameAs", RDFUtil.convertToURI(v));
+                triples.add(new Tuple3<>(RDFUtil.convertToURI(attributeName), Namespaces.owl.val() + "sameAs", RDFUtil.convertToURI(v)));
             }
         });
+        RDFUtil.addBatchOfTriples(namedGraph,triples);
 
         //LAV mapping
         W.registerRDFDataset(RDFUtil.convertToURI(wrapperName));

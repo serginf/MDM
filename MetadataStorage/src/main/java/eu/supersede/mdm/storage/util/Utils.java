@@ -18,15 +18,20 @@ public class Utils {
         return new MongoClient(ConfigManager.getProperty("system_metadata_db_server"));
     }
 
+    public static Dataset copyOfTheDataset = null;
     public static Dataset getTDBDataset() {
-        try {
-            return TDBFactory.createDataset(ConfigManager.getProperty("metadata_db_file")/*"BolsterMetadataStorage"*/ +
-                    ConfigManager.getProperty("metadata_db_name")/*"BolsterMetadataStorage"*/);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (copyOfTheDataset == null) {
+            try {
+                return TDBFactory.createDataset(ConfigManager.getProperty("metadata_db_file")/*"BolsterMetadataStorage"*/ +
+                        ConfigManager.getProperty("metadata_db_name")/*"BolsterMetadataStorage"*/);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("An error has occurred obtaining TDB dataset");
+
+            }
         }
-        System.out.println("An error has occurred obtaining TDB dataset");
-        return null;
+        return copyOfTheDataset;
+//        return null;
     }
 
     public static SQLiteConnection getSQLiteConnection() {
