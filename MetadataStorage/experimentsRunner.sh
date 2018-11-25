@@ -1,10 +1,19 @@
 #!/bin/sh
-for i in `seq 2 7`
+for UPPER_BOUND_FEATURES_IN_G in 5 10 15 20 25
 do
-	for j in `seq 2 25`
+	for MAX_EDGES_IN_QUERY in `seq 2 7`
 	do
-		timeout 10m java -jar build/libs/MetadataStorage-0.0.1-SNAPSHOT.jar 50 5 $i $j 0.15 0.75
-                timeout 10m java -jar build/libs/MetadataStorage-0.0.1-SNAPSHOT.jar 50 5 $i $j 0.15 0.75
-                timeout 10m java -jar build/libs/MetadataStorage-0.0.1-SNAPSHOT.jar 50 5 $i $j 0.15 0.75
+		for MAX_WRAPPERS in `seq 2 25`
+		do
+			for COVERED_FEATURES_QUERY in 0.2 0.4 0.6 0.8 1
+			do
+				for COVERED_FEATURES_WRAPPER in 0.2 0.4 0.6 0.8 1
+				do
+					timeout 10m java -jar build/libs/MetadataStorage-0.0.1-SNAPSHOT.jar 50 $UPPER_BOUND_FEATURES_IN_G $MAX_EDGES_IN_QUERY $MAX_WRAPPERS $COVERED_FEATURES_QUERY $COVERED_FEATURES_WRAPPER
+					timeout 10m java -jar build/libs/MetadataStorage-0.0.1-SNAPSHOT.jar 50 $UPPER_BOUND_FEATURES_IN_G $MAX_EDGES_IN_QUERY $MAX_WRAPPERS $COVERED_FEATURES_QUERY $COVERED_FEATURES_WRAPPER
+					timeout 10m java -jar build/libs/MetadataStorage-0.0.1-SNAPSHOT.jar 50 $UPPER_BOUND_FEATURES_IN_G $MAX_EDGES_IN_QUERY $MAX_WRAPPERS $COVERED_FEATURES_QUERY $COVERED_FEATURES_WRAPPER
+				done
+			done
+		done
 	done
 done
