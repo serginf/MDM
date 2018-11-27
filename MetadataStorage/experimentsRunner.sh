@@ -1,7 +1,7 @@
 #!/bin/sh
 for UPPER_BOUND_FEATURES_IN_G in 5 10 20
 do
-	for MAX_EDGES_IN_QUERY in 4 6 8
+	for MAX_EDGES_IN_QUERY in 2 4 6 8
 	do
 		for MAX_WRAPPERS in 2 4 8 16 32
 		do
