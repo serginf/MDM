@@ -1,22 +1,22 @@
 package eu.supersede.mdm.storage.model.omq;
 
-    import com.google.common.collect.Maps;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
-import eu.supersede.mdm.storage.model.omq.relational_operators.AggregatedAttribute;
-import eu.supersede.mdm.storage.model.omq.relational_operators.AggregationFunctions;
 import eu.supersede.mdm.storage.model.omq.relational_operators.EquiJoin;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
 import eu.supersede.mdm.storage.util.KeyedTuple2;
-    import eu.supersede.mdm.storage.util.RDFUtil;
-    import eu.supersede.mdm.storage.util.Tuple2;
+import eu.supersede.mdm.storage.util.RDFUtil;
+import eu.supersede.mdm.storage.util.Tuple2;
 import eu.supersede.mdm.storage.util.Tuple3;
-import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.*;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -34,12 +34,11 @@ import org.apache.jena.sparql.core.BasicPattern;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.SimpleGraph;
-import scala.util.parsing.combinator.testing.Str;
 
 import java.util.*;
 
 @SuppressWarnings("Duplicates")
-public class QueryRewriting_SIGMOD {
+public class QueryRewriting_SIGMOD_Optimized {
 
     private static void addTriple(BasicPattern pattern, String s, String p, String o) {
         pattern.add(new Triple(new ResourceImpl(s).asNode(), new PropertyImpl(p).asNode(), new ResourceImpl(o).asNode()));
@@ -49,7 +48,6 @@ public class QueryRewriting_SIGMOD {
         model.add(new ResourceImpl(s), new PropertyImpl(p), new ResourceImpl(o));
     }
 
-
     private static OntModel ontologyFromPattern(BasicPattern PHI_p) {
         OntModel o = ModelFactory.createOntologyModel();
         PHI_p.getList().forEach(t ->
@@ -58,65 +56,94 @@ public class QueryRewriting_SIGMOD {
         return o;
     }
 
-    private static boolean covering(Set<Wrapper> W, BasicPattern PHI_p, Dataset T) {
-        BasicPattern coveredPattern = new BasicPattern();
+    private static boolean covering(Set<Wrapper> W, BasicPattern PHI_p) {
+        Set<Triple> coveredPattern = Sets.newHashSet();
         W.forEach(w -> {
-            RDFUtil.runAQuery("SELECT ?s ?p ?o WHERE { GRAPH <" + w.getWrapper() + "> { ?s ?p ?o } }", T).forEachRemaining(res -> {
-                coveredPattern.add(new Triple(new ResourceImpl(res.get("s").toString()).asNode(),
-                        new PropertyImpl(res.get("p").toString()).asNode(), new ResourceImpl(res.get("o").toString()).asNode()));
-            });
+            coveredPattern.addAll(allTriplesPerWrapper.get(w.getWrapper()));
         });
-        return coveredPattern.getList().containsAll(PHI_p.getList());
+        return coveredPattern.containsAll(Sets.newHashSet(PHI_p.getList()));
     }
 
-    private static boolean minimal(Set<Wrapper> W, BasicPattern PHI_p, Dataset T) {
+    private static boolean minimal(Set<Wrapper> W, BasicPattern PHI_p) {
         for (Wrapper w : W) {
-            if (covering(Sets.difference(W,Sets.newHashSet(w)),PHI_p,T)) return false;
+            if (covering(Sets.difference(W,Sets.newHashSet(w)),PHI_p)) return false;
         }
         return true;
     }
 
+    private static Map<String,Map<String,String>> attributesPerFeaturePerWrapper = Maps.newHashMap();
+    private static Map<String,Set<Triple>> allTriplesPerWrapper = Maps.newHashMap();
+    private static Map<String,Map<String,String>> IDsPerWrapperPerConcept = Maps.newHashMap();
+    private static void populateOptimizedStructures(Dataset T) {
+        RDFUtil.runAQuery("SELECT DISTINCT ?g WHERE { GRAPH ?g { ?s ?p ?o } }",T).forEachRemaining(w -> {
+            String wrapper = w.get("g").asResource().getURI();
+            if (wrapper.contains("Wrapper")) {
+                if (!attributesPerFeaturePerWrapper.containsKey(wrapper)) attributesPerFeaturePerWrapper.put(wrapper,Maps.newHashMap());
+                RDFUtil.runAQuery("SELECT DISTINCT ?f WHERE { GRAPH <" + wrapper + "> " +
+                        "{ ?f <" + Namespaces.rdf.val() + "type> <"+GlobalGraph.FEATURE.val()+"> } }",T).forEachRemaining(f -> {
+                    RDFUtil.runAQuery("SELECT DISTINCT ?a WHERE { GRAPH ?g " +
+                            "{ ?a <" + Namespaces.owl.val() + "sameAs> <"+f.get("f")+"> . " +
+                            "<" + wrapper + "> <" + SourceGraph.HAS_ATTRIBUTE.val() + "> ?a } }",T).forEachRemaining(a -> {
+                        if (!attributesPerFeaturePerWrapper.get(wrapper).containsKey(f.get("f"))) {
+                            attributesPerFeaturePerWrapper.get(wrapper).put(f.get("f").asResource().getURI(),a.get("a").asResource().getURI());
+                        }
+                    });
+                });
+            }
+        });
+
+        RDFUtil.runAQuery("SELECT DISTINCT ?g WHERE { GRAPH ?g { ?s ?p ?o } }",T).forEachRemaining(w -> {
+            String wrapper = w.get("g").asResource().getURI();
+            if (wrapper.contains("Wrapper")) {
+                BasicPattern triplesForW = new BasicPattern();
+                RDFUtil.runAQuery("SELECT ?s ?p ?o WHERE { GRAPH <" + wrapper + "> { ?s ?p ?o } }", T).forEachRemaining(res -> {
+                    triplesForW.add(new Triple(new ResourceImpl(res.get("s").toString()).asNode(),
+                            new PropertyImpl(res.get("p").toString()).asNode(), new ResourceImpl(res.get("o").toString()).asNode()));
+                });
+                allTriplesPerWrapper.put(wrapper,Sets.newHashSet(triplesForW.getList()));
+            }
+        });
+
+        RDFUtil.runAQuery("SELECT DISTINCT ?g ?c ?f WHERE { GRAPH ?g {" +
+                "?c <" + Namespaces.rdf.val() + "type> <"+GlobalGraph.CONCEPT.val()+"> ." +
+                "?f <" + Namespaces.rdfs.val() + "subClassOf> <" + Namespaces.sc.val() + "identifier> . " +
+                "?c <" + GlobalGraph.HAS_FEATURE.val() + "> ?f } }",T).forEachRemaining(gcf -> {
+            if (gcf.get("g").asResource().getURI().contains("Wrapper")) {
+                String wrapper = gcf.get("g").asResource().getURI();
+                String concept = gcf.get("c").asResource().getURI();
+                String feature = gcf.get("f").asResource().getURI();
+
+                IDsPerWrapperPerConcept.putIfAbsent(wrapper,Maps.newHashMap());
+                IDsPerWrapperPerConcept.get(wrapper).put(concept,feature);
+            }
+        });
+    }
 
     private static Set<ConjunctiveQuery> combineCQs(ConjunctiveQuery Ql, ConjunctiveQuery Qr, String Cl, String Cr, Dataset T) {
         Set<ConjunctiveQuery> res = Sets.newHashSet();
 
         Map<String, Tuple2<Set<Wrapper>, Set<Wrapper>>> IDs_and_their_wrappers = Maps.newHashMap();
         for (Wrapper w : Ql.getWrappers()) {
-            //Union should be OK, otherwise we would have not have entered the if that says that both collections of wrappers are disjoint
-            ResultSet rs = RDFUtil.runAQuery("SELECT DISTINCT ?f WHERE { GRAPH <" + w.getWrapper() + "> {" +
-                    "{ " +
-                    "?f <" + Namespaces.rdfs.val() + "subClassOf> <" + Namespaces.sc.val() + "identifier> . " +
-                    "<" + Cl + "> <" + GlobalGraph.HAS_FEATURE.val() + "> ?f } " +
-                    "UNION { " +
-                    "?f <" + Namespaces.rdfs.val() + "subClassOf> <" + Namespaces.sc.val() + "identifier> . " +
-                    "<" + Cr + "> <" + GlobalGraph.HAS_FEATURE.val() + "> ?f } " +
-                    "} }", T);
-            while (rs.hasNext()) {
-                String ID = rs.next().get("f").toString();
-                if (!IDs_and_their_wrappers.containsKey(ID))
-                    IDs_and_their_wrappers.put(ID, new Tuple2<>(Sets.newHashSet(), Sets.newHashSet()));
-                Set<Wrapper> wrappersForID = IDs_and_their_wrappers.get(ID)._1;
-                wrappersForID.add(w);
-                IDs_and_their_wrappers.put(ID, new Tuple2<>(wrappersForID, IDs_and_their_wrappers.get(ID)._2));
-            }
+            Set<String> rs = Sets.newHashSet(IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cl),IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cr));
+            rs.forEach(ID -> {
+                if (ID != null) {
+                    IDs_and_their_wrappers.putIfAbsent(ID, new Tuple2<>(Sets.newHashSet(), Sets.newHashSet()));
+                    Set<Wrapper> wrappersForID = IDs_and_their_wrappers.get(ID)._1;
+                    wrappersForID.add(w);
+                    IDs_and_their_wrappers.put(ID, new Tuple2<>(wrappersForID, IDs_and_their_wrappers.get(ID)._2));
+                }
+            });
         }
         for (Wrapper w : Qr.getWrappers()) {
-            ResultSet rs = RDFUtil.runAQuery("SELECT ?f WHERE { GRAPH <" + w.getWrapper() + "> {" +
-                    "{ " +
-                    "?f <" + Namespaces.rdfs.val() + "subClassOf> <" + Namespaces.sc.val() + "identifier> . " +
-                    "<" + Cl + "> <" + GlobalGraph.HAS_FEATURE.val() + "> ?f } " +
-                    "UNION { " +
-                    "?f <" + Namespaces.rdfs.val() + "subClassOf> <" + Namespaces.sc.val() + "identifier> . " +
-                    "<" + Cr + "> <" + GlobalGraph.HAS_FEATURE.val() + "> ?f } " +
-                    "} }", T);
-            while (rs.hasNext()) {
-                String ID = rs.next().get("f").toString();
-                if (!IDs_and_their_wrappers.containsKey(ID))
-                    IDs_and_their_wrappers.put(ID, new Tuple2<>(Sets.newHashSet(), Sets.newHashSet()));
-                Set<Wrapper> wrappersForID = IDs_and_their_wrappers.get(ID)._2;
-                wrappersForID.add(w);
-                IDs_and_their_wrappers.put(ID, new Tuple2<>(IDs_and_their_wrappers.get(ID)._1, wrappersForID));
-            }
+            Set<String> rs = Sets.newHashSet(IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cl),IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cr));
+            rs.forEach(ID -> {
+                if (ID != null) {
+                    IDs_and_their_wrappers.putIfAbsent(ID, new Tuple2<>(Sets.newHashSet(), Sets.newHashSet()));
+                    Set<Wrapper> wrappersForID = IDs_and_their_wrappers.get(ID)._2;
+                    wrappersForID.add(w);
+                    IDs_and_their_wrappers.put(ID, new Tuple2<>(IDs_and_their_wrappers.get(ID)._1, wrappersForID));
+                }
+            });
         }
         IDs_and_their_wrappers.entrySet().forEach(entry -> {
             String feature = entry.getKey();
@@ -126,15 +153,8 @@ public class QueryRewriting_SIGMOD {
                 Wrapper wrapperA = wrapper_combination.get(0);
                 Wrapper wrapperB = wrapper_combination.get(1);
 
-                String attA = RDFUtil.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
-                        "?a <" + Namespaces.owl.val() + "sameAs> <" + feature + "> . " +
-                        "<" + wrapperA.getWrapper() + "> <" + SourceGraph.HAS_ATTRIBUTE.val() + "> ?a } }", T)
-                        .nextSolution().get("a").asResource().getURI();
-
-                String attB = RDFUtil.runAQuery("SELECT ?a WHERE { GRAPH ?g {" +
-                        "?a <" + Namespaces.owl.val() + "sameAs> <" + feature + "> . " +
-                        "<" + wrapperB.getWrapper() + "> <" + SourceGraph.HAS_ATTRIBUTE.val() + "> ?a } }", T)
-                        .nextSolution().get("a").asResource().getURI();
+                String attA = attributesPerFeaturePerWrapper.get(wrapperA.getWrapper()).get(feature);
+                String attB = attributesPerFeaturePerWrapper.get(wrapperB.getWrapper()).get(feature);
 
                 ConjunctiveQuery mergedCQ = new ConjunctiveQuery();
                 mergedCQ.getProjections().addAll(Ql.getProjections());
@@ -152,7 +172,7 @@ public class QueryRewriting_SIGMOD {
     }
 
     private static void getCoveringCQs(BasicPattern G, Dataset T, String c, ConjunctiveQuery currentCQ, Set<ConjunctiveQuery> candidateCQs, Set<ConjunctiveQuery> coveringCQs) {
-        if (covering(currentCQ.getWrappers(),G,T)) {
+        if (covering(currentCQ.getWrappers(),G)) {
             coveringCQs.add(currentCQ);
         }
         else if (!candidateCQs.isEmpty()) {
@@ -303,6 +323,8 @@ public class QueryRewriting_SIGMOD {
 
     @SuppressWarnings("Duplicates")
     public static Tuple2<Integer,Set<ConjunctiveQuery>> rewriteToUnionOfConjunctiveQueries(Tuple3<Set<String>, BasicPattern, InfModel> queryStructure, Dataset T) {
+        populateOptimizedStructures(T);
+
         BasicPattern PHI_p = queryStructure._2;
         InfModel PHI_o = queryStructure._3;
 
@@ -413,6 +435,7 @@ public class QueryRewriting_SIGMOD {
             KeyedTuple2<String,Set<ConjunctiveQuery>> joinedVertex = new KeyedTuple2<>(source._1+"-"+target._1, Sets.newHashSet());
             Set<List<ConjunctiveQuery>> cartesian = Sets.cartesianProduct(source._2,target._2);
             intermediateResults += cartesian.size();
+
             for (List<ConjunctiveQuery> CP : cartesian) {
 
                 // 8 Merge CQs
@@ -420,7 +443,7 @@ public class QueryRewriting_SIGMOD {
                     //The partial CQs do not share any wrapper, must discover how to join them, this will add new equijoins
 
                     //First, let's check if the two sets of wrappers might generate non-minimal queries. If so, we can dismiss them.
-                    if (minimal(Sets.union(CP.get(0).getWrappers(),CP.get(1).getWrappers()),PHI_p,T)) {
+                    if (minimal(Sets.union(CP.get(0).getWrappers(),CP.get(1).getWrappers()),PHI_p)) {
 
                         //This conceptSource and conceptTarget are obtained from the original graph, we can only join
                         //the two partialCQs using the IDs of these two concepts -- see the queries next
