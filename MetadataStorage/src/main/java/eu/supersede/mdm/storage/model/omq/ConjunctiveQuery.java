@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ConjunctiveQuery {
+public class ConjunctiveQuery implements Comparable {
 
     private Set<String> projections;
     private Set<EquiJoin> joinConditions;
@@ -86,5 +86,10 @@ public class ConjunctiveQuery {
                 ", joinConditions=" + joinConditions +
                 ", wrappers=" + wrappers +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return Integer.compare(this.getWrappers().size(),((ConjunctiveQuery)o).getWrappers().size() );
     }
 }

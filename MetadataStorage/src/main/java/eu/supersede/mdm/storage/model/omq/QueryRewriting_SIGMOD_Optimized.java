@@ -36,6 +36,7 @@ import org.jgrapht.Graphs;
 import org.jgrapht.graph.SimpleGraph;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("Duplicates")
 public class QueryRewriting_SIGMOD_Optimized {
@@ -64,7 +65,7 @@ public class QueryRewriting_SIGMOD_Optimized {
         return coveredPattern.containsAll(Sets.newHashSet(PHI_p.getList()));
     }
 
-    private static boolean minimal(Set<Wrapper> W, BasicPattern PHI_p) {
+    private static boolean  minimal(Set<Wrapper> W, BasicPattern PHI_p) {
         for (Wrapper w : W) {
             if (covering(Sets.difference(W,Sets.newHashSet(w)),PHI_p)) return false;
         }
@@ -74,6 +75,8 @@ public class QueryRewriting_SIGMOD_Optimized {
     private static Map<String,Map<String,String>> attributesPerFeaturePerWrapper = Maps.newHashMap();
     private static Map<String,Set<Triple>> allTriplesPerWrapper = Maps.newHashMap();
     private static Map<String,Map<String,String>> IDsPerWrapperPerConcept = Maps.newHashMap();
+    private static Map<String,String> featuresPerAttribute = Maps.newHashMap(); // attribute - (sameAs) -> feature
+    private static Map<String,Set<String>> featuresPerConcept = Maps.newHashMap();
     private static void populateOptimizedStructures(Dataset T) {
         RDFUtil.runAQuery("SELECT DISTINCT ?g WHERE { GRAPH ?g { ?s ?p ?o } }",T).forEachRemaining(w -> {
             String wrapper = w.get("g").asResource().getURI();
@@ -117,6 +120,17 @@ public class QueryRewriting_SIGMOD_Optimized {
                 IDsPerWrapperPerConcept.get(wrapper).put(concept,feature);
             }
         });
+
+        RDFUtil.runAQuery("SELECT DISTINCT ?a ?f WHERE { GRAPH ?g {" +
+                "?a <" + Namespaces.owl.val() + "sameAs> ?f } }",T).forEachRemaining(af -> {
+            featuresPerAttribute.putIfAbsent(af.get("a").asResource().getURI(),af.get("f").asResource().getURI());
+        });
+
+        RDFUtil.runAQuery("SELECT DISTINCT ?c ?f WHERE { GRAPH ?g {" +
+                "?c <" + GlobalGraph.HAS_FEATURE.val() + "> ?f } }",T).forEachRemaining(cf -> {
+            featuresPerConcept.putIfAbsent(cf.get("c").asResource().getURI(),Sets.newHashSet());
+            featuresPerConcept.get(cf.get("c").asResource().getURI()).add(cf.get("f").asResource().getURI());
+        });
     }
 
     private static Set<ConjunctiveQuery> combineCQs(ConjunctiveQuery Ql, ConjunctiveQuery Qr, String Cl, String Cr, Dataset T) {
@@ -153,6 +167,8 @@ public class QueryRewriting_SIGMOD_Optimized {
                 Wrapper wrapperA = wrapper_combination.get(0);
                 Wrapper wrapperB = wrapper_combination.get(1);
 
+                //System.out.println(Cl + " + " + Cr + ": Feature "+feature+" --- "+wrapperA+"-"+wrapperB);
+
                 String attA = attributesPerFeaturePerWrapper.get(wrapperA.getWrapper()).get(feature);
                 String attB = attributesPerFeaturePerWrapper.get(wrapperB.getWrapper()).get(feature);
 
@@ -177,8 +193,14 @@ public class QueryRewriting_SIGMOD_Optimized {
         }
         else if (!candidateCQs.isEmpty()) {
             ConjunctiveQuery CQ = candidateCQs.iterator().next();
-            if (Sets.union(currentCQ.getProjections(),CQ.getProjections()).containsAll(currentCQ.getProjections()) &&
-                    !Sets.union(currentCQ.getProjections(),CQ.getProjections()).equals(currentCQ.getProjections())) {
+
+            Set<String> currentFeatures = currentCQ.getProjections().stream().map(a -> featuresPerAttribute.get(a)).collect(Collectors.toSet());
+            Set<String> contributedFeatures = CQ.getProjections().stream().map(a -> featuresPerAttribute.get(a)).collect(Collectors.toSet());
+
+            if (!Sets.union(currentFeatures,contributedFeatures).equals(currentFeatures)) {
+
+//            if (Sets.union(currentCQ.getProjections(),CQ.getProjections()).containsAll(currentCQ.getProjections()) &&
+//                    !Sets.union(currentCQ.getProjections(),CQ.getProjections()).equals(currentCQ.getProjections())) {
                 Set<ConjunctiveQuery> CQs = combineCQs(currentCQ,CQ,c,c,T);
                 CQs.forEach(Q -> {
                     getCoveringCQs(G,T,c,Q,Sets.difference(candidateCQs,Sets.newHashSet(CQ)),coveringCQs);
@@ -400,9 +422,17 @@ public class QueryRewriting_SIGMOD_Optimized {
                 candidateCQs.add(Q);
             });
 
+
             Set<ConjunctiveQuery> coveringCQs = Sets.newHashSet();
             while (!candidateCQs.isEmpty()) {
-                ConjunctiveQuery Q = candidateCQs.iterator().next();
+                ConjunctiveQuery Q = candidateCQs.stream().sorted((cq1, cq2) -> {
+                    Set<String> features1 = cq1.getProjections().stream().map(a1 -> featuresPerAttribute.get(a1)).collect(Collectors.toSet());
+                    Set<String> features2 = cq2.getProjections().stream().map(a2 -> featuresPerAttribute.get(a2)).collect(Collectors.toSet());
+                    return Integer.compare(
+                        Sets.intersection(featuresPerConcept.get(c),features1).size(),
+                        Sets.intersection(featuresPerConcept.get(c),features2).size()
+                    );
+                }).findFirst().get();
                 candidateCQs.remove(Q);
 
                 BasicPattern phi = new BasicPattern();
