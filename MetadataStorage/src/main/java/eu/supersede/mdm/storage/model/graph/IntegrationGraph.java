@@ -49,7 +49,11 @@ public class IntegrationGraph extends SimpleDirectedGraph<String, RelationshipEd
         System.out.print("digraph \"xx\" {");
         System.out.print("size=\"8,5\"");
         this.edgeSet().forEach(edge -> {
-            System.out.print("\""+this.getEdgeSource(edge)+"\" -> \""+this.getEdgeTarget(edge)+"\" [label = \""+edge.getLabel()+"\" ];");
+            String source = this.getEdgeSource(edge).replace("Concept","C").replace("Feature","F");
+            String target = this.getEdgeTarget(edge).replace("Concept","C").replace("Feature","F");
+            String label = edge.getLabel().replace("hasFeature","hasF");
+
+            System.out.print("\""+source+"\" -> \""+target+"\" [label = \""+label+"\" ];");
         });
         System.out.print("}");
         System.out.println("");

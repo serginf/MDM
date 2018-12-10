@@ -65,7 +65,7 @@ public class QueryRewriting_SIGMOD_Optimized {
         return coveredPattern.containsAll(Sets.newHashSet(PHI_p.getList()));
     }
 
-    private static boolean  minimal(Set<Wrapper> W, BasicPattern PHI_p) {
+    private static boolean minimal(Set<Wrapper> W, BasicPattern PHI_p) {
         for (Wrapper w : W) {
             if (covering(Sets.difference(W,Sets.newHashSet(w)),PHI_p)) return false;
         }
@@ -76,8 +76,8 @@ public class QueryRewriting_SIGMOD_Optimized {
     private static Map<String,Set<Triple>> allTriplesPerWrapper = Maps.newHashMap();
     private static Map<String,Map<String,String>> IDsPerWrapperPerConcept = Maps.newHashMap();
     private static Map<String,String> featuresPerAttribute = Maps.newHashMap(); // attribute - (sameAs) -> feature
-    private static Map<String,Set<String>> featuresPerConcept = Maps.newHashMap();
-    private static void populateOptimizedStructures(Dataset T) {
+    private static Map<String,Set<String>> featuresPerConceptInQuery = Maps.newHashMap();
+    private static void populateOptimizedStructures(Dataset T, BasicPattern queryPattern) {
         RDFUtil.runAQuery("SELECT DISTINCT ?g WHERE { GRAPH ?g { ?s ?p ?o } }",T).forEachRemaining(w -> {
             String wrapper = w.get("g").asResource().getURI();
             if (wrapper.contains("Wrapper")) {
@@ -126,11 +126,19 @@ public class QueryRewriting_SIGMOD_Optimized {
             featuresPerAttribute.putIfAbsent(af.get("a").asResource().getURI(),af.get("f").asResource().getURI());
         });
 
+        queryPattern.forEach(t -> {
+            if (t.getPredicate().equals(GlobalGraph.HAS_FEATURE.val())) {
+                featuresPerConceptInQuery.putIfAbsent(t.getSubject().toString(),Sets.newHashSet());
+                featuresPerConceptInQuery.get(t.getSubject().toString()).add(t.getObject().toString());
+            }
+        });
+
         RDFUtil.runAQuery("SELECT DISTINCT ?c ?f WHERE { GRAPH ?g {" +
                 "?c <" + GlobalGraph.HAS_FEATURE.val() + "> ?f } }",T).forEachRemaining(cf -> {
-            featuresPerConcept.putIfAbsent(cf.get("c").asResource().getURI(),Sets.newHashSet());
-            featuresPerConcept.get(cf.get("c").asResource().getURI()).add(cf.get("f").asResource().getURI());
+            featuresPerConceptInQuery.putIfAbsent(cf.get("c").asResource().getURI(),Sets.newHashSet());
+            featuresPerConceptInQuery.get(cf.get("c").asResource().getURI()).add(cf.get("f").asResource().getURI());
         });
+
     }
 
     private static Set<ConjunctiveQuery> combineCQs(ConjunctiveQuery Ql, ConjunctiveQuery Qr, String Cl, String Cr, Dataset T) {
@@ -345,9 +353,10 @@ public class QueryRewriting_SIGMOD_Optimized {
 
     @SuppressWarnings("Duplicates")
     public static Tuple2<Integer,Set<ConjunctiveQuery>> rewriteToUnionOfConjunctiveQueries(Tuple3<Set<String>, BasicPattern, InfModel> queryStructure, Dataset T) {
-        populateOptimizedStructures(T);
-
         BasicPattern PHI_p = queryStructure._2;
+
+        populateOptimizedStructures(T,PHI_p);
+
         InfModel PHI_o = queryStructure._3;
 
         //Identify query-related concepts
@@ -429,10 +438,10 @@ public class QueryRewriting_SIGMOD_Optimized {
                     Set<String> features1 = cq1.getProjections().stream().map(a1 -> featuresPerAttribute.get(a1)).collect(Collectors.toSet());
                     Set<String> features2 = cq2.getProjections().stream().map(a2 -> featuresPerAttribute.get(a2)).collect(Collectors.toSet());
                     return Integer.compare(
-                        Sets.intersection(featuresPerConcept.get(c),features1).size(),
-                        Sets.intersection(featuresPerConcept.get(c),features2).size()
+                        Sets.intersection(featuresPerConceptInQuery.get(c),features1).size(),
+                        Sets.intersection(featuresPerConceptInQuery.get(c),features2).size()
                     );
-                }).findFirst().get();
+                }).reduce((first,second)->second).get(); //get last
                 candidateCQs.remove(Q);
 
                 BasicPattern phi = new BasicPattern();
@@ -462,24 +471,30 @@ public class QueryRewriting_SIGMOD_Optimized {
             KeyedTuple2<String,Set<ConjunctiveQuery>> source = partialCQsGraph.getEdgeSource(edge);
             KeyedTuple2<String,Set<ConjunctiveQuery>> target = partialCQsGraph.getEdgeTarget(edge);
 
+            //This conceptSource and conceptTarget are obtained from the original graph, we can only join
+            //the two partialCQs using the IDs of these two concepts
+            String conceptSource = conceptsGraph.getEdgeSource(edge);
+            String conceptTarget = conceptsGraph.getEdgeTarget(edge);
+            BasicPattern phi = new BasicPattern();
+            //for (String c : source._1.split("-")) {
+                featuresPerConceptInQuery.get(conceptSource).forEach(f -> phi.add(new Triple(new ResourceImpl(conceptSource).asNode(),
+                        new PropertyImpl(GlobalGraph.HAS_FEATURE.val()).asNode(), new ResourceImpl(f).asNode())));
+            //}
+            //for (String c : target._1.split("-")) {
+                featuresPerConceptInQuery.get(conceptTarget).forEach(f -> phi.add(new Triple(new ResourceImpl(conceptTarget).asNode(),
+                        new PropertyImpl(GlobalGraph.HAS_FEATURE.val()).asNode(), new ResourceImpl(f).asNode())));
+            //}
+
             KeyedTuple2<String,Set<ConjunctiveQuery>> joinedVertex = new KeyedTuple2<>(source._1+"-"+target._1, Sets.newHashSet());
             Set<List<ConjunctiveQuery>> cartesian = Sets.cartesianProduct(source._2,target._2);
             intermediateResults += cartesian.size();
 
             for (List<ConjunctiveQuery> CP : cartesian) {
-
                 // 8 Merge CQs
                 if (Collections.disjoint(CP.get(0).getWrappers(),CP.get(1).getWrappers())) {
                     //The partial CQs do not share any wrapper, must discover how to join them, this will add new equijoins
-
                     //First, let's check if the two sets of wrappers might generate non-minimal queries. If so, we can dismiss them.
-                    if (minimal(Sets.union(CP.get(0).getWrappers(),CP.get(1).getWrappers()),PHI_p)) {
-
-                        //This conceptSource and conceptTarget are obtained from the original graph, we can only join
-                        //the two partialCQs using the IDs of these two concepts -- see the queries next
-                        String conceptSource = conceptsGraph.getEdgeSource(edge);
-                        String conceptTarget = conceptsGraph.getEdgeTarget(edge);
-
+                    if (minimal(Sets.union(CP.get(0).getWrappers(),CP.get(1).getWrappers()),/*PHI_p*/phi)) {
                         joinedVertex._2.addAll(combineCQs(CP.get(0),CP.get(1),conceptSource,conceptTarget,T));
                     }
                 } else {
