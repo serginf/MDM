@@ -13,14 +13,14 @@ public class measureMedians {
     public static void main(String[] args) throws Exception {
         System.out.println("UPPER_BOUND_FEATURES_IN_G;MAX_EDGES_IN_QUERY;MAX_WRAPPERS;COVERED_FEATURES_QUERY;COVERED_FEATURES_WRAPPER;SIZE_OF_INTERMEDIATE_RESULTS;SIZE_OF_CQs;PROCESSING_TIME");
 
-        String path = "/home/snadal/Desktop/experiments/tots_experiments_sense_excepcions.out";
+        String path = "/home/snadal/Desktop/experiments/11desembre/all.txt";
 
         Map<String, List<String>> allData = Maps.newHashMap();
         Files.readAllLines(new File(path).toPath()).forEach(line -> {
             String[] split = line.split(";");
 
-            String dimensions = split[0]+";"+split[1]+";"+split[2]+";"+split[3]+";"+split[4];
-            String values = split[5]+";"+split[6]+";"+split[7];
+            String dimensions = split[0]+";"+split[1]+";"+split[2]+";"+split[3]+";"+split[4]+";"+split[5];
+            String values = split[6]+";"+split[7]+";"+split[8];
             allData.putIfAbsent(dimensions, Lists.newArrayList());
 
             List<String> oldList = allData.get(dimensions);
