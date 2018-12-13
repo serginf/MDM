@@ -264,13 +264,15 @@ public class QueryRewriting_SIGMOD_Optimized {
         res.addAll(
                 Sets.cartesianProduct(queriesCoveringC_AcontainingID_A,queriesCoveringC_BcontainingID_A)
                         .parallelStream()
-                        .flatMap(cp -> findJoins(cp.get(0),cp.get(1),C_A,IDsPerConcept.get(C_A)).stream())
+                        //.flatMap(cp -> findJoins(cp.get(0),cp.get(1),C_A,IDsPerConcept.get(C_A)).stream())
+                        .map(cp -> findJoins(cp.get(0),cp.get(1),C_A,IDsPerConcept.get(C_A)))
                         .collect(Collectors.toSet()));
 
         res.addAll(
                 Sets.cartesianProduct(queriesCoveringC_AcontainingID_B,queriesCoveringC_BcontainingID_B)
                         .parallelStream()
-                        .flatMap(cp -> findJoins(cp.get(0),cp.get(1),C_B,IDsPerConcept.get(C_B)).stream())
+                        //.flatMap(cp -> findJoins(cp.get(0),cp.get(1),C_B,IDsPerConcept.get(C_B)).stream())
+                        .map(cp -> findJoins(cp.get(0),cp.get(1),C_B,IDsPerConcept.get(C_B)))
                         .collect(Collectors.toSet()));
 
         return res;
@@ -284,13 +286,28 @@ public class QueryRewriting_SIGMOD_Optimized {
         return mergedCQ;
     }
 
-    private static Set<ConjunctiveQuery> findJoins(ConjunctiveQuery CQ_A, ConjunctiveQuery CQ_B, String concept, String featureID) {
+    private static ConjunctiveQuery findJoins(ConjunctiveQuery CQ_A, ConjunctiveQuery CQ_B, String concept, String featureID) {
+//    private static Set<ConjunctiveQuery> findJoins(ConjunctiveQuery CQ_A, ConjunctiveQuery CQ_B, String concept, String featureID) {
         Set<Wrapper> coveringWrappersFromA =
                 CQ_A.getWrappers().parallelStream().filter(w -> wrappersPerConceptID.get(concept).contains(w.getWrapper())).collect(Collectors.toSet());
         //Wrappers from CQ_B covering featureID
         Set<Wrapper> coveringWrappersFromB =
                 CQ_B.getWrappers().parallelStream().filter(w -> wrappersPerConceptID.get(concept).contains(w.getWrapper())).collect(Collectors.toSet());
 
+        ConjunctiveQuery mergedCQ = new ConjunctiveQuery();
+        mergedCQ.getProjections().addAll(Sets.union(CQ_A.getProjections(),CQ_B.getProjections()));
+        mergedCQ.getJoinConditions().addAll(Sets.union(CQ_A.getJoinConditions(),CQ_B.getJoinConditions()));
+        mergedCQ.getWrappers().addAll(Sets.union(CQ_A.getWrappers(),CQ_B.getWrappers()));
+        Sets.cartesianProduct(coveringWrappersFromA,coveringWrappersFromB).parallelStream().forEach(wrapper_combination -> {
+            Wrapper wrapperA = wrapper_combination.get(0);
+            Wrapper wrapperB = wrapper_combination.get(1);
+
+            String attA = attributesPerFeaturePerWrapper.get(wrapperA.getWrapper()).get(featureID);
+            String attB = attributesPerFeaturePerWrapper.get(wrapperB.getWrapper()).get(featureID);
+            mergedCQ.getJoinConditions().add(new EquiJoin(attA,attB));
+        });
+        return mergedCQ;
+        /*
         return Sets.cartesianProduct(coveringWrappersFromA,coveringWrappersFromB).parallelStream().map(wrapper_combination -> {
             Wrapper wrapperA = wrapper_combination.get(0);
             Wrapper wrapperB = wrapper_combination.get(1);
@@ -305,7 +322,7 @@ public class QueryRewriting_SIGMOD_Optimized {
             mergedCQ.getWrappers().addAll(Sets.union(CQ_A.getWrappers(),CQ_B.getWrappers()));
 
             return mergedCQ;
-        }).collect(Collectors.toSet());
+        }).collect(Collectors.toSet());*/
     }
 
     private static void getCoveringCQs(BasicPattern G, Dataset T, String c, ConjunctiveQuery currentCQ, Set<ConjunctiveQuery> candidateCQs, Set<ConjunctiveQuery> coveringCQs) {
