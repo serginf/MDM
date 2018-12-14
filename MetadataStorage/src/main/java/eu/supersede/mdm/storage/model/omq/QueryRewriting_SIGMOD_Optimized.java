@@ -149,11 +149,11 @@ public class QueryRewriting_SIGMOD_Optimized {
         RDFUtil.runAQuery("SELECT DISTINCT ?g ?c WHERE { GRAPH ?g {" +
                 "?c <"+GlobalGraph.HAS_FEATURE.val()+"> ?f . " +
                 "?f <"+Namespaces.rdfs.val()+"subClassOf> <"+Namespaces.sc.val()+"identifier> } }",T).forEachRemaining(gc -> {
+            String concept = gc.get("c").asResource().getURI();
+            wrappersPerConceptID.putIfAbsent(concept,Sets.newHashSet());
+
             if (gc.get("g").asResource().getURI().contains("Wrapper")) {
                 String wrapper = gc.get("g").asResource().getURI();
-                String concept = gc.get("c").asResource().getURI();
-
-                wrappersPerConceptID.putIfAbsent(concept,Sets.newHashSet());
                 wrappersPerConceptID.get(concept).add(wrapper);
             }
         });
@@ -166,95 +166,94 @@ public class QueryRewriting_SIGMOD_Optimized {
             IDsPerConcept.putIfAbsent(concept,featureID);
         });
     }
-/*
-    private static Set<ConjunctiveQuery> combineCQs(ConjunctiveQuery Ql, ConjunctiveQuery Qr, String Cl, String Cr, Dataset T) {
-        Set<ConjunctiveQuery> res = Sets.newHashSet();
+    /*
+        private static Set<ConjunctiveQuery> combineCQs(ConjunctiveQuery Ql, ConjunctiveQuery Qr, String Cl, String Cr, Dataset T) {
+            Set<ConjunctiveQuery> res = Sets.newHashSet();
 
-        Map<String, Tuple2<Set<Wrapper>, Set<Wrapper>>> IDs_and_their_wrappers = Maps.newHashMap();
-        for (Wrapper w : Ql.getWrappers()) {
-            Set<String> rs = Sets.newHashSet(IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cl),IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cr));
-            rs.forEach(ID -> {
-                if (ID != null) {
-                    IDs_and_their_wrappers.putIfAbsent(ID, new Tuple2<>(Sets.newHashSet(), Sets.newHashSet()));
-                    Set<Wrapper> wrappersForID = IDs_and_their_wrappers.get(ID)._1;
-                    wrappersForID.add(w);
-                    IDs_and_their_wrappers.put(ID, new Tuple2<>(wrappersForID, IDs_and_their_wrappers.get(ID)._2));
-                }
+            Map<String, Tuple2<Set<Wrapper>, Set<Wrapper>>> IDs_and_their_wrappers = Maps.newHashMap();
+            for (Wrapper w : Ql.getWrappers()) {
+                Set<String> rs = Sets.newHashSet(IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cl),IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cr));
+                rs.forEach(ID -> {
+                    if (ID != null) {
+                        IDs_and_their_wrappers.putIfAbsent(ID, new Tuple2<>(Sets.newHashSet(), Sets.newHashSet()));
+                        Set<Wrapper> wrappersForID = IDs_and_their_wrappers.get(ID)._1;
+                        wrappersForID.add(w);
+                        IDs_and_their_wrappers.put(ID, new Tuple2<>(wrappersForID, IDs_and_their_wrappers.get(ID)._2));
+                    }
+                });
+            }
+            for (Wrapper w : Qr.getWrappers()) {
+                Set<String> rs = Sets.newHashSet(IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cl),IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cr));
+                rs.forEach(ID -> {
+                    if (ID != null) {
+                        IDs_and_their_wrappers.putIfAbsent(ID, new Tuple2<>(Sets.newHashSet(), Sets.newHashSet()));
+                        Set<Wrapper> wrappersForID = IDs_and_their_wrappers.get(ID)._2;
+                        wrappersForID.add(w);
+                        IDs_and_their_wrappers.put(ID, new Tuple2<>(IDs_and_their_wrappers.get(ID)._1, wrappersForID));
+                    }
+                });
+            }
+            IDs_and_their_wrappers.entrySet().forEach(entry -> {
+                String feature = entry.getKey();
+                //Different ways of doing the join
+                Sets.cartesianProduct(entry.getValue()._1, entry.getValue()._2).forEach(wrapper_combination -> {
+
+                    Wrapper wrapperA = wrapper_combination.get(0);
+                    Wrapper wrapperB = wrapper_combination.get(1);
+
+                    //System.out.println(Cl + " + " + Cr + ": Feature "+feature+" --- "+wrapperA+"-"+wrapperB);
+
+                    String attA = attributesPerFeaturePerWrapper.get(wrapperA.getWrapper()).get(feature);
+                    String attB = attributesPerFeaturePerWrapper.get(wrapperB.getWrapper()).get(feature);
+
+                    ConjunctiveQuery mergedCQ = new ConjunctiveQuery();
+                    mergedCQ.getProjections().addAll(Ql.getProjections());
+                    mergedCQ.getProjections().addAll(Qr.getProjections());
+                    mergedCQ.getJoinConditions().addAll(Ql.getJoinConditions());
+                    mergedCQ.getJoinConditions().addAll(Qr.getJoinConditions());
+                    mergedCQ.getJoinConditions().add(new EquiJoin(attA,attB));
+                    mergedCQ.getWrappers().addAll(Ql.getWrappers());
+                    mergedCQ.getWrappers().addAll(Qr.getWrappers());
+
+                    res.add(mergedCQ);
+                });
             });
+            return res;
         }
-        for (Wrapper w : Qr.getWrappers()) {
-            Set<String> rs = Sets.newHashSet(IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cl),IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cr));
-            rs.forEach(ID -> {
-                if (ID != null) {
-                    IDs_and_their_wrappers.putIfAbsent(ID, new Tuple2<>(Sets.newHashSet(), Sets.newHashSet()));
-                    Set<Wrapper> wrappersForID = IDs_and_their_wrappers.get(ID)._2;
-                    wrappersForID.add(w);
-                    IDs_and_their_wrappers.put(ID, new Tuple2<>(IDs_and_their_wrappers.get(ID)._1, wrappersForID));
-                }
-            });
-        }
-        IDs_and_their_wrappers.entrySet().forEach(entry -> {
-            String feature = entry.getKey();
-            //Different ways of doing the join
-            Sets.cartesianProduct(entry.getValue()._1, entry.getValue()._2).forEach(wrapper_combination -> {
-
-                Wrapper wrapperA = wrapper_combination.get(0);
-                Wrapper wrapperB = wrapper_combination.get(1);
-
-                //System.out.println(Cl + " + " + Cr + ": Feature "+feature+" --- "+wrapperA+"-"+wrapperB);
-
-                String attA = attributesPerFeaturePerWrapper.get(wrapperA.getWrapper()).get(feature);
-                String attB = attributesPerFeaturePerWrapper.get(wrapperB.getWrapper()).get(feature);
-
-                ConjunctiveQuery mergedCQ = new ConjunctiveQuery();
-                mergedCQ.getProjections().addAll(Ql.getProjections());
-                mergedCQ.getProjections().addAll(Qr.getProjections());
-                mergedCQ.getJoinConditions().addAll(Ql.getJoinConditions());
-                mergedCQ.getJoinConditions().addAll(Qr.getJoinConditions());
-                mergedCQ.getJoinConditions().add(new EquiJoin(attA,attB));
-                mergedCQ.getWrappers().addAll(Ql.getWrappers());
-                mergedCQ.getWrappers().addAll(Qr.getWrappers());
-
-                res.add(mergedCQ);
-            });
-        });
-        return res;
-    }
-*/
+    */
     private static Set<ConjunctiveQuery> combineSetsOfCQs(Set<ConjunctiveQuery> CQ_A, Set<ConjunctiveQuery> CQ_B, String C_A, String C_B) {
         Set<ConjunctiveQuery> res = Sets.newHashSet();
 
         //First, look for wrappers covering C_A and C_B (i.e., in both sides) that cover also the edge C_A -- E -- C_B
         // TODO check E is covered
         Set<Wrapper> wrappersInBothSides = Sets.intersection(
-                CQ_A.parallelStream().flatMap(cq->cq.getWrappers().parallelStream()).collect(Collectors.toSet()),
-                CQ_B.parallelStream().flatMap(cq->cq.getWrappers().parallelStream()).collect(Collectors.toSet()));
-        wrappersInBothSides.parallelStream().forEach(w -> {
+                CQ_A.stream().flatMap(cq->cq.getWrappers().stream()).collect(Collectors.toSet()),
+                CQ_B.stream().flatMap(cq->cq.getWrappers().stream()).collect(Collectors.toSet()));
+        wrappersInBothSides.stream().forEach(w -> {
             res.addAll(Sets.cartesianProduct(
-                CQ_A.parallelStream().filter(cq -> cq.getWrappers().contains(w)).collect(Collectors.toSet()),
-                CQ_B.parallelStream().filter(cq -> cq.getWrappers().contains(w)).collect(Collectors.toSet()))
-                    .parallelStream()
+                    CQ_A.stream().filter(cq -> cq.getWrappers().contains(w)).collect(Collectors.toSet()),
+                    CQ_B.stream().filter(cq -> cq.getWrappers().contains(w)).collect(Collectors.toSet()))
+                    .stream()
                     .map(cp -> mergeCQs(cp.get(0),cp.get(1)))
                     .collect(Collectors.toSet()));
         });
 
         // Now process the queries that have no shared wrappers
-        Set<ConjunctiveQuery> queriesWithNoSharedWrappersInA = CQ_A.parallelStream()
+        Set<ConjunctiveQuery> queriesWithNoSharedWrappersInA = CQ_A.stream()
                 .filter(cq -> Collections.disjoint(cq.getWrappers(),wrappersInBothSides)).collect(Collectors.toSet());
-        Set<ConjunctiveQuery> queriesWithNoSharedWrappersInB = CQ_B.parallelStream()
+        Set<ConjunctiveQuery> queriesWithNoSharedWrappersInB = CQ_B.stream()
                 .filter(cq -> Collections.disjoint(cq.getWrappers(),wrappersInBothSides)).collect(Collectors.toSet());
-
 
         Set<ConjunctiveQuery> queriesCoveringC_AcontainingID_A = Sets.newHashSet(queriesWithNoSharedWrappersInA);
 
         Set<ConjunctiveQuery> queriesCoveringC_AcontainingID_B = queriesWithNoSharedWrappersInA
-                .parallelStream()
-                .filter(cq -> !Collections.disjoint(wrappersPerConceptID.get(C_B),cq.getWrappers().parallelStream().map(w->w.getWrapper()).collect(Collectors.toSet())))
+                .stream()
+                .filter(cq -> !Collections.disjoint(wrappersPerConceptID.get(C_B),cq.getWrappers().stream().map(w->w.getWrapper()).collect(Collectors.toSet())))
                 .collect(Collectors.toSet());
 
         Set<ConjunctiveQuery> queriesCoveringC_BcontainingID_A = queriesWithNoSharedWrappersInB
-                .parallelStream()
-                .filter(cq -> !Collections.disjoint(wrappersPerConceptID.get(C_A),cq.getWrappers().parallelStream().map(w->w.getWrapper()).collect(Collectors.toSet())))
+                .stream()
+                .filter(cq -> !Collections.disjoint(wrappersPerConceptID.get(C_A),cq.getWrappers().stream().map(w->w.getWrapper()).collect(Collectors.toSet())))
                 .collect(Collectors.toSet());
 
         Set<ConjunctiveQuery> queriesCoveringC_BcontainingID_B = Sets.newHashSet(queriesWithNoSharedWrappersInB);
@@ -263,14 +262,14 @@ public class QueryRewriting_SIGMOD_Optimized {
 
         res.addAll(
                 Sets.cartesianProduct(queriesCoveringC_AcontainingID_A,queriesCoveringC_BcontainingID_A)
-                        .parallelStream()
+                        .stream()
                         //.flatMap(cp -> findJoins(cp.get(0),cp.get(1),C_A,IDsPerConcept.get(C_A)).stream())
                         .map(cp -> findJoins(cp.get(0),cp.get(1),C_A,IDsPerConcept.get(C_A)))
                         .collect(Collectors.toSet()));
 
         res.addAll(
                 Sets.cartesianProduct(queriesCoveringC_AcontainingID_B,queriesCoveringC_BcontainingID_B)
-                        .parallelStream()
+                        .stream()
                         //.flatMap(cp -> findJoins(cp.get(0),cp.get(1),C_B,IDsPerConcept.get(C_B)).stream())
                         .map(cp -> findJoins(cp.get(0),cp.get(1),C_B,IDsPerConcept.get(C_B)))
                         .collect(Collectors.toSet()));
@@ -289,16 +288,16 @@ public class QueryRewriting_SIGMOD_Optimized {
     private static ConjunctiveQuery findJoins(ConjunctiveQuery CQ_A, ConjunctiveQuery CQ_B, String concept, String featureID) {
 //    private static Set<ConjunctiveQuery> findJoins(ConjunctiveQuery CQ_A, ConjunctiveQuery CQ_B, String concept, String featureID) {
         Set<Wrapper> coveringWrappersFromA =
-                CQ_A.getWrappers().parallelStream().filter(w -> wrappersPerConceptID.get(concept).contains(w.getWrapper())).collect(Collectors.toSet());
+                CQ_A.getWrappers().stream().filter(w -> wrappersPerConceptID.get(concept).contains(w.getWrapper())).collect(Collectors.toSet());
         //Wrappers from CQ_B covering featureID
         Set<Wrapper> coveringWrappersFromB =
-                CQ_B.getWrappers().parallelStream().filter(w -> wrappersPerConceptID.get(concept).contains(w.getWrapper())).collect(Collectors.toSet());
+                CQ_B.getWrappers().stream().filter(w -> wrappersPerConceptID.get(concept).contains(w.getWrapper())).collect(Collectors.toSet());
 
         ConjunctiveQuery mergedCQ = new ConjunctiveQuery();
         mergedCQ.getProjections().addAll(Sets.union(CQ_A.getProjections(),CQ_B.getProjections()));
         mergedCQ.getJoinConditions().addAll(Sets.union(CQ_A.getJoinConditions(),CQ_B.getJoinConditions()));
         mergedCQ.getWrappers().addAll(Sets.union(CQ_A.getWrappers(),CQ_B.getWrappers()));
-        Sets.cartesianProduct(coveringWrappersFromA,coveringWrappersFromB).parallelStream().forEach(wrapper_combination -> {
+        Sets.cartesianProduct(coveringWrappersFromA,coveringWrappersFromB).stream().forEach(wrapper_combination -> {
             Wrapper wrapperA = wrapper_combination.get(0);
             Wrapper wrapperB = wrapper_combination.get(1);
 
@@ -308,7 +307,7 @@ public class QueryRewriting_SIGMOD_Optimized {
         });
         return mergedCQ;
         /*
-        return Sets.cartesianProduct(coveringWrappersFromA,coveringWrappersFromB).parallelStream().map(wrapper_combination -> {
+        return Sets.cartesianProduct(coveringWrappersFromA,coveringWrappersFromB).stream().map(wrapper_combination -> {
             Wrapper wrapperA = wrapper_combination.get(0);
             Wrapper wrapperB = wrapper_combination.get(1);
 
@@ -332,8 +331,8 @@ public class QueryRewriting_SIGMOD_Optimized {
         else if (!candidateCQs.isEmpty()) {
             ConjunctiveQuery CQ = candidateCQs.iterator().next();
 
-            Set<String> currentFeatures = currentCQ.getProjections().parallelStream().map(a -> featuresPerAttribute.get(a)).collect(Collectors.toSet());
-            Set<String> contributedFeatures = CQ.getProjections().parallelStream().map(a -> featuresPerAttribute.get(a)).collect(Collectors.toSet());
+            Set<String> currentFeatures = currentCQ.getProjections().stream().map(a -> featuresPerAttribute.get(a)).collect(Collectors.toSet());
+            Set<String> contributedFeatures = CQ.getProjections().stream().map(a -> featuresPerAttribute.get(a)).collect(Collectors.toSet());
 
             if (!Sets.union(currentFeatures,contributedFeatures).equals(currentFeatures)) {
 
@@ -373,15 +372,15 @@ public class QueryRewriting_SIGMOD_Optimized {
         //Define G_virtual as a copy of G
         InfModel G_virtual = ModelFactory.createOntologyModel();
         PHI_p.getList().forEach(t ->
-            addTriple(G_virtual, t.getSubject().getURI(), t.getPredicate().getURI(), t.getObject().getURI())
+                addTriple(G_virtual, t.getSubject().getURI(), t.getPredicate().getURI(), t.getObject().getURI())
         );
 
         //Retrieve aggregable features (i.e., those that have an aggregation function)
         Set<String> aggregableFeatures = Sets.newHashSet();
         RDFUtil.runAQuery("SELECT ?f WHERE { GRAPH ?g {" +
-            "?f <"+ GlobalGraph.HAS_AGGREGATION_FUNCTION.val()+"> ?t } }", T).forEachRemaining(f -> {
-                String feature = f.get("f").toString();
-                    if (PI.contains(feature)) aggregableFeatures.add(feature);
+                "?f <"+ GlobalGraph.HAS_AGGREGATION_FUNCTION.val()+"> ?t } }", T).forEachRemaining(f -> {
+            String feature = f.get("f").toString();
+            if (PI.contains(feature)) aggregableFeatures.add(feature);
         });
 
         aggregableFeatures.forEach(f -> {
@@ -392,7 +391,7 @@ public class QueryRewriting_SIGMOD_Optimized {
             //identify the member concepts related to each parent concept (adjacentParents)
             Set<String> adjacentParents = Sets.newHashSet();
             RDFUtil.runAQuery("SELECT ?n WHERE { GRAPH ?g { ?n <"+GlobalGraph.PART_OF.val()+">+ <"+parentConcept+"> } } ", T)
-                .forEachRemaining(adjacentParent -> adjacentParents.add(adjacentParent.get("n").toString()));
+                    .forEachRemaining(adjacentParent -> adjacentParents.add(adjacentParent.get("n").toString()));
 
             Set<String> aggregableNeighbours = Sets.newHashSet();
             RDFUtil.runAQuery("SELECT ?n WHERE { GRAPH ?g { " +
@@ -400,26 +399,26 @@ public class QueryRewriting_SIGMOD_Optimized {
                     "?n <"+GlobalGraph.PART_OF.val()+">+ ?top } UNION "+
                     "{ <"+parentConcept+"> ?p ?n . " +
                     "?bottom <"+ GlobalGraph.PART_OF.val()+">+ ?n } } }", T)
-                .forEachRemaining(aggregableNeighbour -> aggregableNeighbours.add(aggregableNeighbour.get("n").toString()));
+                    .forEachRemaining(aggregableNeighbour -> aggregableNeighbours.add(aggregableNeighbour.get("n").toString()));
 
             //identify regular neighbours in the query
             Set<String> regularNeighbours = Sets.newHashSet();
             RDFUtil.runAQuery("SELECT ?n WHERE { GRAPH ?g {" +
                     "<"+parentConcept+"> ?p ?n } } ",PHI_o)
-                .forEachRemaining(regularNeighbour -> {
-                    String URI_regularNeighbour = regularNeighbour.get("n").toString();
-                    if (!aggregableFeatures.contains(URI_regularNeighbour)
-                            && !aggregableNeighbours.contains(URI_regularNeighbour)
-                            && !adjacentParents.contains(URI_regularNeighbour)
-                            && /*tweak to avoid including rdf:type*/!URI_regularNeighbour.contains(GlobalGraph.CONCEPT.val())) {
-                        regularNeighbours.add(URI_regularNeighbour);
-                        //expand with subclasses from the query pattern
-                        RDFUtil.runAQuery("SELECT ?sc WHERE { " +
-                            "?sc <"+Namespaces.rdfs.val()+"subClassOf>+ <"+URI_regularNeighbour+"> }",PHI_o)
-                            .forEachRemaining(sc -> regularNeighbours.add(sc.get("sc").toString()));
+                    .forEachRemaining(regularNeighbour -> {
+                        String URI_regularNeighbour = regularNeighbour.get("n").toString();
+                        if (!aggregableFeatures.contains(URI_regularNeighbour)
+                                && !aggregableNeighbours.contains(URI_regularNeighbour)
+                                && !adjacentParents.contains(URI_regularNeighbour)
+                                && /*tweak to avoid including rdf:type*/!URI_regularNeighbour.contains(GlobalGraph.CONCEPT.val())) {
+                            regularNeighbours.add(URI_regularNeighbour);
+                            //expand with subclasses from the query pattern
+                            RDFUtil.runAQuery("SELECT ?sc WHERE { " +
+                                    "?sc <"+Namespaces.rdfs.val()+"subClassOf>+ <"+URI_regularNeighbour+"> }",PHI_o)
+                                    .forEachRemaining(sc -> regularNeighbours.add(sc.get("sc").toString()));
 
-                    }
-                });
+                        }
+                    });
 
             adjacentParents.forEach(par -> {
                 //Generate MatchQuery Qm
@@ -434,18 +433,18 @@ public class QueryRewriting_SIGMOD_Optimized {
                 });
                 aggregableNeighbours.forEach(aggregableNeighbour -> {
                     RDFUtil.runAQuery("SELECT ?p ?y WHERE { GRAPH ?g { <"+par+"> ?p ?y . ?y <"+GlobalGraph.PART_OF.val()+">+ <"+aggregableNeighbour+"> } }",T)
-                        .forEachRemaining(t -> {
-                            patternTriples.add(new Tuple3<>(par,t.get("p").toString(),t.get("y").toString()));
-                            //go up one at a time until in the top level (e.g., Hour)
-                            //we rely on automatic expansion of IDs later
-                            String currentLevel = t.get("y").toString();
-                            while (!currentLevel.equals(aggregableNeighbour)) {
-                                String top = RDFUtil.runAQuery("SELECT DISTINCT ?t WHERE { GRAPH ?g { <"+currentLevel+"> <"+GlobalGraph.PART_OF.val()+"> ?t } }",T)
-                                    .next().get("t").toString();
-                                patternTriples.add(new Tuple3<>(currentLevel,GlobalGraph.PART_OF.val(),top));
-                                currentLevel = top;
-                            }
-                        });
+                            .forEachRemaining(t -> {
+                                patternTriples.add(new Tuple3<>(par,t.get("p").toString(),t.get("y").toString()));
+                                //go up one at a time until in the top level (e.g., Hour)
+                                //we rely on automatic expansion of IDs later
+                                String currentLevel = t.get("y").toString();
+                                while (!currentLevel.equals(aggregableNeighbour)) {
+                                    String top = RDFUtil.runAQuery("SELECT DISTINCT ?t WHERE { GRAPH ?g { <"+currentLevel+"> <"+GlobalGraph.PART_OF.val()+"> ?t } }",T)
+                                            .next().get("t").toString();
+                                    patternTriples.add(new Tuple3<>(currentLevel,GlobalGraph.PART_OF.val(),top));
+                                    currentLevel = top;
+                                }
+                            });
                 });
                 patternTriples.forEach(triple -> addTriple(matchQuery,triple._1,triple._2,triple._3));
 
@@ -517,25 +516,25 @@ public class QueryRewriting_SIGMOD_Optimized {
             Map<Wrapper,Set<String>> attsPerWrapper = Maps.newHashMap();
             ResultSet resultSetFeatures = RDFUtil.runAQuery("SELECT ?f " +
                     "WHERE {<"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?f }",PHI_o);
-        // 4 Unfold LAV mappings
+            // 4 Unfold LAV mappings
             Set<String> F = Sets.newHashSet();
             resultSetFeatures.forEachRemaining(f -> F.add(f.get("f").asResource().getURI()));
 
             //Case when the Concept has no data, we need to identify the wrapper using the concept instead of the feature
             if (F.isEmpty()) {
                 RDFUtil.runAQuery("SELECT ?g WHERE { GRAPH ?g { <" + c + "> <" + Namespaces.rdf.val() + "type" + "> <" + GlobalGraph.CONCEPT.val() + "> } }", T)
-                    .forEachRemaining(wrapper -> {
-                        String w = wrapper.get("g").toString();
-                        //System.out.println("        "+w);
-                        if (!w.equals(Namespaces.T.val()) && w.contains("Wrapper")/*last min bugfix*/) {
-                            attsPerWrapper.putIfAbsent(new Wrapper(w), Sets.newHashSet());
-                        }
-                    });
+                        .forEachRemaining(wrapper -> {
+                            String w = wrapper.get("g").toString();
+                            //System.out.println("        "+w);
+                            if (!w.equals(Namespaces.T.val()) && w.contains("Wrapper")/*last min bugfix*/) {
+                                attsPerWrapper.putIfAbsent(new Wrapper(w), Sets.newHashSet());
+                            }
+                        });
             }
             F.forEach(f -> {
                 //System.out.println("    "+f);
                 ResultSet W = RDFUtil.runAQuery("SELECT ?g " +
-                    "WHERE { GRAPH ?g { <" + c + "> <" + GlobalGraph.HAS_FEATURE.val() + "> <" + f + "> } }", T);
+                        "WHERE { GRAPH ?g { <" + c + "> <" + GlobalGraph.HAS_FEATURE.val() + "> <" + f + "> } }", T);
                 W.forEachRemaining(wRes -> {
                     String w = wRes.get("g").asResource().getURI();
                     // Distinguish the ontology named graph
@@ -564,12 +563,12 @@ public class QueryRewriting_SIGMOD_Optimized {
 
             Set<ConjunctiveQuery> coveringCQs = Sets.newHashSet();
             while (!candidateCQs.isEmpty()) {
-                ConjunctiveQuery Q = candidateCQs.parallelStream().sorted((cq1, cq2) -> {
-                    Set<String> features1 = cq1.getProjections().parallelStream().map(a1 -> featuresPerAttribute.get(a1)).collect(Collectors.toSet());
-                    Set<String> features2 = cq2.getProjections().parallelStream().map(a2 -> featuresPerAttribute.get(a2)).collect(Collectors.toSet());
+                ConjunctiveQuery Q = candidateCQs.stream().sorted((cq1, cq2) -> {
+                    Set<String> features1 = cq1.getProjections().stream().map(a1 -> featuresPerAttribute.get(a1)).collect(Collectors.toSet());
+                    Set<String> features2 = cq2.getProjections().stream().map(a2 -> featuresPerAttribute.get(a2)).collect(Collectors.toSet());
                     return Integer.compare(
-                        Sets.intersection(featuresPerConceptInQuery.get(c),features1).size(),
-                        Sets.intersection(featuresPerConceptInQuery.get(c),features2).size()
+                            Sets.intersection(featuresPerConceptInQuery.get(c),features1).size(),
+                            Sets.intersection(featuresPerConceptInQuery.get(c),features2).size()
                     );
                 }).reduce((first,second)->second).get(); //get last
                 candidateCQs.remove(Q);
@@ -585,8 +584,8 @@ public class QueryRewriting_SIGMOD_Optimized {
 
         //Add edges to the graph of partialCQs
         conceptsGraph.edgeSet().forEach(edge -> {
-            KeyedTuple2<String,Set<ConjunctiveQuery>> source = partialCQsGraph.vertexSet().parallelStream().filter(v -> v.equals(conceptsGraph.getEdgeSource(edge))).findFirst().get();
-            KeyedTuple2<String,Set<ConjunctiveQuery>> target = partialCQsGraph.vertexSet().parallelStream().filter(v -> v.equals(conceptsGraph.getEdgeTarget(edge))).findFirst().get();
+            KeyedTuple2<String,Set<ConjunctiveQuery>> source = partialCQsGraph.vertexSet().stream().filter(v -> v.equals(conceptsGraph.getEdgeSource(edge))).findFirst().get();
+            KeyedTuple2<String,Set<ConjunctiveQuery>> target = partialCQsGraph.vertexSet().stream().filter(v -> v.equals(conceptsGraph.getEdgeTarget(edge))).findFirst().get();
             partialCQsGraph.addEdge(source, target, conceptsGraph.getEdge(source._1,target._1));
         });
 
@@ -618,30 +617,30 @@ public class QueryRewriting_SIGMOD_Optimized {
             KeyedTuple2<String,Set<ConjunctiveQuery>> joinedVertex = new KeyedTuple2<>(source._1+"-"+target._1, Sets.newHashSet());
             joinedVertex._2.addAll(combineSetsOfCQs(source._2,target._2,conceptSource,conceptTarget));
             /**
-            Set<List<ConjunctiveQuery>> cartesian = Sets.cartesianProduct(source._2,target._2);
+             Set<List<ConjunctiveQuery>> cartesian = Sets.cartesianProduct(source._2,target._2);
 
-            for (List<ConjunctiveQuery> CP : cartesian) {
-                // 8 Merge CQs
-                if (Collections.disjoint(CP.get(0).getWrappers(),CP.get(1).getWrappers())) {
-                    System.out.println(CP.get(0).getWrappers() + " --- " + CP.get(1).getWrappers());
-                    //The partial CQs do not share any wrapper, must discover how to join them, this will add new equijoins
-                    //First, let's check if the two sets of wrappers might generate non-minimal queries. If so, we can dismiss them.
-                    if (minimal(Sets.union(CP.get(0).getWrappers(),CP.get(1).getWrappers()),phi)) {
-                        joinedVertex._2.addAll(combineCQs(CP.get(0),CP.get(1),conceptSource,conceptTarget,T));
-                    }
-                } else {
-                    ConjunctiveQuery mergedCQ = new ConjunctiveQuery();
-                    mergedCQ.getProjections().addAll(CP.get(0).getProjections());
-                    mergedCQ.getProjections().addAll(CP.get(1).getProjections());
-                    mergedCQ.getJoinConditions().addAll(CP.get(0).getJoinConditions());
-                    mergedCQ.getJoinConditions().addAll(CP.get(1).getJoinConditions());
-                    mergedCQ.getWrappers().addAll(CP.get(0).getWrappers());
-                    mergedCQ.getWrappers().addAll(CP.get(1).getWrappers());
+             for (List<ConjunctiveQuery> CP : cartesian) {
+             // 8 Merge CQs
+             if (Collections.disjoint(CP.get(0).getWrappers(),CP.get(1).getWrappers())) {
+             System.out.println(CP.get(0).getWrappers() + " --- " + CP.get(1).getWrappers());
+             //The partial CQs do not share any wrapper, must discover how to join them, this will add new equijoins
+             //First, let's check if the two sets of wrappers might generate non-minimal queries. If so, we can dismiss them.
+             if (minimal(Sets.union(CP.get(0).getWrappers(),CP.get(1).getWrappers()),phi)) {
+             joinedVertex._2.addAll(combineCQs(CP.get(0),CP.get(1),conceptSource,conceptTarget,T));
+             }
+             } else {
+             ConjunctiveQuery mergedCQ = new ConjunctiveQuery();
+             mergedCQ.getProjections().addAll(CP.get(0).getProjections());
+             mergedCQ.getProjections().addAll(CP.get(1).getProjections());
+             mergedCQ.getJoinConditions().addAll(CP.get(0).getJoinConditions());
+             mergedCQ.getJoinConditions().addAll(CP.get(1).getJoinConditions());
+             mergedCQ.getWrappers().addAll(CP.get(0).getWrappers());
+             mergedCQ.getWrappers().addAll(CP.get(1).getWrappers());
 
-                    joinedVertex._2.add(mergedCQ);
-                }
+             joinedVertex._2.add(mergedCQ);
+             }
 
-            }**/
+             }**/
 
 
             //Remove the processed edge
@@ -667,7 +666,7 @@ public class QueryRewriting_SIGMOD_Optimized {
             partialCQsGraph.removeVertex(target);
         }
 
-       return new Tuple2<>((intermediateResults/(numberOfEdges==0?1:numberOfEdges)),partialCQsGraph.vertexSet().stream().findFirst().get()._2);
+        return new Tuple2<>((intermediateResults/(numberOfEdges==0?1:numberOfEdges)),partialCQsGraph.vertexSet().stream().findFirst().get()._2);
     }
 
 
