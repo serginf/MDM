@@ -13,8 +13,14 @@ do
 						for COVERED_FEATURES_WRAPPER in 0.3 0.6 0.9 #0.2 0.4 0.6 0.8 1
 						do
 							timeout 10m java -jar build/libs/MetadataStorage-0.0.1-SNAPSHOT.jar 50 $UPPER_BOUND_FEATURES_IN_G $N_EDGES_IN_QUERY $N_WRAPPERS $N_EDGES_COVERED_BY_WRAPPERS $COVERED_FEATURES_QUERY $COVERED_FEATURES_WRAPPER
+							sysctl -w vm.drop_caches=3 > /dev/null #free memory
+							sync && echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null #free memory
 							timeout 10m java -jar build/libs/MetadataStorage-0.0.1-SNAPSHOT.jar 50 $UPPER_BOUND_FEATURES_IN_G $N_EDGES_IN_QUERY $N_WRAPPERS $N_EDGES_COVERED_BY_WRAPPERS $COVERED_FEATURES_QUERY $COVERED_FEATURES_WRAPPER
+							sysctl -w vm.drop_caches=3 > /dev/null #free memory
+							sync && echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null #free memory
 							timeout 10m java -jar build/libs/MetadataStorage-0.0.1-SNAPSHOT.jar 50 $UPPER_BOUND_FEATURES_IN_G $N_EDGES_IN_QUERY $N_WRAPPERS $N_EDGES_COVERED_BY_WRAPPERS $COVERED_FEATURES_QUERY $COVERED_FEATURES_WRAPPER
+							sysctl -w vm.drop_caches=3 > /dev/null #free memory
+							sync && echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null #free memory
 						done
 					done
 				fi
