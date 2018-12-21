@@ -221,7 +221,12 @@ public class QueryRewriting_SIGMOD_Optimized {
             return res;
         }
     */
-    private static Set<ConjunctiveQuery> combineSetsOfCQs(Set<ConjunctiveQuery> CQ_A, Set<ConjunctiveQuery> CQ_B, String C_A, String C_B) {
+    private static Set<ConjunctiveQuery> combineSetsOfCQs(Set<ConjunctiveQuery> CQ_A, Set<ConjunctiveQuery> CQ_B, String C_A, String C_B, String edge) {
+        //Covered graph
+        BasicPattern phi = new BasicPattern();
+        if (edge!=null)
+            phi.add(new Triple(new ResourceImpl(C_A).asNode(),new PropertyImpl(edge).asNode(),new ResourceImpl(C_B).asNode()));
+
         Set<ConjunctiveQuery> res = Sets.newHashSet();
 
         //First, look for wrappers covering C_A and C_B (i.e., in both sides) that cover also the edge C_A -- E -- C_B
@@ -235,6 +240,7 @@ public class QueryRewriting_SIGMOD_Optimized {
                     CQ_B.stream().filter(cq -> cq.getWrappers().contains(w)).collect(Collectors.toSet()))
                     .stream()
                     .map(cp -> mergeCQs(cp.get(0),cp.get(1)))
+                    .filter(cq -> edge==null || minimal(cq.getWrappers(),phi))
                     .collect(Collectors.toSet()));
         });
 
@@ -282,6 +288,7 @@ public class QueryRewriting_SIGMOD_Optimized {
         mergedCQ.getProjections().addAll(Sets.union(CQ_A.getProjections(),CQ_B.getProjections()));
         mergedCQ.getJoinConditions().addAll(Sets.union(CQ_A.getJoinConditions(),CQ_B.getJoinConditions()));
         mergedCQ.getWrappers().addAll(Sets.union(CQ_A.getWrappers(),CQ_B.getWrappers()));
+
         return mergedCQ;
     }
 
@@ -338,7 +345,7 @@ public class QueryRewriting_SIGMOD_Optimized {
 
 //            if (Sets.union(currentCQ.getProjections(),CQ.getProjections()).containsAll(currentCQ.getProjections()) &&
 //                    !Sets.union(currentCQ.getProjections(),CQ.getProjections()).equals(currentCQ.getProjections())) {
-                Set<ConjunctiveQuery> CQs = combineSetsOfCQs(Sets.newHashSet(currentCQ),Sets.newHashSet(CQ),c,c);//combineCQs(currentCQ,CQ,c,c,T);
+                Set<ConjunctiveQuery> CQs = combineSetsOfCQs(Sets.newHashSet(currentCQ),Sets.newHashSet(CQ),c,c,null);//combineCQs(currentCQ,CQ,c,c,T);
                 CQs.forEach(Q -> {
                     getCoveringCQs(G,T,c,Q,Sets.difference(candidateCQs,Sets.newHashSet(CQ)),coveringCQs);
                 });
@@ -615,7 +622,7 @@ public class QueryRewriting_SIGMOD_Optimized {
             //}
 
             KeyedTuple2<String,Set<ConjunctiveQuery>> joinedVertex = new KeyedTuple2<>(source._1+"-"+target._1, Sets.newHashSet());
-            joinedVertex._2.addAll(combineSetsOfCQs(source._2,target._2,conceptSource,conceptTarget));
+            joinedVertex._2.addAll(combineSetsOfCQs(source._2,target._2,conceptSource,conceptTarget,edge));
             /**
              Set<List<ConjunctiveQuery>> cartesian = Sets.cartesianProduct(source._2,target._2);
 
