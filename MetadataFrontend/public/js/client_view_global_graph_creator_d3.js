@@ -58,10 +58,10 @@ $(function () {
     // Set color for the metamodel selectors
     //, style="background-color: #33CCCC"
     $("#"+(Global.CONCEPT.name)).css("background-color",Global.CONCEPT.color);
-    $("#"+(Global.MEMBERCONCEPT.name)).css("background-color",Global.MEMBERCONCEPT.color);
+    // $("#"+(Global.MEMBERCONCEPT.name)).css("background-color",Global.MEMBERCONCEPT.color);
     $("#"+(Global.FEATURE_ID.name)).css("background-color",Global.FEATURE_ID.color);
     $("#"+(Global.FEATURE.name)).css("background-color",Global.FEATURE.color);
-    $("#"+(Global.AGGREGATIONFUNCTION.name)).css("background-color",Global.AGGREGATIONFUNCTION.color);
+    // $("#"+(Global.AGGREGATIONFUNCTION.name)).css("background-color",Global.AGGREGATIONFUNCTION.color);
 });
 
 $(function () {
@@ -262,7 +262,6 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
             /*    if (window.File && window.FileReader && window.FileList && window.Blob) {
                 var uploadFile = this.files[0];
                 var filereader = new window.FileReader();
-
                 filereader.onload = function(){
                 var txtRes = filereader.result;
                 // TODO better error handling
@@ -284,7 +283,6 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
                 }
                 };
                 filereader.readAsText(uploadFile);
-
                 } else {
                 alert("Your browser won't let you save this graph -- try upgrading your browser to IE 10+ or Chrome or Firefox.");
                 }
@@ -307,9 +305,7 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
             });
             //Rename attribute links to edges
             jsonObj.edges = jsonObj.links;
-
             alert(JSON.stringify(jsonObj));
-
             thisGraph.deleteGraph(true);
             thisGraph.nodes = jsonObj.nodes;
             thisGraph.setIdCt(jsonObj.nodes.length + 1);
@@ -557,29 +553,29 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
             var newEdge = {source: mouseDownNode, target: d, title: currentGlobalGraph.defaultNamespace};
 
             if (newEdge.source.namespace == Global.CONCEPT.iri &&
-                    (newEdge.target.namespace == Global.FEATURE.iri || newEdge.target.namespace == Global.FEATURE_ID.iri)) {
+                (newEdge.target.namespace == Global.FEATURE.iri || newEdge.target.namespace == Global.FEATURE_ID.iri)) {
                 newEdge.title = Global.HAS_FEATURE.iri;
             }
-            else if (newEdge.source.namespace == Global.MEMBERCONCEPT.iri && newEdge.target.namespace == Global.FEATURE_ID.iri) {
+            /*else if (newEdge.source.namespace == Global.MEMBERCONCEPT.iri && newEdge.target.namespace == Global.FEATURE_ID.iri) {
                 newEdge.title = Global.HAS_FEATURE.iri;
             }
             else if (newEdge.source.namespace == Global.MEMBERCONCEPT.iri && newEdge.target.namespace == Global.FEATURE.iri) {
                 newEdge.title = Global.HAS_FEATURE.iri;
-            }
+            }*/
             /*else if (newEdge.source.namespace == Global.MEMBERCONCEPT.iri && newEdge.target.namespace == Global.CONCEPT.iri) {
                 newEdge.title = Global.PART_OF.iri;
             }*/
-            else if (newEdge.source.namespace == Global.MEMBERCONCEPT.iri && newEdge.target.namespace == Global.MEMBERCONCEPT.iri) {
+            /*else if (newEdge.source.namespace == Global.MEMBERCONCEPT.iri && newEdge.target.namespace == Global.MEMBERCONCEPT.iri) {
                 newEdge.title = Global.PART_OF.iri;
-            }
-            else if (newEdge.source.namespace == Global.FEATURE.iri && newEdge.target.namespace == Global.AGGREGATIONFUNCTION.iri) {
+            }*/
+            /*else if (newEdge.source.namespace == Global.FEATURE.iri && newEdge.target.namespace == Global.AGGREGATIONFUNCTION.iri) {
                 newEdge.title = Global.HAS_AGGREGATIONFUNCTION.iri;
-            }
-            else if (newEdge.source.namespace == Global.FEATURE_ID.iri && newEdge.target.namespace == Global.AGGREGATIONFUNCTION.iri) {
+            }*/
+            /*else if (newEdge.source.namespace == Global.FEATURE_ID.iri && newEdge.target.namespace == Global.AGGREGATIONFUNCTION.iri) {
                 newEdge.title = Global.HAS_AGGREGATIONFUNCTION.iri;
-            }
+            }*/
             else if (newEdge.source.namespace == Global.CONCEPT.iri && newEdge.target.namespace == Global.CONCEPT.iri
-            || newEdge.source.namespace == Global.MEMBERCONCEPT.iri && newEdge.target.namespace == Global.CONCEPT.iri) {
+            /*||  newEdge.source.namespace == Global.MEMBERCONCEPT.iri  &&  newEdge.target.namespace == Global.CONCEPT.iri */) {
                 //TODO aresta nova
                 // shift-clicked node: edit text content
                 var thisGraph = this;
@@ -630,21 +626,20 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
                 /*if (d3.event.shiftKey) {
                     // shift-clicked node: edit text content
                     var d3txt = thisGraph.changeTextOfNode(d3node, d);
-
                     var txtNode = d3txt.node();
                     thisGraph.selectElementContents(txtNode);
                     txtNode.focus();
                 } else {*/
-                    if (state.selectedEdge) {
-                        thisGraph.removeSelectFromEdge();
-                    }
-                    var prevNode = state.selectedNode;
+                if (state.selectedEdge) {
+                    thisGraph.removeSelectFromEdge();
+                }
+                var prevNode = state.selectedNode;
 
-                    if (!prevNode || prevNode.id !== d.id) {
-                        thisGraph.replaceSelectNode(d3node, d);
-                    } else {
-                        thisGraph.removeSelectFromNode();
-                    }
+                if (!prevNode || prevNode.id !== d.id) {
+                    thisGraph.replaceSelectNode(d3node, d);
+                } else {
+                    thisGraph.removeSelectFromNode();
+                }
                 //}
             }
         }
@@ -699,20 +694,18 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
     };
 
     // paths mouse up
-  /*  GraphCreator.prototype.pathMouseUp = function (d3node, d) {
-        //change name of existing edge
-        console.log("d:" + d);
-        if (d3.event.shiftKey && d.source.namespace == Global.CONCEPT.iri && d.target.namespace == Global.CONCEPT.iri) {
-            var thisGraph = this;
-
-            // shift-clicked node: edit text content
-            var d3txt = thisGraph.changeTextOfEdge(d3node, d);
-
-            var txtNode = d3txt.node();
-            thisGraph.selectElementContents(txtNode);
-            txtNode.focus();
-        }
-    }*/
+    /*  GraphCreator.prototype.pathMouseUp = function (d3node, d) {
+          //change name of existing edge
+          console.log("d:" + d);
+          if (d3.event.shiftKey && d.source.namespace == Global.CONCEPT.iri && d.target.namespace == Global.CONCEPT.iri) {
+              var thisGraph = this;
+              // shift-clicked node: edit text content
+              var d3txt = thisGraph.changeTextOfEdge(d3node, d);
+              var txtNode = d3txt.node();
+              thisGraph.selectElementContents(txtNode);
+              txtNode.focus();
+          }
+      }*/
 
     // mousedown on main svg
     GraphCreator.prototype.svgMouseDown = function () {
@@ -801,7 +794,6 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
                     .attr('marker-start', function(d,i){ return 'url(#marker_' + d.name + ')' })
                     .attr('marker-end', function(d,i){ return 'url(#marker_' + d.name  + ')' })
                     .attr('class', 'link');
-
                 var edgelabels = d3.selectAll(".edgelabel")
                     .data(thisGraph.paths);
                     .enter()
@@ -812,7 +804,6 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
                         'dx':function(d,i){ return euclidean(d.source.x,d.source.y,d.target.x,d.target.y)/3-2*d.name.length;},
                         'dy':20,
                         'fill':'#aaa'});
-
                 edgelabels.append('textPath')
                     .attr('xlink:href',function(d,i) {return '#edgepath'+i})
                     .style("pointer-events", "none")
@@ -892,7 +883,7 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
 
         thisGraph.paths.select("g text").attr("transform", function (d) {
             return "translate(" + (d.source.x+d.target.x)/2 + "," + (d.source.y+d.target.y)/2 + ")";
-            })
+        })
             .text(function(d) {
                 return d.title;
             });
@@ -952,7 +943,7 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
     // warn the user when leaving
     window.onbeforeunload = function () {
         $("#download-input").click();
-       // return null;
+        // return null;
         return undefined;
     };
 
