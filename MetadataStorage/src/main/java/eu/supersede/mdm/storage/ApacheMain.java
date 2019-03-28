@@ -14,6 +14,7 @@ public class ApacheMain {
     public static String configPath;
 
     public static void main(String[] args) throws Exception {
+        System.out.println("Apachemain");
         if (args.length != 1) {
             throw new Exception("Parameter missing: configuration file path");
         }

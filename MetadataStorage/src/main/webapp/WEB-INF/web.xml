@@ -43,9 +43,10 @@
     <context-param>
         <param-name>metadata_db_path</param-name>
         <!--<param-value>/opt/jenkins/apps/jenkins/jenkins_home/workspace/MetadataManagementSystem/data_management/MetadataManagementSystem/MetadataStorage</param-value>-->
-        <param-value>/home/snadal/UPC/Sergi/SUPERSEDE/Development/big_data/data_management/MetadataManagementSystem/MetadataStorage</param-value>
-    </context-param>
-    <!-- File name for metadata path (for TDB!) -->
+    <!--<param-value>/home/snadal/UPC/Sergi/SUPERSEDE/Development/big_data/data_management/MetadataManagementSystem/MetadataStorage</param-value>-->
+        <param-value>D:\upc\MetadataStorage</param-value>
+</context-param>
+<!-- File name for metadata path (for TDB!) -->
     <context-param>
         <param-name>metadata_db_file</param-name>
         <param-value>BolsterMetadataStorage</param-value>

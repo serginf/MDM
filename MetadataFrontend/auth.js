@@ -13,6 +13,8 @@ passport.use(new LocalStrategy(
     function(username, password, done) {
         request.get(config.METADATA_DATA_LAYER_URL+"users/findOne/"+username, function (error, response, body) {
             if (error || response.statusCode == 404) { return done(null, false, {message: 'Invalid username or password'}); }
+            console.log("hola")
+            console.log(body)
             var user = JSON.parse(body);
             if (!user) { return done(null, false, {message: 'Invalid username or password'}); }
             bcrypt.compare(password, user.password, function (err, res) {
