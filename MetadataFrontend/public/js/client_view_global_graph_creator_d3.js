@@ -58,10 +58,10 @@ $(function () {
     // Set color for the metamodel selectors
     //, style="background-color: #33CCCC"
     $("#"+(Global.CONCEPT.name)).css("background-color",Global.CONCEPT.color);
-    // $("#"+(Global.MEMBERCONCEPT.name)).css("background-color",Global.MEMBERCONCEPT.color);
+    $("#"+(Global.MEMBERCONCEPT.name)).css("background-color",Global.MEMBERCONCEPT.color);
     $("#"+(Global.FEATURE_ID.name)).css("background-color",Global.FEATURE_ID.color);
     $("#"+(Global.FEATURE.name)).css("background-color",Global.FEATURE.color);
-    // $("#"+(Global.AGGREGATIONFUNCTION.name)).css("background-color",Global.AGGREGATIONFUNCTION.color);
+    $("#"+(Global.AGGREGATIONFUNCTION.name)).css("background-color",Global.AGGREGATIONFUNCTION.color);
 });
 
 $(function () {
@@ -560,26 +560,26 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
                     (newEdge.target.namespace == Global.FEATURE.iri || newEdge.target.namespace == Global.FEATURE_ID.iri)) {
                 newEdge.title = Global.HAS_FEATURE.iri;
             }
-            /*else if (newEdge.source.namespace == Global.MEMBERCONCEPT.iri && newEdge.target.namespace == Global.FEATURE_ID.iri) {
+            else if (newEdge.source.namespace == Global.MEMBERCONCEPT.iri && newEdge.target.namespace == Global.FEATURE_ID.iri) {
                 newEdge.title = Global.HAS_FEATURE.iri;
             }
             else if (newEdge.source.namespace == Global.MEMBERCONCEPT.iri && newEdge.target.namespace == Global.FEATURE.iri) {
                 newEdge.title = Global.HAS_FEATURE.iri;
-            }*/
+            }
             /*else if (newEdge.source.namespace == Global.MEMBERCONCEPT.iri && newEdge.target.namespace == Global.CONCEPT.iri) {
                 newEdge.title = Global.PART_OF.iri;
             }*/
-            /*else if (newEdge.source.namespace == Global.MEMBERCONCEPT.iri && newEdge.target.namespace == Global.MEMBERCONCEPT.iri) {
+            else if (newEdge.source.namespace == Global.MEMBERCONCEPT.iri && newEdge.target.namespace == Global.MEMBERCONCEPT.iri) {
                 newEdge.title = Global.PART_OF.iri;
-            }*/
-            /*else if (newEdge.source.namespace == Global.FEATURE.iri && newEdge.target.namespace == Global.AGGREGATIONFUNCTION.iri) {
+            }
+            else if (newEdge.source.namespace == Global.FEATURE.iri && newEdge.target.namespace == Global.AGGREGATIONFUNCTION.iri) {
                 newEdge.title = Global.HAS_AGGREGATIONFUNCTION.iri;
-            }*/
-            /*else if (newEdge.source.namespace == Global.FEATURE_ID.iri && newEdge.target.namespace == Global.AGGREGATIONFUNCTION.iri) {
+            }
+            else if (newEdge.source.namespace == Global.FEATURE_ID.iri && newEdge.target.namespace == Global.AGGREGATIONFUNCTION.iri) {
                 newEdge.title = Global.HAS_AGGREGATIONFUNCTION.iri;
-            }*/
+            }
             else if (newEdge.source.namespace == Global.CONCEPT.iri && newEdge.target.namespace == Global.CONCEPT.iri
-            /*||  newEdge.source.namespace == Global.MEMBERCONCEPT.iri  &&  newEdge.target.namespace == Global.CONCEPT.iri */) {
+            || newEdge.source.namespace == Global.MEMBERCONCEPT.iri && newEdge.target.namespace == Global.CONCEPT.iri) {
                 //TODO aresta nova
                 // shift-clicked node: edit text content
                 var thisGraph = this;

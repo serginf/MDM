@@ -20,12 +20,12 @@ const Global = {
         color: "#33CCCC",
         isID: false
     },
-    /*MEMBERCONCEPT: {
+    MEMBERCONCEPT: {
         iri: Namespaces.G+"MemberConcept",
         name: "MemberConcept",
         color: "#1dcc72",
         isID: false
-    },*/
+    },
     HAS_RELATION: {
         iri: Namespaces.G+"hasRelation",
         name: "hasRelation",
@@ -55,7 +55,7 @@ const Global = {
         name: "partOf",
         color: "#D7DF01",
         isID: false
-    }/*,
+    },
     AGGREGATIONFUNCTION: {
         iri: Namespaces.G+"AggregationFunction",
         name: "AggregationFunction",
@@ -67,7 +67,7 @@ const Global = {
         name: "hasAggregationFunction",
         color: "#aa4adf",
         isID: false
-    }*/
+    }
     /*
     HAS_DATATYPE: {
         iri: Namespaces.G+"hasDatatype",
@@ -101,9 +101,9 @@ function getGlobalEdge(namespaceOrigin, namespaceDest) {
     if (namespaceOrigin == Global.FEATURE.iri && namespaceDest == Global.INTEGRITY_CONSTRAINT.iri) return Global.HAS_INTEGRITY_CONSTRAINT.iri;
     if (namespaceOrigin == Global.FEATURE.iri && namespaceDest == Global.DATATYPE.iri) return Global.HAS_DATATYPE.iri;
     if (namespaceOrigin == Global.CONCEPT.iri && namespaceDest == Global.CONCEPT.iri) return Global.HAS_RELATION.iri;
-/*    if (namespaceOrigin == Global.MEMBERCONCEPT.iri && namespaceDest == Global.MEMBERCONCEPT.iri) return Global.PART_OF.iri;
+    if (namespaceOrigin == Global.MEMBERCONCEPT.iri && namespaceDest == Global.MEMBERCONCEPT.iri) return Global.PART_OF.iri;
     if (namespaceOrigin == Global.MEMBERCONCEPT.iri && namespaceDest == Global.CONCEPT.iri) return Global.HAS_RELATION.iri;
     if (namespaceOrigin == Global.MEMBERCONCEPT.iri && namespaceDest == Global.FEATURE_ID.iri) return Global.HAS_FEATURE.iri;
-    if (namespaceOrigin == Global.MEMBERCONCEPT.iri && namespaceDest == Global.FEATURE.iri) return Global.HAS_FEATURE.iri;*/
+    if (namespaceOrigin == Global.MEMBERCONCEPT.iri && namespaceDest == Global.FEATURE.iri) return Global.HAS_FEATURE.iri;
     return null;
 }
