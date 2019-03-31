@@ -288,8 +288,6 @@ function drawGraph(globalGraphID) {
         if (selection.length == 0) alert("Select subgraph first");
         else{
             var subGraph = new Object();
-            console.log(selection);
-            /*
             subGraph.selection = selection;
             subGraph.LAVMappingID = getParameterByName("LAVMappingID");
             $.ajax({
@@ -301,7 +299,6 @@ function drawGraph(globalGraphID) {
             }).fail(function(err) {
                 console.log("error "+JSON.stringify(err));
             });
-            */
         }
     });
 }
