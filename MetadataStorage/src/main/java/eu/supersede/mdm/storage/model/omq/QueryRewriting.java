@@ -166,61 +166,8 @@ public class QueryRewriting_SIGMOD_Optimized {
             IDsPerConcept.putIfAbsent(concept,featureID);
         });
     }
-    /*
-        private static Set<ConjunctiveQuery> combineCQs(ConjunctiveQuery Ql, ConjunctiveQuery Qr, String Cl, String Cr, Dataset T) {
-            Set<ConjunctiveQuery> res = Sets.newHashSet();
 
-            Map<String, Tuple2<Set<Wrapper>, Set<Wrapper>>> IDs_and_their_wrappers = Maps.newHashMap();
-            for (Wrapper w : Ql.getWrappers()) {
-                Set<String> rs = Sets.newHashSet(IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cl),IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cr));
-                rs.forEach(ID -> {
-                    if (ID != null) {
-                        IDs_and_their_wrappers.putIfAbsent(ID, new Tuple2<>(Sets.newHashSet(), Sets.newHashSet()));
-                        Set<Wrapper> wrappersForID = IDs_and_their_wrappers.get(ID)._1;
-                        wrappersForID.add(w);
-                        IDs_and_their_wrappers.put(ID, new Tuple2<>(wrappersForID, IDs_and_their_wrappers.get(ID)._2));
-                    }
-                });
-            }
-            for (Wrapper w : Qr.getWrappers()) {
-                Set<String> rs = Sets.newHashSet(IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cl),IDsPerWrapperPerConcept.get(w.getWrapper()).get(Cr));
-                rs.forEach(ID -> {
-                    if (ID != null) {
-                        IDs_and_their_wrappers.putIfAbsent(ID, new Tuple2<>(Sets.newHashSet(), Sets.newHashSet()));
-                        Set<Wrapper> wrappersForID = IDs_and_their_wrappers.get(ID)._2;
-                        wrappersForID.add(w);
-                        IDs_and_their_wrappers.put(ID, new Tuple2<>(IDs_and_their_wrappers.get(ID)._1, wrappersForID));
-                    }
-                });
-            }
-            IDs_and_their_wrappers.entrySet().forEach(entry -> {
-                String feature = entry.getKey();
-                //Different ways of doing the join
-                Sets.cartesianProduct(entry.getValue()._1, entry.getValue()._2).forEach(wrapper_combination -> {
 
-                    Wrapper wrapperA = wrapper_combination.get(0);
-                    Wrapper wrapperB = wrapper_combination.get(1);
-
-                    //System.out.println(Cl + " + " + Cr + ": Feature "+feature+" --- "+wrapperA+"-"+wrapperB);
-
-                    String attA = attributesPerFeaturePerWrapper.get(wrapperA.getWrapper()).get(feature);
-                    String attB = attributesPerFeaturePerWrapper.get(wrapperB.getWrapper()).get(feature);
-
-                    ConjunctiveQuery mergedCQ = new ConjunctiveQuery();
-                    mergedCQ.getProjections().addAll(Ql.getProjections());
-                    mergedCQ.getProjections().addAll(Qr.getProjections());
-                    mergedCQ.getJoinConditions().addAll(Ql.getJoinConditions());
-                    mergedCQ.getJoinConditions().addAll(Qr.getJoinConditions());
-                    mergedCQ.getJoinConditions().add(new EquiJoin(attA,attB));
-                    mergedCQ.getWrappers().addAll(Ql.getWrappers());
-                    mergedCQ.getWrappers().addAll(Qr.getWrappers());
-
-                    res.add(mergedCQ);
-                });
-            });
-            return res;
-        }
-    */
     private static Set<ConjunctiveQuery> combineSetsOfCQs(Set<ConjunctiveQuery> CQ_A, Set<ConjunctiveQuery> CQ_B, String C_A, String C_B, String edge) {
         //Covered graph
         BasicPattern phi = new BasicPattern();
@@ -327,7 +274,7 @@ public class QueryRewriting_SIGMOD_Optimized {
             mergedCQ.getJoinConditions().add(new EquiJoin(attA,attB));
             mergedCQ.getWrappers().addAll(Sets.union(CQ_A.getWrappers(),CQ_B.getWrappers()));
 
-            return mergedCQ;
+            returln mergedCQ;
         }).collect(Collectors.toSet());*/
     }
 

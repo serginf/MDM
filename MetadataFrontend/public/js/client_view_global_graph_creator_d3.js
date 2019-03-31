@@ -939,13 +939,20 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
     };
 
     /**** MAIN ****/
-
-    // warn the user when leaving
-    window.onbeforeunload = function () {
+    /*
+        Sergi 31/03/2019
+        Store the d3 json of the graph. This is done by artificially clicking the download-input link.
+        This has an event associated to store the "graphicalGraph"
+     */
+    window.addEventListener('beforeunload', function (e) {
+        // Cancel the event
+        e.preventDefault();
+        // Chrome requires returnValue to be set
+        e.returnValue = '';
         $("#download-input").click();
         // return null;
         return undefined;
-    };
+    });
 
     var docEl = document.documentElement,
         bodyEl = document.getElementsByTagName('body')[0];
