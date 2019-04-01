@@ -2,19 +2,25 @@ package eu.supersede.mdm.storage.resources;
 
 import com.google.common.collect.Lists;
 import com.mongodb.MongoClient;
+import eu.supersede.mdm.storage.model.omq.ConjunctiveQuery;
+import eu.supersede.mdm.storage.model.omq.QueryRewriting;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
 import eu.supersede.mdm.storage.util.MongoCollections;
+import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.SQLiteUtils;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
 import org.bson.Document;
 import scala.Tuple3;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -59,8 +65,7 @@ public class OMQResource {
         return Response.ok(out.toJSONString()).build();
     }
 
-    //20181106 - Commented to replace rewriting algorithm
-/**
+
     @POST @Path("omq/fromSPARQLToRA")
     @Consumes("text/plain")
     public Response POST_omq_fromSPARQLToRA(String body) {
@@ -69,12 +74,23 @@ public class OMQResource {
 
         String SPARQL = objBody.getAsString("sparql");
         //String namedGraph = objBody.getAsString("namedGraph");
-        QueryRewriting_DAG qr = new QueryRewriting_DAG(SPARQL.replace("\n"," "));
-        Set<Walk> walks = qr.rewrite();
+        //QueryRewriting qr = new QueryRewriting_DAG(SPARQL.replace("\n"," "));
+
+        Dataset T = Utils.getTDBDataset();
+        T.begin(ReadWrite.READ);
+        Set<ConjunctiveQuery> UCQ = QueryRewriting.rewriteToUnionOfConjunctiveQueries(
+                QueryRewriting.parseSPARQL(SPARQL.replace("\n"," "), T), T)._2;
+
+
+        //Set<Walk> walks = qr.rewrite();
         //System.out.println(walks);
 
         JSONObject out = new JSONObject();
-        out.put("ra",RDFUtil.nn(walks.stream().map(w -> w.toString()).collect(Collectors.joining("\nU\n"))));
+        out.put("ra", RDFUtil.nn(UCQ.stream().map(cq -> cq.toString()).collect(Collectors.joining("\nU\n"))));
+
+        T.abort();
+        T.close();
+        /*
 
         HashMap<String,String> wrapperIriToID = Maps.newHashMap(); //used to map wrapper IRIs to IDs
         //Populate data here
@@ -127,9 +143,9 @@ public class OMQResource {
 
         out.put("wrappers",wrappers);
         out.put("sql",SQLstr);
+        */
         return Response.ok(out.toJSONString()).build();
     }
-**/
 
     @POST @Path("omq/fromSQLToData")
     @Consumes("text/plain")

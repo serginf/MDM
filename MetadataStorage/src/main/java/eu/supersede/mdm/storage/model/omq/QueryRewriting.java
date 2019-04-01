@@ -39,7 +39,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("Duplicates")
-public class QueryRewriting_SIGMOD_Optimized {
+public class QueryRewriting {
 
     private static void addTriple(BasicPattern pattern, String s, String p, String o) {
         pattern.add(new Triple(new ResourceImpl(s).asNode(), new PropertyImpl(p).asNode(), new ResourceImpl(o).asNode()));
