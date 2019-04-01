@@ -236,6 +236,11 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
                     var graphicalGraph = JSON.parse(data.graphicalGraph);
                     var jsonObj = graphicalGraph;
                     thisGraph.deleteGraph(true);
+                    // change values x and y from string to integer
+                    for(var i=0;i<jsonObj.nodes.length;i++){
+                        jsonObj.nodes[i].x=parseInt(jsonObj.nodes[i].x)
+                        jsonObj.nodes[i].y=parseInt(jsonObj.nodes[i].y)
+                    }
                     thisGraph.nodes = jsonObj.nodes;
                     console.log(thisGraph.nodes);
                     thisGraph.setIdCt(jsonObj.nodes.length + 1);
