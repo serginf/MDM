@@ -916,7 +916,6 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
             .attr('transform',function(d,i){
                 return "translate(" + (d.source.x+d.target.x)/2 + "," + (d.source.y+d.target.y)/2 + ")";
             })
-            .append("textPath")
             .attr("style", "pointer-events: none")
             .attr("xlink:href" , function(d,i){return 'edgepath'+i})
             .text(function(d) {
