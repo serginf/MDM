@@ -91,8 +91,10 @@ public class LAVMappingResource {
 
         Document wrapper = MongoCollections.getWrappersCollection(client)
                 .find(new Document("wrapperID",objMapping.getString("wrapperID"))).first();
-        Document globalGraph = MongoCollections.getDataSourcesCollection(client)
+        Document globalGraph = MongoCollections.getGlobalGraphCollection(client)
                 .find(new Document("globalGraphID",objMapping.getString("globalGraphID"))).first();
+        String globalGraphIRI = globalGraph.getString("namedGraph");
+
         String wIRI = wrapper.getString("iri");
 
         ((JSONArray)objBody.get("selection")).forEach(selectedElement -> {
@@ -102,6 +104,22 @@ public class LAVMappingResource {
                 String relIRI = objSelectedElement.getAsString("name");
                 String targetIRI = ((JSONObject)objSelectedElement.get("target")).getAsString("iri");
                 RDFUtil.addTriple(wIRI,sourceIRI,relIRI,targetIRI);
+
+                //Extend to also incorporate the type of the added triple. This is obtained from the original global graph
+                String typeOfSource = RDFUtil.runAQuery("SELECT ?t WHERE { GRAPH <"+globalGraphIRI+"> { <"+sourceIRI+"> <"
+                        +Namespaces.rdf.val()+"type> ?t } }",globalGraphIRI).next().get("t").toString();
+                String typeOfTarget = RDFUtil.runAQuery("SELECT ?t WHERE { GRAPH <"+globalGraphIRI+"> { <"+targetIRI+"> <"
+                        +Namespaces.rdf.val()+"type> ?t } }",globalGraphIRI).next().get("t").toString();
+
+                RDFUtil.addTriple(wIRI,sourceIRI,Namespaces.rdf.val()+"type",typeOfSource);
+                RDFUtil.addTriple(wIRI,targetIRI,Namespaces.rdf.val()+"type",typeOfTarget);
+
+                //Check if the target is an ID feature
+                if (RDFUtil.runAQuery("SELECT ?sc WHERE { GRAPH <"+globalGraphIRI+"> { <"+targetIRI+"> <"+
+                        Namespaces.rdfs.val()+"subClassOf> <"+Namespaces.sc.val()+"identifier> } }",globalGraphIRI).hasNext()) {
+                    RDFUtil.addTriple(wIRI,targetIRI,Namespaces.rdfs.val()+"subClassOf",Namespaces.sc.val()+"identifier");
+                }
+
             }
         });
 

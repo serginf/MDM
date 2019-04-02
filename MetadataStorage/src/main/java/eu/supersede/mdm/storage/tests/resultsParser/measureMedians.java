@@ -13,7 +13,7 @@ public class measureMedians {
     public static void main(String[] args) throws Exception {
         System.out.println("UPPER_BOUND_FEATURES_IN_G;MAX_EDGES_IN_QUERY;MAX_WRAPPERS;COVERED_FEATURES_QUERY;COVERED_FEATURES_WRAPPER;SIZE_OF_INTERMEDIATE_RESULTS;SIZE_OF_CQs;PROCESSING_TIME");
 
-        String path = "/home/snadal/Desktop/experiments/11desembre/all.txt";
+        String path = "/home/snadal/Desktop/experiments/17desembre/allexperiments.txt";
 
         Map<String, List<String>> allData = Maps.newHashMap();
         Files.readAllLines(new File(path).toPath()).forEach(line -> {

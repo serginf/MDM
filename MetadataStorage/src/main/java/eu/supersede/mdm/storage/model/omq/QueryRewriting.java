@@ -201,11 +201,13 @@ public class QueryRewriting {
 
         Set<ConjunctiveQuery> queriesCoveringC_AcontainingID_B = queriesWithNoSharedWrappersInA
                 .stream()
+                .filter(cq->wrappersPerConceptID.containsKey(C_B))
                 .filter(cq -> !Collections.disjoint(wrappersPerConceptID.get(C_B),cq.getWrappers().stream().map(w->w.getWrapper()).collect(Collectors.toSet())))
                 .collect(Collectors.toSet());
 
         Set<ConjunctiveQuery> queriesCoveringC_BcontainingID_A = queriesWithNoSharedWrappersInB
                 .stream()
+                .filter(cq->wrappersPerConceptID.containsKey(C_A))
                 .filter(cq -> !Collections.disjoint(wrappersPerConceptID.get(C_A),cq.getWrappers().stream().map(w->w.getWrapper()).collect(Collectors.toSet())))
                 .collect(Collectors.toSet());
 
@@ -547,6 +549,8 @@ public class QueryRewriting {
         // Phase 3 : Inter-concept generation
         // ***************************************
         //Assumption here, acyclic graph
+
+
         int numberOfEdges = partialCQsGraph.edgeSet().size();
         int intermediateResults = 0;
         while (!partialCQsGraph.edgeSet().isEmpty()) {
