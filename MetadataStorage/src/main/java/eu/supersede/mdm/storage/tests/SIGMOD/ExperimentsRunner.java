@@ -3,7 +3,7 @@ package eu.supersede.mdm.storage.tests.SIGMOD;
 import eu.supersede.mdm.storage.ApacheMain;
 import eu.supersede.mdm.storage.model.graph.IntegrationGraph;
 import eu.supersede.mdm.storage.model.omq.ConjunctiveQuery;
-import eu.supersede.mdm.storage.model.omq.QueryRewriting_SIGMOD_Optimized;
+import eu.supersede.mdm.storage.model.omq.QueryRewriting;
 import eu.supersede.mdm.storage.model.omq.QueryRewriting_SimpleGraph;
 import eu.supersede.mdm.storage.tests.TestUtils;
 import eu.supersede.mdm.storage.util.Tuple2;
@@ -71,7 +71,7 @@ public class ExperimentsRunner {
         Dataset T = Utils.getTDBDataset();
         T.begin(ReadWrite.READ);
         long a = System.currentTimeMillis();
-        Tuple2<Integer, Set<ConjunctiveQuery>> CQs = QueryRewriting_SIGMOD_Optimized.rewriteToUnionOfConjunctiveQueries(QueryRewriting_SimpleGraph.parseSPARQL(ExperimentsGenerator.convertToSPARQL(Q_withFeatures,prefixes), T), T);
+        Tuple2<Integer, Set<ConjunctiveQuery>> CQs = QueryRewriting.rewriteToUnionOfConjunctiveQueries(QueryRewriting_SimpleGraph.parseSPARQL(ExperimentsGenerator.convertToSPARQL(Q_withFeatures,prefixes), T), T);
         long b = System.currentTimeMillis();
         //edges in query; number of covering wrappers;
         System.out.println(UPPER_BOUND_FEATURES_IN_G+";"+N_EDGES_IN_QUERY+";"+N_WRAPPERS+";"+N_EDGES_COVERED_BY_WRAPPERS+";"+COVERED_FEATURES_QUERY+
