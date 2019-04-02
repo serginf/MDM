@@ -1,6 +1,7 @@
 package eu.supersede.mdm.storage.resources;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.mongodb.MongoClient;
 import eu.supersede.mdm.storage.model.omq.ConjunctiveQuery;
 import eu.supersede.mdm.storage.model.omq.QueryRewriting;
@@ -19,6 +20,7 @@ import scala.Tuple3;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -82,56 +84,40 @@ public class OMQResource {
                 QueryRewriting.parseSPARQL(SPARQL.replace("\n"," "), T), T)._2;
 
 
-        //Set<Walk> walks = qr.rewrite();
-        //System.out.println(walks);
-
         JSONObject out = new JSONObject();
         out.put("ra", RDFUtil.nn(UCQ.stream().map(cq -> cq.toString()).collect(Collectors.joining("\nU\n"))));
 
         T.abort();
         T.close();
-        /*
+
 
         HashMap<String,String> wrapperIriToID = Maps.newHashMap(); //used to map wrapper IRIs to IDs
         //Populate data here
         JSONArray wrappers = new JSONArray();
-        walks.forEach(w -> {
-            w.getOperators().forEach(op -> {
-                if (op instanceof Wrapper) {
-                    String wrapperID = MongoCollections.getWrappersCollection(Utils.getMongoDBClient()).find(
-                            new Document("iri",((Wrapper)op).getWrapper())
-                    ).first().getString("wrapperID");
+        UCQ.forEach(q -> {
+            q.getWrappers().forEach(op -> {
+                String wrapperID = MongoCollections.getWrappersCollection(Utils.getMongoDBClient()).find(
+                           new Document("iri",((Wrapper)op).getWrapper())
+                ).first().getString("wrapperID");
 
-                    wrapperIriToID.putIfAbsent(((Wrapper)op).getWrapper(),wrapperID);
-                    wrappers.add(wrapperID);
-                }
+                wrapperIriToID.putIfAbsent(((Wrapper)op).getWrapper(),wrapperID);
+                wrappers.add(wrapperID);
             });
         });
 
         //Convert to SQL
         StringBuilder SQL = new StringBuilder();
-        walks.forEach(w -> {
+        UCQ.forEach(q -> {
             StringBuilder select = new StringBuilder("SELECT ");
             StringBuilder from = new StringBuilder(" FROM ");
             StringBuilder where = new StringBuilder(" WHERE ");
-            w.getOperators().forEach(op -> {
-                if (op instanceof ProjectionSet_OLD) {
-                    ProjectionSet_OLD projection = (ProjectionSet_OLD)op;
-                    projection.getProjectedAttributes().forEach(p -> select.append(RDFUtil.nn(p).split("/")[RDFUtil.nn(p).split("/").length-1]+","));
-                }
-                else if (op instanceof Wrapper) {
-                    Wrapper wrapper = (Wrapper)op;
-                    from.append(wrapperIriToID.get(wrapper.getWrapper())+",");
-                }
-                else if (op instanceof EquiJoin) {
-                    EquiJoin equiJoin = (EquiJoin)op;
-                    where.append(
-                            RDFUtil.nn(equiJoin.getLeft_attribute()).split("/")[RDFUtil.nn(equiJoin.getLeft_attribute()).split("/").length-1]+
+            q.getProjections().forEach(proj -> select.append(RDFUtil.nn(proj).split("/")[RDFUtil.nn(proj).split("/").length-1]+","));
+            q.getWrappers().forEach(w -> from.append(wrapperIriToID.get(w.getWrapper())+","));
+            q.getJoinConditions().forEach(j -> where.append(
+                    RDFUtil.nn(j.getLeft_attribute()).split("/")[RDFUtil.nn(j.getLeft_attribute()).split("/").length-1]+
                             " = "+
-                            RDFUtil.nn(equiJoin.getRight_attribute()).split("/")[RDFUtil.nn(equiJoin.getRight_attribute()).split("/").length-1]+
-                            " AND ");
-                }
-            });
+                            RDFUtil.nn(j.getRight_attribute()).split("/")[RDFUtil.nn(j.getRight_attribute()).split("/").length-1]+
+                            " AND "));
             SQL.append(select.substring(0,select.length()-1));
             SQL.append(from.substring(0,from.length()-1));
             if (!where.toString().equals(" WHERE ")) {
@@ -141,9 +127,11 @@ public class OMQResource {
         });
         String SQLstr = SQL.substring(0,SQL.length()-" UNION ".length())+";";
 
+        System.out.println(SQLstr);
+
         out.put("wrappers",wrappers);
         out.put("sql",SQLstr);
-        */
+
         return Response.ok(out.toJSONString()).build();
     }
 
