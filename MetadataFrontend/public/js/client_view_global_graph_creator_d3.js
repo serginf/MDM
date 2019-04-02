@@ -463,6 +463,10 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
         } else {
             thisGraph.removeSelectFromEdge();
         }
+        if (d3.event.shiftKey) {
+            state.shiftNodeDrag = d3.event.shiftKey;
+            return;
+        }
     };
 
     // mousedown on node
@@ -485,7 +489,6 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
         var thisGraph = this,
             consts = thisGraph.consts,
             htmlEl = d3node.node();
-
         d3node.selectAll("text").remove();
         var nodeBCR = htmlEl.getBoundingClientRect(),
             curScale = nodeBCR.width / consts.nodeRadius,
@@ -659,7 +662,7 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
             consts = thisGraph.consts,
             htmlEl = d3node.node();
 
-        d3node.selectAll("textPath text").remove();
+        d3node.selectAll("text").remove();
         var nodeBCR = htmlEl.getBoundingClientRect(),
             curScale = nodeBCR.width / consts.nodeRadius,
             useHW = curScale > 1 ? nodeBCR.width * 0.71 : consts.nodeRadius * 1.42;
@@ -693,24 +696,37 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
                 addTriple(d.source.iri, "http://www.BDIOntology.com/Global/" + d.title, d.target.iri);
                 d3.select(this.parentElement).remove();
                 thisGraph.updateGraph();
+                d3node.append("text")
+                    .classed("edgelabel", true)
+                    .attr("text-anchor", "middle")
+                    .attr("style", "pointer-events: none")
+                    .attr('transform',function(d,i){
+                        return "translate(" + (d.source.x+d.target.x)/2 + "," + (d.source.y+d.target.y)/2 + ")";
+                    })
+                    .attr("style", "pointer-events: none")
+                    .attr("xlink:href" , function(d,i){return 'edgepath'+i})
+                    .text(function(d) {
+                        return d.title;
+                    });
             });
 
         return d3txt;
     };
 
     // paths mouse up
-    /*  GraphCreator.prototype.pathMouseUp = function (d3node, d) {
-          //change name of existing edge
-          console.log("d:" + d);
-          if (d3.event.shiftKey && d.source.namespace == Global.CONCEPT.iri && d.target.namespace == Global.CONCEPT.iri) {
-              var thisGraph = this;
-              // shift-clicked node: edit text content
-              var d3txt = thisGraph.changeTextOfEdge(d3node, d);
-              var txtNode = d3txt.node();
-              thisGraph.selectElementContents(txtNode);
-              txtNode.focus();
-          }
-      }*/
+    GraphCreator.prototype.pathMouseUp = function (d3node, d) {
+        console.log("hola:")
+        console.log(d)
+        if (d3.event.shiftKey && d.source.namespace == Global.CONCEPT.iri && d.target.namespace == Global.CONCEPT.iri) {
+            // shift-clicked node: edit text content
+            var thisGraph = this;
+            var d3txt = thisGraph.changeTextOfEdge(d3node, d);
+            var txtNode = d3txt.node();
+            thisGraph.selectElementContents(txtNode);
+            txtNode.focus();
+        }
+    }
+
 
     // mousedown on main svg
     GraphCreator.prototype.svgMouseDown = function () {
@@ -906,7 +922,10 @@ document.onload = (function (d3, saveAs, Blob, undefined) {
             .on("mousedown", function (d) {
                     thisGraph.pathMouseDown.call(thisGraph, d3.select(this), d);
                 }
-            )
+            ).on("mouseup", function (d) {
+                //click event is in path, we select g with parentNode
+                thisGraph.pathMouseUp.call(thisGraph, d3.select(this.parentNode), d);
+            });
 
         newPaths
             .append("text")
