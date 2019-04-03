@@ -37,7 +37,7 @@ block content
                             li.nav-item
                                 a.text-primary#avro-tab.nav-link.active(data-toggle="tab" href="#avro" role="tab" aria-controls="profile" aria-selected="false") Avro
                             li.nav-item
-                                a.text-primary#plaintext-tab.nav-link(data-toggle="tab" href="#plaintext" role="tab" aria-controls="messages" aria-selected="false") JSON file
+                                a.text-primary#json-tab.nav-link(data-toggle="tab" href="#json" role="tab" aria-controls="messages" aria-selected="false") JSON file
                             li.nav-item
                                 a.text-primary#mongodb-tab.nav-link(data-toggle="tab" href="#mongodb" role="tab" aria-controls="home" aria-selected="true") MongoDB
                             li.nav-item
@@ -87,11 +87,11 @@ block content
                                     option(value="yaml") YAML (N/A)
                                     option(value="xml") XML (N/A)
                 
-                    #plaintext.tab-pane
-                        .form-group#plaintext_pathForm
-                            label.col-lg-4.col-form-label File path (with protocol)
+                    #json.tab-pane
+                        .form-group#json_pathForm
+                            label.col-lg-4.col-form-label File path
                             .col-lg-12
-                                input#plaintext_path.form-control(type='text', name='plaintext_path', required='required')
+                                input#json_path.form-control(type='text', name='json_path', required='required')
                 
                     #sqldatabase.tab-pane(role="tabpanel" aria-labelledby="sqldatabase-tab")
                         .form-group#sql_jdbcForm

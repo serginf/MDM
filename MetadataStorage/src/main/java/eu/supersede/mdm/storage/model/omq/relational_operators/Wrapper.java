@@ -1,11 +1,16 @@
 package eu.supersede.mdm.storage.model.omq.relational_operators;
 
+import com.clearspring.analytics.util.Lists;
 import eu.supersede.mdm.storage.model.omq.wrapper_implementations.*;
 import eu.supersede.mdm.storage.util.RDFUtil;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
 import org.bson.Document;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Wrapper extends RelationalOperator {
 
@@ -43,6 +48,10 @@ public class Wrapper extends RelationalOperator {
         return "("+RDFUtil.nn(wrapper)+")";
     }
 
+    public String inferSchema() throws Exception {
+        throw new Exception("Can't infer the schema of a generic wrapper, need to call an implementation subclass");
+    }
+
     public String preview(List<String> attributes) throws Exception {
         throw new Exception("Can't preview a generic wrapper, need to call an implementation subclass");
     }
@@ -51,21 +60,21 @@ public class Wrapper extends RelationalOperator {
         throw new Exception("Can't populate a generic wrapper, need to call an implementation subclass");
     }
 
-    public static Wrapper specializeWrapper(Document ds, String query) {
+    public static Wrapper specializeWrapper(Document ds, String queryParameters) {
         Wrapper w = null;
         switch (ds.getString("type")) {
             case "avro":
                 w = new SparkSQL_Wrapper("preview");
                 ((SparkSQL_Wrapper)w).setPath(ds.getString("avro_path"));
                 ((SparkSQL_Wrapper)w).setTableName(ds.getString("name"));
-                ((SparkSQL_Wrapper)w).setSparksqlQuery(query);
+                ((SparkSQL_Wrapper)w).setSparksqlQuery(((JSONObject) JSONValue.parse(queryParameters)).getAsString("query"));
                 break;
             case "mongodb":
                 w = new MongoDB_Wrapper("preview");
                 ((MongoDB_Wrapper)w).setConnectionString(ds.getString("mongodb_connectionString"));
                 ((MongoDB_Wrapper)w).setDatabase(ds.getString("mongodb_database"));
 
-                ((MongoDB_Wrapper)w).setMongodbQuery(query);
+                ((MongoDB_Wrapper)w).setMongodbQuery(((JSONObject) JSONValue.parse(queryParameters)).getAsString("query"));
                 break;
             case "neo4j":
                 w = new Neo4j_Wrapper("preview");
@@ -80,7 +89,7 @@ public class Wrapper extends RelationalOperator {
                 w = new SparkSQL_Wrapper("preview");
                 ((SparkSQL_Wrapper)w).setPath(ds.getString("parquet_path"));
                 ((SparkSQL_Wrapper)w).setTableName(ds.getString("name"));
-                ((SparkSQL_Wrapper)w).setSparksqlQuery(query);
+                ((SparkSQL_Wrapper)w).setSparksqlQuery(((JSONObject) JSONValue.parse(queryParameters)).getAsString("query"));
                 break;
             case "restapi":
                 w = new REST_API_Wrapper("preview");
@@ -89,6 +98,13 @@ public class Wrapper extends RelationalOperator {
             case "sql":
                 w = new SQL_Wrapper("preview");
                 break;
+            case "json":
+                w = new JSON_Wrapper("preview");
+                ((JSON_Wrapper)w).setPath(ds.getString("json_path"));
+
+                ((JSON_Wrapper)w).setExplodeLevels(
+                    ((JSONArray)((JSONObject) JSONValue.parse(queryParameters)).get("explodeLevels")).stream().map(a -> (String)a).collect(Collectors.toList())
+                );
         }
         return w;
     }

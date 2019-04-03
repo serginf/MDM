@@ -44,6 +44,8 @@ block content
                             li.nav-item
                                 a.text-primary#avro-tab.nav-link(role="tab" aria-controls="profile" aria-selected="false") Avro
                             li.nav-item
+                                a.text-primary#json-tab.nav-link(role="tab" aria-controls="messages" aria-selected="false") JSON file
+                            li.nav-item
                                 a.text-primary#mongodb-tab.nav-link(role="tab" aria-controls="home" aria-selected="true") MongoDB
                             li.nav-item
                                 a.text-primary#neo4j-tab.nav-link(role="tab" aria-controls="home" aria-selected="true") Neo4j
@@ -51,8 +53,6 @@ block content
                                 a.text-primary#parquet-tab.nav-link(role="tab" aria-controls="home" aria-selected="true") Parquet
                             li.nav-item
                                 a.text-primary#restapi-tab.nav-link(role="tab" aria-controls="messages" aria-selected="false") REST API
-                            li.nav-item
-                                a.text-primary#plaintext-tab.nav-link(role="tab" aria-controls="messages" aria-selected="false") Plain Text
                             li.nav-item
                                 a.text-primary#sqldatabase-tab.nav-link(role="tab" aria-controls="settings" aria-selected="false") SQL Database
                 
@@ -94,11 +94,11 @@ block content
                                     option(value="yaml") YAML (N/A)
                                     option(value="xml") XML (N/A)
                 
-                    #plaintext.tab-pane
-                        .form-group#plaintext_pathForm
-                            label.col-lg-4.col-form-label File path (with protocol)
+                    #json.tab-pane
+                        .form-group#json_pathForm
+                            label.col-lg-4.col-form-label File path
                             .col-lg-12
-                                input#plaintext_path.form-control(type='text', name='plaintext_path', required='required', readonly='')
+                                input#json_path.form-control(type='text', name='json_path', required='required', readonly='')
                 
                     #sqldatabase.tab-pane(role="tabpanel" aria-labelledby="sqldatabase-tab")
                         .form-group#sql_jdbcForm

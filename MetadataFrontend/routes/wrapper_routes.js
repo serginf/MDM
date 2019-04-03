@@ -49,6 +49,24 @@ exports.postWrapper = function (req, res, next) {
     }
 };
 
+exports.inferSchema = function (req, res, next) {
+    if (!(req.body.hasOwnProperty('dataSourceID')) || req.body.dataSourceID==null){
+        res.status(400).json({msg: "(Bad Request) data format: {dataSourceID}"});
+    } else {
+        var objInfer = req.body;
+        request.post({
+            url: config.METADATA_DATA_LAYER_URL + "wrapper/inferSchema",
+            body: JSON.stringify(objInfer)
+        }, function done(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                res.status(200).json(JSON.parse(body));
+            } else {
+                res.status(500).send("Error inferring schema");
+            }
+        });
+    }
+};
+
 exports.previewWrapper = function (req, res, next) {
     if (!(req.body.hasOwnProperty('dataSourceID')) || req.body.dataSourceID==null ||
         !(req.body.hasOwnProperty('query')) || req.body.query==null ||

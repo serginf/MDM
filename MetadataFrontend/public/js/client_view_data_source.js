@@ -29,9 +29,9 @@ $(function() {
                 $("#parquet-tab").addClass("active"); $("#parquet").addClass("active");
                 $("#parquet_path").val(dataSource.parquet_path);
                 break;
-            case "plaintext":
-                $("#plaintext-tab").addClass("active"); $("#plaintext").addClass("active");
-                $("#plaintext_path").val(dataSource.plaintext_path);
+            case "json":
+                $("#json-tab").addClass("active"); $("#json").addClass("active");
+                $("#json_path").val(dataSource.json_path);
                 break;
             case "restapi":
                 $("#restapi-tab").addClass("active"); $("#restapi").addClass("active");

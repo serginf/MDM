@@ -25,11 +25,10 @@ block content
         .card.bg-secondary.mb-3
             form#wrapperForm
                             #hiddenDiv(style="display:none")
-                                .form-group
                                 #fields.control-group
                                             label.control-label Attributes
                                             .controls
-                                                form(role="form" autocomplete="off")
+                                                form(name="attributesForm" role="form" autocomplete="off")
                                                     .entry.input-group.col-xs-3
                                                         //.input-group-prepend
                                                             .input-group-text
@@ -37,13 +36,13 @@ block content
                                                                 | &nbsp;ID
                                                         input.form-control(name="fields[]" type="text" placeholder="")
                                                         span.input-group-btn
-                                                            button.btn.btn-success.btn-add(type="button")
+                                                            button.btn.btn-success.attBtn.btn-add(type="button")
                                                                 span.fa.fa-plus
 
                             .form-group#nameForm
                                 label.col-lg-4.col-form-label Name
                                 .col-lg-12
-                                    input#name.form-control(type='text', name='name', required='required' value="Wrapper_")
+                                    input#name.form-control(type='text', name='name', required='required' /*value="Wrapper_"*/)
 
                             .form-group#dataSourceForm
                                 label.col-lg-4.col-form-label Data Source
@@ -57,10 +56,6 @@ block content
                                         .controls
                                             form(role="form" autocomplete="off")
                                                 .entry.input-group.col-xs-3
-                                                    //.input-group-prepend
-                                                        .input-group-text
-                                                            input(type="checkbox" name="idSet[]")
-                                                            | &nbsp;ID
                                                     input.form-control(name="attributeSet[]" type="text" placeholder="")
                                                     span.input-group-btn
                                                         button.btn.btn-success.btn-add(type="button")
@@ -76,7 +71,39 @@ block content
                                                 button.btn.btn-success.btn-preview(type="button")
                                                     span.fa.fa-search
 
-                            .form-group#fileseparatorForm(style="display:none")
+                            .form-group#jsonArrayExplodeForm(style="display:none")
+                                .col-lg-12
+                                    #explodeLevels.control-group
+                                        label.control-label Explode levels hierarchy (separates the elements of array into multiple rows)
+                                        .controls
+                                            form(role="form" autocomplete="off")
+                                                .entry.input-group.col-xs-3
+                                                    input.form-control(name="explodeLevels[]" type="text" placeholder="")
+                                                    span.input-group-btn
+                                                        button.btn.btn-success.btn-add(type="button")
+                                                            span.fa.fa-plus
+
+                            .form-group#jsonValueToAttribute(style="display:none")
+                                .row
+                                    .col-md-6
+                                        .form-group#attributesForm
+                                            label.col-lg-4.col-form-label Attributes
+                                            .col-lg-12#attributes
+                                                input#asdasd.form-control(type='text', name='cypherQuery', required='required')
+                                    .col-md-6
+                                        .form-group#featuresForm
+                                            label.col-lg-4.col-form-label Features
+                                            .col-lg-12#features
+
+                                //.col-lg-12
+                                    form(role="form" autocomplete="off")
+                                        .entry.input-group.col-xs-3
+                                            input#fileseparator.form-control(type='text', name='fileseparator', required='required', readonly="", value="-")
+                                            span.input-group-btn
+                                                button.btn.btn-success.btn-preview(type="button")
+                                                    span.fa.fa-search
+
+                            //.form-group#fileseparatorForm(style="display:none")
                                 label.col-lg-8.col-form-label (No Filtering)
                                 .col-lg-12
                                     form(role="form" autocomplete="off")
@@ -127,8 +154,18 @@ block content
                                                     span.fa.fa-search
 
                             .form-group
-                                .col-lg-12.col-lg-offset-2
-                                    button#submitWrapper.btn.btn-primary.btn-lg.btn-block(type="submit") Submit
+                                .row
+                                    .col-md-4
+                                        .col-lg-12.col-lg-offset-2
+                                            button#inferSchema.btn.btn-primary.btn-lg.btn-block(type="submit") Infer schema
+
+                                    .col-md-4
+                                        .col-lg-12.col-lg-offset-2
+                                            button#previewWrapper.btn.btn-primary.btn-lg.btn-block(type="submit") Preview
+
+                                    .col-md-4
+                                        .col-lg-12.col-lg-offset-2
+                                            button#submitWrapper.btn.btn-primary.btn-lg.btn-block(type="submit") Submit
 
 
     #previewModal.modal.fade(tabindex="-1" role="dialog")

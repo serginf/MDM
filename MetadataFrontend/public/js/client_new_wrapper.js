@@ -9,13 +9,28 @@ function getParameterByName(name) {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
+function getJSONQueryByType() {
+    var queryParameters = new Object();
+    if (currDataSource.type == "avro") queryParameters.query = $("#sparksqlQuery").val();
+    else if (currDataSource.type == "mongodb") queryParameters.query = $("#mongodbQuery").val();
+    else if (currDataSource.type == "neo4j") queryParameters.query = $("#cypherQuery").val();
+    else if (currDataSource.type == "parquet") queryParameters.query = $("#sparksqlQuery").val();
+    else if (currDataSource.type == "json") {
+        queryParameters.explodeLevels = new Array();
+        $('input[name^="explodeLevels"]').each(function() { queryParameters.explodeLevels.push(($(this).val()));});
+    }
+    else if (currDataSource.type == "restapi") queryParameters.query = $("#restapiQuery").val();
+    else if (currDataSource.type == "sqldatabase") queryParameters.query = $("#sqlQuery").val();
+    return queryParameters;
+}
+
 var dataSources = [];
 var currDataSource;
 
 $(function(){
     $(document).on('click', '.btn-add', function(e) {
         e.preventDefault();
-        var controlForm = $('.controls form:first'),
+        var controlForm = $(this).parents('.controls form:first'),
             currentEntry = $(this).parents('.entry:first'),
             newEntry = $(currentEntry.clone()).appendTo(controlForm);
         newEntry.find('input').val('');
@@ -31,22 +46,18 @@ $(function(){
 });
 
 $(function(){
-    $(document).on('click', '.btn-preview', function(e) {
+    $(document).on('click', '#previewWrapper', function(e) {
+        e.preventDefault();
+
         $("#previewModal").modal("show");
-        var query;
-        if (currDataSource.type == "avro") query = $("#sparksqlQuery").val();
-        else if (currDataSource.type == "mongodb") query = $("#mongodbQuery").val();
-        else if (currDataSource.type == "neo4j") query = $("#cypherQuery").val();
-        else if (currDataSource.type == "parquet") query = $("#sparksqlQuery").val();
-        else if (currDataSource.type == "plaintext") query = $("#fileseparator").val();
-        else if (currDataSource.type == "restapi") query = $("#restapiQuery").val();
-        else if (currDataSource.type == "sqldatabase") query = $("#sqlQuery").val();
 
         var previewObj = new Object();
         previewObj.dataSourceID = currDataSource.dataSourceID;
-        previewObj.query = query;
+        previewObj.query = JSON.stringify(getJSONQueryByType());
+
         previewObj.attributes = new Array();
         $('input[name^="attributeSet"]').each(function() { previewObj.attributes.push(($(this).val()));});
+
         $.ajax({
             url: '/wrapper/preview',
             method: "POST",
@@ -89,14 +100,17 @@ $(function() {
             for (var i=0;i<dataSources.length;++i) {
                 if(dataSources[i].dataSourceID == $(this).val()) currDataSource = dataSources[i];
             }
-            $("#sparksqlQueryForm").hide(); $("#mongodbQueryForm").hide(); $("#cypherQueryForm").hide(); $("#fileseparatorForm").hide();
+            $("#sparksqlQueryForm").hide(); $("#mongodbQueryForm").hide(); $("#cypherQueryForm").hide(); $("#jsonForm").hide();
             $("#restapiQueryForm").hide(); $("#sqlQueryForm").hide();
 
             if (currDataSource.type == "avro") query = $("#sparksqlQueryForm").show();
             else if (currDataSource.type == "mongodb") query = $("#mongodbQueryForm").show();
             else if (currDataSource.type == "neo4j") query = $("#cypherQueryForm").show();
             else if (currDataSource.type == "parquet") query = $("#sparksqlQueryForm").show();
-            else if (currDataSource.type == "plaintext") query = $("#fileseparatorForm").show();
+            else if (currDataSource.type == "json") {
+                $("#jsonArrayExplodeForm").show();
+                $("#jsonValueToAttribute").show();
+            }
             else if (currDataSource.type == "restapi") query = $("#restapiQueryForm").show();
             else if (currDataSource.type == "sqldatabase") query = $("#sqlQueryForm").show();
         });
@@ -119,14 +133,6 @@ $(function() {
             wrapper.attributes.push(attribute);
         });
 
-        if (currDataSource.type == "avro") wrapper.query = $("#sparksqlQuery").val();
-        else if (currDataSource.type == "mongodb") wrapper.query = $("#mongodbQuery").val();
-        else if (currDataSource.type == "neo4j") wrapper.query = $("#cypherQuery").val();
-        else if (currDataSource.type == "parquet") wrapper.query = $("#sparksqlQuery").val();
-        else if (currDataSource.type == "plaintext") wrapper.query = $("#fileseparator").val();
-        else if (currDataSource.type == "restapi") wrapper.query = $("#restapiQuery").val();
-        else if (currDataSource.type == "sqldatabase") query = $("#sqlQuery").val();
-
         $.ajax({
             url: '/wrapper',
             method: "POST",
@@ -136,6 +142,43 @@ $(function() {
         }).fail(function(err) {
             alert("error "+JSON.stringify(err));
         });
+    });
+
+    $('#inferSchema').on("click", function(e) {
+        e.preventDefault();
+
+        var inferObj = new Object();
+        inferObj.dataSourceID = $("#dataSource").val();
+        inferObj.query = JSON.stringify(getJSONQueryByType());
+
+        $.ajax({
+            url: '/wrapper/inferSchema',
+            method: "POST",
+            data: inferObj
+        }).done(function(data) {
+            _.each(JSON.parse(data.schema), function (att) {
+                var controlForm = $('input[name="attributeSet[]"]').parents('.controls form:last'),
+                    currentEntry = $('input[name="attributeSet[]"]').parents('.entry:last'),
+                    newEntry = $(currentEntry.clone()).appendTo(controlForm);
+                    newEntry.find('input').val(att);
+                controlForm.find('.entry:not(:last) .btn-add')
+                    .removeClass('btn-add').addClass('btn-remove')
+                    .removeClass('btn-success').addClass('btn-danger')
+                    .html('<span class="fa fa-minus"></span>');
+            });
+
+
+/*
+                currentEntry = $(this).parents('.entry:first'),
+                newEntry = $(currentEntry.clone()).appendTo(controlForm);
+            newEntry.find('input').val('');
+            controlForm.find('.entry:not(:last) .btn-add')
+*/
+
+        }).fail(function(err) {
+            alert("error "+JSON.stringify(err));
+        });
+
     });
 
 });

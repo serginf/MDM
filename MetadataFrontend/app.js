@@ -120,6 +120,7 @@ app.post('/dataSource', data_source_routes.postDataSource);
 app.get('/wrapper/', wrapper_routes.getAllWrappers);
 app.get('/wrapper/:wrapperID', wrapper_routes.getWrapper);
 app.post('/wrapper', wrapper_routes.postWrapper);
+app.post('/wrapper/inferSchema/', wrapper_routes.inferSchema);
 app.post('/wrapper/preview/', wrapper_routes.previewWrapper);
 app.get('/wrapper/:namedGraph/attributes', wrapper_routes.getAttributesForGraph);
 

@@ -101,6 +101,23 @@ public class WrapperResource {
     }
 
     @POST
+    @Path("wrapper/inferSchema/")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response POST_inferSchema(String body) throws Exception {
+        System.out.println("[POST /inferSchema/] body = " + body);
+        JSONObject objBody = (JSONObject) JSONValue.parse(body);
+        String query = objBody.getAsString("query");
+        String dataSourceID = objBody.getAsString("dataSourceID");
+
+        MongoClient client = Utils.getMongoDBClient();
+        Document ds = MongoCollections.getDataSourcesCollection(client).find(new Document("dataSourceID", dataSourceID)).first();
+        Wrapper w = Wrapper.specializeWrapper(ds,query); //Body sent to get extra parameters
+        client.close();
+        return Response.ok((w.inferSchema())).build();
+    }
+
+    @POST
     @Path("wrapper/preview/")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)

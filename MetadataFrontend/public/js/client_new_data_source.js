@@ -37,9 +37,9 @@ $(function() {
                 dataSource.parquet_path = $("#parquet_path").val();
                 break;
 
-            case "plaintext-tab":
-                dataSource.type = "plaintext";
-                dataSource.plaintext_path = $("#plaintext_path").val();
+            case "json-tab":
+                dataSource.type = "json";
+                dataSource.json_path = $("#json_path").val();
                 break;
 
             case "restapi-tab":
