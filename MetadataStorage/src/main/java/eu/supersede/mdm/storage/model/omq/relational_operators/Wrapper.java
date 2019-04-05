@@ -69,6 +69,14 @@ public class Wrapper extends RelationalOperator {
                 ((SparkSQL_Wrapper)w).setTableName(ds.getString("name"));
                 ((SparkSQL_Wrapper)w).setSparksqlQuery(((JSONObject) JSONValue.parse(queryParameters)).getAsString("query"));
                 break;
+            case "csv":
+                w = new CSV_Wrapper("preview");
+                ((CSV_Wrapper)w).setPath(ds.getString("csv_path"));
+                ((CSV_Wrapper)w).setColumnDelimiter(((JSONObject) JSONValue.parse(queryParameters)).getAsString("csvColumnDelimiter"));
+                ((CSV_Wrapper)w).setRowDelimiter(((JSONObject) JSONValue.parse(queryParameters)).getAsString("csvRowDelimiter"));
+                ((CSV_Wrapper)w).setHeaderInFirstRow(
+                        Boolean.parseBoolean(((JSONObject) JSONValue.parse(queryParameters)).getAsString("headersInFirstRow")));
+                break;
             case "mongodb":
                 w = new MongoDB_Wrapper("preview");
                 ((MongoDB_Wrapper)w).setConnectionString(ds.getString("mongodb_connectionString"));
@@ -101,10 +109,13 @@ public class Wrapper extends RelationalOperator {
             case "json":
                 w = new JSON_Wrapper("preview");
                 ((JSON_Wrapper)w).setPath(ds.getString("json_path"));
-
                 ((JSON_Wrapper)w).setExplodeLevels(
                     ((JSONArray)((JSONObject) JSONValue.parse(queryParameters)).get("explodeLevels")).stream().map(a -> (String)a).collect(Collectors.toList())
                 );
+                ((JSON_Wrapper)w).setArrayOfValues(ds.getString("array"));
+                ((JSON_Wrapper)w).setAttributeForSchema(ds.getString("key"));
+                ((JSON_Wrapper)w).setValueForAttribute(ds.getString("values"));
+                ((JSON_Wrapper)w).setCopyToParent(ds.getString("copyToParent"));
         }
         return w;
     }

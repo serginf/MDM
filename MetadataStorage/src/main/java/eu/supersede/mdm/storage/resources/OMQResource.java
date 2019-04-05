@@ -111,7 +111,7 @@ public class OMQResource {
             StringBuilder select = new StringBuilder("SELECT ");
             StringBuilder from = new StringBuilder(" FROM ");
             StringBuilder where = new StringBuilder(" WHERE ");
-            q.getProjections().forEach(proj -> select.append(RDFUtil.nn(proj).split("/")[RDFUtil.nn(proj).split("/").length-1]+","));
+            q.getProjections().forEach(proj -> select.append("'"+RDFUtil.nn(proj).split("/")[RDFUtil.nn(proj).split("/").length-1]+"'"+","));
             q.getWrappers().forEach(w -> from.append(wrapperIriToID.get(w.getWrapper())+","));
             q.getJoinConditions().forEach(j -> where.append(
                     RDFUtil.nn(j.getLeft_attribute()).split("/")[RDFUtil.nn(j.getLeft_attribute()).split("/").length-1]+
@@ -153,7 +153,7 @@ public class OMQResource {
             Document ds = MongoCollections.getDataSourcesCollection(client).find(new Document("dataSourceID", wrapper.getString("dataSourceID"))).first();
             List<String> attributes = Lists.newArrayList();
             ((List<Document>)wrapper.get("attributes")).forEach(a -> {
-                attributes.add(a.getString("name"));
+                attributes.add("'"+a.getString("name")+"'");
             });
             wrappers.add(new Tuple3<>(Wrapper.specializeWrapper(ds,wrapper.getString("query")),strWrapperID,attributes));
         });

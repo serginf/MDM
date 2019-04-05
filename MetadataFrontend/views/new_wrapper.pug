@@ -71,6 +71,24 @@ block content
                                                 button.btn.btn-success.btn-preview(type="button")
                                                     span.fa.fa-search
 
+                            .form-group#csvForm(style="display:none")
+                                .row
+                                    .col-md-4
+                                        .form-group#csvColumnDelimiterForm
+                                            label.col-lg-6.col-form-label Column delimiter
+                                            .col-lg-12
+                                                input#csvColumnDelimiter.form-control(type='text')
+                                    .col-md-4
+                                        .form-group#csvRowDelimiterForm
+                                            label.col-lg-6.col-form-label Row delimiter
+                                            .col-lg-12
+                                                input#csvRowDelimiter.form-control(type='text')
+                                    .col-md-4
+                                        .form-group#headersInFirstRowForm
+                                            label.col-lg-6.col-form-label First row contains headers
+                                            .col-lg-12
+                                                input#headersInFirstRow.form-control(type='checkbox')
+
                             .form-group#jsonArrayExplodeForm(style="display:none")
                                 .col-lg-12
                                     #explodeLevels.control-group
@@ -85,16 +103,26 @@ block content
 
                             .form-group#jsonValueToAttribute(style="display:none")
                                 .row
-                                    .col-md-6
+                                    .col-md-3
+                                        .form-group#arrayForm
+                                            label.col-lg-6.col-form-label Array of values
+                                            .col-lg-12
+                                                input#array.form-control(type='text')
+                                    .col-md-3
                                         .form-group#attributesForm
-                                            label.col-lg-4.col-form-label Attributes
-                                            .col-lg-12#attributes
-                                                input#asdasd.form-control(type='text', name='cypherQuery', required='required')
-                                    .col-md-6
-                                        .form-group#featuresForm
-                                            label.col-lg-4.col-form-label Features
-                                            .col-lg-12#features
-
+                                            label.col-lg-6.col-form-label Attribute for schema
+                                            .col-lg-12
+                                                input#key.form-control(type='text')
+                                    .col-md-3
+                                        .form-group#valuesForm
+                                            label.col-lg-6.col-form-label Value for the attribute
+                                            .col-lg-12
+                                                input#values.form-control(type='text')
+                                    .col-md-3
+                                        .form-group#copyToParentForm
+                                            label.col-lg-6.col-form-label Copy to parent
+                                            .col-lg-12
+                                                input#copyToParent.form-control(type='checkbox')
                                 //.col-lg-12
                                     form(role="form" autocomplete="off")
                                         .entry.input-group.col-xs-3

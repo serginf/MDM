@@ -12,12 +12,22 @@ function getParameterByName(name) {
 function getJSONQueryByType() {
     var queryParameters = new Object();
     if (currDataSource.type == "avro") queryParameters.query = $("#sparksqlQuery").val();
+    else if (currDataSource.type == "csv") {
+        queryParameters.csvColumnDelimiter = $("#csvColumnDelimiter").val();
+        queryParameters.csvRowDelimiter = $("#csvRowDelimiter").val();
+        queryParameters.headersInFirstRow = $('#headersInFirstRow:checked').is(":checked");
+    }
     else if (currDataSource.type == "mongodb") queryParameters.query = $("#mongodbQuery").val();
     else if (currDataSource.type == "neo4j") queryParameters.query = $("#cypherQuery").val();
     else if (currDataSource.type == "parquet") queryParameters.query = $("#sparksqlQuery").val();
     else if (currDataSource.type == "json") {
         queryParameters.explodeLevels = new Array();
         $('input[name^="explodeLevels"]').each(function() { queryParameters.explodeLevels.push(($(this).val()));});
+
+        queryParameters.array = $("#array").val();
+        queryParameters.key = $("#key").val();
+        queryParameters.values = $("#values").val();
+        queryParameters.copyToParent = $("#copyToParent").val();
     }
     else if (currDataSource.type == "restapi") queryParameters.query = $("#restapiQuery").val();
     else if (currDataSource.type == "sqldatabase") queryParameters.query = $("#sqlQuery").val();
@@ -104,6 +114,7 @@ $(function() {
             $("#restapiQueryForm").hide(); $("#sqlQueryForm").hide();
 
             if (currDataSource.type == "avro") query = $("#sparksqlQueryForm").show();
+            else if (currDataSource.type == "csv") $("#csvForm").show();
             else if (currDataSource.type == "mongodb") query = $("#mongodbQueryForm").show();
             else if (currDataSource.type == "neo4j") query = $("#cypherQueryForm").show();
             else if (currDataSource.type == "parquet") query = $("#sparksqlQueryForm").show();
@@ -132,6 +143,7 @@ $(function() {
             attribute.isID = $(this).parent().find('input[type=checkbox]').is(':checked');
             wrapper.attributes.push(attribute);
         });
+        wrapper.query = JSON.stringify(getJSONQueryByType());
 
         $.ajax({
             url: '/wrapper',
@@ -166,14 +178,6 @@ $(function() {
                     .removeClass('btn-success').addClass('btn-danger')
                     .html('<span class="fa fa-minus"></span>');
             });
-
-
-/*
-                currentEntry = $(this).parents('.entry:first'),
-                newEntry = $(currentEntry.clone()).appendTo(controlForm);
-            newEntry.find('input').val('');
-            controlForm.find('.entry:not(:last) .btn-add')
-*/
 
         }).fail(function(err) {
             alert("error "+JSON.stringify(err));

@@ -37,6 +37,8 @@ block content
                             li.nav-item
                                 a.text-primary#avro-tab.nav-link.active(data-toggle="tab" href="#avro" role="tab" aria-controls="profile" aria-selected="false") Avro
                             li.nav-item
+                                a.text-primary#csv-tab.nav-link(data-toggle="tab" href="#csv" role="tab" aria-controls="messages" aria-selected="false") CSV file
+                            li.nav-item
                                 a.text-primary#json-tab.nav-link(data-toggle="tab" href="#json" role="tab" aria-controls="messages" aria-selected="false") JSON file
                             li.nav-item
                                 a.text-primary#mongodb-tab.nav-link(data-toggle="tab" href="#mongodb" role="tab" aria-controls="home" aria-selected="true") MongoDB
@@ -55,6 +57,12 @@ block content
                             label.col-lg-4.col-form-label Avro path (with protocol)
                             .col-lg-12
                                 input#file_path.form-control(type='text', name='avro_path', required='required')
+
+                    #csv.tab-pane
+                        .form-group#csv_pathForm
+                            label.col-lg-4.col-form-label CSV path (with protocol)
+                            .col-lg-12
+                                input#csv_path.form-control(type='text', name='csv_path', required='required')
                 
                     #mongodb.tab-pane(role="tabpanel" aria-labelledby="mongodb-tab")
                         .form-group#mongodb_hostnameForm

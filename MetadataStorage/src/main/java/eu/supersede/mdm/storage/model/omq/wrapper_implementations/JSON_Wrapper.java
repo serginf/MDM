@@ -22,6 +22,10 @@ public class JSON_Wrapper extends Wrapper {
 
     private String path;
     private List<String> explodeLevels;
+    private String arrayOfValues;
+    private String attributeForSchema;
+    private String valueForAttribute;
+    private String copyToParent;
 
     public JSON_Wrapper(String name) {
         super(name);
@@ -43,7 +47,39 @@ public class JSON_Wrapper extends Wrapper {
         this.explodeLevels = explodeLevels;
     }
 
-    private static void extractAttributes(Set<String> attributes, String parent, JSONObject jsonSchema) {
+    public String getArrayOfValues() {
+        return arrayOfValues;
+    }
+
+    public void setArrayOfValues(String arrayOfValues) {
+        this.arrayOfValues = arrayOfValues;
+    }
+
+    public String getAttributeForSchema() {
+        return attributeForSchema;
+    }
+
+    public void setAttributeForSchema(String attributeForSchema) {
+        this.attributeForSchema = attributeForSchema;
+    }
+
+    public String getValueForAttribute() {
+        return valueForAttribute;
+    }
+
+    public void setValueForAttribute(String valueForAttribute) {
+        this.valueForAttribute = valueForAttribute;
+    }
+
+    public String getCopyToParent() {
+        return copyToParent;
+    }
+
+    public void setCopyToParent(String copyToParent) {
+        this.copyToParent = copyToParent;
+    }
+
+    public static void extractAttributes(Set<String> attributes, String parent, JSONObject jsonSchema) {
         if (jsonSchema.get("type") instanceof String && jsonSchema.get("type").equals("struct") ||
                 jsonSchema.get("type") instanceof JSONObject && ((JSONObject) jsonSchema.get("type")).get("type").equals("struct")) {
             if (jsonSchema.containsKey("fields")) {
@@ -74,12 +110,14 @@ public class JSON_Wrapper extends Wrapper {
         for (String level : explodeLevels) {
             if (first) {
                 first = false;
-                query += "select explode("+level+") as "+level+" from "+tableName;
+                path = level;
+                query = "select explode("+level+") as "+level+" from "+tableName;
             } else {
-                //query += "select explode("+level+") as "
+                path += "."+level;
+                query = "select explode("+path+") as "+level+" from ( "+query+" )";
             }
         }
-        return "select * from ("+ (query.isEmpty() ? tableName : query) + ")";
+        return "select * from ("+ query + ")";
     }
 
     @Override

@@ -34,7 +34,8 @@ import org.apache.jena.sparql.core.BasicPattern;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.SimpleGraph;
-import scala.util.parsing.combinator.testing.Str;
+
+
 
 import java.util.*;
 

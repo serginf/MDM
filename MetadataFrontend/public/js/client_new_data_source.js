@@ -22,6 +22,11 @@ $(function() {
                 dataSource.avro_path = $("#avro_path").val();
                 break;
 
+            case "csv-tab":
+                dataSource.type = "csv";
+                dataSource.csv_path = $("#csv_path").val();
+                break;
+
             case "mongodb-tab":
                 dataSource.type = "mongodb";
                 dataSource.mongodb_connectionString = $("#mongodb_connectionString").val();

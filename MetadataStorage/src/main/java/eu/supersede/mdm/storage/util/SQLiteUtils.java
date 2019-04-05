@@ -48,7 +48,7 @@ public class SQLiteUtils {
             StringBuilder schema = new StringBuilder("(");
             StringBuilder values = new StringBuilder("(");
             ((JSONArray)tuple).forEach(datum -> {
-                schema.append(((JSONObject)datum).getAsString("attribute")+",");
+                schema.append("'"+((JSONObject)datum).getAsString("attribute")+"'"+",");
                 values.append("'"+((JSONObject)datum).getAsString("value").replace("'","")+"',");
             });
             SQL += schema.substring(0,schema.length()-1)+") VALUES "+values.substring(0,values.length()-1)+");";
