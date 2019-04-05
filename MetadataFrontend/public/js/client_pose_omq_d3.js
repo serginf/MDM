@@ -15,7 +15,7 @@ function drawGraph(globalGraphID) {
     var nodeRadius = 9;
 
     d3.json('/globalGraph/'+globalGraphID, function (error, graph) {
-        var thisGraph = new Object();
+        thisGraph = new Object();
         var jsonObj = JSON.parse(graph.graphicalGraph);
 
         newNodes = jsonObj.nodes;
@@ -24,7 +24,8 @@ function drawGraph(globalGraphID) {
                 id: e.id,
                 iri: e.iri,
                 color: e.color,
-                name: e.title
+                name: e.title,
+                namespace: e.namespace
             };
         });
         thisGraph.nodes = newNodes;
@@ -77,6 +78,9 @@ function drawGraph(globalGraphID) {
             .data(thisGraph.edges)
             .enter().append('svg:path')
             .attr('id', function(d,i) { return 'edgepath'+i; })
+            .attr("data-type", function (d) {
+                return d.name.toLowerCase().includes("hasfeature") ? "feature" : "concept";
+            })
             .attr('stroke', "#aaa")
             .attr('marker-end','url(#arrowhead)')
             .attr('class', 'link');
@@ -87,6 +91,9 @@ function drawGraph(globalGraphID) {
             .append('text')
             .style("pointer-events", "none")
             .attr('class', 'edgelabel')
+            .attr("data-type", function (d) {
+                return d.name.toLowerCase().includes("hasfeature") ? "feature" : "concept";
+            })
             .attr('id', function(d,i){return 'edgelabel'+i})
             .attr('dx', function(d,i){ return euclidean(d.source.x,d.source.y,d.target.x,d.target.y)/3-2*d.name.length;})
             .attr('dy', 20)
@@ -96,6 +103,9 @@ function drawGraph(globalGraphID) {
             .attr('xlink:href',function(d,i) {return '#edgepath'+i})
             .style("pointer-events", "none")
             .attr("startOffset", "30%")
+            .attr("data-type", function (d) {
+                return d.name.toLowerCase().includes("hasfeature") ? "feature" : "concept";
+            })
             .attr("value", function (d) {
                 return d.name;
             })
@@ -110,6 +120,9 @@ function drawGraph(globalGraphID) {
             .attr("r", nodeRadius)
             .attr("cx", 10)
             .attr("cy", 10)
+            .attr("data-type", function (d) {
+                return d.namespace.toLowerCase().includes("concept") ? "concept" : "feature";
+            })
             .style("fill", function(d) {
                 return d.color;
             });
@@ -117,6 +130,9 @@ function drawGraph(globalGraphID) {
         var nodeTexts = svg.selectAll("text.label")
             .data(thisGraph.nodes)
             .enter().append("text")
+            .attr("data-type", function (d) {
+                return d.namespace.toLowerCase().includes("concept") ? "concept" : "feature";
+            })
             .attr("class", "label")
             .attr("value", function (d) {
                 return d.name;

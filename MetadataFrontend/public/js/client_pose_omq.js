@@ -43,6 +43,33 @@ $(function() {
 });
 
 $(function() {
+    var hexDigits = new Array
+    ("0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F");
+
+    //Function to convert rgb color to hex format
+    function rgb2hex(rgb) {
+        rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+        return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }
+
+    function hex(x) {
+        return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
+    }
+
+    $('#showFeaturesButton').change(function() {
+        if ($(this).prop("checked")) {
+            $('*[data-type="feature"]').each(function() {
+                $(this).show();
+            });
+        } else {
+            $('*[data-type="feature"]').each(function() {
+                $(this).hide();
+            });
+        }
+    })
+});
+
+$(function() {
     $("#clearQueryButton").on("click", function(e) {
         e.preventDefault();
         d3.selectAll(".selection").remove();
