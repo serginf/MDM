@@ -7,7 +7,8 @@ block headers
     script(src='/js/d3.min.js')
     script(src='/js/cola.d3.min.js')
     script(src='/js/noty-2.3.8/js/noty/packaged/jquery.noty.packaged.js')
-
+    link(href='https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css', rel='stylesheet')
+    script(src='https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js')
 
 block content
 
@@ -35,23 +36,29 @@ block content
                             li.list-inline-item (d) shift-click on a node/edge to change its title;
                             li.list-inline-item (e) click on node or edge and press backspace/delete to delete
 
-        h4
-            span.label Metadata Model:
-            | &nbsp;&nbsp;
-            span.label.btn(id='Concept').metamodelButton.normal
-                a(href="#") G:Concept
-            | &nbsp;&nbsp;
-            //span.label.btn(id='MemberConcept').metamodelButton.normal
-            //    a(href="#") G:MemberConcept
-            //| &nbsp;&nbsp;
-            span.label.btn(id='Feature_ID').metamodelButton.normal
-                a(href="#") G:Feature (ID subclass)
-            | &nbsp;&nbsp;
-            span.label.btn(id='Feature').metamodelButton.normal
-                a(href="#") G:Feature
-            //| &nbsp;&nbsp;
-            //span.label.btn(id='AggregationFunction').metamodelButton.normal
-            //    a(href="#") G:AggregationFunction
+        .row
+            .col-md-6
+                h4
+                    span.label Metadata Model:
+                    | &nbsp;&nbsp;
+                    span.label.btn(id='Concept').metamodelButton.normal
+                        a(href="#") G:Concept
+                    | &nbsp;&nbsp;
+                    //span.label.btn(id='MemberConcept').metamodelButton.normal
+                    //    a(href="#") G:MemberConcept
+                    //| &nbsp;&nbsp;
+                    span.label.btn(id='Feature_ID').metamodelButton.normal
+                        a(href="#") G:Feature (ID subclass)
+                    | &nbsp;&nbsp;
+                    span.label.btn(id='Feature').metamodelButton.normal
+                        a(href="#") G:Feature
+                    //| &nbsp;&nbsp;
+                    //span.label.btn(id='AggregationFunction').metamodelButton.normal
+                    //    a(href="#") G:AggregationFunction
+            .col-md-3
+                h4 Show complete IRIs
+                    | &nbsp;&nbsp;&nbsp;
+                    input#showCompleteIRIs(type='checkbox', checked='', data-toggle='toggle' data-onstyle="primary")
     //Used to save the graph
     //p#download-input(hidden="") Download
     //Used to load the graph
@@ -63,5 +70,5 @@ block content
 
     #graph
 
-
+    script(src='/js/client_view_global_graph.js')
     script(src='/js/client_view_global_graph_creator_d3.js')

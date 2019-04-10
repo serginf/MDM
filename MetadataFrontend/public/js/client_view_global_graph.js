@@ -1,19 +1,18 @@
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
 $(function() {
-    $.get("/globalGraph/"+getParameterByName("globalGraphID"), function(data) {
-        var globalGraph = (data);
-        $("#id").val(globalGraph.globalGraphID);
-        $("#name").val(globalGraph.name);
-        $("#defaultNamespace").val(globalGraph.defaultNamespace);
-        $("#namedGraph").val(globalGraph.namedGraph);
-
-        //$("#editGlobalGraph").append($('<a href="/edit_global_graph?globalGraphID='+(globalGraph.globalGraphID)+'">'));
-    });
-
+    $('#showCompleteIRIs').change(function() {
+        if ($(this).prop("checked")) {
+            $('text').each(function() {
+                //$(this).text("you fff");
+            });
+        } else {
+            $('.edgelabel').each(function() {
+                var iri = $(this).text();
+                $(this).text(iri.substring(iri.lastIndexOf("/")+1,iri.length));
+            });
+            $('text').each(function() {
+                var iri = $(this).text();
+                $(this).text(iri.substring(iri.lastIndexOf("/")+1,iri.length));
+            });
+        }
+    })
 });
