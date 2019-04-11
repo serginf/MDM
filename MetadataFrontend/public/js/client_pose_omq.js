@@ -5,6 +5,13 @@ function getParameterByName(name) {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
+$(function () {
+    $("#"+(Global.CONCEPT.name)).css("background-color",Global.CONCEPT.color);
+    $("#"+(Global.FEATURE_ID.name)).css("background-color",Global.FEATURE_ID.color);
+    $("#"+(Global.FEATURE.name)).css("background-color",Global.FEATURE.color);
+});
+
+
 var globalGraphs = [];
 var currGlobalGraph;
 
@@ -87,17 +94,25 @@ $(function() {
 });
 
 $(function() {
-    $("#generateSparqlButton").on("click", function(e) {
+    $("#getFeaturesButton").on("click", function(e) {
         e.preventDefault();
 
         var hull = d3.polygonHull(convexHull);
         selection = [];
 
+        var selectedFeatures = [];
         newNodes.forEach(function (e, i) {
             if (d3.polygonContains(hull, [e.x, e.y])) {
                 selection.push(e);
+                //Add to the list of features
+                if (e.namespace == Global.FEATURE.iri) {
+                    selectedFeatures.push(e.name)
+                }
             }
         });
+        $('#projectedFeatures').val(selectedFeatures);
+        $('#projectedFeatures').trigger('change');
+
         newEdges.forEach(function (e) {
             var s = false,
                 t = false;
@@ -107,6 +122,13 @@ $(function() {
             }
             if (s && t) selection.push(e);
         });
+
+    });
+});
+
+$(function() {
+    $("#generateSparqlButton").on("click", function(e) {
+        e.preventDefault();
 
         var graphical_omq = new Object();
         if (selection.length == 0) alert("Select subgraph first");
@@ -177,7 +199,6 @@ $(function(){
             method: "POST",
             data: sql_omq
         }).done(function(data) {
-            console.log(data)
             $("#spinner").hide();
             _.each($('#projectedFeatures').val(), function(f) {
                 $('#dataTable').find('thead > tr').append($('<td>').append($('<b>').text(f)));

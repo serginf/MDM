@@ -53,7 +53,7 @@ function drawGraph(globalGraphID) {
             node,
             link;
 
-        svg.append('defs').append('marker')
+        /*svg.append('defs').append('marker')
             .attr('id', 'arrowhead')
             .attr('viewBox','-0 -5 10 10')
             .attr('refX', 13)
@@ -64,9 +64,9 @@ function drawGraph(globalGraphID) {
             .attr('xoverflow', 'visible')
             .append('svg:path')
             .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
-            .attr('fill', '#aaa')
+            .attr('fill', '#ffff')
             .style('stroke','none');
-
+*/
         var simulation = d3.forceSimulation()
             .force("charge", d3.forceManyBody().strength(-1100))
             .force("center", d3.forceCenter(width / 2, height / 2))
@@ -74,6 +74,21 @@ function drawGraph(globalGraphID) {
             .force("x", d3.forceX(width / 2).strength(.01))
             .force("y", d3.forceY(height / 2).strength(.01))
             .force("link", d3.forceLink().distance(100).strength(1));
+
+
+        var marker = svg.selectAll('marker')
+            .data(thisGraph.edges)
+            .enter()
+            .append('svg:marker')
+            .attr('id', function(d){ return 'marker_' + d.name})
+            .attr('markerWidth', 7)
+            .attr('markerHeight', 7)
+            .attr('orient', 'auto')
+            .attr('refX', 6)
+            .attr('viewBox', '0 -5 10 10')
+            .append('svg:path')
+            .attr('d', 'M0,-5L10,0L0,5')
+            .attr('fill', function(d,i) { return d.color});
 
         var path = svg.selectAll(".link")
             .data(thisGraph.edges)
@@ -83,7 +98,8 @@ function drawGraph(globalGraphID) {
                 return d.name.toLowerCase().includes("hasfeature") ? "feature" : "concept";
             })
             .attr('stroke', "#aaa")
-            .attr('marker-end','url(#arrowhead)')
+            .attr('marker-start', function(d,i){ return 'url(#marker_' + d.source.iri + ')' })
+            .attr('marker-end', function(d,i){ return 'url(#marker_' + d.target.iri  + ')' })
             .attr('class', 'link');
 
         var edgelabels = svg.selectAll(".edgelabel")
@@ -118,6 +134,7 @@ function drawGraph(globalGraphID) {
             .data(thisGraph.nodes)
             .enter()
             .append("circle")
+            .attr('id', function(d,i){return d.iri})
             .attr("r", nodeRadius)
             .attr("cx", 10)
             .attr("cy", 10)

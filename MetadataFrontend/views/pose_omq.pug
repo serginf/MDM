@@ -23,13 +23,25 @@ block content
     .container-fluid
         .banner
             .row.align-middle
-                .col-md-4
-                    h2 Query the Ontology
                 .col-md-3
-                    h2 Show features
+                    h2 Ontology querying
+                .col-md-3
+                    h4 Legend:
+                        | &nbsp;&nbsp;
+                        span.label.btn(id='Concept').metamodelButton.normal
+                            | Concept
+                        | &nbsp;&nbsp;
+                        span.label.btn(id='Feature_ID').metamodelButton.normal
+                            | Feature ID
+                        | &nbsp;&nbsp;
+                        span.label.btn(id='Feature').metamodelButton.normal
+                            | Feature
+                        | &nbsp;&nbsp;
+                .col-md-2
+                    h4 Show features:
                         |&nbsp;&nbsp;&nbsp;
                         input#showFeaturesButton(type='checkbox', checked='', data-toggle='toggle' data-onstyle="primary")
-                .col-md-3
+                .col-md-2
                     select#globalGraph.form-control(type='text', name='globalGraph', required='required')
                 .col-md-2
                     button#clearQueryButton.btn.btn-primary.btn-lg.btn-block(type='submit') Clear Query
@@ -38,15 +50,16 @@ block content
             .col-md-8
                 svg(width="100%", height=600)#globalGraphSVG
             .col-md-4
+
+                .form-group#generateSPARQLForm
+                    .row
+                        .col-md-6
+                            button#getFeaturesButton.btn.btn-primary.btn-lg.btn-block(type='submit') Get features
+                        .col-md-6
+                            button#generateSparqlButton.btn.btn-primary.btn-lg.btn-block(type='submit') Execute query
                 .form-group#projectedFeaturesForm
                     label.col-lg-4.col-form-label Projected Features
                     select#projectedFeatures.form-control(type='text', name='projectedFeatures[]', multiple="multiple")
-                .form-group#generateSPARQLForm
-                    .row
-                        .col-md-3
-                        .col-md-6
-                            button#generateSparqlButton.btn.btn-primary.btn-lg.btn-block(type='submit') Generate SPARQL
-                        .col-md-3
 
                 .form-group#sparqlAreaForm
                     //pre#text
