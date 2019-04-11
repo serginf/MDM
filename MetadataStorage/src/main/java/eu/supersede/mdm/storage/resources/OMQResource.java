@@ -21,10 +21,7 @@ import scala.Tuple3;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -122,7 +119,17 @@ public class OMQResource {
             StringBuilder from = new StringBuilder(" FROM ");
             StringBuilder where = new StringBuilder(" WHERE ");
             //Sort the projections as they are indicated in the interface
-            List<String> projections = Lists.newArrayList(q.getProjections());
+            //First remove duplicates based on the features
+            List<String> seenFeatures = Lists.newArrayList();
+            List<String> withoutDuplicates = Lists.newArrayList();
+            q.getProjections().forEach(proj -> {
+                if (!seenFeatures.contains(QueryRewriting.featuresPerAttribute.get(proj))) {
+                    withoutDuplicates.add(proj);
+                    seenFeatures.add(QueryRewriting.featuresPerAttribute.get(proj));
+                }
+            });
+            //Now do the sorting
+            List<String> projections = Lists.newArrayList(withoutDuplicates);//Lists.newArrayList(q.getProjections());
             projections.sort(Comparator.comparingInt(s -> listOfFeatures.indexOf(QueryRewriting.featuresPerAttribute.get(s))));
             projections.forEach(proj -> select.append("\""+RDFUtil.nn(proj).split("/")[RDFUtil.nn(proj).split("/").length-1]+"\""+","));
             q.getWrappers().forEach(w -> from.append(wrapperIriToID.get(w.getWrapper())+","));
