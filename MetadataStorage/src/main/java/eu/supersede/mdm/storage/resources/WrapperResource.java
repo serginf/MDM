@@ -67,7 +67,7 @@ public class WrapperResource {
         MongoClient client = Utils.getMongoDBClient();
         //Metadata for the wrapper
         objBody.put("wrapperID", "w"+UUID.randomUUID().toString().replace("-",""));
-        String wrapperName = objBody.getAsString("name").trim().replace(" ","");
+        String wrapperName = objBody.getAsString("name")/*.trim().replace(" ","")*/;
         String wIRI = SourceGraph.WRAPPER.val()+"/"+wrapperName;
         objBody.put("iri",wIRI);
 
@@ -88,7 +88,8 @@ public class WrapperResource {
         RDFUtil.addTriple(dsIRI, dsIRI, SourceGraph.HAS_WRAPPER.val(), wIRI);
         ((JSONArray) objBody.get("attributes")).forEach(attribute -> {
             String attName = ((JSONObject) attribute).getAsString("name");
-            String attIRI = dsIRI + "/" + attName.trim().replace(" ", "");
+            //String attIRI = dsIRI + "/" + wrapperName + "." + attName/*.trim().replace(" ", "")*/;
+            String attIRI = dsIRI + "/" + attName/*.trim().replace(" ", "")*/;
             RDFUtil.addTriple(dsIRI, attIRI, Namespaces.rdf.val() + "type", SourceGraph.ATTRIBUTE.val());
             RDFUtil.addTriple(dsIRI, wIRI, SourceGraph.HAS_ATTRIBUTE.val(), attIRI);
                 //if (Boolean.parseBoolean(((JSONObject)attribute).getAsString("isID"))) {

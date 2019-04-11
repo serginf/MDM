@@ -80,7 +80,7 @@ public class QueryRewriting {
     private static Map<String,Map<String,String>> attributesPerFeaturePerWrapper = Maps.newHashMap();
     private static Map<String,Set<Triple>> allTriplesPerWrapper = Maps.newHashMap();
     private static Map<String,Map<String,String>> IDsPerWrapperPerConcept = Maps.newHashMap();
-    private static Map<String,String> featuresPerAttribute = Maps.newHashMap(); // attribute - (sameAs) -> feature
+    public static Map<String,String> featuresPerAttribute = Maps.newHashMap(); // attribute - (sameAs) -> feature
     private static Map<String,Set<String>> featuresPerConceptInQuery = Maps.newHashMap();
     private static Map<String,Set<String>> wrappersPerConceptID = Maps.newHashMap(); // index: concept (ID), value: set of wrappers that cover the ID
     private static Map<String,String> IDsPerConcept = Maps.newHashMap(); // index: concept, value: feature ID

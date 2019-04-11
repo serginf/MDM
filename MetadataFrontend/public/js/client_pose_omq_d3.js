@@ -10,6 +10,7 @@ function euclidean(xA,yA,xB,yB) {
 }
 
 function drawGraph(globalGraphID) {
+
     var width = $(window).width()*0.5;
     var height = $(window).height()*0.65;
     var nodeRadius = 9;
@@ -67,12 +68,12 @@ function drawGraph(globalGraphID) {
             .style('stroke','none');
 
         var simulation = d3.forceSimulation()
-            .force("charge", d3.forceManyBody().strength(-550))
+            .force("charge", d3.forceManyBody().strength(-1100))
             .force("center", d3.forceCenter(width / 2, height / 2))
             .force("collide", d3.forceCollide().radius(function(d) { return d.r + 0.5; }).iterations(20))
-            .force("x", d3.forceX(width / 2).strength(.05))
-            .force("y", d3.forceY(height / 2).strength(.05))
-            .force("link", d3.forceLink().distance(140).strength(1));
+            .force("x", d3.forceX(width / 2).strength(.01))
+            .force("y", d3.forceY(height / 2).strength(.01))
+            .force("link", d3.forceLink().distance(100).strength(1));
 
         var path = svg.selectAll(".link")
             .data(thisGraph.edges)
@@ -190,11 +191,7 @@ function drawGraph(globalGraphID) {
         Based in Mike Bostock's Line drawing
         https://bl.ocks.org/mbostock/f705fc55e6f26df29354
      */
-    var line = d3.line().curve(d3.curveBasis),
-        xmin = Number.MAX_VALUE,
-        xmax = Number.MIN_VALUE,
-        ymin = Number.MAX_VALUE,
-        ymax = Number.MIN_VALUE;
+    var line = d3.line().curve(d3.curveBasis);
 
     selection = [];
 
@@ -205,10 +202,8 @@ function drawGraph(globalGraphID) {
             .subject(function() { var p = [d3.event.x, d3.event.y]; return [p, p]; })
             .on("start", dragstarted));
 
-
-
+    convexHull = [];
     function dragstarted() {
-       // if (d3.event.shiftKey){
             var d = d3.event.subject,
                 active = svg.append("path").datum(d)
                     .attr("class","selection")
@@ -218,60 +213,16 @@ function drawGraph(globalGraphID) {
                     .style("fill-opacity", 0.2),
                 x0 = d3.event.x,
                 y0 = d3.event.y;
-
             d3.event.on("drag", function() {
+                convexHull.push([d3.event.x,d3.event.y]);
                 var x1 = d3.event.x,
                     y1 = d3.event.y,
                     dx = x1 - x0,
                     dy = y1 - y0;
-
                 if (dx * dx + dy * dy > 100) d.push([x0 = x1, y0 = y1]);
                 else d[d.length - 1] = [x1, y1];
-                if (x1 < xmin) xmin = x1;
-                if (x1 > xmax) xmax = x1;
-                if (y1 < ymin) ymin = y1;
-                if (y1 > ymax) ymax = y1;
                 active.attr("d", line);
-
             });
-            calculateArea(d);
-      //  }
-    }
-
-    function calculateArea(d) {
-        selection = [];
-
-        newNodes.forEach(function (e, i) {
-            if (e.x < xmax && e.x > xmin && e.y < ymax && e.y > ymin) {
-                //console.log("inside area");
-                selection.push(e);
-            }
-            /* var nxmin = 0,
-                 nxmax = 0,
-                 nymin = 0,
-                 nymax = 0;
-             for(var i = 0; i < d.length; ++i) {
-                 if (e.x < xmax && e.x > xmin && e.y < ymax && e.y > ymin) {
-                     if (e.x < d[i][0]) ++nxmin;
-                     //if (e.x > d[0]) ++nxmax;
-                     //if (e.y < d[1]) ++nymin;
-                     //if (e.y > d[1]) ++nymax;
-                 }
-             }
-             if (nxmin%2 == 0) selection.push(e);*/
-        });
-
-        newEdges.forEach(function (e) {
-            var s = false,
-                t = false;
-            for (var i = 0; i < selection.length; ++i) {
-                if (selection[i] == e.source) s = true;
-                if (selection[i] == e.target) t = true;
-            }
-            if (s && t) selection.push(e);
-        })
-
-        console.log("in selection "+selection);
     }
 
     $("#clearSelectionButton").on("click", function(e) {
@@ -280,37 +231,4 @@ function drawGraph(globalGraphID) {
 
     });
 
-    $("#saveButton").on("click", function(e) {
-        e.preventDefault();
-
-        if (selection.length == 0) alert("Select subgraph first");
-
-        else{
-
-            var subGraph = new Object();
-            subGraph.triples = new Array();
-            _.each(selection, function(graphElement) {
-                if (graphElement.hasOwnProperty("target")) {
-                    //it is an edge
-                    var triple = new Object();
-                    triple.s = graphElement.source.iri;
-                    triple.p = graphElement.name;
-                    triple.o = graphElement.target.iri;
-                    subGraph.triples.push(triple);
-                }
-            });
-
-            alert(JSON.stringify(subGraph));
-/*            $.ajax({
-                url: '/bdi_ontology/sparQLQuery',
-                type: 'POST',
-                data: selection
-            }).done(function(res) {
-                console.log(res);
-                $('#algebraText').val(res);
-            }).fail(function(err) {
-                console.log("error "+JSON.stringify(err));
-            });*/
-        }
-    });
 };

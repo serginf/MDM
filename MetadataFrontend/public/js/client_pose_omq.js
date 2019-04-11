@@ -89,6 +89,25 @@ $(function() {
 $(function() {
     $("#generateSparqlButton").on("click", function(e) {
         e.preventDefault();
+
+        var hull = d3.polygonHull(convexHull);
+        selection = [];
+
+        newNodes.forEach(function (e, i) {
+            if (d3.polygonContains(hull, [e.x, e.y])) {
+                selection.push(e);
+            }
+        });
+        newEdges.forEach(function (e) {
+            var s = false,
+                t = false;
+            for (var i = 0; i < selection.length; ++i) {
+                if (selection[i] == e.source) s = true;
+                if (selection[i] == e.target) t = true;
+            }
+            if (s && t) selection.push(e);
+        });
+
         var graphical_omq = new Object();
         if (selection.length == 0) alert("Select subgraph first");
         else {
@@ -120,6 +139,7 @@ $(function() {
         var sparql_omq = new Object();
         sparql_omq.sparql = $("#text").text();
         sparql_omq.namedGraph = currGlobalGraph.namedGraph;
+        sparql_omq.features = $('#projectedFeatures').val();
 
         $.ajax({
             url: '/OMQ/fromSPARQLToRA',
@@ -157,6 +177,7 @@ $(function(){
             method: "POST",
             data: sql_omq
         }).done(function(data) {
+            console.log(data)
             $("#spinner").hide();
             _.each($('#projectedFeatures').val(), function(f) {
                 $('#dataTable').find('thead > tr').append($('<td>').append($('<b>').text(f)));

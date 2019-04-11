@@ -115,7 +115,8 @@ public class CSV_Wrapper extends Wrapper {
         ds.createTempView(tableName);
 
         spark.sql("select "+String.join(",",
-                attributes.stream().filter(a->!a.isEmpty() && !a.equals("\'\'")).map(a ->  "`"+a.replace("'","")+"`")
+                attributes.stream().filter(a->!a.isEmpty() && !a.equals("\'\'"))
+                        .map(a ->  "`"+a.replace("'","")+"`")
                         .collect(Collectors.toList()))+" from "+tableName)                .toJavaRDD()
                 .collect()
                 .forEach(r -> {

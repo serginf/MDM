@@ -15,11 +15,13 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
+import org.apache.spark.sql.catalyst.plans.logical.Except;
 import org.bson.Document;
 import scala.Tuple3;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -70,18 +72,26 @@ public class OMQResource {
 
     @POST @Path("omq/fromSPARQLToRA")
     @Consumes("text/plain")
-    public Response POST_omq_fromSPARQLToRA(String body) {
+    public Response POST_omq_fromSPARQLToRA(String body) throws Exception{
         System.out.println("[POST /omq/fromSPARQLToRA/] body = "+body);
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
 
         String SPARQL = objBody.getAsString("sparql");
+        List<String> listOfFeatures = (((JSONArray)JSONValue.parse(objBody.getAsString("features"))).stream().map(o ->String.valueOf(o)).collect(Collectors.toList()));
+
         //String namedGraph = objBody.getAsString("namedGraph");
         //QueryRewriting qr = new QueryRewriting_DAG(SPARQL.replace("\n"," "));
 
         Dataset T = Utils.getTDBDataset();
         T.begin(ReadWrite.READ);
-        Set<ConjunctiveQuery> UCQ = QueryRewriting.rewriteToUnionOfConjunctiveQueries(
-                QueryRewriting.parseSPARQL(SPARQL.replace("\n"," "), T), T)._2;
+        Set<ConjunctiveQuery> UCQ = null;
+        try {
+            UCQ = QueryRewriting.rewriteToUnionOfConjunctiveQueries(
+                    QueryRewriting.parseSPARQL(SPARQL.replace("\n", " "), T), T)._2;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(e);
+        }
 
 
         JSONObject out = new JSONObject();
@@ -111,12 +121,15 @@ public class OMQResource {
             StringBuilder select = new StringBuilder("SELECT ");
             StringBuilder from = new StringBuilder(" FROM ");
             StringBuilder where = new StringBuilder(" WHERE ");
-            q.getProjections().forEach(proj -> select.append("'"+RDFUtil.nn(proj).split("/")[RDFUtil.nn(proj).split("/").length-1]+"'"+","));
+            //Sort the projections as they are indicated in the interface
+            List<String> projections = Lists.newArrayList(q.getProjections());
+            projections.sort(Comparator.comparingInt(s -> listOfFeatures.indexOf(QueryRewriting.featuresPerAttribute.get(s))));
+            projections.forEach(proj -> select.append("\""+RDFUtil.nn(proj).split("/")[RDFUtil.nn(proj).split("/").length-1]+"\""+","));
             q.getWrappers().forEach(w -> from.append(wrapperIriToID.get(w.getWrapper())+","));
             q.getJoinConditions().forEach(j -> where.append(
-                    RDFUtil.nn(j.getLeft_attribute()).split("/")[RDFUtil.nn(j.getLeft_attribute()).split("/").length-1]+
+                    "\""+RDFUtil.nn(j.getLeft_attribute()).split("/")[RDFUtil.nn(j.getLeft_attribute()).split("/").length-1]+"\""+
                             " = "+
-                            RDFUtil.nn(j.getRight_attribute()).split("/")[RDFUtil.nn(j.getRight_attribute()).split("/").length-1]+
+                            "\""+RDFUtil.nn(j.getRight_attribute()).split("/")[RDFUtil.nn(j.getRight_attribute()).split("/").length-1]+"\""+
                             " AND "));
             SQL.append(select.substring(0,select.length()-1));
             SQL.append(from.substring(0,from.length()-1));
