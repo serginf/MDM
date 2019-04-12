@@ -55,7 +55,7 @@ public class OMQResource {
             if (selectedElement.containsKey("source")) {
                 JSONObject source = (JSONObject)selectedElement.get("source");
                 JSONObject target = (JSONObject)selectedElement.get("target");
-                pattern += "<"+source.getAsString("iri") + "> <" + selectedElement.getAsString("name") + "> <" +
+                pattern += "<"+source.getAsString("iri") + "> <" + selectedElement.getAsString("iri") + "> <" +
                         target.getAsString("iri") + "> .\n";
             }
         }

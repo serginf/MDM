@@ -50,19 +50,6 @@ $(function() {
 });
 
 $(function() {
-    var hexDigits = new Array
-    ("0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F");
-
-    //Function to convert rgb color to hex format
-    function rgb2hex(rgb) {
-        rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-        return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-    }
-
-    function hex(x) {
-        return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
-    }
-
     $('#showFeaturesButton').change(function() {
         if ($(this).prop("checked")) {
             $('*[data-type="feature"]').each(function() {
@@ -122,10 +109,82 @@ $(function() {
             }
             if (s && t) selection.push(e);
         });
-
     });
 });
 
+$(function() {
+    $("#executeQueryButton").on("click", function(e) {
+        e.preventDefault();
+        $("#dataModal").modal("show");
+
+
+        var graphical_omq = new Object();
+        if (selection.length == 0) alert("Select subgraph first");
+        else {
+            graphical_omq.selection = selection;
+            graphical_omq.projectedFeatures = $("#projectedFeatures").val();
+            console.log(graphical_omq.selection);
+            $.ajax({
+                url: '/OMQ/fromGraphicalToSPARQL',
+                method: "POST",
+                data: graphical_omq
+            }).done(function (res) {
+                var sparql_omq = new Object();
+                sparql_omq.sparql = res.sparql;
+                sparql_omq.namedGraph = currGlobalGraph.namedGraph;
+                sparql_omq.features = $('#projectedFeatures').val();
+                $.ajax({
+                    url: '/OMQ/fromSPARQLToRA',
+                    method: "POST",
+                    data: sparql_omq
+                }).done(function (res) {
+                    currOMQ = res;
+
+                    var sql_omq = new Object();
+                    sql_omq.sql = currOMQ.sql
+                    sql_omq.wrappers = currOMQ.wrappers;
+                    sql_omq.features = $('#projectedFeatures').val();
+
+                    $.ajax({
+                        url: '/OMQ/fromSQLtoDATA',
+                        method: "POST",
+                        data: sql_omq
+                    }).done(function(data) {
+                        $("#spinner").hide();
+                        _.each($('#projectedFeatures').val(), function(f) {
+                            $('#dataTable').find('thead > tr').append($('<td>').append($('<b>').text(f)));
+                        });
+                        $('#dataTable').show();
+                        _.each(data.data,function(row) {
+                            $('#dataTable').find('tbody').append($('<tr>'));
+                            _.each(row,function(item) {
+                                $('#dataTable').find('tbody > tr:last').append($('<td>').text(item.value));
+                            });
+                        });
+                    }).fail(function(err) {
+                        alert("error "+JSON.stringify(err));
+                    });
+
+                    //reset modal when hidden
+                    $('#dataModal').on('hidden.bs.modal', function (e) {
+                        $('#dataTable').find('thead > tr').remove();
+                        $('#dataTable').find('tbody > tr').remove();
+                        $('#dataTable').hide();
+                        $("#spinner").show();
+                    });
+
+                }).fail(function (err) {
+                    alert("error " + JSON.stringify(err));
+                });
+            }).fail(function (err) {
+                alert("error " + JSON.stringify(err));
+            });
+        }
+    });
+});
+
+
+/*
 $(function() {
     $("#generateSparqlButton").on("click", function(e) {
         e.preventDefault();
@@ -223,4 +282,5 @@ $(function(){
         });
     });
 });
+*/
 
