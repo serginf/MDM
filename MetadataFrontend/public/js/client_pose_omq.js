@@ -43,7 +43,7 @@ $(function() {
                 });
             });
 
-            drawGraph(currGlobalGraph.globalGraphID);
+            drawGraph(currGlobalGraph.namedGraph);
         });
         $("#globalGraph").trigger("change");
     });

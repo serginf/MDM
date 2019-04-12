@@ -61,20 +61,6 @@ $(function() {
             .attr('d', 'M0,-5L10,0L0,5')
             .attr('fill', function(d,i) { return d.color});
 
-/*
-        svg.append('svg:defs').append('svg:marker')
-            .attr('id', 'end-arrow')
-            .attr('viewBox', '0 -5 10 10')
-            .attr('refX', 6)
-            .attr('markerWidth', 7)
-            .attr('markerHeight', 7)
-            .attr('orient', 'auto')
-            .append('svg:path')
-            .attr('fill',function(d) {
-                console.log(JSON.stringify(d))
-            })
-            .attr('d', 'M0,-5L10,0L0,5');
-*/
         var path = svg.selectAll(".link")
             .data(graph.links)
             .enter().append('svg:path')
@@ -85,7 +71,7 @@ $(function() {
             .attr('marker-start', function(d,i){ return 'url(#marker_' + d.name + ')' })
             .attr('marker-end', function(d,i){ return 'url(#marker_' + d.name  + ')' })
             .attr('class', 'link');
-
+console.log(graph.links)
         var edgelabels = svg.selectAll(".edgelabel")
             .data(graph.links)
             .enter()
@@ -119,10 +105,10 @@ $(function() {
             .enter().append("text")
             .attr("class", "label")
             .attr("value", function (d) {
-                return d.name;
+                return d.name.substring(d.name.lastIndexOf("/")+1,d.name.length);
             })
             .text(function (d) {
-                return d.name;
+                return d.name.substring(d.name.lastIndexOf("/")+1,d.name.length);
             });
 
 

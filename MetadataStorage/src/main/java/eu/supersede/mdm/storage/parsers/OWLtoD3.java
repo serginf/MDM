@@ -72,6 +72,8 @@ public class OWLtoD3 {
                 //d3Node.put("name", triple._1().getURI().substring(triple._1().getURI().lastIndexOf("/")+1));
                 d3Node.put("name", triple._1().getURI());
                 d3Node.put("iri", triple._1().getURI());
+                d3Node.put("namespace",
+                        triple._3().getURI() == null ? triple._1().getURI() : triple._3().getURI());
                 // Get the color from the namespace of the element
                 d3Node.put("color", colorMap.get(triple._3().getURI()) == null ? colorMap.get(triple._1().getURI()) : colorMap.get(triple._3().getURI()));
                 d3Nodes.add(d3Node);
@@ -84,8 +86,13 @@ public class OWLtoD3 {
                 JSONObject d3Link = new JSONObject();
                 d3Link.put("source",nodesMap.get(triple._1().getURI()));
                 d3Link.put("target",nodesMap.get(triple._3().getURI()));
+                d3Link.put("iri", triple._2().getURI());
                 d3Link.put("name", triple._2().getLocalName());
-                d3Link.put("color", colorMap.get(triple._2().getURI()));
+                if (!colorMap.containsKey(triple._2().getURI())) {
+                    d3Link.put("color", colorMap.get(GlobalGraph.CONCEPT.val()));
+                } else {
+                    d3Link.put("color", colorMap.get(triple._2().getURI()));
+                }
 
                 d3Links.add(d3Link);
             }
