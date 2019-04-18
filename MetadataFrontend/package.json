@@ -2,9 +2,6 @@
   "name": "MetadataFrontend",
   "version": "0.0.0",
   "private": true,
-  "scripts": {
-    "start": "node ./bin/www"
-  },
   "dependencies": {
     "body-parser": "^1.5.2",
     "cookie-parser": "latest",
@@ -13,18 +10,41 @@
     "pug": "latest",
     "morgan": "latest",
     "serve-favicon": "latest",
-    "socket.io":"latest",
+    "socket.io": "latest",
     "method-override": "^2.1.2",
-    "express-session":"latest",
-    "express-flash":"latest",
+    "express-session": "latest",
+    "express-flash": "latest",
     "multer": "latest",
-    "passport" : "latest",
-    "bcryptjs":"latest",
-    "passport-local" : "latest",
-    "underscore":"latest",
-    "request":"latest",
-    "randomstring":"latest",
-    "uuid":"latest",
-    "async":"latest"
+    "passport": "latest",
+    "bcryptjs": "latest",
+    "passport-local": "latest",
+    "underscore": "latest",
+    "request": "latest",
+    "randomstring": "latest",
+    "uuid": "latest",
+    "async": "latest",
+    "d3": "^3.5.6",
+    "lodash": "^4.1.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^9.5.1",
+    "clean-webpack-plugin": "^2.0.1",
+    "copy-webpack-plugin": "^5.0.2",
+    "css-loader": "^2.1.1",
+    "d3.promise": "^2.0.0",
+    "html-loader": "^0.5.5",
+    "html-replace-webpack-plugin": "^2.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.6.0",
+    "postcss-loader": "^3.0.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.3.1"
+  },
+  "scripts": {
+    "dev": "webpack-dev-server  --mode development ",
+    "build": "webpack --mode production",
+    "start": "npm run build & node app.js"
   }
 }

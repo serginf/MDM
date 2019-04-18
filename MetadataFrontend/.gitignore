@@ -18,3 +18,5 @@ local.properties
 
 node_modules/
 .idea/
+
+public/graph
