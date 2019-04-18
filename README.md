@@ -1,3 +1,4 @@
+
 # Metadata Management System
 The Metadata Management System (MDM) is responsible of providing the other components with the necessary information to describe and model raw data, as well as keeping the footprint about data usage. With this purpose, the MDM contains all the metadata artifacts needed to deal with data governance and assist data exploitation.
 
@@ -13,6 +14,8 @@ The [Metadata Frontend][mdm_frontend] is a NodeJS webserver which serves as disp
 
 In the [config.js][config.properties.frontend] file, different parameters can be customized such as the port where the API is deployed or the pointers to the Metadata Storage port.
 
+The [webpack.config.js][webpack.config.frontend] is used to bundle all files related to the graph gui. Different parameters can be customized such as the output file, minification, etc.
+
 ### Metadata Storage
 The [Metadata Storage][mdm_storage] is a Java application which exposes its functionalities as REST APIs using Jersey webservices (note, however, that only the Metadata Frontend is supposed to interact with it). This subcomponent implements all algorithms necessary to generate and maintain the BDI ontology, as well as the management of its storage. Precisely, regarding data storage, it uses two data stores:
   - MongoDB, for system metadata such as the pointers to the different RDF graphs composing the ontology
@@ -25,21 +28,19 @@ The specification for the APIs that interact with other components can be found 
 
 ## Installation and deployment instructions
 In the following subsections we provide details on the installation of the different subcomponents composing the MDM.
+
 ### Metadata Frontend
-Set your current directory to the subcomponent and install the dependent NodeJS modules: 
+On the command line, in the Metadata Frontend directory, run the following command to install all the dependent NodeJS modules:
 
 ```sh
 $ npm install
 ```
 Then, we can start the server:
 ```sh
-$ node app.js
+$ npm run start
 ```
-or using [forever] (might require its installation)
-```sh
-$ forever start app.js
-```
-### Metadata Storage 
+
+### Metadata Storage
 This subcomponent can be built using **gradle**, a WAR file must be generated:
 ```sh
 gradle war
@@ -64,6 +65,7 @@ You should get a similar output to the following one. This is the Kafka topic wh
 
    [mdm_frontend]: <https://github.com/supersede-project/big_data/tree/master/data_management/MetadataManagementSystem/MetadataFrontend>
    [mdm_storage]: <https://github.com/supersede-project/big_data/tree/master/data_management/MetadataManagementSystem/MetadataStorage>
-   [config.properties.frontend]: <https://github.com/supersede-project/big_data/blob/master/data_management/MetadataManagementSystem/MetadataFrontend/config.js> 
-   [config.properties.storage]: <https://github.com/supersede-project/big_data/blob/master/data_management/MetadataManagementSystem/MetadataStorage/src/main/webapp/WEB-INF/web.xml> 
+   [config.properties.frontend]: <https://github.com/supersede-project/big_data/blob/master/data_management/MetadataManagementSystem/MetadataFrontend/config.js>
+   [config.properties.storage]: <https://github.com/supersede-project/big_data/blob/master/data_management/MetadataManagementSystem/MetadataStorage/src/main/webapp/WEB-INF/web.xml>
    [forever]: <https://github.com/foreverjs/forever>
+   [webpack.config.frontend]: <https://github.com/serginf/MDM/blob/webVowl/MetadataFrontend/webpack.config.js>
