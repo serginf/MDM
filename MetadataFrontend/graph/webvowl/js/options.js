@@ -61,7 +61,7 @@ module.exports = function () {
         debugMenu,
 
         supportedDatatypes=["rdfs:Literal", "xsd:boolean", "xsd:double", "xsd:integer", "xsd:string","undefined"],
-        supportedClasses=["owl:Thing","owl:Class","owl:DeprecatedClass","G:Concept"/*,"G:Feature (ID subclass)"," G:Feature"*/],
+        supportedClasses=["owl:Thing","owl:Class","owl:DeprecatedClass","G:Concept","G:Feature","G:Feature (ID subclass)"],
         supportedProperties=["owl:objectProperty",
 			"rdfs:subClassOf",
 			"owl:disjointWith",

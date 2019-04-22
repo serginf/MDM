@@ -1,5 +1,8 @@
 var nodes = [];
 nodes.push(require("./implementations/ConceptGClass"));
+nodes.push(require("./implementations/FeatureG_ID_Class"));
+nodes.push(require("./implementations/FeatureGClass"));
+
 nodes.push(require("./implementations/ExternalClass"));
 nodes.push(require("./implementations/OwlClass"));
 nodes.push(require("./implementations/OwlComplementOf"));
