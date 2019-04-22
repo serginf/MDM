@@ -189,10 +189,15 @@ module.exports = (function () {
 			that.nodeElement(parentElement);
 
 			var bgColor=that.backgroundColor();
-			if (bgColor===null) bgColor=undefined;
-			if (that.attributes().indexOf("deprecated")>-1){
-				bgColor=undefined;
+			if(that.background() != null){
+				bgColor = that.background();
+			}else{
+				if (bgColor===null) bgColor=undefined;
+				if (that.attributes().indexOf("deprecated")>-1){
+					bgColor=undefined;
+				}
 			}
+
 			if (additionalCssClasses instanceof Array) {
 				cssClasses = cssClasses.concat(additionalCssClasses);
 			}

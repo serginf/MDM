@@ -14,9 +14,14 @@ module.exports = function (graph) {
     var oldPrefix, oldPrefixURL;
     var prefix_editMode = false;
 
+    //javier: added to test if can retrieve types class to generate dynamically
+    var options = graph.graphOptions()
+
 
     editSidebar.clearMetaObjectValue=function(){
+        //javier: TODO: get name of global graph
         d3.select("#titleEditor").node().value="";
+        //javier: TODO: get iri for node....they are in metamodel.js
         d3.select("#iriEditor").node().value="";
         d3.select("#versionEditor").node().value="";
         d3.select("#authorsEditor").node().value="";
@@ -1289,8 +1294,10 @@ module.exports = function (graph) {
             availiblePrototypes.push("rdfs:Literal");
             availiblePrototypes.push("rdfs:Datatype");
         }else {
-            availiblePrototypes.push("owl:Class");
-            availiblePrototypes.push("owl:Thing");
+            //javier: improve code by getting options from config
+            availiblePrototypes = options.supportedClasses();
+            // availiblePrototypes.push("owl:Class");
+            // availiblePrototypes.push("owl:Thing");
             //  TODO: ADD MORE TYPES
             // availiblePrototypes.push("owl:complementOf");
             // availiblePrototypes.push("owl:disjointUnionOf");

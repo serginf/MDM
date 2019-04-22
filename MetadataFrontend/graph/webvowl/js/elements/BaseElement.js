@@ -25,6 +25,7 @@ module.exports = (function () {
 			mouseEntered = false,
 			styleClass,
 			visible = true,
+			background,
 
 			backupLabel,
 		// Other
@@ -127,6 +128,12 @@ module.exports = (function () {
 		this.styleClass = function (p) {
 			if (!arguments.length) return styleClass;
 			styleClass = p;
+			return this;
+		};
+
+		this.background = function (p) {
+			if (!arguments.length) return background;
+			background = p;
 			return this;
 		};
 
