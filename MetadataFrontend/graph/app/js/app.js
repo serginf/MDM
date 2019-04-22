@@ -312,12 +312,13 @@ module.exports = function () {
 
 	function adjustSize() {
 	    var dist_bottom_bar = 40;
+	    var dist_nav = 0;
 	    //changes for MDM gui
         //TO DO: add a global option to enable navbar and navbar selector.
         var navbar = d3.select(".navbar");
         if(!navbar.empty()){
-            var hnav = parseInt(navbar.style("height"),10);
-            dist_bottom_bar = dist_bottom_bar + hnav;
+            var dist_nav = parseInt(navbar.style("height"),10);
+            dist_bottom_bar = dist_bottom_bar + dist_nav;
         }
 
 	    //size of canvas
@@ -337,6 +338,7 @@ module.exports = function () {
 
         d3.select("#WarningErrorMessagesContainer").style("width",width+"px");
         d3.select("#WarningErrorMessagesContainer").style("height",height+"px");
+        d3.select("#WarningErrorMessagesContainer").style("padding-top",dist_nav+"px");
 
         d3.select("#WarningErrorMessages").style("max-height",(height-12)+"px");
 
