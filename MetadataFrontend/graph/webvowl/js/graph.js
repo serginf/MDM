@@ -3011,7 +3011,10 @@ module.exports = function (graphContainerSelector) {
     graph.sanityCheckProperty=function(domain,range,typeString){
 
         // check for duplicate triple in the element;
-
+        console.log("sanity")
+        console.log(domain)
+        console.log(range)
+        console.log(typeString)
 
         if (typeString==="owl:objectProperty" && graph.options().objectPropertyFilter().enabled()===true) {
             graph.options().warningModule().showWarning("Warning",
@@ -3063,6 +3066,15 @@ module.exports = function (graphContainerSelector) {
         if (range.type()==="owl:Thing" && typeString==="owl:someValuesFrom"){
             graph.options().warningModule().showWarning("Warning",
                 "owl:someValuesFrom can not be connected to owl:Thing",
+                "Element not created!",1,false);
+            return false;
+        }
+        // ---------------  //
+        //      MDM         //
+        // --------------- //
+        if (domain.type()==="G:Concept" && typeString !=="hasFeature" && (range.type() !== "G:Feature" || range.type() !== "G:Feature (ID subclass)")){
+            graph.options().warningModule().showWarning("Warning",
+                "G:concept can only be connected to a node G:Feature using a property HasFeature",
                 "Element not created!",1,false);
             return false;
         }
