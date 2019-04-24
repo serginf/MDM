@@ -66,7 +66,10 @@ module.exports = function () {
 			"rdfs:subClassOf",
 			"owl:disjointWith",
 			"owl:allValuesFrom",
-    		"owl:someValuesFrom"
+    		"owl:someValuesFrom",
+			"hasRelation",
+			"hasFeature",
+			"partOf"
 		],
 		prefixList={
             rdf:'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
@@ -315,7 +318,7 @@ module.exports = function () {
     defaultOptionsConfig.doc=-1;
     defaultOptionsConfig.cd=200;
     defaultOptionsConfig.dd=120;
-    defaultOptionsConfig.editorMode="false";
+    defaultOptionsConfig.editorMode="true";
     defaultOptionsConfig.filter_datatypes="false";
     defaultOptionsConfig.filter_objectProperties="false";
     defaultOptionsConfig.filter_sco="false";
@@ -336,7 +339,7 @@ module.exports = function () {
 		   	initCfg.doc=-1;
 		   	initCfg.cd=200;
 		   	initCfg.dd=120;
-		   	initCfg.editorMode="false";
+		   	initCfg.editorMode="true";
 		   	initCfg.filter_datatypes="false";
 		   	initCfg.filter_objectProperties="false";
 		   	initCfg.filter_sco="false";
