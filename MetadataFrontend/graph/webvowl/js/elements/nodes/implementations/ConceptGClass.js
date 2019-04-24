@@ -5,8 +5,8 @@ module.exports = (function () {
     var o = function (graph) {
         RoundNode.apply(this, arguments);
         this.type("G:Concept")
-            .iri(metamodel.namespaces().G+"Concept")
-            .background(metamodel.colors().concept);
+            .iri(metamodel.Global().CONCEPT.iri)
+            .background(metamodel.Global().CONCEPT.color);
     };
     o.prototype = Object.create(RoundNode.prototype);
     o.prototype.constructor = o;

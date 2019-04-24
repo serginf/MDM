@@ -1,6 +1,6 @@
 module.exports = function () {
     var options = {},
-        namespaces={
+        Namespaces={
             S: "http://www.essi.upc.edu/~snadal/BDIOntology/Source/",
             G: "http://www.essi.upc.edu/~snadal/BDIOntology/Global/",
             owl: "http://www.w3.org/2002/07/owl#",
@@ -10,17 +10,50 @@ module.exports = function () {
             dcat: "http://www.w3.org/ns/dcat#",
             sc: "http://schema.org/"
         },
-        colors = {
-            concept:  "#33CCCC",
-            feature:  "#D7DF01",
-            feature_id: "#FF6600"
+        Global = {
+            CONCEPT: {
+                iri: Namespaces.G+"Concept",
+                name: "Concept",
+                color: "#33CCCC",
+                isID: false
+            },
+            HAS_RELATION: {
+                iri: Namespaces.G+"hasRelation",
+                name: "hasRelation",
+                color: "#33CCCC",
+                isID: false
+            },
+            FEATURE: {
+                iri: Namespaces.G+"Feature",
+                name: "Feature",
+                color: "#D7DF01",
+                isID: false
+            },
+            FEATURE_ID: {
+                iri: Namespaces.G+"Feature",
+                name: "Feature_ID",
+                color: "#FF6600",
+                isID: true
+            },
+            HAS_FEATURE: {
+                iri: Namespaces.G+"hasFeature",
+                name: "hasFeature",
+                color: "#D7DF01",
+                isID: false
+            },
+            PART_OF: {
+                iri: Namespaces.G+"partOf",
+                name: "partOf",
+                color: "#D7DF01",
+                isID: false
+            }
         };
 
-    options.namespaces=function () {
-        return namespaces;
+    options.Namespaces=function () {
+        return Namespaces;
     };
-    options.colors=function () {
-        return colors;
+    options.Global=function () {
+        return Global;
     };
 
     return options;

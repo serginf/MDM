@@ -1,4 +1,8 @@
 var properties = [];
+properties.push(require("./implementations/Has_FeatureProperty"));
+properties.push(require("./implementations/Has_RelationProperty"));
+properties.push(require("./implementations/Part_OfProperty"));
+
 properties.push(require("./implementations/OwlAllValuesFromProperty"));
 properties.push(require("./implementations/OwlDatatypeProperty"));
 properties.push(require("./implementations/OwlDeprecatedProperty"));
