@@ -15,8 +15,9 @@ module.exports =  function (graph) {
     var showLoadingDetails=false;
     var visibilityStatus=true;
 
-    var DEFAULT_JSON_NAME = "foaf"; // This file is loaded by default
+    var DEFAULT_JSON_NAME = "mdm_template"; // This file is loaded by default
     var conversion_sessionId;
+    var currentGlobalGraph;
 
     /** variable defs **/
     var loadingModule={},
@@ -218,21 +219,28 @@ module.exports =  function (graph) {
         var urlString = String(location);
         var parameterArray=identifyParameter(urlString);
         ontologyIdentifierFromURL=DEFAULT_JSON_NAME;
-        loadGraphOptions(parameterArray); // identifies and loads configuration values
-        var loadingMethod= identifyOntologyLoadingMethod(ontologyIdentifierFromURL);
-        d3.select("#progressBarValue").node().innerHTML=" ";
-        switch (loadingMethod){
-            case 0:
-                loadingModule.from_presetOntology(ontologyIdentifierFromURL); break;
-            case 1:
-                loadingModule.from_FileUpload(ontologyIdentifierFromURL); break;
-            case 2:
-                loadingModule.from_JSON_URL(ontologyIdentifierFromURL); break;
-            case 3:
-                loadingModule.from_IRI_URL(ontologyIdentifierFromURL); break;
-            default:
-                console.log("Could not identify loading method , or not IMPLEMENTED YET");
+        retrieveGraph();
+        if (currentGlobalGraph.graphicalGraph) {
+            //load save template
+        }else{
+            //load default template
+            loadGraphOptions(parameterArray); // identifies and loads configuration values
+            var loadingMethod= identifyOntologyLoadingMethod(ontologyIdentifierFromURL);
+            d3.select("#progressBarValue").node().innerHTML=" ";
+            switch (loadingMethod){
+                case 0:
+                    loadingModule.from_presetOntology(ontologyIdentifierFromURL); break;
+                case 1:
+                    loadingModule.from_FileUpload(ontologyIdentifierFromURL); break;
+                case 2:
+                    loadingModule.from_JSON_URL(ontologyIdentifierFromURL); break;
+                case 3:
+                    loadingModule.from_IRI_URL(ontologyIdentifierFromURL); break;
+                default:
+                    console.log("Could not identify loading method , or not IMPLEMENTED YET");
+            }
         }
+
     };
 
     /** ------------------- LOADING --------------------- **/
@@ -471,6 +479,12 @@ module.exports =  function (graph) {
             f2r="/graph/data/new_ontology.json";
 
         }
+        if (ontology.indexOf("mdm_template")!==-1){
+            loadingModule.hideLoadingIndicator();
+            graph.showEditorHintIfNeeded();
+            f2r="/graph/data/mdm_template.json";
+
+        }
 
         loadingWasSuccessFul=false;
         var ontologyContent="";
@@ -492,8 +506,9 @@ module.exports =  function (graph) {
             d3.xhr(fileToRead, "application/json", function (error, request) {
                 var loadingSuccessful = !error;
                 if (loadingSuccessful) {
-                    console.log("loaded...")
                     ontologyContent= request.responseText;
+                    ontologyContent = ontologyContent.replace("{{:title:}}",currentGlobalGraph.name);
+                    ontologyContent = ontologyContent.replace("{{:iri:}}",currentGlobalGraph.defaultNamespace);
                     parseOntologyContent(ontologyContent);
                 } else {
                     // some error occurred
@@ -534,8 +549,23 @@ module.exports =  function (graph) {
 
 
     /** --- HELPER FUNCTIONS **/
+    function retrieveGraph() {
+        currentGlobalGraph = JSON.parse($.ajax({
+            type: "GET",
+            url: "/globalGraph/"+getParameterByName("globalGraphID"),
+            async: false
+        }).responseText);
+    }
+
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
 
     function identifyParameter(url){
+
         var numParameters = (url.match(/#/g) || []).length;
         // create parameters array
         var paramArray = [];

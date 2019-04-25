@@ -7,7 +7,7 @@ module.exports = (function () {
 
         this.attributes(["object"]) //?
             .styleClass("objectproperty")
-            .type("hasRelation");
+            .type(Global.HAS_RELATION.name);
     };
     o.prototype = Object.create(BaseProperty.prototype);
     o.prototype.constructor = o;

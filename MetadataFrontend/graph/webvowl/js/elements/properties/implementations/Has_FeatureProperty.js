@@ -7,7 +7,7 @@ module.exports = (function () {
 
         this.attributes(["object"]) //?
             .styleClass("objectproperty")
-            .type("hasFeature");
+            .type(Global.HAS_FEATURE.name);
     };
     o.prototype = Object.create(BaseProperty.prototype);
     o.prototype.constructor = o;

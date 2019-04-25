@@ -61,15 +61,15 @@ module.exports = function () {
         debugMenu,
 
         supportedDatatypes=["rdfs:Literal", "xsd:boolean", "xsd:double", "xsd:integer", "xsd:string","undefined"],
-        supportedClasses=["owl:Thing","owl:Class","owl:DeprecatedClass","G:Concept","G:Feature","G:Feature (ID subclass)"],
+        supportedClasses=["owl:Thing","owl:Class","owl:DeprecatedClass",Global.CONCEPT.gui_name,Global.FEATURE.gui_name,Global.FEATURE_ID.gui_name],
         supportedProperties=["owl:objectProperty",
 			"rdfs:subClassOf",
 			"owl:disjointWith",
 			"owl:allValuesFrom",
     		"owl:someValuesFrom",
-			"hasRelation",
-			"hasFeature",
-			"partOf"
+			Global.HAS_RELATION.name,
+			Global.HAS_FEATURE.name,
+			Global.PART_OF.name
 		],
 		prefixList={
             rdf:'http://www.w3.org/1999/02/22-rdf-syntax-ns#',

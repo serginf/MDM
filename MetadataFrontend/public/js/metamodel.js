@@ -18,6 +18,7 @@ const Global = {
     CONCEPT: {
         iri: Namespaces.G+"Concept",
         name: "Concept",
+        gui_name: "G:Concept",
         color: "#33CCCC",
         isID: false
     },
@@ -36,12 +37,14 @@ const Global = {
     FEATURE: {
         iri: Namespaces.G+"Feature",
         name: "Feature",
+        gui_name: "G:Feature",
         color: "#D7DF01",
         isID: false
     },
     FEATURE_ID: {
         iri: Namespaces.G+"Feature",
         name: "Feature_ID",
+        gui_name: "G:Feature (ID subclass)",
         color: "#FF6600",
         isID: true
     },
