@@ -11,6 +11,7 @@ module.exports = (function () {
 			type,
 			iri,
 			baseIri,
+			guiLabel,
 		// Additional attributes
 			annotations,
 			attributes = [],
@@ -140,6 +141,12 @@ module.exports = (function () {
 		this.type = function (p) {
 			if (!arguments.length) return type;
 			type = p;
+			return this;
+		};
+
+		this.guiLabel = function (p) {
+			if (!arguments.length) return guiLabel;
+			guiLabel = p;
 			return this;
 		};
 
