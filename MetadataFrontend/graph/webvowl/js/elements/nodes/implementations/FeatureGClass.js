@@ -3,7 +3,8 @@ module.exports = (function () {
 
     var o = function (graph) {
         RoundNode.apply(this, arguments);
-        this.type(Global.FEATURE.gui_name)
+        this.type(Global.FEATURE.name)
+            .guiLabel(Global.FEATURE.gui_name)
             .iri(Global.FEATURE.iri)
             .background(Global.FEATURE.color);
     };

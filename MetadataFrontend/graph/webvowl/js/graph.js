@@ -2786,7 +2786,9 @@ module.exports = function (graphContainerSelector) {
 
     function createLowerCasePrototypeMap(prototypeMap) {
         return d3.map(prototypeMap.values(), function (Prototype) {
-            return new Prototype().type().toLowerCase();
+            if(new Prototype().guiLabel() === undefined)
+                return new Prototype().type().toLowerCase();
+            return new Prototype().guiLabel().toLowerCase();
         });
     }
 

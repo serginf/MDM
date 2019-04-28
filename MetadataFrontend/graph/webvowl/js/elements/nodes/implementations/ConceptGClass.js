@@ -4,7 +4,8 @@ module.exports = (function () {
 
     var o = function (graph) {
         RoundNode.apply(this, arguments);
-        this.type(Global.CONCEPT.gui_name)
+        this.type(Global.CONCEPT.name)
+            .guiLabel(Global.CONCEPT.gui_name)
             .iri(Global.CONCEPT.iri)
             .background(Global.CONCEPT.color);
     };
