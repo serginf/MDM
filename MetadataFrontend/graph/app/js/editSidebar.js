@@ -1279,14 +1279,22 @@ module.exports = function (graph) {
                 availiblePrototypes.push("owl:DatatypeProperty");
             else
             {
+                availiblePrototypes = options.supportedProperties();
+                //MDM_TODO: possible error, options define property as "objectProperty" but here start with Uppercase
+                //          ObjectProperty just works for property with source and target to same node.
                 availiblePrototypes.push("owl:ObjectProperty");
+
                 // handling loops !
-                if (selectedElement.domain()!==selectedElement.range()) {
-                    availiblePrototypes.push("rdfs:subClassOf");
-                }
-                availiblePrototypes.push("owl:disjointWith");
-                availiblePrototypes.push("owl:allValuesFrom");
-                availiblePrototypes.push("owl:someValuesFrom");
+                // if (selectedElement.domain()!==selectedElement.range()) {
+                //     availiblePrototypes.push("rdfs:subClassOf");
+                // }
+                if (selectedElement.domain() === selectedElement.range())
+                    availiblePrototypes.splice(availiblePrototypes.indexOf('rdfs:subClassOf'), 1 )
+
+                // availiblePrototypes.push("owl:disjointWith");
+                // availiblePrototypes.push("owl:allValuesFrom");
+                // availiblePrototypes.push("owl:someValuesFrom");
+
             }
             return availiblePrototypes;
         }
@@ -1294,7 +1302,6 @@ module.exports = function (graph) {
             availiblePrototypes.push("rdfs:Literal");
             availiblePrototypes.push("rdfs:Datatype");
         }else {
-            //javier: improve code by getting options from config
             availiblePrototypes = options.supportedClasses();
             // availiblePrototypes.push("owl:Class");
             // availiblePrototypes.push("owl:Thing");
