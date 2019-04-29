@@ -706,10 +706,7 @@ module.exports = function (graph) {
 			return;
 		}
 
-		var exportObj=exportMenu.createJSON_exportObject();
-
-		// make a string again;
-		var exportText = JSON.stringify(exportObj, null, '  ');
+		var exportText = getJson();
 		// write the data
 		var dataURI = "data:text/json;charset=utf-8," + encodeURIComponent(exportText);
 		var jsonExportFileName=exportFilename;
@@ -719,6 +716,16 @@ module.exports = function (graph) {
 		exportJsonButton.attr("href", dataURI)
 			.attr("download", jsonExportFileName );
 	}
+
+    exportMenu.getJson = function () {
+        return getJson();
+    };
+
+	function getJson() {
+        var exportObj=exportMenu.createJSON_exportObject();
+        // make a string again;
+        return JSON.stringify(exportObj, null, '  ');
+    }
 
     var curveFunction = d3.svg.line()
         .x(function (d) {

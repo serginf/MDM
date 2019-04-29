@@ -3,7 +3,8 @@ module.exports =  function (graph) {
     var PREDEFINED  = 0,
         FILE_UPLOAD = 1,
         JSON_URL    = 2,
-        IRI_URL     = 3;
+        IRI_URL     = 3,
+        MDM_DB      = 4;
 
     var PROGRESS_BAR_ERROR=0,
         PROGRESS_BAR_BUSY=1,
@@ -220,26 +221,25 @@ module.exports =  function (graph) {
         var parameterArray=identifyParameter(urlString);
         ontologyIdentifierFromURL=DEFAULT_JSON_NAME;
         retrieveGraph();
-        if (currentGlobalGraph.graphicalGraph) {
-            //load save template
-        }else{
-            //load default template
-            loadGraphOptions(parameterArray); // identifies and loads configuration values
-            var loadingMethod= identifyOntologyLoadingMethod(ontologyIdentifierFromURL);
-            d3.select("#progressBarValue").node().innerHTML=" ";
-            switch (loadingMethod){
-                case 0:
-                    loadingModule.from_presetOntology(ontologyIdentifierFromURL); break;
-                case 1:
-                    loadingModule.from_FileUpload(ontologyIdentifierFromURL); break;
-                case 2:
-                    loadingModule.from_JSON_URL(ontologyIdentifierFromURL); break;
-                case 3:
-                    loadingModule.from_IRI_URL(ontologyIdentifierFromURL); break;
-                default:
-                    console.log("Could not identify loading method , or not IMPLEMENTED YET");
-            }
+        loadGraphOptions(parameterArray); // identifies and loads configuration values
+        var loadingMethod= identifyOntologyLoadingMethod(ontologyIdentifierFromURL);
+        d3.select("#progressBarValue").node().innerHTML=" ";
+
+        switch (loadingMethod) {
+            case 0:
+                loadingModule.from_presetOntology(ontologyIdentifierFromURL);break;
+            case 1:
+                loadingModule.from_FileUpload(ontologyIdentifierFromURL);break;
+            case 2:
+                loadingModule.from_JSON_URL(ontologyIdentifierFromURL);break;
+            case 3:
+                loadingModule.from_IRI_URL(ontologyIdentifierFromURL);break;
+            case 4:
+                loadingModule.from_MDM_DB();break;
+            default:
+                console.log("Could not identify loading method , or not IMPLEMENTED YET");
         }
+
 
     };
 
@@ -470,6 +470,11 @@ module.exports =  function (graph) {
         loadPresetOntology(selectedOntology);
     };
 
+    loadingModule.from_MDM_DB=function() {
+        ontologyMenu.append_bulletPoint("Retrieving ontology: " + currentGlobalGraph.name );
+        parseOntologyContent(JSON.parse(currentGlobalGraph.graphicalGraph));
+    };
+
     function loadPresetOntology(ontology){
         // check if already cached in ontology menu?
         var f2r;
@@ -545,6 +550,12 @@ module.exports =  function (graph) {
         ontologyMenu.append_message_toLastBulletPoint("done");
         loadingWasSuccessFul=true;
     };
+
+    loadingModule.currentGlobalGraph=function(){
+        return currentGlobalGraph;
+    };
+
+
 
 
 
@@ -642,6 +653,9 @@ module.exports =  function (graph) {
 
 
     function identifyOntologyLoadingMethod(url){
+        if (currentGlobalGraph.graphicalGraph) {
+            return MDM_DB;
+        }
         var iriKey = "iri=";
         var urlKey = "url=";
         var fileKey = "file=";
