@@ -72,6 +72,7 @@ module.exports = (env, argv) => {
         externals: {
             d3: "d3",
             Global: "Global",
+            Namespaces: "Namespaces"
         },
         devServer: {
             contentBase: path.join(__dirname, outputPath),
