@@ -18,6 +18,7 @@ module.exports = function () {
 		ontologyMenu   = require("./menu/ontologyMenu")   (graph),
 		pauseMenu      = require("./menu/pauseMenu")      (graph),
 		resetMenu      = require("./menu/resetMenu")      (graph),
+        saveGraphMenu  = require("./menu/saveGraphMenu")  (graph),
 		searchMenu     = require("./menu/searchMenu")     (graph),
 		navigationMenu = require("./menu/navigationMenu") (graph),
         zoomSlider     = require("./menu/zoomSlider")     (graph),
@@ -87,6 +88,7 @@ module.exports = function () {
 		filterMenu.setup(datatypeFilter, objectPropertyFilter, subclassFilter, disjointFilter, setOperatorFilter, nodeDegreeFilter);
 		modeMenu.setup(pickAndPin, nodeScalingSwitch, compactNotationSwitch, colorExternalsSwitch);
 		pauseMenu.setup();
+		saveGraphMenu.setup();
 		sidebar.setup();
 		loadingModule.setup();
 		leftSidebar.setup();
@@ -125,6 +127,7 @@ module.exports = function () {
 			options.pausedMenu(pauseMenu);
 			options.pickAndPinModule(pickAndPin);
 			options.resetMenu(resetMenu);
+			options.saveGraphMenu(saveGraphMenu);
 			options.searchMenu(searchMenu);
 			options.ontologyMenu(ontologyMenu);
 			options.navigationMenu(navigationMenu);
