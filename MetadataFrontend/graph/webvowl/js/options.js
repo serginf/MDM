@@ -209,9 +209,9 @@ module.exports = function () {
     };
 
 
-    options.supportedDatatypes  = function(){ return supportedDatatypes;  };
-	options.supportedClasses    = function(){ return supportedClasses;    };
-	options.supportedProperties = function(){ return supportedProperties; };
+    options.supportedDatatypes  = function(){ return supportedDatatypes.slice();  };
+	options.supportedClasses    = function(){ return supportedClasses.slice();    };
+	options.supportedProperties = function(){ return supportedProperties.slice(); };
 
     options.datatypeFilter=function(val){
         if (!arguments.length) return datatypeFilter;
