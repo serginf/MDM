@@ -3067,17 +3067,37 @@ module.exports = function (graphContainerSelector) {
                 "Element not created!",1,false);
             return false;
         }
-        // ---------------  //
-        //      MDM         //
-        // --------------- //
-        if (domain.type()===Global.CONCEPT.gui_name && typeString !==Global.HAS_FEATURE.name&& (range.type() !== Global.FEATURE.gui_name|| range.type() !== Global.FEATURE_ID.gui_name)){
+          // ---------------------------------  //
+         //             MDM PROPERTIES         //
+        // ---------------------------------- //
+        if (typeString ===Global.HAS_FEATURE.gui_name){
+
+            if( domain.type() === Global.CONCEPT.name
+                && (   range.type() === Global.FEATURE.name
+                    || range.type() === Global.FEATURE_ID.name)){
+                return true;
+            }
             graph.options().warningModule().showWarning("Warning",
-                "G:concept can only be connected to a node G:Feature using a property HasFeature",
+                Global.HAS_FEATURE.gui_name +" can only be used connecting a "+Global.CONCEPT.gui_name
+                +" node to a "+Global.FEATURE_ID.gui_name +" node or "+Global.FEATURE.gui_name +"node",
+                "Element not created!",1,false);
+            return false;
+        }
+        if (typeString ===Global.HAS_RELATION.gui_name){
+
+            if( domain.type() === Global.CONCEPT.name
+                &&  range.type() === Global.CONCEPT.name){
+                return true;
+            }
+            graph.options().warningModule().showWarning("Warning",
+                Global.HAS_RELATION.gui_name+" can only be used connecting a "+Global.CONCEPT.gui_name
+                +" node to a "+Global.CONCEPT.gui_name +" node",
                 "Element not created!",1,false);
             return false;
         }
         return true; // we can create a property
     };
+
 
     function createNewObjectProperty(domain,range, draggerEndposition){
         // check type of the property that we want to create;
@@ -3093,9 +3113,13 @@ module.exports = function (graphContainerSelector) {
         aProp.id("objectProperty"+eP++);
         aProp.domain(domain);
         aProp.range(range);
-        aProp.label("newObjectProperty");
-        aProp.baseIri(d3.select("#iriEditor").node().value);
-        aProp.iri(aProp.baseIri()+aProp.id());
+
+        if(aProp.label() === undefined)
+            aProp.label("newObjectProperty");
+        if(aProp.baseIri() === undefined)
+            aProp.baseIri(d3.select("#iriEditor").node().value);
+        if(aProp.iri() === undefined)
+            aProp.iri(aProp.baseIri()+aProp.id());
 
         // check for duplicate;
         if (graph.propertyCheckExistenceChecker(aProp,domain,range)===false){
@@ -3106,7 +3130,8 @@ module.exports = function (graphContainerSelector) {
 
         var autoEditElement=false;
 
-        if (defaultPropertyName==="owl:objectProperty"){
+        if (   defaultPropertyName === "owl:objectProperty"
+            || defaultPropertyName === Global.HAS_RELATION.gui_name){
             autoEditElement=true;
         }
         var pX=0.49*(domain.x+range.x);
