@@ -40,7 +40,8 @@ module.exports =  function (graph) {
             resource = fullURL.substring(fullURL.lastIndexOf('/') + 1);
             base=fullURL.substring(0,fullURL.length-resource.length);
             // overwrite base if it is ontologyIri;
-            if (base===graph.options().getGeneralMetaObjectProperty('iri')){
+            if (   base===graph.options().getGeneralMetaObjectProperty('iri')
+                || base === Namespaces.G){
                 base=":";
             }
             splitedURL.base=base;
