@@ -31,6 +31,7 @@ const Global = {
     HAS_RELATION: {
         iri: Namespaces.G+"hasRelation",
         name: "G:hasRelation",
+        gui_name: "G:hasRelation",
         color: "#33CCCC",
         isID: false
     },
@@ -50,13 +51,15 @@ const Global = {
     },
     HAS_FEATURE: {
         iri: Namespaces.G+"hasFeature",
-        name: "hasFeature",
+        name: "G:hasFeature",
+        gui_name: "G:hasFeature",
         color: "#D7DF01",
         isID: false
     },
     PART_OF: {
         iri: Namespaces.G+"partOf",
-        name: "partOf",
+        name: "G:partOf",
+        gui_name: "G:partOf",
         color: "#D7DF01",
         isID: false
     }/*,
