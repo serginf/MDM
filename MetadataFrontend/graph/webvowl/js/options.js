@@ -68,9 +68,9 @@ module.exports = function () {
 			"owl:disjointWith",
 			"owl:allValuesFrom",
     		"owl:someValuesFrom",
-			Global.HAS_RELATION.name,
-			Global.HAS_FEATURE.name,
-			Global.PART_OF.name
+			Global.HAS_RELATION.gui_name,
+			Global.HAS_FEATURE.gui_name,
+			Global.PART_OF.gui_name
 		],
 		prefixList={
             rdf:'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
