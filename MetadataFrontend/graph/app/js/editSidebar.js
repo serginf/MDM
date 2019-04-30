@@ -13,7 +13,7 @@ module.exports = function (graph) {
     var selectedElementForCharacteristics;
     var oldPrefix, oldPrefixURL;
     var prefix_editMode = false;
-    
+
     var options = graph.graphOptions()
 
 
@@ -963,6 +963,9 @@ module.exports = function (graph) {
             }
             // set the proper value in the selection
             typeEditorSelection.value = element.type();
+            if (element.guiLabel() !== undefined)
+                typeEditorSelection.value = element.guiLabel();
+
             d3.select("#typeEditor").on("change", function () {
                 elementTypeSelectionChanged(element);
             });
