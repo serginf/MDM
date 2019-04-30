@@ -1,9 +1,11 @@
 .metadata
+.DS_Store
 bin/
 tmp/
 *.tmp
 *.bak
 *.swp
+*.iml
 *~.nib
 local.properties
 #.settings/
