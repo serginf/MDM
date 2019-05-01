@@ -225,9 +225,12 @@ module.exports = function (graph) {
         var i;
         for (i=0;i<allProps.length;i++){
             if (allProps[i].domain()===node &&
-                (   allProps[i].type()==="rdfs:subClassOf"||
-                    allProps[i].type()==="owl:allValuesFrom"  ||
-                    allProps[i].type()==="owl:someValuesFrom")
+                    (   allProps[i].type()==="rdfs:subClassOf"
+                        || allProps[i].type()==="owl:allValuesFrom"
+                        || allProps[i].type()==="owl:someValuesFrom"
+                        || allProps[i].type() === Global.HAS_FEATURE.name
+                        || allProps[i].type() === Global.HAS_RELATION.name
+                    )
                 )
             {
                 myProperties.push(allProps[i]);
