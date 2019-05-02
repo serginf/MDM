@@ -108,6 +108,15 @@ exports.postGraphicalGraph = function (req, res, next) {
     });
 };
 
+exports.postTTL = function (req, res, next) {
+    request.post({
+        url: config.METADATA_DATA_LAYER_URL + "globalGraph/"+encodeURIComponent(req.params.namedGraph)+"/TTL",
+        body: req.body.ttl
+    }, function done(err, results) {
+        res.status(200).json("ok");
+    });
+};
+
 exports.postSparQLQuery = function (req, res) {
     var query = req.body;
     request.post({
