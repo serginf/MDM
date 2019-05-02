@@ -17,6 +17,14 @@ module.exports = function (graph) {
                     url: '/globalGraph/'+loadingModule.currentGlobalGraph().globalGraphID+'/graphicalGraph',
                     data: {graphicalGraph: exportMenu.getJson()}
                 });
+
+                $.ajax({
+                    type: "POST",
+                    url: '/globalGraph/'+encodeURIComponent(loadingModule.currentGlobalGraph().namedGraph)+'/TTL',
+                    data:  {'ttl': exportMenu.exportTurtleText()},
+                });
+
+
                 // alert("Saved graph");
             });
     };

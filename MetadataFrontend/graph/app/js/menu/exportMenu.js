@@ -49,6 +49,12 @@ module.exports = function (graph) {
             exportMenu.exportAsUrl();
 		});
 	};
+
+    exportMenu.exportTurtleText = function ()  {
+        var success=exportTTLModule.requestExport();
+        return exportTTLModule.resultingTTL_Content();
+    };
+
     function exportTurtle(){
 		var success=exportTTLModule.requestExport();
 		var result=exportTTLModule.resultingTTL_Content();
