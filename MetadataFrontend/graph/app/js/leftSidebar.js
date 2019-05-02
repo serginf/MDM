@@ -74,6 +74,12 @@ module.exports = function (graph) {
         updateDefaultNameInAccordion(this,"defaultProperty");
     }
 
+    function firstElement(array) {
+        if(array.length>1)
+            return array[0];
+        return "";
+    }
+
 
 	function setupSelectionContainers(){
         var classContainer    = d3.select("#classContainer");
@@ -81,13 +87,14 @@ module.exports = function (graph) {
         var propertyContainer = d3.select("#propertyContainer");
         // create the supported elements
 
-        var defaultClass="owl:Class";
-        var defaultDatatype="rdfs:Literal";
-        var defaultProperty="owl:objectProperty";
-
         var supportedClasses=graph.options().supportedClasses();
         var supportedDatatypes=graph.options().supportedDatatypes();
         var supportedProperties=graph.options().supportedProperties();
+
+        // Choose the first element in array and set up as default
+        var defaultClass= firstElement(supportedClasses)
+        var defaultDatatype= firstElement(supportedDatatypes)
+        var defaultProperty= firstElement(supportedProperties)
         var i;
 
         for (i=0;i<supportedClasses.length;i++){
@@ -100,6 +107,7 @@ module.exports = function (graph) {
 
             if (supportedClasses[i]===defaultClass){
                 selectThisDefaultElement(aClassSelectionContainer.node());
+                updateDefaultNameInAccordion(aClassSelectionContainer.node(),"defaultClass");
             }
             aClassSelectionContainer.on("click", classSelectorFunction);
             defaultClassSelectionContainers.push(aClassSelectionContainer);
@@ -114,6 +122,7 @@ module.exports = function (graph) {
 
             if (supportedDatatypes[i]===defaultDatatype){
                 selectThisDefaultElement(aDTSelectionContainer.node());
+                updateDefaultNameInAccordion(aDTSelectionContainer.node(),"defaultDatatype");
             }
             aDTSelectionContainer.on("click",datatypeSelectorFunction);
             defaultDatatypeSelectionContainers.push(aDTSelectionContainer);
@@ -127,6 +136,7 @@ module.exports = function (graph) {
             aPropSelectionContainer.on("click",propertySelectorFunction);
             if (supportedProperties[i]===defaultProperty){
                 selectThisDefaultElement(aPropSelectionContainer.node());
+                updateDefaultNameInAccordion(aPropSelectionContainer.node(),"defaultProperty");
             }
             defaultPropertySelectionContainers.push(aPropSelectionContainer);
         }

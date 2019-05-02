@@ -61,13 +61,21 @@ module.exports = function () {
         nodeDegreeFilter,
         debugMenu,
 
-        supportedDatatypes=["rdfs:Literal", "xsd:boolean", "xsd:double", "xsd:integer", "xsd:string","undefined"],
-        supportedClasses=["owl:Thing","owl:Class","owl:DeprecatedClass",Global.CONCEPT.gui_name,Global.FEATURE.gui_name,Global.FEATURE_ID.gui_name],
-        supportedProperties=["owl:objectProperty",
-			"rdfs:subClassOf",
-			"owl:disjointWith",
-			"owl:allValuesFrom",
-    		"owl:someValuesFrom",
+        supportedDatatypes=[/*"rdfs:Literal", "xsd:boolean", "xsd:double", "xsd:integer", "xsd:string","undefined"*/],
+        supportedClasses=[
+        	// "owl:Thing",
+			// "owl:Class",
+			// "owl:DeprecatedClass",
+			Global.CONCEPT.gui_name,
+			Global.FEATURE.gui_name,
+			Global.FEATURE_ID.gui_name
+		],
+        supportedProperties=[
+        	// "owl:objectProperty",
+			// "rdfs:subClassOf",
+			// "owl:disjointWith",
+			// "owl:allValuesFrom",
+    		// "owl:someValuesFrom",
 			Global.HAS_RELATION.gui_name,
 			Global.HAS_FEATURE.gui_name,
 			Global.PART_OF.gui_name
