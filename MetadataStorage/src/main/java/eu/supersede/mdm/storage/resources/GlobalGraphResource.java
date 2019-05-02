@@ -120,6 +120,14 @@ public class GlobalGraphResource {
         return Response.ok().build();
     }
 
+    @POST @Path("globalGraph/{namedGraph}/TTL")
+    @Consumes("text/plain")
+    public Response POST_TTL(@PathParam("namedGraph") String namedGraph, String body) {
+        System.out.println("[POST /globalGraph/"+namedGraph+"/triple] body = "+body);
+        RDFUtil.loadTTL(namedGraph,body);
+        return Response.ok().build();
+    }
+
     @POST @Path("globalGraph/{globalGraphID}/graphicalGraph")
     @Consumes("text/plain")
     public Response POST_graphicalGraph(@PathParam("globalGraphID") String globalGraphID, String body) {

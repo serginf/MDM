@@ -15,6 +15,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,6 +34,16 @@ public class RDFUtil {
         graph.add(new ResourceImpl(s), new PropertyImpl(p), new ResourceImpl(o));
         graph.commit();
         graph.close();
+        ds.commit();
+        ds.close();
+    }
+
+    public static void loadTTL(String namedGraph, String contentTTL){
+        Dataset ds = Utils.getTDBDataset();
+        ds.begin(ReadWrite.WRITE);
+        Model graph = ds.getNamedModel(namedGraph);
+        graph.removeAll();
+        graph.read(new ByteArrayInputStream(contentTTL.getBytes()), null,"TTL");
         ds.commit();
         ds.close();
     }
