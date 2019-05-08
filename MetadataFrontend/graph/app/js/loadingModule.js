@@ -486,7 +486,8 @@ module.exports =  function (graph) {
         }
         if (ontology.indexOf("mdm_template")!==-1){
             loadingModule.hideLoadingIndicator();
-            graph.showEditorHintIfNeeded();
+            if(graph.options().defaultConfig().editorMode === "true")
+                graph.showEditorHintIfNeeded();
             f2r="/graph/data/mdm_template.json";
 
         }
