@@ -27,6 +27,7 @@ module.exports = function () {
 		pickAndPinModule,
 		resetMenu,
 		saveGraphMenu,
+		selectGraphMenu,
 		searchMenu,
 		ontologyMenu,
 		sidebar,
@@ -450,6 +451,12 @@ module.exports = function () {
 	options.saveGraphMenu = function (m) {
 		if (!arguments.length) return saveGraphMenu;
 		saveGraphMenu = m;
+		return options;
+	};
+
+	options.selectGraphMenu = function (m) {
+		if (!arguments.length) return selectGraphMenu;
+		selectGraphMenu = m;
 		return options;
 	};
 

@@ -19,6 +19,7 @@ module.exports = function () {
 		pauseMenu      = require("./menu/pauseMenu")      (graph),
 		resetMenu      = require("./menu/resetMenu")      (graph),
         saveGraphMenu  = require("./menu/saveGraphMenu")  (graph),
+        selectGraphMenu= require("./menu/selectGraphMenu")(graph),
 		searchMenu     = require("./menu/searchMenu")     (graph),
 		navigationMenu = require("./menu/navigationMenu") (graph),
         zoomSlider     = require("./menu/zoomSlider")     (graph),
@@ -89,6 +90,7 @@ module.exports = function () {
 		modeMenu.setup(pickAndPin, nodeScalingSwitch, compactNotationSwitch, colorExternalsSwitch);
 		pauseMenu.setup();
 		saveGraphMenu.setup();
+        selectGraphMenu.setup();
 		sidebar.setup();
 		loadingModule.setup();
 		leftSidebar.setup();
@@ -128,6 +130,7 @@ module.exports = function () {
 			options.pickAndPinModule(pickAndPin);
 			options.resetMenu(resetMenu);
 			options.saveGraphMenu(saveGraphMenu);
+			options.selectGraphMenu(selectGraphMenu);
 			options.searchMenu(searchMenu);
 			options.ontologyMenu(ontologyMenu);
 			options.navigationMenu(navigationMenu);
