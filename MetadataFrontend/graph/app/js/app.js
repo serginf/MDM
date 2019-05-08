@@ -30,6 +30,7 @@ module.exports = function () {
 		loadingModule  = require("./loadingModule")       (graph),
         warningModule  = require("./warningModule")       (graph),
         directInputMod = require("./directInputModule")   (graph),
+        mdmConfig      = require("./config/mdmConfig")      (),
 
 
 	// Graph modules
@@ -60,9 +61,11 @@ module.exports = function () {
 
 
 
-	app.initialize = function () {
+	app.initialize = function (viewType) {
         window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || function(f){return setTimeout(f, 1000/60);}; // simulate calling code 60
         window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame || function(requestID){clearTimeout(requestID);}; //fall back
+
+        options.setEditorModeForDefaultObject(mdmConfig.getConf(viewType).editorMode);
 
         options.graphContainerSelector(GRAPH_SELECTOR);
 		options.selectionModules().push(focuser);
