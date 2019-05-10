@@ -562,11 +562,31 @@ module.exports =  function (graph) {
 
     /** --- HELPER FUNCTIONS **/
     function retrieveGraph() {
-        currentGlobalGraph = JSON.parse($.ajax({
-            type: "GET",
-            url: "/globalGraph/"+getParameterByName("globalGraphID"),
-            async: false
-        }).responseText);
+        var lavMappingID = getParameterByName("LAVMappingID");
+
+        if(lavMappingID !== ""){
+            var data = JSON.parse($.ajax({
+                type: "GET",
+                url: "/LAVMapping/"+lavMappingID,
+                async: false
+            }).responseText);
+
+            currentGlobalGraph = JSON.parse($.ajax({
+                type: "GET",
+                url: "/globalGraph/"+data.globalGraphID,
+                async: false
+            }).responseText);
+
+            // $.get("/LAVMapping/"+lavMappingID, function(data) {
+            //
+            // });
+        }else{
+            currentGlobalGraph = JSON.parse($.ajax({
+                type: "GET",
+                url: "/globalGraph/"+getParameterByName("globalGraphID"),
+                async: false
+            }).responseText);
+        }
     }
 
     function getParameterByName(name) {
