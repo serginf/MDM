@@ -37,7 +37,7 @@ module.exports = function (graph) {
 	/**
 	 * Connects the website with the available graph modes.
 	 */
-	modeMenu.setup = function (pickAndPin, nodeScaling, compactNotation, colorExternals) {
+	modeMenu.setup = function (pickAndPin, nodeScaling, compactNotation, colorExternals,selectionMarker) {
 		var menuEntry= d3.select("#m_modes");
 		menuEntry.on("mouseover",function(){
 			var searchMenu=graph.options().searchMenu();
@@ -45,6 +45,8 @@ module.exports = function (graph) {
 		});
         addCheckBoxD("labelWidth","Dynamic label width","#dynamicLabelWidth",graph.options().dynamicLabelWidth,1);
         addCheckBox("editorMode","Editing ","#editMode",graph.editorMode);
+		// addCheckBox("selectionSGMode","Selection ","#selectionMode",graph.selectionSGMode);
+		addModeItem(selectionMarker, "selectionSGMode", "Selection", "#selectionMode", false);
 		addModeItem(pickAndPin, "pickandpin", "Pick & pin", "#pickAndPinOption", false);
 		addModeItem(nodeScaling, "nodescaling", "Node scaling", "#nodeScalingOption", true);
 		addModeItem(compactNotation, "compactnotation", "Compact notation", "#compactNotationOption", true);
@@ -131,15 +133,24 @@ module.exports = function (graph) {
 		// Store for easier resetting all modes
 		checkboxes.push(moduleCheckbox);
 
-		moduleCheckbox.on("click", function (d, silent) {
-			var isEnabled = moduleCheckbox.property("checked");
-			d.module.enabled(isEnabled);
-			if (updateGraphOnClick && silent !== true) {
-				graph.executeColorExternalsModule();
-				graph.executeCompactNotationModule();
-				graph.lazyRefresh();
-			}
-		});
+		if(identifier === "selectionSGMode"){
+			moduleCheckbox.on("click", function (d, silent) {
+				var isEnabled = moduleCheckbox.property("checked");
+				d.module.enabled(isEnabled);
+				graph.setupModeSelectionSG(isEnabled);
+			});
+		}else{
+			moduleCheckbox.on("click", function (d, silent) {
+				var isEnabled = moduleCheckbox.property("checked");
+				d.module.enabled(isEnabled);
+				if (updateGraphOnClick && silent !== true) {
+					graph.executeColorExternalsModule();
+					graph.executeCompactNotationModule();
+					graph.lazyRefresh();
+				}
+			});
+		}
+
 
 		moduleOptionContainer.append("label")
 			.attr("for", identifier + "ModuleCheckbox")

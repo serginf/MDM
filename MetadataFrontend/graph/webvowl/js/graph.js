@@ -29,6 +29,7 @@ module.exports = function (graphContainerSelector) {
         labelContainer,
         cardinalityContainer,
         linkContainer,
+        selectSGContainer,
         // Visual elements
         nodeElements,
         initialLoad = true,
@@ -816,6 +817,12 @@ module.exports = function (graphContainerSelector) {
             return;
         }
 
+        if( options.getModeForSelectionSG()  === "true"){
+            // zoomFactor = d3.event.scale;
+            // graphTranslation = d3.event.translate;
+            // graphContainer.attr("transform", "translate(" + graphTranslation + ")scale(" + zoomFactor + ")");
+            return;
+        }
 
         var zoomEventByMWheel = false;
         if (d3.event.sourceEvent) {
@@ -1053,6 +1060,14 @@ module.exports = function (graphContainerSelector) {
         labelContainer = graphContainer.append("g").classed("labelContainer", true);
         nodeContainer = graphContainer.append("g").classed("nodeContainer", true);
 
+        //select subgraph marker
+        selectSGContainer = graphContainer.append("g").classed("markerContainer", true);
+        //when selection is setup from app.js
+        if( options.getModeForSelectionSG() === "true" ){
+            setupSelectionSG();
+        }
+
+
         // adding editing Elements
         var draggerPathLayer = graphContainer.append("g").classed("linkContainer", true);
         draggerLayer = graphContainer.append("g").classed("editContainer", true);
@@ -1105,7 +1120,6 @@ module.exports = function (graphContainerSelector) {
         nodeElements.each(function (node) {
                 node.draw(d3.select(this));
             });
-
 
         if (labelNodes===undefined)  labelNodes=[];
 
@@ -1162,6 +1176,8 @@ module.exports = function (graphContainerSelector) {
                 link.draw(d3.select(this), markerContainer);
             });
             linkPathElements = linkGroups.selectAll("path");
+        //necessary when selection SG option is enable from app.js
+        updateNodesForSG();
         // Select the path for direct access to receive a better performance
         addClickEvents();
     }
@@ -1401,6 +1417,110 @@ module.exports = function (graphContainerSelector) {
 
 
     };
+
+    /** --------------------------------------------------------- **/
+    /** --          Select subGraph functions                  -- **/
+    /** --------------------------------------------------------- **/
+
+    function setupSelectionSG() {
+        if(!selectSGContainer)
+            return;
+        timeout = 25;
+        var element = graphContainer.node().getBoundingClientRect();
+        var width = element.width;
+        var height = element.height;
+
+        // marker.state.select = true;
+        var svg = d3.select(options.graphContainerSelector()).select("svg");
+
+        var selectionMarker = options.selectionMarker();
+
+
+        selectionMarker.init(selectSGContainer, svg, element.left * -1, element.top * -1);
+        // selectionMarker.cleanCallbacks();
+        selectionMarker.afterMarked(function(release){
+            graph.paused(!release);
+        });
+
+        selectionMarker.marked(function(clear) {
+            graph.paused(true);
+            var selectionGraph = options.selectionGraph();
+
+            nodeElements.each(function (node)  {
+
+                if (!selectionGraph.is_selected(node)) {
+                    var point = [node.px, node.py];
+                    if (selectionMarker.contains(point)) {
+                        selectionGraph.add(node);
+                        markNode(node);
+                    }
+                }
+
+            });
+
+        });
+    }
+
+    graph.clearSelectionSubGraph = function () {
+        var selectionGraph = options.selectionGraph();
+        selectionGraph.clear();
+        updateNodesForSG();
+    }
+
+
+    graph.setupModeSelectionSG = function (val) {
+        if(arguments.length){
+            options.setModeForSelectionSG(val);
+        }
+        setupSelectionSG();
+        updateNodesForSG();
+
+    };
+
+    function updateNodesForSG(){
+        if(nodeElements){
+            if( options.getModeForSelectionSG() === "true"){
+                nodeElements.each(function (node)  {
+                    d3.select(options.graphContainerSelector()).select("#"+node.id()).style("opacity", "0.3");
+                });
+                labelGroupElements.style("opacity", "0.3");
+                linkPathElements.style("opacity", "0.3");
+            }else{
+                nodeElements.each(function (node)  {
+                    d3.select(options.graphContainerSelector()).select("#"+node.id()).style("opacity", "1");
+                });
+            }
+        }
+    }
+
+    function markNode(node){
+        d3.select(options.graphContainerSelector()).select("#" + node.id()).style("opacity", "1");
+        
+        var selectionGraph = options.selectionGraph();
+        if(selectionGraph.all().length >1){
+            var nodesId = [];
+            selectionGraph.all().forEach(function (node)  {
+                nodesId.push(node.id());
+            });
+
+            labelGroupElements.each(function (label) {
+                var domain = label.link().domain().id();
+                var range =label.link().range().id();
+                if(nodesId.includes(domain) && nodesId.includes(range)){
+                    //label box
+                    d3.select("#"+ label.property().id()).node().parentNode.style.opacity =1;
+                    //path
+                    d3.select(label.link().pathObj().node()).style("opacity", "1");
+                }
+            });
+
+            linkPathElements.each(function (link) {
+
+            });
+
+        }
+
+    }
 
     /** --------------------------------------------------------- **/
     /** -- data related handling                               -- **/

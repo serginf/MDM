@@ -10,7 +10,7 @@ module.exports = function (graph) {
 
         selectSGButton = d3.select("#clear-select-sg-button")
             .on("click", function (d) {
-                // graph.clearSelectionSubGraph();
+                graph.clearSelectionSubGraph();
             });
     };
 
