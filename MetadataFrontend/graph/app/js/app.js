@@ -1,4 +1,4 @@
-String.prototype.replaceAll = function(search, replacement) {
+String.prototype.replaceAll = function (search, replacement) {
     var target = this;
     return target.split(search).join(replacement);
 };
@@ -47,7 +47,9 @@ module.exports = function () {
 		selectionDetailDisplayer = webvowl.modules.selectionDetailsDisplayer(sidebar.updateSelectionInformation),
 		statistics 				 = webvowl.modules.statistics(),
 		subclassFilter 			 = webvowl.modules.subclassFilter(),
-		setOperatorFilter 		 = webvowl.modules.setOperatorFilter();
+		setOperatorFilter 		 = webvowl.modules.setOperatorFilter(),
+        selectionGraph           = webvowl.modules.selectionGraph(),
+        selectionMarker          = webvowl.modules.selectionMarker();
 
 
 
@@ -67,12 +69,15 @@ module.exports = function () {
         window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame || function(requestID){clearTimeout(requestID);}; //fall back
 
         options.setEditorModeForDefaultObject(mdmConfig.getConf(viewType).editorMode);
+        options.setModeForSelectionSG(mdmConfig.getConf(viewType).selectSG);
 
         options.graphContainerSelector(GRAPH_SELECTOR);
 		options.selectionModules().push(focuser);
 		options.selectionModules().push(selectionDetailDisplayer );
 		options.selectionModules().push(pickAndPin);
 
+        options.selectionMarker(selectionMarker);
+        options.selectionGraph(selectionGraph);
 
 		options.filterModules().push(emptyLiteralFilter);
         options.filterModules().push(statistics);
@@ -87,12 +92,12 @@ module.exports = function () {
 		options.filterModules().push(compactNotationSwitch);
 		options.filterModules().push(colorExternalsSwitch);
 
-		d3.select(window).on("resize", adjustSize);
+        d3.select(window).on("resize", adjustSize);
 
 		exportMenu.setup();
 		gravityMenu.setup();
 		filterMenu.setup(datatypeFilter, objectPropertyFilter, subclassFilter, disjointFilter, setOperatorFilter, nodeDegreeFilter);
-		modeMenu.setup(pickAndPin, nodeScalingSwitch, compactNotationSwitch, colorExternalsSwitch);
+        modeMenu.setup(pickAndPin, nodeScalingSwitch, compactNotationSwitch, colorExternalsSwitch, selectionMarker);
 		pauseMenu.setup();
 		saveGraphMenu.setup();
         clearSelectSG.setup();
@@ -117,7 +122,7 @@ module.exports = function () {
                 d3.select("#killWarning").classed("hidden", false);
             } else {
                 d3.select("#browserCheck").classed("hidden", true);
-			}
+            }
 
             resetMenu.setup([gravityMenu, filterMenu, modeMenu, focuser, selectionDetailDisplayer, pauseMenu]);
 			searchMenu.setup();
@@ -175,8 +180,10 @@ module.exports = function () {
 			var h = graph.options().height();
 			defZoom = Math.min(w, h) / 1000;
 
-			var hideDebugOptions=true;
-            if (hideDebugOptions===false) {graph.setForceTickFunctionWithFPS();}
+            var hideDebugOptions = true;
+            if (hideDebugOptions === false) {
+                graph.setForceTickFunctionWithFPS();
+            }
 
 			graph.setDefaultZoom(defZoom);
             d3.selectAll(".debugOption").classed("hidden",hideDebugOptions);
@@ -217,8 +224,10 @@ module.exports = function () {
                     d3.event.stopPropagation();
                 });
 
-            d3.select("#direct-text-input").on("click",function (){directInputMod.setDirectInputMode();});
-            d3.select("#blockGraphInteractions").node().draggable=false;
+            d3.select("#direct-text-input").on("click", function () {
+                directInputMod.setDirectInputMode();
+            });
+            d3.select("#blockGraphInteractions").node().draggable = false;
             options.prefixModule(webvowl.util.prefixTools(graph));
             adjustSize();
             sidebar.updateOntologyInformation(undefined, statistics);
