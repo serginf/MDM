@@ -3,13 +3,14 @@ module.exports = function (graph) {
     var selectGraphMenu = {},
         selectSGButton,
         selectGMod,
-        graphSelector;
+        graphSelector,
+        timeout;
 
     selectGraphMenu.setup = function () {
 
-        selectSGButton = d3.select("#select-sg-button")
+        selectSGButton = d3.select("#clear-select-sg-button")
             .on("click", function (d) {
-                //add logic
+                // graph.clearSelectionSubGraph();
             });
     };
 

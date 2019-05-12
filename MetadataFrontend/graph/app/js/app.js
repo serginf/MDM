@@ -19,7 +19,7 @@ module.exports = function () {
 		pauseMenu      = require("./menu/pauseMenu")      (graph),
 		resetMenu      = require("./menu/resetMenu")      (graph),
         saveGraphMenu  = require("./menu/saveGraphMenu")  (graph),
-        selectGraphMenu= require("./menu/selectGraphMenu")(graph),
+        clearSelectSG  = require("./menu/clearSelectSGMenu")(graph),
 		searchMenu     = require("./menu/searchMenu")     (graph),
 		navigationMenu = require("./menu/navigationMenu") (graph),
         zoomSlider     = require("./menu/zoomSlider")     (graph),
@@ -50,6 +50,7 @@ module.exports = function () {
 		setOperatorFilter 		 = webvowl.modules.setOperatorFilter();
 
 
+
 	app.getOptions=function(){
 	    return webvowl.opts;
     };
@@ -72,6 +73,7 @@ module.exports = function () {
 		options.selectionModules().push(selectionDetailDisplayer );
 		options.selectionModules().push(pickAndPin);
 
+
 		options.filterModules().push(emptyLiteralFilter);
         options.filterModules().push(statistics);
 
@@ -93,7 +95,7 @@ module.exports = function () {
 		modeMenu.setup(pickAndPin, nodeScalingSwitch, compactNotationSwitch, colorExternalsSwitch);
 		pauseMenu.setup();
 		saveGraphMenu.setup();
-        selectGraphMenu.setup();
+        clearSelectSG.setup();
 		sidebar.setup();
 		loadingModule.setup();
 		leftSidebar.setup();
@@ -133,7 +135,7 @@ module.exports = function () {
 			options.pickAndPinModule(pickAndPin);
 			options.resetMenu(resetMenu);
 			options.saveGraphMenu(saveGraphMenu);
-			options.selectGraphMenu(selectGraphMenu);
+			options.clearSelectSGMenu(clearSelectSG);
 			options.searchMenu(searchMenu);
 			options.ontologyMenu(ontologyMenu);
 			options.navigationMenu(navigationMenu);
@@ -359,7 +361,7 @@ module.exports = function () {
 			   .height( height );
 
 		graph.updateStyle();
-        
+
         if (isTouchDevice()===true){
             if (graph.isEditorMode()===true )
                 d3.select("#modeOfOperationString").node().innerHTML="touch able device detected";
@@ -373,7 +375,7 @@ module.exports = function () {
 
         d3.select("#loadingInfo-container").style("height",0.5*(height-80)+"px");
         loadingModule.checkForScreenSize();
-		
+
 		adjustSliderSize();
 		// update also the padding options of loading and the logo positions;
 		var warningDiv=d3.select("#browserCheck");
