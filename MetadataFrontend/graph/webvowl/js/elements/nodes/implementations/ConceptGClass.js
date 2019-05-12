@@ -7,6 +7,7 @@ module.exports = (function () {
         this.type(Global.CONCEPT.name)
             .guiLabel(Global.CONCEPT.gui_name)
             .iri(Global.CONCEPT.iri)
+            .iriType(Global.CONCEPT.iri)
             .background(Global.CONCEPT.color);
     };
     o.prototype = Object.create(RoundNode.prototype);

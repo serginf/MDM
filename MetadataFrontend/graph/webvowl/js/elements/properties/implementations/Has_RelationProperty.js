@@ -10,7 +10,8 @@ module.exports = (function () {
             .type(Global.HAS_RELATION.name)
             .guiLabel(Global.HAS_RELATION.gui_name)
             .label(Global.HAS_RELATION.iri.split("/").slice(-1)[0])
-            .baseIri(Namespaces.G);
+            .baseIri(Namespaces.G)
+            .iriType(Global.HAS_RELATION.iri);
 
     };
     o.prototype = Object.create(BaseProperty.prototype);

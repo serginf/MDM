@@ -10,6 +10,7 @@ module.exports = (function () {
 			label,
 			type,
 			iri,
+			iriType,
 			baseIri,
 			guiLabel,
 		// Additional attributes
@@ -111,6 +112,12 @@ module.exports = (function () {
 		this.iri = function (p) {
 			if (!arguments.length) return iri;
 			iri = p;
+			return this;
+		};
+
+		this.iriType = function (p) {
+			if (!arguments.length) return iriType;
+			iriType = p;
 			return this;
 		};
 

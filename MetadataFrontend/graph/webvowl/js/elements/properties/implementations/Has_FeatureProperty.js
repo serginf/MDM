@@ -10,7 +10,7 @@ module.exports = (function () {
             .type(Global.HAS_FEATURE.name)
             .guiLabel(Global.HAS_FEATURE.gui_name)
             .baseIri(Namespaces.G)
-            .iri(Global.HAS_FEATURE.iri);
+            .iriType(Global.HAS_FEATURE.iri);
 
         var label = Global.HAS_FEATURE.iri.split("/").slice(-1)[0];
 

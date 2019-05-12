@@ -6,6 +6,7 @@ module.exports = (function () {
         this.type(Global.FEATURE_ID.name)
             .guiLabel(Global.FEATURE_ID.gui_name)
             .iri(Global.FEATURE_ID.iri)
+            .iriType(Global.FEATURE_ID.iri)
             .background(Global.FEATURE_ID.color);
     };
     o.prototype = Object.create(RoundNode.prototype);
