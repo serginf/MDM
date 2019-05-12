@@ -11,6 +11,8 @@ module.exports = function () {
 		height = 600,
 		width = 800,
 		selectionModules = [],
+		selectionGraph,
+		selectionMarker,
 		filterModules = [],
 		minMagnification = 0.01,
 		maxMagnification = 4,
@@ -27,7 +29,7 @@ module.exports = function () {
 		pickAndPinModule,
 		resetMenu,
 		saveGraphMenu,
-		selectGraphMenu,
+		clearSelectSGMenu,
 		searchMenu,
 		ontologyMenu,
 		sidebar,
@@ -330,6 +332,7 @@ module.exports = function () {
     defaultOptionsConfig.cd=200;
     defaultOptionsConfig.dd=120;
     defaultOptionsConfig.editorMode="false";
+	defaultOptionsConfig.mode_selectSG = "false"; //select subgraph mode
     defaultOptionsConfig.filter_datatypes="false";
     defaultOptionsConfig.filter_objectProperties="false";
     defaultOptionsConfig.filter_sco="false";
@@ -351,6 +354,7 @@ module.exports = function () {
 		   	initCfg.cd=200;
 		   	initCfg.dd=120;
 		   	initCfg.editorMode="false";
+		   	initCfg.mode_selectSG = "false";
 		   	initCfg.filter_datatypes="false";
 		   	initCfg.filter_objectProperties="false";
 		   	initCfg.filter_sco="false";
@@ -370,6 +374,14 @@ module.exports = function () {
     options.setEditorModeForDefaultObject=function(val){
         defaultOptionsConfig.editorMode=String(val);
 	};
+
+	options.setModeForSelectionSG = function(val){
+		defaultOptionsConfig.mode_selectSG =String(val);
+	};
+	options.getModeForSelectionSG = function(){
+		return defaultOptionsConfig.mode_selectSG;
+	};
+
     options.setHideDebugFeaturesForDefaultObject=function(val){
         defaultOptionsConfig.debugFeatures=String(!val);
 	};
@@ -454,9 +466,9 @@ module.exports = function () {
 		return options;
 	};
 
-	options.selectGraphMenu = function (m) {
-		if (!arguments.length) return selectGraphMenu;
-		selectGraphMenu = m;
+	options.clearSelectSGMenu = function (m) {
+		if (!arguments.length) return clearSelectSGMenu;
+		clearSelectSGMenu = m;
 		return options;
 	};
 
@@ -598,6 +610,19 @@ module.exports = function () {
 		literalFilter=p;
 		return options;
 	};
+
+	options.selectionGraph=function (p) {
+		if (!arguments.length) return selectionGraph;
+		selectionGraph=p;
+		return options;
+	};
+
+	options.selectionMarker=function (p) {
+		if (!arguments.length) return selectionMarker;
+		selectionMarker=p;
+		return options;
+	};
+
     options.nodeDegreeFilter=function (p) {
         if (!arguments.length) return nodeDegreeFilter;
         nodeDegreeFilter=p;
@@ -708,6 +733,12 @@ module.exports = function () {
             modeMenu.setCheckBoxValue("pickandpinModuleCheckbox",settingFlag);
             defaultOptionsConfig.mode_pnp=opts.mode_pnp;
         }
+		settingFlag = false;
+		if(opts.mode_selectSG){
+			if (opts.mode_selectSG==="true") settingFlag=true;
+			modeMenu.setCheckBoxValue("selectionSGModeModuleCheckbox",settingFlag);
+			defaultOptionsConfig.mode_selectSG=opts.mode_selectSG;
+		}
 
         settingFlag=false;
         if (opts.mode_scaling) {
