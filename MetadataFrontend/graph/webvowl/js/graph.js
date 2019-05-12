@@ -1514,12 +1514,37 @@ module.exports = function (graphContainerSelector) {
                 }
             });
 
-            linkPathElements.each(function (link) {
-
-            });
-
         }
 
+    }
+    
+    graph.prepareSelectionObject =function() {
+        var selectionGraph = options.selectionGraph();
+        var data = [];
+        var nodesId = [];
+        if(selectionGraph){
+            selectionGraph.all().forEach(function (node)  {
+                var n  = new Object();
+                n.id = node.id();
+                n.iri = node.iri();
+                n.name = node.iriType();
+                data.push(n);
+                nodesId.push(node.id());
+            });
+            labelGroupElements.each(function (label) {
+                var domain = label.link().domain().id();
+                var range =label.link().range().id();
+                if(nodesId.includes(domain) && nodesId.includes(range)){
+                    var n  = new Object();
+                    n.source =data[nodesId.indexOf(domain)] ;
+                    n.target =data[nodesId.indexOf(range)]  ;
+                    n.name = label.property().iriType();
+                    data.push(n);
+                }
+
+            });
+        }
+        return data;
     }
 
     /** --------------------------------------------------------- **/
