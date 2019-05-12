@@ -14,6 +14,13 @@
 #graphmain h3 {
 	font-size: initial;
 }
+.polygonMarker {
+	fill:green;
+	fill-opacity:0.15;
+	stroke-width: 1px;
+	stroke: green;
+	stroke-opacity: 0.4;
+}
 
 
 
