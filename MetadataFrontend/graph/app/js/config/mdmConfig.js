@@ -1,13 +1,16 @@
 module.exports = function () {
     var options = {},
         global_Graph_Edit={
-            editorMode : "true"
+            editorMode : "true",
+            selectSG   : "false"
         },
         mappings_Graph_select = {
-            editorMode : "false"
+            editorMode : "false",
+            selectSG   : "true"
         },
         default_Option = {
-            editorMode : "false"
+            editorMode : "false",
+            selectSG   : "false"
         };
 
     options.getConf=function (type) {
