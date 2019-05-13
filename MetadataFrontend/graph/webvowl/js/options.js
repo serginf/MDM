@@ -52,6 +52,7 @@ module.exports = function () {
         disjointPropertyFilter,
         rectangularRep=false,
         warningModule,
+		alertModule,
         prefixModule,
         drawPropertyDraggerOnHover=true,
         showDraggerObject=false,
@@ -264,6 +265,10 @@ module.exports = function () {
         if (!arguments.length) return warningModule;
         warningModule=val;
     };
+	options.alertModule=function(val){
+		if (!arguments.length) return alertModule;
+		alertModule=val;
+	};
     options.directInputModule=function(val){
         if (!arguments.length) return directInputModule;
         directInputModule=val;
