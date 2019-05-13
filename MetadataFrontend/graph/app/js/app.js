@@ -29,6 +29,7 @@ module.exports = function () {
         configMenu     = require("./menu/configMenu")     (graph),
 		loadingModule  = require("./loadingModule")       (graph),
         warningModule  = require("./warningModule")       (graph),
+        alertModule    = require("./modules/alertModule") (graph),
         directInputMod = require("./directInputModule")   (graph),
         mdmConfig      = require("./config/mdmConfig")      (),
 
@@ -151,6 +152,7 @@ module.exports = function () {
 			options.graphObject(graph);
 			options.zoomSlider(zoomSlider);
 			options.warningModule(warningModule);
+            options.alertModule(alertModule);
 			options.directInputModule(directInputMod);
             options.datatypeFilter(datatypeFilter);
             options.objectPropertyFilter(objectPropertyFilter);
@@ -361,6 +363,12 @@ module.exports = function () {
         d3.select("#WarningErrorMessagesContainer").style("padding-top",dist_nav+"px");
 
         d3.select("#WarningErrorMessages").style("max-height",(height-12)+"px");
+
+        d3.select("#AlertMessagesContainer").style("width",width+"px");
+        d3.select("#AlertMessagesContainer").style("height",height+"px");
+        d3.select("#AlertMessagesContainer").style("padding-top",dist_nav+"px");
+
+        d3.select("#AlertMessages").style("max-height",(height-12)+"px");
 
         graphContainer.style("height", height + "px");
 		svg.attr("width", width)

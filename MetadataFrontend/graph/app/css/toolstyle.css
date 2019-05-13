@@ -2007,7 +2007,7 @@ a#locateSearchResult{
 
 }
 
-#WarningErrorMessagesContainer{
+#WarningErrorMessagesContainer, #AlertMessagesContainer{
 	position: absolute;
 	text-align: center;
 	top:0;
@@ -2015,7 +2015,7 @@ a#locateSearchResult{
 }
 
 /*Editor hints*/
-#WarningErrorMessages {
+#AlertMessages,#WarningErrorMessages {
 	position: relative;
 	/*text-align: center;*/
 	width:  50%;
@@ -2026,24 +2026,24 @@ a#locateSearchResult{
 	overflow-x: hidden;
 }
 
-#WarningErrorMessages label {
+#AlertMessages label,#WarningErrorMessages label {
 	pointer-events: auto;
 	float: right;
 	padding: 5px 5px;
 	color: #ffdd00;
 }
-#WarningErrorMessages span {
+#AlertMessages span,#WarningErrorMessages span {
 	pointer-events: auto;
 	float: right;
 	padding: 5px 5px;
 }
 
-#WarningErrorMessages label:hover {
+#AlertMessages label:hover,#WarningErrorMessages label:hover {
 	text-decoration: underline;
 	cursor: pointer;
 }
 
-#WarningErrorMessages > div {
+#AlertMessages  > div,#WarningErrorMessages > div {
 	pointer-events: auto;
 	text-align: left;
 	display: inline-block;
@@ -2057,12 +2057,12 @@ a#locateSearchResult{
 
 }
 
-#WarningErrorMessagesContent > ul {
+#AlertMessagesContainer > ul, #WarningErrorMessagesContent > ul {
 	-webkit-padding-start: 20px;
 	padding: 0 16px;
 
 }
-#WarningErrorMessagesContent  > ul > li {
+#AlertMessagesContainer  > ul > li , #WarningErrorMessagesContent  > ul > li {
 	padding: 5px;
 }
 

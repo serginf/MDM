@@ -24,6 +24,10 @@ module.exports = function (graph) {
                         type: "POST",
                         url: '/globalGraph/'+encodeURIComponent(loadingModule.currentGlobalGraph().namedGraph)+'/TTL',
                         data:  {'ttl': exportMenu.exportTurtleText()},
+                        success: function(data) {
+                            console.log("success");
+                            graph.options().alertModule().showAlert("Information","Graph saved",1);
+                        }
                     });
                 } else if(config.mode_selectSG === "true"){
                     var subGraph = new Object();
@@ -32,9 +36,14 @@ module.exports = function (graph) {
                     $.ajax({
                         url: '/LAVMapping/subgraph',
                         type: 'POST',
-                        data: subGraph
+                        data: subGraph,
+                        success: function(data) {
+                            console.log("success");
+                            graph.options().alertModule().showAlert("Information","Mappings saved",1);
+                        }
                     }).done(function(res) {
                         //alert
+
                     }).fail(function(err) {
                         console.log("error "+JSON.stringify(err));
                     });
