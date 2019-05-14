@@ -95,8 +95,7 @@ module.exports = function () {
     };
 
     marker.init = function(container, background, _offset_x, _offset_y) {
-        console.log("initialized marker")
-        poly = container.append('polygon').attr('class', 'polygonMarker')
+        poly = container.append('polygon').attr('class', 'polygonMarker');
         offset_x = _offset_x;
         offset_y = _offset_y;
         state.started = false;
@@ -109,11 +108,13 @@ module.exports = function () {
         });
 
         var up = function() {
-            state.started = false;
-            marker.points = [];
-            poly.attr('points', to_str(marker.points, 4, true));
-            if(releaseFunct)
+
+            if(releaseFunct && state.started) {
+                marker.points = [];
+                poly.attr('points', to_str(marker.points, 4, true));
+                state.started = false;
                 releaseFunct(true);
+            }
         };
 
         document.addEventListener('mouseup', up);
