@@ -2,6 +2,7 @@ var _ = require("lodash/core");
 var math = require("./util/math")();
 var linkCreator = require("./parsing/linkCreator")();
 var elementTools = require("./util/elementTools")();
+var connectivity = require("./util/connectivity")();
 // add some maps for nodes and properties -- used for object generation
 var nodePrototypeMap = require("./elements/nodes/nodeMap")();
 var propertyPrototypeMap = require("./elements/properties/propertyMap")();
@@ -1440,6 +1441,7 @@ module.exports = function (graphContainerSelector) {
         // selectionMarker.cleanCallbacks();
         selectionMarker.afterMarked(function(release){
             graph.paused(!release);
+            markNode(true);
         });
 
         selectionMarker.marked(function(clear) {
@@ -1452,7 +1454,7 @@ module.exports = function (graphContainerSelector) {
                     var point = [node.px, node.py];
                     if (selectionMarker.contains(point)) {
                         selectionGraph.add(node);
-                        markNode(node);
+                        markNode(false);
                     }
                 }
 
@@ -1493,16 +1495,22 @@ module.exports = function (graphContainerSelector) {
         }
     }
 
-    function markNode(node){
-        d3.select(options.graphContainerSelector()).select("#" + node.id()).style("opacity", "1");
+    /*
+     * Change opacity to 1 if node is selected, then check for possible properties to change opacity too.
+     */
+    function markNode(band){
+        // d3.select(options.graphContainerSelector()).select("#" + node.id()).style("opacity", "1");
         
         var selectionGraph = options.selectionGraph();
+
         if(selectionGraph.all().length >1){
             var nodesId = [];
+            var selector = d3.select(options.graphContainerSelector());
             selectionGraph.all().forEach(function (node)  {
+                selector.select("#" + node.id()).style("opacity", "1");
                 nodesId.push(node.id());
             });
-
+            var labs = [];
             labelGroupElements.each(function (label) {
                 var domain = label.link().domain().id();
                 var range =label.link().range().id();
@@ -1511,13 +1519,41 @@ module.exports = function (graphContainerSelector) {
                     d3.select("#"+ label.property().id()).node().parentNode.style.opacity =1;
                     //path
                     d3.select(label.link().pathObj().node()).style("opacity", "1");
+                    labs.push(label);
                 }
             });
+            if(band)
+                if(!connectivity.isConnected(selectionGraph.all(),labs)){
+                    graph.options().alertModule().showAlert("Warning","Graph need to be convex",1);
+                    graph.clearSelectionSubGraph();
+                    updateNodesForSG();
+                }
 
         }
-
     }
-    
+
+    /*
+     * Verify that graph is convex
+     */
+    // graph.checkConnectivity = function(){
+    //     if(selectionGraph.all().length >1){
+    //         var nodesId = [];
+    //         selectionGraph.all().forEach(function (node)  {
+    //             nodesId.push(node.id());
+    //         });
+    //         var labs = [];
+    //         labelGroupElements.each(function (label) {
+    //             var domain = label.link().domain().id();
+    //             var range =label.link().range().id();
+    //             if(nodesId.includes(domain) && nodesId.includes(range)){
+    //                 labs.push(label);
+    //             }
+    //         });
+    //
+    //     }
+    //
+    // }
+    //
     graph.prepareSelectionObject =function() {
         var selectionGraph = options.selectionGraph();
         var data = [];
