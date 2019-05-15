@@ -9,10 +9,6 @@ module.exports = function (graph) {
             .on("click", function (d) {
                 graph.clearSelectionSubGraph();
             });
-        if(graph.options().getModeForSelectionSG() !=="true")
-            clearSelectionMenu.hide(true);
-        else
-            clearSelectionMenu.hide(false);
     };
 
     clearSelectionMenu.hide = function (flag) {
