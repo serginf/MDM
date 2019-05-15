@@ -381,6 +381,12 @@ module.exports = function () {
 	};
 
 	options.setModeForSelectionSG = function(val){
+		if(clearSelectSGMenu){
+			if(String(val) === "true")
+				clearSelectSGMenu.hide(false);
+			else
+				clearSelectSGMenu.hide(true);
+		}
 		defaultOptionsConfig.mode_selectSG =String(val);
 	};
 	options.getModeForSelectionSG = function(){

@@ -1,19 +1,30 @@
 module.exports = function (graph) {
 
-    var selectGraphMenu = {},
-        selectSGButton,
-        selectGMod,
-        graphSelector,
-        timeout;
+    var clearSelectionMenu = {},
+        selectSGButton;
 
-    selectGraphMenu.setup = function () {
+    clearSelectionMenu.setup = function () {
 
         selectSGButton = d3.select("#clear-select-sg-button")
             .on("click", function (d) {
                 graph.clearSelectionSubGraph();
             });
+        if(graph.options().getModeForSelectionSG() !=="true")
+            clearSelectionMenu.hide(true);
+        else
+            clearSelectionMenu.hide(false);
     };
 
-    return selectGraphMenu;
+    clearSelectionMenu.hide = function (flag) {
+        if(flag){
+            d3.select("#c_clear-select-sg").style("display","none")
+        }else{
+            d3.select("#c_clear-select-sg").style("display","")
+        }
+    };
+
+
+
+    return clearSelectionMenu;
 };
 
