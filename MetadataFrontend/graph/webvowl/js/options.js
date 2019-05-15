@@ -64,6 +64,7 @@ module.exports = function () {
         hideDebugOptions=true,
         nodeDegreeFilter,
         debugMenu,
+		mdmController,
 
         supportedDatatypes=[/*"rdfs:Literal", "xsd:boolean", "xsd:double", "xsd:integer", "xsd:string","undefined"*/],
         supportedClasses=[
@@ -378,16 +379,14 @@ module.exports = function () {
 
     options.setEditorModeForDefaultObject=function(val){
         defaultOptionsConfig.editorMode=String(val);
+		if(mdmController)
+			mdmController.updateGui();
 	};
 
 	options.setModeForSelectionSG = function(val){
-		if(clearSelectSGMenu){
-			if(String(val) === "true")
-				clearSelectSGMenu.hide(false);
-			else
-				clearSelectSGMenu.hide(true);
-		}
 		defaultOptionsConfig.mode_selectSG =String(val);
+		if(mdmController)
+			mdmController.updateGui();
 	};
 	options.getModeForSelectionSG = function(){
 		return defaultOptionsConfig.mode_selectSG;
@@ -480,6 +479,12 @@ module.exports = function () {
 	options.clearSelectSGMenu = function (m) {
 		if (!arguments.length) return clearSelectSGMenu;
 		clearSelectSGMenu = m;
+		return options;
+	};
+
+	options.mdmController = function (m) {
+		if (!arguments.length) return mdmController;
+		mdmController = m;
 		return options;
 	};
 
@@ -667,7 +672,8 @@ module.exports = function () {
             }
 
             // update config object
-            defaultOptionsConfig.editorMode=opts.editorMode;
+			options.setEditorModeForDefaultObject(opts.editorMode)
+            // defaultOptionsConfig.editorMode=opts.editorMode;
 
         }
         if (opts.cd ){ // class distance
@@ -748,7 +754,8 @@ module.exports = function () {
 		if(opts.mode_selectSG){
 			if (opts.mode_selectSG==="true") settingFlag=true;
 			modeMenu.setCheckBoxValue("selectionSGModeModuleCheckbox",settingFlag);
-			defaultOptionsConfig.mode_selectSG=opts.mode_selectSG;
+			// defaultOptionsConfig.mode_selectSG=opts.mode_selectSG;
+			options.setModeForSelectionSG(opts.mode_selectSG)
 		}
 
         settingFlag=false;

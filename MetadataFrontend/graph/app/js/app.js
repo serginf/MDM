@@ -10,28 +10,29 @@ module.exports = function () {
 		languageTools = webvowl.util.languageTools(),
 		GRAPH_SELECTOR = "#graph",
 	// Modules for the webvowl app
-		exportMenu     = require("./menu/exportMenu")     (graph),
-		filterMenu     = require("./menu/filterMenu")     (graph),
-		gravityMenu    = require("./menu/gravityMenu")    (graph),
-		modeMenu       = require("./menu/modeMenu")       (graph),
-        debugMenu      = require("./menu/debugMenu")      (graph),
-		ontologyMenu   = require("./menu/ontologyMenu")   (graph),
-		pauseMenu      = require("./menu/pauseMenu")      (graph),
-		resetMenu      = require("./menu/resetMenu")      (graph),
-        saveGraphMenu  = require("./menu/saveGraphMenu")  (graph),
-        clearSelectSG  = require("./menu/clearSelectSGMenu")(graph),
-		searchMenu     = require("./menu/searchMenu")     (graph),
-		navigationMenu = require("./menu/navigationMenu") (graph),
-        zoomSlider     = require("./menu/zoomSlider")     (graph),
-		sidebar        = require("./sidebar")             (graph),
-		leftSidebar    = require("./leftSidebar")         (graph),
-        editSidebar    = require("./editSidebar")         (graph),
-        configMenu     = require("./menu/configMenu")     (graph),
-		loadingModule  = require("./loadingModule")       (graph),
-        warningModule  = require("./warningModule")       (graph),
-        alertModule    = require("./modules/alertModule") (graph),
-        directInputMod = require("./directInputModule")   (graph),
-        mdmConfig      = require("./config/mdmConfig")      (),
+		exportMenu     = require("./menu/exportMenu")        (graph),
+		filterMenu     = require("./menu/filterMenu")        (graph),
+		gravityMenu    = require("./menu/gravityMenu")       (graph),
+		modeMenu       = require("./menu/modeMenu")          (graph),
+        debugMenu      = require("./menu/debugMenu")         (graph),
+		ontologyMenu   = require("./menu/ontologyMenu")      (graph),
+		pauseMenu      = require("./menu/pauseMenu")         (graph),
+		resetMenu      = require("./menu/resetMenu")         (graph),
+        saveGraphMenu  = require("./menu/saveGraphMenu")     (graph),
+        clearSelectSG  = require("./menu/clearSelectSGMenu") (graph),
+		searchMenu     = require("./menu/searchMenu")        (graph),
+		navigationMenu = require("./menu/navigationMenu")    (graph),
+        zoomSlider     = require("./menu/zoomSlider")        (graph),
+		sidebar        = require("./sidebar")                (graph),
+		leftSidebar    = require("./leftSidebar")            (graph),
+        editSidebar    = require("./editSidebar")            (graph),
+        configMenu     = require("./menu/configMenu")        (graph),
+		loadingModule  = require("./loadingModule")          (graph),
+        warningModule  = require("./warningModule")          (graph),
+        alertModule    = require("./modules/alertModule")    (graph),
+        directInputMod = require("./directInputModule")      (graph),
+        MDMController  = require("./util/MDMController")     (graph),
+        mdmConfig      = require("./config/mdmConfig")       (),
 
 
 	// Graph modules
@@ -79,6 +80,7 @@ module.exports = function () {
 
         options.selectionMarker(selectionMarker);
         options.selectionGraph(selectionGraph);
+        options.mdmController(MDMController);
 
 		options.filterModules().push(emptyLiteralFilter);
         options.filterModules().push(statistics);
@@ -165,6 +167,7 @@ module.exports = function () {
 
             ontologyMenu.setup(loadOntologyFromText);
             configMenu.setup();
+            MDMController.setup();
 
             leftSidebar.showSidebar(0);
             leftSidebar.hideCollapseButton(true);
