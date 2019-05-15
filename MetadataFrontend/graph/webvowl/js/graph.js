@@ -1454,7 +1454,7 @@ module.exports = function (graphContainerSelector) {
                     var point = [node.px, node.py];
                     if (selectionMarker.contains(point)) {
                         selectionGraph.add(node);
-                        markNode(false);
+                        markNode(false,node);
                     }
                 }
 
@@ -1491,6 +1491,8 @@ module.exports = function (graphContainerSelector) {
                 nodeElements.each(function (node)  {
                     d3.select(options.graphContainerSelector()).select("#"+node.id()).style("opacity", "1");
                 });
+                labelGroupElements.style("opacity", "1");
+                linkPathElements.style("opacity", "1");
             }
         }
     }
@@ -1498,8 +1500,9 @@ module.exports = function (graphContainerSelector) {
     /*
      * Change opacity to 1 if node is selected, then check for possible properties to change opacity too.
      */
-    function markNode(band){
-        // d3.select(options.graphContainerSelector()).select("#" + node.id()).style("opacity", "1");
+    function markNode(flag,node){
+        if(node)
+            d3.select(options.graphContainerSelector()).select("#" + node.id()).style("opacity", "1");
         
         var selectionGraph = options.selectionGraph();
 
@@ -1507,7 +1510,7 @@ module.exports = function (graphContainerSelector) {
             var nodesId = [];
             var selector = d3.select(options.graphContainerSelector());
             selectionGraph.all().forEach(function (node)  {
-                selector.select("#" + node.id()).style("opacity", "1");
+                // selector.select("#" + node.id()).style("opacity", "1");
                 nodesId.push(node.id());
             });
             var labs = [];
@@ -1522,7 +1525,7 @@ module.exports = function (graphContainerSelector) {
                     labs.push(label);
                 }
             });
-            if(band)
+            if(flag)
                 if(!connectivity.isConnected(selectionGraph.all(),labs)){
                     graph.options().alertModule().showAlert("Warning","Graph need to be convex",1);
                     graph.clearSelectionSubGraph();
