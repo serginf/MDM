@@ -37,7 +37,7 @@ module.exports = function (graph) {
 	/**
 	 * Connects the website with the available graph modes.
 	 */
-	modeMenu.setup = function (pickAndPin, nodeScaling, compactNotation, colorExternals,selectionMarker) {
+	modeMenu.setup = function (pickAndPin, nodeScaling, compactNotation, colorExternals,selectionMarker,OMQ) {
 		var menuEntry= d3.select("#m_modes");
 		menuEntry.on("mouseover",function(){
 			var searchMenu=graph.options().searchMenu();
@@ -45,6 +45,7 @@ module.exports = function (graph) {
 		});
         addCheckBoxD("labelWidth","Dynamic label width","#dynamicLabelWidth",graph.options().dynamicLabelWidth,1);
         addCheckBox("editorMode","Editing ","#editMode",graph.editorMode);
+		addCheckBox("OMQ","OMQ ","#OMQMode",graph.options().setModeForOMQ);
 		// addCheckBox("selectionSGMode","Selection ","#selectionMode",graph.selectionSGMode);
 		addModeItem(selectionMarker, "selectionSGMode", "Selection", "#selectionMode", false);
 		addModeItem(pickAndPin, "pickandpin", "Pick & pin", "#pickAndPinOption", false);
