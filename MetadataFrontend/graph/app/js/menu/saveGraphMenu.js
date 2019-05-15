@@ -7,7 +7,6 @@ module.exports = function (graph) {
 
     saveGraphMenu.setup = function () {
 
-
         saveButton = d3.select("#save-button")
             .on("click", function (d) {
                 var config = graph.options().defaultConfig();
@@ -41,18 +40,17 @@ module.exports = function (graph) {
                             console.log("success");
                             graph.options().alertModule().showAlert("Information","Mappings saved",1);
                         }
-                    }).done(function(res) {
-                        //alert
-
-                    }).fail(function(err) {
-                        console.log("error "+JSON.stringify(err));
                     });
                 }
-
-
-
-                // alert("Saved graph");
             });
+    };
+
+    saveGraphMenu.hide = function (flag) {
+        if(flag){
+            d3.select("#c_save").style("display","none")
+        }else{
+            d3.select("#c_save").style("display","")
+        }
     };
 
     function getParameterByName(name) {
