@@ -22,6 +22,10 @@
 	stroke-opacity: 0.4;
 }
 
+#c_opt-global-graph-omq{
+	padding: 0px !important;
+}
+
 
 
 /*----------------------------------------------
@@ -1464,6 +1468,7 @@ main {
 
 /*Font-color Style for menu entries */
 #menuElementContainer >li > a {
+	font-size: 16px;
 	color   : #fff;
 	padding: 9px 12px 12px 30px;
 }
@@ -1829,12 +1834,13 @@ a#pause-button:not(.paused)::before {
 	padding: 0;
 	background-color: #32CD32;
 }
-a#locateSearchResult{
-	padding-bottom: 0;
-	padding-top: 50px;
-	position:relative;
-	top:5px;
-}
+/*a#locateSearchResult{*/
+/*	padding-bottom: 0;*/
+/*	padding-top: 50px;*/
+/*	position:relative;*/
+/*	font-size: 2em;*/
+/*	top:5px;*/
+/*}*/
 /*#sliderRange{*/
 	/*padding: 0;*/
 	/*margin: 7px 0 0 0;*/
@@ -1972,7 +1978,8 @@ a#locateSearchResult{
 	padding-bottom: 0;
 	padding-top: 0;
 	position:relative;
-	top:5px;
+	top:2px;
+	font-size: 2em !important;
 }
 
 /*Editor hints*/

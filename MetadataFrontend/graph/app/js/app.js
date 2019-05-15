@@ -23,7 +23,8 @@ module.exports = function () {
         clearQueryOMQ  = require("./menu/clearQueryOMQMenu") (graph),
         genSparqlOMQ   = require("./menu/GenSparqlOMQMenu")  (graph),
         getFeaturesOMQ = require("./menu/getFeaturesOMQMenu")(graph),
-		searchMenu     = require("./menu/searchMenu")        (graph),
+        graphOMQdrop   = require("./menu/graphOMQDropdown")  (graph),
+        searchMenu     = require("./menu/searchMenu")        (graph),
 		navigationMenu = require("./menu/navigationMenu")    (graph),
         zoomSlider     = require("./menu/zoomSlider")        (graph),
 		sidebar        = require("./sidebar")                (graph),
@@ -110,6 +111,7 @@ module.exports = function () {
         clearQueryOMQ.setup();
         genSparqlOMQ.setup();
         getFeaturesOMQ.setup();
+        graphOMQdrop.setup();
 		sidebar.setup();
 		loadingModule.setup();
 		leftSidebar.setup();
@@ -153,6 +155,7 @@ module.exports = function () {
 			options.clearQueryOMQMenu(clearQueryOMQ);
             options.generateSparqlOMQMenu(genSparqlOMQ);
             options.getFeaturesOMQMenu(getFeaturesOMQ);
+            options.graphOMQdropdown(graphOMQdrop);
 			options.searchMenu(searchMenu);
 			options.ontologyMenu(ontologyMenu);
 			options.navigationMenu(navigationMenu);
