@@ -30,6 +30,8 @@ module.exports = function () {
 		resetMenu,
 		saveGraphMenu,
 		clearSelectSGMenu,
+		clearQueryOMQMenu,
+		generateSparqlOMQMenu,
 		searchMenu,
 		ontologyMenu,
 		sidebar,
@@ -338,7 +340,8 @@ module.exports = function () {
     defaultOptionsConfig.cd=200;
     defaultOptionsConfig.dd=120;
     defaultOptionsConfig.editorMode="false";
-	defaultOptionsConfig.mode_selectSG = "false"; //select subgraph mode
+	defaultOptionsConfig.selectSG_mode = "false"; //select subgraph mode
+	defaultOptionsConfig.OMQ_mode = "false"; // Ontology medited queries
     defaultOptionsConfig.filter_datatypes="false";
     defaultOptionsConfig.filter_objectProperties="false";
     defaultOptionsConfig.filter_sco="false";
@@ -360,7 +363,8 @@ module.exports = function () {
 		   	initCfg.cd=200;
 		   	initCfg.dd=120;
 		   	initCfg.editorMode="false";
-		   	initCfg.mode_selectSG = "false";
+		   	initCfg.selectSG_mode = "false";
+			initCfg.OMQ_mode = "false";
 		   	initCfg.filter_datatypes="false";
 		   	initCfg.filter_objectProperties="false";
 		   	initCfg.filter_sco="false";
@@ -384,12 +388,15 @@ module.exports = function () {
 	};
 
 	options.setModeForSelectionSG = function(val){
-		defaultOptionsConfig.mode_selectSG =String(val);
+		defaultOptionsConfig.selectSG_mode =String(val);
 		if(mdmController)
 			mdmController.updateGui();
 	};
-	options.getModeForSelectionSG = function(){
-		return defaultOptionsConfig.mode_selectSG;
+
+	options.setModeForOMQ = function(val){
+		defaultOptionsConfig.OMQ_mode =String(val);
+		if(mdmController)
+			mdmController.updateGui();
 	};
 
     options.setHideDebugFeaturesForDefaultObject=function(val){
@@ -479,6 +486,16 @@ module.exports = function () {
 	options.clearSelectSGMenu = function (m) {
 		if (!arguments.length) return clearSelectSGMenu;
 		clearSelectSGMenu = m;
+		return options;
+	};
+	options.clearQueryOMQMenu = function (m) {
+		if (!arguments.length) return clearQueryOMQMenu;
+		clearQueryOMQMenu = m;
+		return options;
+	};
+	options.generateSparqlOMQMenu = function (m) {
+		if (!arguments.length) return generateSparqlOMQMenu;
+		generateSparqlOMQMenu = m;
 		return options;
 	};
 
@@ -751,11 +768,17 @@ module.exports = function () {
             defaultOptionsConfig.mode_pnp=opts.mode_pnp;
         }
 		settingFlag = false;
-		if(opts.mode_selectSG){
-			if (opts.mode_selectSG==="true") settingFlag=true;
+		if(opts.selectSG_mode){
+			if (opts.selectSG_mode==="true") settingFlag=true;
 			modeMenu.setCheckBoxValue("selectionSGModeModuleCheckbox",settingFlag);
-			// defaultOptionsConfig.mode_selectSG=opts.mode_selectSG;
-			options.setModeForSelectionSG(opts.mode_selectSG)
+			options.setModeForSelectionSG(opts.selectSG_mode)
+		}
+
+		settingFlag = false;
+		if(opts.OMQ_mode){
+			if (opts.OMQ_mode==="true") settingFlag=true;
+			// modeMenu.setCheckBoxValue("selectionSGModeModuleCheckbox",settingFlag);
+			options.setModeForOMQ(opts.OMQ_mode)
 		}
 
         settingFlag=false;

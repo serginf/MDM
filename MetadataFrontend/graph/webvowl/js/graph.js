@@ -818,7 +818,7 @@ module.exports = function (graphContainerSelector) {
             return;
         }
 
-        if( options.getModeForSelectionSG()  === "true"){
+        if( options.defaultConfig().selectSG_mode  === "true"){
             // zoomFactor = d3.event.scale;
             // graphTranslation = d3.event.translate;
             // graphContainer.attr("transform", "translate(" + graphTranslation + ")scale(" + zoomFactor + ")");
@@ -1064,7 +1064,7 @@ module.exports = function (graphContainerSelector) {
         //select subgraph marker
         selectSGContainer = graphContainer.append("g").classed("markerContainer", true);
         //when selection is setup from app.js
-        if( options.getModeForSelectionSG() === "true" ){
+        if( options.defaultConfig().selectSG_mode === "true" ){
             setupSelectionSG();
         }
 
@@ -1481,7 +1481,7 @@ module.exports = function (graphContainerSelector) {
 
     function updateNodesForSG(){
         if(nodeElements){
-            if( options.getModeForSelectionSG() === "true"){
+            if( options.defaultConfig().selectSG_mode === "true"){
                 nodeElements.each(function (node)  {
                     d3.select(options.graphContainerSelector()).select("#"+node.id()).style("opacity", "0.3");
                 });

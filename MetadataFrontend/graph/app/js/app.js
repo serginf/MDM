@@ -20,6 +20,8 @@ module.exports = function () {
 		resetMenu      = require("./menu/resetMenu")         (graph),
         saveGraphMenu  = require("./menu/saveGraphMenu")     (graph),
         clearSelectSG  = require("./menu/clearSelectSGMenu") (graph),
+        clearQueryOMQ  = require("./menu/clearQueryOMQMenu") (graph),
+        genSparqlOMQ   = require("./menu/GenSparqlOMQMenu")  (graph),
 		searchMenu     = require("./menu/searchMenu")        (graph),
 		navigationMenu = require("./menu/navigationMenu")    (graph),
         zoomSlider     = require("./menu/zoomSlider")        (graph),
@@ -104,6 +106,8 @@ module.exports = function () {
 		pauseMenu.setup();
 		saveGraphMenu.setup();
         clearSelectSG.setup();
+        clearQueryOMQ.setup();
+        genSparqlOMQ.setup();
 		sidebar.setup();
 		loadingModule.setup();
 		leftSidebar.setup();
@@ -144,6 +148,8 @@ module.exports = function () {
 			options.resetMenu(resetMenu);
 			options.saveGraphMenu(saveGraphMenu);
 			options.clearSelectSGMenu(clearSelectSG);
+			options.clearQueryOMQMenu(clearQueryOMQ);
+            options.generateSparqlOMQMenu(genSparqlOMQ);
 			options.searchMenu(searchMenu);
 			options.ontologyMenu(ontologyMenu);
 			options.navigationMenu(navigationMenu);
