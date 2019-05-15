@@ -4,9 +4,13 @@
 module.exports = function (graph) {
 
     var controller = {},
+        //Selection
         clearSelectSGMenu,
+        //OMG
         clearQueryOMQMenu,
         genSparqlOMQ,
+        getFeaturesOMQ,
+        //Selection & editor
         saveGraphMenu,
         config,
         setup = false;
@@ -37,6 +41,7 @@ module.exports = function (graph) {
     function hideOMQ(flag){
         clearQueryOMQMenu.hide(flag);
         genSparqlOMQ.hide(flag);
+        getFeaturesOMQ.hide(flag)
     }
 
     function hideSelection(flag){
@@ -49,6 +54,7 @@ module.exports = function (graph) {
         clearQueryOMQMenu = graph.options().clearQueryOMQMenu();
         clearSelectSGMenu = graph.options().clearSelectSGMenu();
         genSparqlOMQ = graph.options().generateSparqlOMQMenu();
+        getFeaturesOMQ = graph.options().getFeaturesOMQMenu();
         saveGraphMenu = graph.options().saveGraphMenu();
         controller.updateGui();
     };
