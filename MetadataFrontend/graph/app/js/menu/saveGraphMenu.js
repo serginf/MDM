@@ -28,7 +28,7 @@ module.exports = function (graph) {
                             graph.options().alertModule().showAlert("Information","Graph saved",1);
                         }
                     });
-                } else if(config.mode_selectSG === "true"){
+                } else if(config.selectSG_mode === "true"){
                     var subGraph = new Object();
                     subGraph.selection = graph.prepareSelectionObject();
                     subGraph.LAVMappingID = getParameterByName("LAVMappingID");
