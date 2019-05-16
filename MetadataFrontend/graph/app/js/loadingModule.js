@@ -209,7 +209,7 @@ module.exports =  function (graph) {
     };
 
     /** ------------------ URL Interpreter -------------- **/
-    loadingModule.parseUrlAndLoadOntology=function(storeCache) {
+    loadingModule.parseUrlAndLoadOntology=function(storeCache,globalgraphid) {
         var autoStore=true;
         if (storeCache===false){
             autoStore=false;
@@ -220,7 +220,7 @@ module.exports =  function (graph) {
         var urlString = String(location);
         var parameterArray=identifyParameter(urlString);
         ontologyIdentifierFromURL=DEFAULT_JSON_NAME;
-        retrieveGraph();
+        retrieveGraph(globalgraphid);
         loadGraphOptions(parameterArray); // identifies and loads configuration values
         var loadingMethod= identifyOntologyLoadingMethod(ontologyIdentifierFromURL);
         d3.select("#progressBarValue").node().innerHTML=" ";
@@ -241,6 +241,19 @@ module.exports =  function (graph) {
         }
 
 
+    };
+
+    loadingModule.parseAndLoadFromNameGraph = function (){
+        var autoStore=true;
+        graph.clearAllGraphData();
+        loadingModule.initializeLoader(autoStore);
+        var urlString = String(location);
+        var parameterArray=identifyParameter(urlString);
+        ontologyIdentifierFromURL=DEFAULT_JSON_NAME;
+        loadGraphOptions(parameterArray); // identifies and loads configuration values
+        var loadingMethod= identifyOntologyLoadingMethod(ontologyIdentifierFromURL);
+        d3.select("#progressBarValue").node().innerHTML=" ";
+        loadingModule.from_MDM_DB();
     };
 
     /** ------------------- LOADING --------------------- **/
@@ -561,8 +574,19 @@ module.exports =  function (graph) {
 
 
     /** --- HELPER FUNCTIONS **/
-    function retrieveGraph() {
+    function retrieveGraph(id) {
+        //there's id provided
+        if(id){
+            console.log(id)
+            currentGlobalGraph = JSON.parse($.ajax({
+                type: "GET",
+                url: "/globalGraph/"+id,
+                async: false
+            }).responseText);
+            return;
+        }
         var lavMappingID = getParameterByName("LAVMappingID");
+        var globalGraphID = getParameterByName("globalGraphID");
 
         if(lavMappingID !== ""){
             var data = JSON.parse($.ajax({
@@ -577,13 +601,10 @@ module.exports =  function (graph) {
                 async: false
             }).responseText);
 
-            // $.get("/LAVMapping/"+lavMappingID, function(data) {
-            //
-            // });
-        }else{
+        }else if(globalGraphID !== ""){
             currentGlobalGraph = JSON.parse($.ajax({
                 type: "GET",
-                url: "/globalGraph/"+getParameterByName("globalGraphID"),
+                url: "/globalGraph/"+globalGraphID,
                 async: false
             }).responseText);
         }
