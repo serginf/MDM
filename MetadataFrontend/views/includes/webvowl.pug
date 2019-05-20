@@ -423,6 +423,10 @@ main#graphmain
                 #noSelectionInformation
                     p
                         span Select an element in the visualization.
+            h3#OMQ-accordion-trigger.accordion-trigger.noselect Projected Features
+            #OMQ-accordion-container.accordion-container
+                #OMQ-projected-features
+                    select#projectedFeatures.form-control(type='text', name='projectedFeatures[]', multiple="multiple")
     #blockGraphInteractions.hidden
     #WarningErrorMessagesContainer
         #WarningErrorMessages
@@ -438,3 +442,16 @@ main#graphmain
                     li
                         button#close_directUploadBtn Close
                     li#Error_onLoad.hidden Some text if ERROR
+    #dataModal.modal.fade(tabindex="-1" role="dialog")
+        .modal-dialog.modal-lg.modal-dialog-centered(role="document",style="max-width: 90%;")
+            .modal-content
+                .modal-header
+                    h5.modal-title Ontology-Mediated Query Execution
+                    button.close(type="button" data-dismiss="modal" aria-label="Close")
+                        span(aria-hidden="true") ×
+                .modal-body(style="position:relative;text-align:center;")
+                    span#spinner.fa.fa-spinner.fa-spin(style="font-size: 128px;")
+                    table#dataTable.table.table-striped.table-hover(style="display:none")
+                        thead.thead-dark
+                            tr
+                        tbody
