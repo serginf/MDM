@@ -5,6 +5,7 @@ import org.apache.jena.graph.Triple;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
 
@@ -44,6 +45,8 @@ public class RDFUtil {
         Model graph = ds.getNamedModel(namedGraph);
         graph.removeAll();
         graph.read(new ByteArrayInputStream(contentTTL.getBytes()), null,"TTL");
+        graph.commit();
+        graph.close();
         ds.commit();
         ds.close();
     }
