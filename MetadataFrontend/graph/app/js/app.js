@@ -9,6 +9,7 @@ module.exports = function () {
 		options = graph.graphOptions(),
 		languageTools = webvowl.util.languageTools(),
 		GRAPH_SELECTOR = "#graph",
+        GUI_Container = "#graphmain",
 	// Modules for the webvowl app
 		exportMenu     = require("./menu/exportMenu")        (graph),
 		filterMenu     = require("./menu/filterMenu")        (graph),
@@ -76,6 +77,7 @@ module.exports = function () {
 
         options.setEditorModeForDefaultObject(mdmConfig.getConf(viewType).editorMode);
         options.setModeForSelectionSG(mdmConfig.getConf(viewType).selectSG);
+        options.setModeForOMQ(mdmConfig.getConf(viewType).OMQ_mode);
 
         options.graphContainerSelector(GRAPH_SELECTOR);
 		options.selectionModules().push(focuser);
@@ -248,7 +250,8 @@ module.exports = function () {
             options.prefixModule(webvowl.util.prefixTools(graph));
             adjustSize();
             sidebar.updateOntologyInformation(undefined, statistics);
-			loadingModule.parseUrlAndLoadOntology(); // loads automatically the ontology provided by the parameters
+            if(options.defaultConfig().OMQ_mode !== "true") //In case of true, omq module will execute the load.
+			    loadingModule.parseUrlAndLoadOntology(); // loads automatically the ontology provided by the parameters
             options.debugMenu(debugMenu);
             debugMenu.updateSettings();
 
@@ -356,6 +359,9 @@ module.exports = function () {
         if(!navbar.empty()){
             var dist_nav = parseInt(navbar.style("height"),10);
             dist_bottom_bar = dist_bottom_bar + dist_nav;
+            //padding for gui container
+            d3.select(GUI_Container).style("padding-top",dist_nav+"px");
+            d3.select("#detailsArea").style("padding-top",dist_nav+"px");
         }
 
 	    //size of canvas
