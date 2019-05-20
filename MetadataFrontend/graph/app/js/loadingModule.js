@@ -598,7 +598,6 @@ module.exports =  function (graph) {
                 async: false
             }).responseText);
         }
-
     }
 
     function getParameterByName(name) {
