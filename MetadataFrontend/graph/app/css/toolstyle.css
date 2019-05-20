@@ -447,7 +447,6 @@ main {
 	padding: 0;
 	position: relative;
 	width: 100%;
-	padding-top: 5%;
 }
 #canvasArea {
 	position: relative;
@@ -705,8 +704,6 @@ main {
 }
 
 #detailsArea {
-	/*added*/
-	padding-top: 5%;
 	top        : 0;
 	right      : 0;
 	bottom     : 0;

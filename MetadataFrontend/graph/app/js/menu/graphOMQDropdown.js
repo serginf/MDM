@@ -16,13 +16,8 @@ module.exports = function (graph) {
         }).done(function () {
 
             $(selectIdentifier).change(function () {
-                if (graph.options().defaultConfig().OMQ_mode === "true") {
-                    console.log("changed")
-                    for (var i = 0; i < globalGraphs.length; ++i) {
-                        if (globalGraphs[i].globalGraphID == $(this).val()) currGlobalGraph = globalGraphs[i];
-                    }
-                    graph.options().loadingModule().parseUrlAndLoadOntology(true, currGlobalGraph.globalGraphID);
-                }
+                if (graph.options().defaultConfig().OMQ_mode === "true")
+                    changeSelectorGlobalGraph($(this).val());
             });
             $(selectIdentifier).trigger("change");
 
@@ -34,8 +29,28 @@ module.exports = function (graph) {
         });
     };
 
+    globalGraphDropdown.getCurrGlobalGraph =function() {
+        return currGlobalGraph;
+    };
+
+    function changeSelectorGlobalGraph(id) {
+        graph.clearSelectionSubGraph();
+        $("#projectedFeatures").empty().end();
+        for (var i = 0; i < globalGraphs.length; ++i) {
+            if (globalGraphs[i].globalGraphID == id) currGlobalGraph = globalGraphs[i];
+        }
+        $.get("/globalGraph/"+encodeURIComponent(currGlobalGraph.namedGraph)+"/features", function(features) {
+            _.each(features,function(feature) {
+                $('#projectedFeatures').append($('<option value="'+feature+'">').text(feature));
+            });
+            $("#projectedFeatures").select2({
+                theme: "bootstrap"
+            });
+        });
+        graph.options().loadingModule().parseUrlAndLoadOntology(true, currGlobalGraph.globalGraphID);
+    }
+
     function setSelected(id) {
-        console.log("set:"+id);
         $(selectIdentifier).val(id);
     }
 

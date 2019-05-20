@@ -818,7 +818,8 @@ module.exports = function (graphContainerSelector) {
             return;
         }
 
-        if( options.defaultConfig().selectSG_mode  === "true"){
+        if( options.defaultConfig().selectSG_mode  === "true" ||
+            options.defaultConfig().OMQ_mode === "true"){
             // zoomFactor = d3.event.scale;
             // graphTranslation = d3.event.translate;
             // graphContainer.attr("transform", "translate(" + graphTranslation + ")scale(" + zoomFactor + ")");
@@ -1064,7 +1065,8 @@ module.exports = function (graphContainerSelector) {
         //select subgraph marker
         selectSGContainer = graphContainer.append("g").classed("markerContainer", true);
         //when selection is setup from app.js
-        if( options.defaultConfig().selectSG_mode === "true" ){
+        if( options.defaultConfig().selectSG_mode === "true" ||
+            options.defaultConfig().OMQ_mode === "true"){
             setupSelectionSG();
         }
 
@@ -1420,7 +1422,7 @@ module.exports = function (graphContainerSelector) {
     };
 
     /** --------------------------------------------------------- **/
-    /** --          Select subGraph functions                  -- **/
+    /** --      MDM:  Select subGraph functions                -- **/
     /** --------------------------------------------------------- **/
 
     function setupSelectionSG() {
@@ -1469,7 +1471,6 @@ module.exports = function (graphContainerSelector) {
         updateNodesForSG();
     }
 
-
     graph.setupModeSelectionSG = function (val) {
         if(arguments.length){
             options.setModeForSelectionSG(val);
@@ -1479,9 +1480,19 @@ module.exports = function (graphContainerSelector) {
 
     };
 
+    graph.setupModeOMQ= function (val) {
+        if(arguments.length){
+            options.setModeForOMQ(val);
+        }
+        setupSelectionSG();
+        updateNodesForSG();
+
+    };
+
     function updateNodesForSG(){
         if(nodeElements){
-            if( options.defaultConfig().selectSG_mode === "true"){
+            if( options.defaultConfig().selectSG_mode === "true" ||
+                options.defaultConfig().OMQ_mode === "true"){
                 nodeElements.each(function (node)  {
                     d3.select(options.graphContainerSelector()).select("#"+node.id()).style("opacity", "0.3");
                 });
@@ -1535,28 +1546,21 @@ module.exports = function (graphContainerSelector) {
         }
     }
 
-    /*
-     * Verify that graph is convex
-     */
-    // graph.checkConnectivity = function(){
-    //     if(selectionGraph.all().length >1){
-    //         var nodesId = [];
-    //         selectionGraph.all().forEach(function (node)  {
-    //             nodesId.push(node.id());
-    //         });
-    //         var labs = [];
-    //         labelGroupElements.each(function (label) {
-    //             var domain = label.link().domain().id();
-    //             var range =label.link().range().id();
-    //             if(nodesId.includes(domain) && nodesId.includes(range)){
-    //                 labs.push(label);
-    //             }
-    //         });
-    //
-    //     }
-    //
-    // }
-    //
+    graph.getSelectedFeatures = function(){
+        var selectedFeatures = [];
+        var selectionGraph = options.selectionGraph();
+        if(selectionGraph){
+            selectionGraph.all().forEach(function (node)  {
+                if (node.iriType() == Global.FEATURE.iri) {
+                    //MDM_TODO: change iriType for namespace and here use .name
+                    selectedFeatures.push(node.iri())
+                }
+            });
+        }
+        return selectedFeatures;
+    }
+
+
     graph.prepareSelectionObject =function() {
         var selectionGraph = options.selectionGraph();
         var data = [];
@@ -1566,7 +1570,8 @@ module.exports = function (graphContainerSelector) {
                 var n  = new Object();
                 n.id = node.id();
                 n.iri = node.iri();
-                n.name = node.iriType();
+                n.name = node.iri();
+                n.namespace = node.iriType();
                 data.push(n);
                 nodesId.push(node.id());
             });
@@ -1577,7 +1582,11 @@ module.exports = function (graphContainerSelector) {
                     var n  = new Object();
                     n.source =data[nodesId.indexOf(domain)] ;
                     n.target =data[nodesId.indexOf(range)]  ;
-                    n.name = label.property().iriType();
+                    if(label.property().iriType() === Global.HAS_RELATION.iri)
+                        n.name = label.property().iri(); //uri for has_relation is given by user
+                    else
+                        n.name = label.property().iriType();
+                    n.iri =label.property().iriType();
                     data.push(n);
                 }
 

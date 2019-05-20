@@ -7,7 +7,11 @@ module.exports = function (graph) {
 
         getFeaturesButton = d3.select("#get-features-omq-button")
             .on("click", function (d) {
-                //logic
+
+                var selectedFeatures = graph.getSelectedFeatures();
+
+                $('#projectedFeatures').val(selectedFeatures);
+                $('#projectedFeatures').trigger('change');
             });
     };
 
