@@ -19,7 +19,10 @@ nodes.push(require("./implementations/RdfsLiteral"));
 nodes.push(require("./implementations/RdfsResource"));
 
 var map = d3.map(nodes, function (Prototype) {
-	return new Prototype().type();
+	// return new Prototype().type();
+	if(new Prototype().guiLabel() === undefined)
+		return new Prototype().type();
+	return new Prototype().guiLabel();
 });
 
 module.exports = function () {
