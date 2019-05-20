@@ -45,7 +45,7 @@ module.exports = function (graph) {
 		});
         addCheckBoxD("labelWidth","Dynamic label width","#dynamicLabelWidth",graph.options().dynamicLabelWidth,1);
         addCheckBox("editorMode","Editing ","#editMode",graph.editorMode);
-		addCheckBox("OMQ","OMQ ","#OMQMode",graph.options().setModeForOMQ);
+		addCheckBox("OMQ","OMQ ","#OMQMode",graph.setupModeOMQ);
 		// addCheckBox("selectionSGMode","Selection ","#selectionMode",graph.selectionSGMode);
 		addModeItem(selectionMarker, "selectionSGMode", "Selection", "#selectionMode", false);
 		addModeItem(pickAndPin, "pickandpin", "Pick & pin", "#pickAndPinOption", false);
@@ -131,8 +131,7 @@ module.exports = function (graph) {
 			.attr("type", "checkbox")
 			.property("checked", module.enabled());
 
-		// Store for easier resetting all modes
-		checkboxes.push(moduleCheckbox);
+
 
 		if(identifier === "selectionSGMode"){
 			moduleCheckbox.on("click", function (d, silent) {
@@ -141,6 +140,10 @@ module.exports = function (graph) {
 				graph.setupModeSelectionSG(isEnabled);
 			});
 		}else{
+			// Store for easier resetting all modes except selection since the setting is in option.js
+
+			checkboxes.push(moduleCheckbox);
+
 			moduleCheckbox.on("click", function (d, silent) {
 				var isEnabled = moduleCheckbox.property("checked");
 				d.module.enabled(isEnabled);
