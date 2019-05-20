@@ -243,18 +243,6 @@ module.exports =  function (graph) {
 
     };
 
-    loadingModule.parseAndLoadFromNameGraph = function (){
-        var autoStore=true;
-        graph.clearAllGraphData();
-        loadingModule.initializeLoader(autoStore);
-        var urlString = String(location);
-        var parameterArray=identifyParameter(urlString);
-        ontologyIdentifierFromURL=DEFAULT_JSON_NAME;
-        loadGraphOptions(parameterArray); // identifies and loads configuration values
-        var loadingMethod= identifyOntologyLoadingMethod(ontologyIdentifierFromURL);
-        d3.select("#progressBarValue").node().innerHTML=" ";
-        loadingModule.from_MDM_DB();
-    };
 
     /** ------------------- LOADING --------------------- **/
     // the loading module splits into 3 branches
@@ -526,8 +514,10 @@ module.exports =  function (graph) {
                 var loadingSuccessful = !error;
                 if (loadingSuccessful) {
                     ontologyContent= request.responseText;
-                    ontologyContent = ontologyContent.replace("{{:title:}}",currentGlobalGraph.name);
-                    ontologyContent = ontologyContent.replace("{{:iri:}}",currentGlobalGraph.defaultNamespace);
+                    if(currentGlobalGraph){
+                        ontologyContent = ontologyContent.replace("{{:title:}}",currentGlobalGraph.name);
+                        ontologyContent = ontologyContent.replace("{{:iri:}}",currentGlobalGraph.defaultNamespace);
+                    }
                     parseOntologyContent(ontologyContent);
                 } else {
                     // some error occurred
@@ -540,7 +530,6 @@ module.exports =  function (graph) {
             });
         }
     }
-
 
 
     /** -- PARSE JSON CONTENT -- **/
@@ -576,6 +565,7 @@ module.exports =  function (graph) {
     /** --- HELPER FUNCTIONS **/
     function retrieveGraph(id) {
         //there's id provided
+        currentGlobalGraph = undefined;
         if(id){
             console.log(id)
             currentGlobalGraph = JSON.parse($.ajax({
@@ -608,6 +598,7 @@ module.exports =  function (graph) {
                 async: false
             }).responseText);
         }
+
     }
 
     function getParameterByName(name) {
@@ -695,9 +686,10 @@ module.exports =  function (graph) {
 
 
     function identifyOntologyLoadingMethod(url){
-        if (currentGlobalGraph.graphicalGraph) {
-            return MDM_DB;
-        }
+        if(currentGlobalGraph)
+            if (currentGlobalGraph.graphicalGraph) {
+                return MDM_DB;
+            }
         var iriKey = "iri=";
         var urlKey = "url=";
         var fileKey = "file=";
