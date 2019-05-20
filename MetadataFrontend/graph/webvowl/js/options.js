@@ -1,6 +1,7 @@
 module.exports = function () {
 	var options = {},
 		data,
+		MDM = true,
 		graphContainerSelector,
 		classDistance = 200,
 		datatypeDistance = 120,
@@ -96,7 +97,8 @@ module.exports = function () {
     	    xsd:'http://www.w3.org/2001/XMLSchema#',
     		dc:'http://purl.org/dc/elements/1.1/#',
             xml:'http://www.w3.org/XML/1998/namespace',
-			G: Namespaces.G
+			G: Namespaces.G,
+			sc: Namespaces.sc
 		};
 
 	options.clearMetaObject=function(){
@@ -578,6 +580,12 @@ module.exports = function () {
 		return options;
 	};
 
+	options.MDM = function (p) {
+		if (!arguments.length) return MDM;
+		MDM = p;
+		return options;
+	};
+
 	options.datatypeDistance = function (p) {
 		if (!arguments.length) return datatypeDistance;
 		datatypeDistance = +p;
@@ -789,6 +797,7 @@ module.exports = function () {
 		settingFlag = false;
 		if(opts.OMQ_mode){
 			if (opts.OMQ_mode==="true") settingFlag=true;
+			d3.select("#OMQModuleCheckbox").node().checked=settingFlag;
 			// modeMenu.setCheckBoxValue("selectionSGModeModuleCheckbox",settingFlag);
 			options.setModeForOMQ(opts.OMQ_mode)
 		}

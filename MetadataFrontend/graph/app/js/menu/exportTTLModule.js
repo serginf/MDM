@@ -29,7 +29,8 @@ module.exports = function (graph) {
 
         prepareHeader();
         preparePrefixList();
-        prepareOntologyDef();
+        if(!graph.options().MDM)
+            prepareOntologyDef();
         resultingTTLContent+="#################################################################\r\n\r\n";
         preparePrefixRepresentation();
         var property_success=exportProperties();
@@ -105,7 +106,14 @@ module.exports = function (graph) {
     function extractClassDescription(node){
         var subject=node.prefixRepresentation;
         var predicate="rdf:type";
-        var object=node.type();
+        var object;
+        //MDM_TODO: create global configuration to define letter for prefix
+        if(graph.options().MDM){
+            //MDM_TODO. Obtain prefix from global options.
+            object = "G"+ graph.options().prefixModule().getPrefixRepresentationForFullURI(node.iriType());
+        }else{
+            object=node.type();
+        }
         if (node.type()==="owl:equivalentClass")
             object="owl:Class";
         if (node.type()==="owl:disjointUnionOf")
@@ -140,6 +148,10 @@ module.exports = function (graph) {
         // check for equivalent classes;
         var indent=getIndent(subject);
         objectDef+="; \r\n";
+        if(node.type() === Global.FEATURE_ID.name){
+            //MDM_TODO: get prefix sc from options.
+            objectDef+= indent+" rdfs:subClassOf sc:identifier"+ " ;\r\n"
+        }
         for (var e=0;e<node.equivalents().length;e++){
             var eqIRI=prefixModule.getPrefixRepresentationForFullURI(node.equivalents()[e].iri());
             var eqNode_prefRepresentation="";
@@ -266,7 +278,11 @@ module.exports = function (graph) {
                 continue;
             }
 
-            if (myProperties[i].range().type() !== "owl:Thing" ) {
+            if(myProperties[i].iriType() === Global.HAS_FEATURE.iri){
+                var prefix = graph.options().prefixModule().getPrefixRepresentationForFullURI(myProperties[i].iriType());
+                objectDef += indent +" G"+prefix+
+                    " " + myProperties[i].range().prefixRepresentation + " ;\r\n";
+            }else if (myProperties[i].range().type() !== "owl:Thing" ) {
                 objectDef += indent +" "+ myProperties[i].prefixRepresentation +
                     " " + myProperties[i].range().prefixRepresentation + " ;\r\n";
 
