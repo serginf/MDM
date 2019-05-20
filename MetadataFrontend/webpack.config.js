@@ -64,7 +64,7 @@ module.exports = (env, argv) => {
             new CopyWebpackPlugin([
                 { context: "graph/app", from: "data/**/*"},
                 { from: "node_modules/d3/d3.min.js",to: "js"}
-            ]),
+            ], { copyUnmodified: true }),
             new webpack.ProvidePlugin({
                 d3: "d3",
             })
@@ -84,6 +84,9 @@ module.exports = (env, argv) => {
             watchContentBase: true,
             open: true,
             port: 8000
+        },
+        watchOptions: {
+            ignored: /node_modules/
         }
     };
 
