@@ -28,6 +28,8 @@ public class ApacheMain {
         }
         configPath = args[0];
 
+        setLoggerConfig();
+
         ResourceConfig config = new ResourceConfig();
         config.packages("eu.supersede.mdm.storage.resources");
         config.packages("eu.supersede.mdm.storage.errorhandling");
@@ -85,5 +87,13 @@ public class ApacheMain {
         return context;
     }
 
-    
+    private static void setLoggerConfig(){
+        InputStream stream = ApacheMain.class.getClassLoader().
+                getResourceAsStream("logging.properties");
+        try {
+            LogManager.getLogManager().readConfiguration(stream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
