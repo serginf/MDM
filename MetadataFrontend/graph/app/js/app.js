@@ -343,8 +343,10 @@ module.exports = function () {
             exportMenu.setFilename(filename);
             graph.updateZoomSliderValueFromOutside();
             adjustSize();
-
-            var flagOfCheckBox=d3.select("#editorModeModuleCheckbox").node().checked;
+            if(options.showModesGui())
+                var flagOfCheckBox=d3.select("#editorModeModuleCheckbox").node().checked;
+            else
+                var flagOfCheckBox=options.defaultConfig().editorMode;
             graph.editorMode(flagOfCheckBox);// update gui
 
         }

@@ -2,6 +2,7 @@ module.exports = function () {
 	var options = {},
 		data,
 		MDM = true,
+		showModesGui = false,
 		graphContainerSelector,
 		classDistance = 200,
 		datatypeDistance = 120,
@@ -267,6 +268,11 @@ module.exports = function () {
         if (!arguments.length) return drawPropertyDraggerOnHover;
         drawPropertyDraggerOnHover=val;
     };
+
+	options.showModesGui=function(val){
+		if (!arguments.length) return showModesGui;
+		showModesGui=val;
+	};
 
     options.warningModule=function(val){
         if (!arguments.length) return warningModule;
@@ -701,8 +707,10 @@ module.exports = function () {
         }
         var settingFlag=false;
         if (opts.editorMode ){
+
             if (opts.editorMode==="true") settingFlag=true;
-            d3.select("#editorModeModuleCheckbox").node().checked=settingFlag;
+            if(showModesGui)
+            	 d3.select("#editorModeModuleCheckbox").node().checked=settingFlag;
 
             if (changeEditFlag&& changeEditFlag===true) {
                 graphObject.editorMode(settingFlag);
@@ -797,8 +805,8 @@ module.exports = function () {
 		settingFlag = false;
 		if(opts.OMQ_mode){
 			if (opts.OMQ_mode==="true") settingFlag=true;
-			d3.select("#OMQModuleCheckbox").node().checked=settingFlag;
-			// modeMenu.setCheckBoxValue("selectionSGModeModuleCheckbox",settingFlag);
+			if(showModesGui)
+				d3.select("#OMQModuleCheckbox").node().checked=settingFlag;
 			options.setModeForOMQ(opts.OMQ_mode)
 		}
 
