@@ -4,6 +4,7 @@ module.exports = function () {
 		MDM = true,
 		showModesGui = false,
 		showExportGui = false,
+		showSelectOntologyGui =false,
 		graphContainerSelector,
 		classDistance = 200,
 		datatypeDistance = 120,
@@ -278,6 +279,11 @@ module.exports = function () {
 	options.showExportGui=function(val){
 		if (!arguments.length) return showExportGui;
 		showExportGui=val;
+	};
+
+	options.showSelectOntologyGui=function(val){
+		if (!arguments.length) return showSelectOntologyGui;
+		showSelectOntologyGui=val;
 	};
 
     options.warningModule=function(val){

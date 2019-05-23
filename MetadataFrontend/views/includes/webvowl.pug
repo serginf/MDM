@@ -63,39 +63,36 @@ main#graphmain
                     //#datatypeContainer.accordion-container
         #menuContainer
             // Ontology Menu
-            ul#m_select.toolTipMenu.noselect
-                li
-                    a#foaf(href='#foaf') Friend of a Friend (FOAF) vocabulary
-                li
-                    a#goodrelations(href='#goodrelations') GoodRelations Vocabulary for E-Commerce
-                li
-                    a#muto(href='#muto') Modular and Unified Tagging Ontology (MUTO)
-                li
-                    a#ontovibe(href='#ontovibe') Ontology Visualization Benchmark (OntoViBe)
-                li
-                    a#personasonto(href='#personasonto') Personas Ontology (PersonasOnto)
-                li
-                    a#sioc(href='#sioc') SIOC (Semantically-Interlinked Online Communities) Core Ontology
-                // build:remove release
-                li
-                    a#benchmark(href='#benchmark') Benchmark Graph for VOWL
-                // /build
-                li#converter-option.option
-                    form#iri-converter-form.converter-form
-                        label(for='iri-converter-input') Custom Ontology:
-                        input#iri-converter-input(type='text', placeholder='Enter ontology IRI')
-                        button#iri-converter-button(type='submit', disabled='') Visualize
-                    .converter-form
-                        input#file-converter-input.hidden(type='file', autocomplete='off')
-                        label#file-converter-label.truncate(for='file-converter-input') Select ontology file
-                        button#file-converter-button(type='submit', disabled='')
-                            | Upload
-                    #emptyContainer
-                        a#empty(href='#opts=editorMode=true;#new_ontology1', style='pointer-events:none; padding-left:0') Create new ontology
-                    div
-                        // <button class="debugOption" type="submit" id="direct-text-input">
-                        // Direct input
-                        // </button>
+            //ul#m_select.toolTipMenu.noselect
+            //    li
+            //        a#foaf(href='#foaf') Friend of a Friend (FOAF) vocabulary
+            //    li
+            //        a#goodrelations(href='#goodrelations') GoodRelations Vocabulary for E-Commerce
+            //    li
+            //        a#muto(href='#muto') Modular and Unified Tagging Ontology (MUTO)
+            //    li
+            //        a#ontovibe(href='#ontovibe') Ontology Visualization Benchmark (OntoViBe)
+            //    li
+            //        a#personasonto(href='#personasonto') Personas Ontology (PersonasOnto)
+            //    ligr
+            //        a#sioc(href='#sioc') SIOC (Semantically-Interlinked Online Communities) Core Ontology
+            //    // build:remove release
+            //    li
+            //        a#benchmark(href='#benchmark') Benchmark Graph for VOWL
+            //    // /build
+            //    li#converter-option.option
+            //        form#iri-converter-form.converter-form
+            //            label(for='iri-converter-input') Custom Ontology:
+            //            input#iri-converter-input(type='text', placeholder='Enter ontology IRI')
+            //            button#iri-converter-button(type='submit', disabled='') Visualize
+            //        .converter-form
+            //            input#file-converter-input.hidden(type='file', autocomplete='off')
+            //            label#file-converter-label.truncate(for='file-converter-input') Select ontology file
+            //            button#file-converter-button(type='submit', disabled='')
+            //                | Upload
+            //        #emptyContainer
+            //            a#empty(href='#opts=editorMode=true;#new_ontology1', style='pointer-events:none; padding-left:0') Create new ontology
+            //        div
             // Export Menu
             //ul#m_export.toolTipMenu.noselect
             //    li
@@ -187,13 +184,13 @@ main#graphmain
                 li#c_locate
                     a#locateSearchResult(style='padding: 0 8px 5px 8px;', draggable='false', title='Nothing to locate, enter search term.', href='#')
                         | &target;
-                li#c_select
-                    a(draggable='false', href='#')
-                        i
-                            svg.menuElementSvgElement(viewbox='0 0 24 24')
-                                g
-                                    path(style='fill : #fff; stroke-width:0;', d='M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z', transform='matrix(0.75,0,0,0.75,3.5,2.5)')
-                        |  Ontology
+                //li#c_select
+                //    a(draggable='false', href='#')
+                //        i
+                //            svg.menuElementSvgElement(viewbox='0 0 24 24')
+                //                g
+                //                    path(style='fill : #fff; stroke-width:0;', d='M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z', transform='matrix(0.75,0,0,0.75,3.5,2.5)')
+                //        |  Ontology
                 //li#c_export
                 //    a(draggable='false', href='#')
                 //        i
