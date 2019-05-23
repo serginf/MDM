@@ -346,7 +346,7 @@ module.exports = function () {
             if(options.showModesGui())
                 var flagOfCheckBox=d3.select("#editorModeModuleCheckbox").node().checked;
             else
-                var flagOfCheckBox=options.defaultConfig().editorMode;
+                var flagOfCheckBox=options.defaultConfig().editorMode==="true";
             graph.editorMode(flagOfCheckBox);// update gui
 
         }
