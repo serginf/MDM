@@ -3,6 +3,7 @@ module.exports = function () {
 		data,
 		MDM = true,
 		showModesGui = false,
+		showExportGui = false,
 		graphContainerSelector,
 		classDistance = 200,
 		datatypeDistance = 120,
@@ -272,6 +273,11 @@ module.exports = function () {
 	options.showModesGui=function(val){
 		if (!arguments.length) return showModesGui;
 		showModesGui=val;
+	};
+
+	options.showExportGui=function(val){
+		if (!arguments.length) return showExportGui;
+		showExportGui=val;
 	};
 
     options.warningModule=function(val){

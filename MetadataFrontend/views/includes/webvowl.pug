@@ -97,25 +97,25 @@ main#graphmain
                         // Direct input
                         // </button>
             // Export Menu
-            ul#m_export.toolTipMenu.noselect
-                li
-                    a#exportJson(href='#', download='') Export as JSON
-                li
-                    a#exportSvg(href='#', download='') Export as SVG
-                li
-                    a#exportTex(href='#', download='')
-                        | Export as TeX
-                        label(style='font-size: 10px') (alpha)
-                li
-                    a#exportTurtle(href='#', download='')
-                        | Export as TTL
-                        label(style='font-size: 10px') (alpha)
-                li#emptyLiHover.option
-                    div
-                        form#url-copy-form.converter-form
-                            label(for='exportedUrl') Export as URL:
-                            input#exportedUrl(type='text', placeholder='#')
-                            button#copyBt(title='Copy to clipboard') Copy
+            //ul#m_export.toolTipMenu.noselect
+            //    li
+            //        a#exportJson(href='#', download='') Export as JSON
+            //    li
+            //        a#exportSvg(href='#', download='') Export as SVG
+            //    li
+            //        a#exportTex(href='#', download='')
+            //            | Export as TeX
+            //            label(style='font-size: 10px') (alpha)
+            //    li
+            //        a#exportTurtle(href='#', download='')
+            //            | Export as TTL
+            //            label(style='font-size: 10px') (alpha)
+            //    li#emptyLiHover.option
+            //        div
+            //            form#url-copy-form.converter-form
+            //                label(for='exportedUrl') Export as URL:
+            //                input#exportedUrl(type='text', placeholder='#')
+            //                button#copyBt(title='Copy to clipboard') Copy
             // Filter Menu
             ul#m_filter.toolTipMenu.noselect
                 li#datatypeFilteringOption.toggleOption
@@ -194,13 +194,13 @@ main#graphmain
                                 g
                                     path(style='fill : #fff; stroke-width:0;', d='M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z', transform='matrix(0.75,0,0,0.75,3.5,2.5)')
                         |  Ontology
-                li#c_export
-                    a(draggable='false', href='#')
-                        i
-                            svg.menuElementSvgElement(viewbox='0 0 24 24')
-                                g
-                                    path(style='fill : #fff; stroke-width:0;', d='M19 7v4H5.83l3.58-3.59L8 6l-6 6 6 6 1.41-1.41L5.83 13H21V7z', transform='matrix(0.75,0,0,0.75,3.5,2.5)')
-                        |  Export
+                //li#c_export
+                //    a(draggable='false', href='#')
+                //        i
+                //            svg.menuElementSvgElement(viewbox='0 0 24 24')
+                //                g
+                //                    path(style='fill : #fff; stroke-width:0;', d='M19 7v4H5.83l3.58-3.59L8 6l-6 6 6 6 1.41-1.41L5.83 13H21V7z', transform='matrix(0.75,0,0,0.75,3.5,2.5)')
+                //        |  Export
                 li#c_filter
                     a(draggable='false', href='#')
                         i
