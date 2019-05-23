@@ -50,9 +50,6 @@ public class GlobalGraphResource {
         MongoCollections.getGlobalGraphCollection(client).find().iterator().forEachRemaining(document -> globalGraphs.add(document.toJson()));
         client.close();
 
-        if (new Random().nextBoolean())
-            throw new ValidationException("details test", "globalgraph","none");
-
         return Response.ok(new Gson().toJson(globalGraphs)).build();
     }
 
