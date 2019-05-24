@@ -51,6 +51,17 @@ public class RDFUtil {
         ds.close();
     }
 
+    public static void deleteTriplesNamedGraph(String namedGraph){
+        Dataset ds = Utils.getTDBDataset();
+        ds.begin(ReadWrite.WRITE);
+        Model graph = ds.getNamedModel(namedGraph);
+        graph.removeAll();
+        graph.commit();
+        graph.close();
+        ds.commit();
+        ds.close();
+    }
+
     public static void addBatchOfTriples(String namedGraph, List<Tuple3<String,String,String>> triples) {
         //System.out.println("Adding triple: [namedGraph] "+namedGraph+", [s] "+s+", [p] "+p+", [o] "+o);
         Dataset ds = Utils.getTDBDataset();

@@ -100,7 +100,7 @@ public class LAVMappingResource {
         String globalGraphIRI = globalGraph.getString("namedGraph");
 
         String wIRI = wrapper.getString("iri");
-
+        RDFUtil.deleteTriplesNamedGraph(wIRI);
         ((JSONArray)objBody.get("selection")).forEach(selectedElement -> {
             JSONObject objSelectedElement = (JSONObject)selectedElement;
             if (objSelectedElement.containsKey("target")) {
