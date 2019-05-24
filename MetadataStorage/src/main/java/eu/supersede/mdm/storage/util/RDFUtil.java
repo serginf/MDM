@@ -1,20 +1,14 @@
 package eu.supersede.mdm.storage.util;
 
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
-import org.apache.jena.graph.Triple;
-import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
 
 import eu.supersede.mdm.storage.model.Namespaces;
-import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.impl.PropertyImpl;
-import org.apache.jena.rdf.model.impl.ResourceImpl;
+import org.apache.jena.update.UpdateAction;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -81,16 +75,21 @@ public class RDFUtil {
         Dataset ds = Utils.getTDBDataset();
         ds.begin(ReadWrite.READ);
         try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), ds)) {
-            return ResultSetFactory.copyResults(qExec.execSelect());
+            ResultSetRewindable results = ResultSetFactory.copyResults(qExec.execSelect());
+            qExec.close();
+            return results;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
+
     public static ResultSet runAQuery(String sparqlQuery, Dataset ds) {
         try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), ds)) {
-            return ResultSetFactory.copyResults(qExec.execSelect());
+            ResultSetRewindable results = ResultSetFactory.copyResults(qExec.execSelect());
+            qExec.close();
+            return results;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -98,7 +97,9 @@ public class RDFUtil {
     }
     public static ResultSet runAQuery(String sparqlQuery, InfModel o) {
         try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), o)) {
-            return ResultSetFactory.copyResults(qExec.execSelect());
+            ResultSetRewindable results = ResultSetFactory.copyResults(qExec.execSelect());
+            qExec.close();
+            return results;
         } catch (Exception e) {
             e.printStackTrace();
         }
