@@ -3,10 +3,7 @@ package eu.supersede.mdm.storage.resources;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
 import eu.supersede.mdm.storage.model.Namespaces;
-import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
-import eu.supersede.mdm.storage.util.ConfigManager;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
@@ -18,8 +15,10 @@ import org.bson.Document;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
  * Created by snadal on 22/11/16.
@@ -27,13 +26,14 @@ import java.util.UUID;
 @Path("metadataStorage")
 public class LAVMappingResource {
 
+    private static final Logger LOGGER = Logger.getLogger(GlobalGraphResource.class.getName());
+
     @GET
     @Path("LAVMapping/")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public Response GET_LAVMapping() {
-        System.out.println("[GET /LAVMapping/]");
-
+        LOGGER.info("[GET /LAVMapping/]");
         MongoClient client = Utils.getMongoDBClient();
         List<String> LAVMappings = Lists.newArrayList();
         MongoCollections.getLAVMappingCollection(client).find().iterator().forEachRemaining(document -> LAVMappings.add(document.toJson()));
@@ -46,7 +46,7 @@ public class LAVMappingResource {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public Response GET_LAVMappingByID(@PathParam("LAVMappingID") String LAVMappingID) {
-        System.out.println("[GET /LAVMapping/] LAVMappingID = "+LAVMappingID);
+        LOGGER.info("[GET /LAVMapping/] LAVMappingID = "+LAVMappingID);
 
         MongoClient client = Utils.getMongoDBClient();
         Document query = new Document("LAVMappingID",LAVMappingID);
@@ -58,7 +58,7 @@ public class LAVMappingResource {
     @POST @Path("LAVMapping/sameAs")
     @Consumes("text/plain")
     public Response POST_LAVMappingMapsTo(String body) {
-        System.out.println("[POST /LAVMapping/mapsTo/] body = "+body);
+        LOGGER.info("[POST /LAVMapping/mapsTo/] body = "+body);
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
         MongoClient client = Utils.getMongoDBClient();
         objBody.put("LAVMappingID", UUID.randomUUID().toString().replace("-",""));
@@ -82,12 +82,16 @@ public class LAVMappingResource {
     @POST @Path("LAVMapping/subgraph")
     @Consumes("text/plain")
     public Response POST_LAVMappingSubgraph(String body) {
-        System.out.println("[POST /LAVMapping/subgraph/] body = "+body);
+        LOGGER.info("[POST /LAVMapping/subgraph/] body = "+body);
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
         MongoClient client = Utils.getMongoDBClient();
 
         Document objMapping = MongoCollections.getLAVMappingCollection(client).find
                 (new Document("LAVMappingID",objBody.getAsString("LAVMappingID"))).first();
+
+        Document filter = new Document("_id",objMapping.get("_id"));
+        Document updateOperationDocument = new Document("$set", new Document("graphicalSubGraph", objBody.get("graphicalSubGraph")));
+        MongoCollections.getLAVMappingCollection(client).updateOne(filter, updateOperationDocument);
 
         Document wrapper = MongoCollections.getWrappersCollection(client)
                 .find(new Document("wrapperID",objMapping.getString("wrapperID"))).first();
