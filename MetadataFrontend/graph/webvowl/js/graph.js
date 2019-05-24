@@ -1213,7 +1213,6 @@ module.exports = function (graphContainerSelector) {
         if (graph.options().loadingModule().successfullyLoadedOntology() === false) {
             graph.options().loadingModule().setErrorMode();
         }
-
     };
 
     // Updates only the style of the graph.
@@ -1510,6 +1509,7 @@ module.exports = function (graphContainerSelector) {
 
     /*
      * Change opacity to 1 if node is selected, then check for possible properties to change opacity too.
+     * If flags is true, check connectivity property. Set to false when drawing.
      */
     function markNode(flag,node){
         if(node)
@@ -1521,7 +1521,7 @@ module.exports = function (graphContainerSelector) {
             var nodesId = [];
             var selector = d3.select(options.graphContainerSelector());
             selectionGraph.all().forEach(function (node)  {
-                // selector.select("#" + node.id()).style("opacity", "1");
+                selector.select("#" + node.id()).style("opacity", "1");
                 nodesId.push(node.id());
             });
             var labs = [];
@@ -1560,6 +1560,24 @@ module.exports = function (graphContainerSelector) {
         return selectedFeatures;
     }
 
+    graph.prepareGraphicalSelObject= function(){
+        var nodesId = [];
+        options.selectionGraph().all().forEach(function (node)  {
+            nodesId.push(node.id());
+        });
+        return nodesId;
+    }
+
+    graph.loadGraphicalSelection = function() {
+        var nodes = graph.options().loadingModule().currentSubGraph();
+        if(nodes){
+            nodeElements.each(function (node)  {
+                if(nodes.includes(node.id()))
+                    graph.options().selectionGraph().add(node);
+            });
+            markNode(false)
+        }
+    }
 
     graph.prepareSelectionObject =function() {
         var selectionGraph = options.selectionGraph();

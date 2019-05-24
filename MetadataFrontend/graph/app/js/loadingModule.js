@@ -19,6 +19,7 @@ module.exports =  function (graph) {
     var DEFAULT_JSON_NAME = "mdm_template"; // This file is loaded by default
     var conversion_sessionId;
     var currentGlobalGraph;
+    var currentSubGraph;
 
     /** variable defs **/
     var loadingModule={},
@@ -558,13 +559,15 @@ module.exports =  function (graph) {
         return currentGlobalGraph;
     };
 
-
-
+    loadingModule.currentSubGraph=function(){
+        return currentSubGraph;
+    };
 
 
     /** --- HELPER FUNCTIONS **/
     function retrieveGraph(id) {
         //there's id provided
+        currentSubGraph = undefined;
         currentGlobalGraph = undefined;
         if(id){
             console.log(id)
@@ -584,6 +587,9 @@ module.exports =  function (graph) {
                 url: "/LAVMapping/"+lavMappingID,
                 async: false
             }).responseText);
+
+            if(data.graphicalSubGraph)
+                currentSubGraph = data.graphicalSubGraph;
 
             currentGlobalGraph = JSON.parse($.ajax({
                 type: "GET",

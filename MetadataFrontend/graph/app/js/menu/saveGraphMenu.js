@@ -32,12 +32,12 @@ module.exports = function (graph) {
                     var subGraph = new Object();
                     subGraph.selection = graph.prepareSelectionObject();
                     subGraph.LAVMappingID = getParameterByName("LAVMappingID");
+                    subGraph.graphicalSubGraph = graph.prepareGraphicalSelObject();
                     $.ajax({
                         url: '/LAVMapping/subgraph',
                         type: 'POST',
                         data: subGraph,
                         success: function(data) {
-                            console.log("success");
                             graph.options().alertModule().showAlert("Information","Mappings saved",1);
                         }
                     });

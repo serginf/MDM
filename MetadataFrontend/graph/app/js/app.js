@@ -252,6 +252,8 @@ module.exports = function () {
             sidebar.updateOntologyInformation(undefined, statistics);
             if(options.defaultConfig().OMQ_mode !== "true") //In case of true, omq module will execute the load.
 			    loadingModule.parseUrlAndLoadOntology(); // loads automatically the ontology provided by the parameters
+            if(options.defaultConfig().selectSG_mode === "true")
+                graph.loadGraphicalSelection();
             options.debugMenu(debugMenu);
             debugMenu.updateSettings();
 
