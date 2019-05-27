@@ -4,9 +4,9 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
-import eu.supersede.mdm.storage.errorhandling.exception.ValidationException;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
+import eu.supersede.mdm.storage.service.impl.UpdateGlobalGraphServiceImpl;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
@@ -21,7 +21,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -154,16 +153,24 @@ public class GlobalGraphResource {
         return Response.ok().build();
     }
 
-    @ApiOperation(value = "Save graph in turtle format",consumes = MediaType.TEXT_PLAIN)
+    @ApiOperation(value = "Save and update graph in turtle format",consumes = MediaType.TEXT_PLAIN)
     @ApiResponses(value ={
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "body is missing")})
     @POST @Path("globalGraph/{namedGraph}/TTL")
     @Consumes("text/plain")
     public Response POST_TTL(@PathParam("namedGraph") String namedGraph, String body) {
-        LOGGER.info("[POST /globalGraph/"+namedGraph+"/triple] body = "+body);
+        LOGGER.info("[POST /globalGraph/"+namedGraph+"/ ttl] body = "+body);
         validator.validateGeneralBody(body,"POST /globalGraph/"+namedGraph+"/triple");
-        RDFUtil.loadTTL(namedGraph,body);
+
+        JSONObject objBody = (JSONObject) JSONValue.parse(body);
+        JSONObject objMod = (JSONObject) objBody.get("modified");
+        if(objMod.getAsString("isModified").equals("true")){
+            UpdateGlobalGraphServiceImpl u = new UpdateGlobalGraphServiceImpl();
+            u.updateTriples(objMod,namedGraph);
+        }else{
+            RDFUtil.loadTTL(namedGraph,objBody.getAsString("ttl"));
+        }
         return Response.ok().build();
     }
 

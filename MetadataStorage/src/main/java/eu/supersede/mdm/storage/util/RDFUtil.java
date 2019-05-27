@@ -37,7 +37,6 @@ public class RDFUtil {
         Dataset ds = Utils.getTDBDataset();
         ds.begin(ReadWrite.WRITE);
         Model graph = ds.getNamedModel(namedGraph);
-        graph.removeAll();
         graph.read(new ByteArrayInputStream(contentTTL.getBytes()), null,"TTL");
         graph.commit();
         graph.close();
@@ -82,6 +81,18 @@ public class RDFUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void runAnUpdateQuery(String sparqlQuery) {
+        Dataset ds = Utils.getTDBDataset();
+        ds.begin(ReadWrite.WRITE);
+        try {
+            UpdateAction.parseExecute(sparqlQuery,ds);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ds.commit();
+        ds.close();
     }
 
 

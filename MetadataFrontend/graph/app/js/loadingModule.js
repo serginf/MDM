@@ -563,6 +563,10 @@ module.exports =  function (graph) {
         return currentSubGraph;
     };
 
+    loadingModule.retrieveCurrentGraph = function () {
+      retrieveGraph();
+    };
+
 
     /** --- HELPER FUNCTIONS **/
     function retrieveGraph(id) {

@@ -29,6 +29,7 @@ module.exports = (function () {
 			visible = true,
 			background,
 
+			originalLabel, //keeps the original label, in case label is modified.
 			backupLabel,
 		// Other
 			languageTools = require("../util/languageTools")();
@@ -37,6 +38,14 @@ module.exports = (function () {
 		this.backupLabel=function(label){
 			if (!arguments.length) return backupLabel;
 			backupLabel=label;
+		};
+		this.originalLabel=function(label){
+			//Disallow overwriting the label more than one time.
+			if (!arguments.length || originalLabel) return originalLabel;
+			originalLabel=label;
+		};
+		this.resetOriginalLabel=function(){
+			originalLabel=undefined;
 		};
 		// Properties
 		this.attributes = function (p) {

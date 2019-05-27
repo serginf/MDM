@@ -19,12 +19,16 @@ module.exports = function (graph) {
                         data: {graphicalGraph: exportMenu.getJson()}
                     });
 
+                    var object = new Object();
+                    object.ttl = exportMenu.exportTurtleText();
+                    object.modified = graph.prepareChangesObject();
                     $.ajax({
                         type: "POST",
                         url: '/globalGraph/'+encodeURIComponent(loadingModule.currentGlobalGraph().namedGraph)+'/TTL',
-                        data:  {'ttl': exportMenu.exportTurtleText()},
+                        data: object,
                         success: function(data) {
                             console.log("success");
+                            graph.resetOriginalLabels();
                             graph.options().alertModule().showAlert("Information","Graph saved",1);
                         }
                     });

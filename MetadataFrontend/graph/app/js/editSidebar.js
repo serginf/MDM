@@ -591,7 +591,12 @@ module.exports = function (graph) {
     function defaultIriValue(element){
         // get the iri of that element;
         if (graph.options().getGeneralMetaObject().iri){
-            var str2Compare=graph.options().getGeneralMetaObject().iri+element.id();
+            if(element.iriType() === Global.HAS_RELATION.iri)
+                return true;
+            // ----- just works for webvowl logic. In mdm we don't use the id in the iri. --------//
+            // var str2Compare = graph.options().getGeneralMetaObject().iri + element.id();
+            // --------- let update iris when editing elements. --------//
+            var str2Compare = graph.options().getGeneralMetaObject().iri + element.label();
             return element.iri()===str2Compare;
         }
         return false;
