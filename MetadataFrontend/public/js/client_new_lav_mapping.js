@@ -110,6 +110,7 @@ $(function() {
 
         lav_mapping.wrapperID = currWrapper.wrapperID;
         lav_mapping.globalGraphID = currGlobalGraph.globalGraphID;
+        lav_mapping.isModified = false;
 
         lav_mapping.sameAs = new Array();
         for (var i = 0; i < $('#attributes input').length; ++i) {

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import eu.supersede.mdm.storage.model.Namespaces;
+import eu.supersede.mdm.storage.service.impl.UpdateLavMappingServiceImpl;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
@@ -61,19 +62,28 @@ public class LAVMappingResource {
         LOGGER.info("[POST /LAVMapping/mapsTo/] body = "+body);
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
         MongoClient client = Utils.getMongoDBClient();
-        objBody.put("LAVMappingID", UUID.randomUUID().toString().replace("-",""));
-        MongoCollections.getLAVMappingCollection(client).insertOne(Document.parse(objBody.toJSONString()));
 
         Document wrapper = MongoCollections.getWrappersCollection(client)
-            .find(new Document("wrapperID",objBody.getAsString("wrapperID"))).first();
+                .find(new Document("wrapperID",objBody.getAsString("wrapperID"))).first();
         Document dataSource = MongoCollections.getDataSourcesCollection(client)
-            .find(new Document("dataSourceID",wrapper.getString("dataSourceID"))).first();
-        String dsIRI = dataSource.getString("iri");
+                .find(new Document("dataSourceID",wrapper.getString("dataSourceID"))).first();
 
-        ((JSONArray)objBody.get("sameAs")).forEach(mapping -> {
-            JSONObject objMapping = (JSONObject)mapping;
-            RDFUtil.addTriple(dsIRI,objMapping.getAsString("attribute"),Namespaces.owl.val()+"sameAs",objMapping.getAsString("feature"));
-        });
+        if(objBody.getAsString("isModified").equals("false")){
+            objBody.put("LAVMappingID", UUID.randomUUID().toString().replace("-",""));
+            MongoCollections.getLAVMappingCollection(client).insertOne(Document.parse(objBody.toJSONString()));
+
+            String dsIRI = dataSource.getString("iri");
+
+            ((JSONArray)objBody.get("sameAs")).forEach(mapping -> {
+                JSONObject objMapping = (JSONObject)mapping;
+                RDFUtil.addTriple(dsIRI,objMapping.getAsString("attribute"),Namespaces.owl.val()+"sameAs",objMapping.getAsString("feature"));
+            });
+
+        }else{
+            UpdateLavMappingServiceImpl updateLAVM = new UpdateLavMappingServiceImpl();
+            updateLAVM.updateTriples(((JSONArray)objBody.get("sameAs")),objBody.getAsString("LAVMappingID"),
+                    wrapper.getString("iri"),dataSource.getString("iri"));
+        }
 
         client.close();
         return Response.ok(objBody.toJSONString()).build();

@@ -27,7 +27,8 @@ exports.getAllLAVMappings = function (req, res, next) {
 exports.postLAVMappingSameAs = function (req, res, next) {
     if (!(req.body.hasOwnProperty('wrapperID')) || req.body.wrapperID==null ||
         !(req.body.hasOwnProperty('globalGraphID')) || req.body.globalGraphID==null ||
-        !(req.body.hasOwnProperty('sameAs')) || req.body.sameAs==null){
+        !(req.body.hasOwnProperty('sameAs')) || req.body.sameAs==null ||
+        !(req.body.hasOwnProperty('isModified')) || req.body.isModified==null){
         res.status(400).json({msg: "(Bad Request) data format: {wrapperID,globalGraphID,sameAs}"});
     } else {
         var objLAVMappingMapsTo = req.body;

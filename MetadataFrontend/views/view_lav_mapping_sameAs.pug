@@ -47,3 +47,20 @@ block content
                         .form-group
                             .col-lg-12.col-lg-offset-2
                                 button#submitLAVMapping.btn.btn-primary.btn-lg.btn-block(type="submit") Submit
+    // Button trigger modal
+    //button.btn.btn-primary(type='button' data-toggle='modal' data-target='#warningModal')
+    //    | Launch demo modal
+    // Modal
+    #warningModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='warningModalLabel' aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    h5#warningModalLabel.modal-title Confirm update
+                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true') &times;
+                .modal-body
+                    | You are about to update the LAVMapping, it must be necessary to cover the  subgraph again.
+                    | Do you want to proceed?
+                .modal-footer
+                    button.btn.btn-secondary(type='button' data-dismiss='modal') Cancel
+                    button#btn_ok_modal.btn.btn-primary(type='button') Update changes

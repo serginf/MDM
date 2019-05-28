@@ -57,9 +57,10 @@ public class UpdateGlobalGraphServiceImpl {
   }
 
   /**
-   * Gets the LavMappings IRI which contains the features IRIs to be updated.
+   * Gets the LavMappings IRI, wrapperIri and datasourceIRI which contains the features IRIs to be updated.
+   *
    * @param globalGraphId
-   * @return
+   * @return a list for every lavmapping associated with the given globalgraph and need to be updated.
    */
   public List<LavObj> getLavMappingsAffected(String globalGraphId, List<String> IRIs){
 
