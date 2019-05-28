@@ -4,12 +4,13 @@ module.exports = function (graph) {
 
 
     configMenu.setup = function () {
-        var menuEntry= d3.select("#m_modes");
-        menuEntry.on("mouseover",function(){
-            var searchMenu=graph.options().searchMenu();
-            searchMenu.hideSearchEntries();
-        });
-
+        if(graph.options().showModesGui()){
+            var menuEntry= d3.select("#m_modes");
+            menuEntry.on("mouseover",function(){
+                var searchMenu=graph.options().searchMenu();
+                searchMenu.hideSearchEntries();
+            });
+        }
         addCheckBox("showZoomSlider","Zoom controls","#zoomSliderOption",graph.options().zoomSlider().showSlider,0);
         addLabelWidthSlider("#maxLabelWidthSliderOption","maxLabelWidth","Max label width", graph.options().maxLabelWidth);
     };

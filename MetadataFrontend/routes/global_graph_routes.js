@@ -111,7 +111,7 @@ exports.postGraphicalGraph = function (req, res, next) {
 exports.postTTL = function (req, res, next) {
     request.post({
         url: config.METADATA_DATA_LAYER_URL + "globalGraph/"+encodeURIComponent(req.params.namedGraph)+"/TTL",
-        body: req.body.ttl
+        body: JSON.stringify(req.body)
     }, function done(err, results) {
         res.status(200).json("ok");
     });

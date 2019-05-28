@@ -96,5 +96,7 @@ dependencies {
     compile 'org.apache.spark:spark-sql_2.10:2.2.0'
 
     compile files('lib/sqlite4java-392/sqlite4java.jar')
+    
+    compile group: 'io.swagger', name: 'swagger-jersey2-jaxrs', version: '1.5.22'
 
 }

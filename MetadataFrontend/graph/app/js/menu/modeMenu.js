@@ -21,7 +21,6 @@ module.exports = function (graph) {
 		return modeMenu;
 	};
 
-
 	modeMenu.setDynamicLabelWidth=function(val){
         dynamicLabelWidthCheckBox.property("checked",val);
 	};
@@ -37,18 +36,24 @@ module.exports = function (graph) {
 	/**
 	 * Connects the website with the available graph modes.
 	 */
-	modeMenu.setup = function (pickAndPin, nodeScaling, compactNotation, colorExternals,selectionMarker,OMQ) {
-		var menuEntry= d3.select("#m_modes");
-		menuEntry.on("mouseover",function(){
-			var searchMenu=graph.options().searchMenu();
-			searchMenu.hideSearchEntries();
-		});
-        addCheckBoxD("labelWidth","Dynamic label width","#dynamicLabelWidth",graph.options().dynamicLabelWidth,1);
-        addCheckBox("editorMode","Editing ","#editMode",graph.editorMode);
-		addCheckBox("OMQ","OMQ ","#OMQMode",graph.setupModeOMQ);
-		// addCheckBox("selectionSGMode","Selection ","#selectionMode",graph.selectionSGMode);
-		addModeItem(selectionMarker, "selectionSGMode", "Selection", "#selectionMode", false);
-		addModeItem(pickAndPin, "pickandpin", "Pick & pin", "#pickAndPinOption", false);
+	modeMenu.setup = function (pickAndPin, nodeScaling, compactNotation, colorExternals,selectionMarker) {
+		if(graph.options().showModesGui()){
+			var menuEntry= d3.select("#m_modes");
+			d3.select("#c_modes").style("display","");
+			menuEntry.on("mouseover",function(){
+				var searchMenu=graph.options().searchMenu();
+				searchMenu.hideSearchEntries();
+			});
+			addCheckBox("editorMode","Editing ","#editMode",graph.editorMode);
+			addCheckBox("OMQ","OMQ ","#OMQMode",graph.setupModeOMQ);
+			// addCheckBox("selectionSGMode","Selection ","#selectionMode",graph.selectionSGMode);
+			addModeItem(selectionMarker, "selectionSGMode", "Selection", "#selectionMode", false);
+			addModeItem(pickAndPin, "pickandpin", "Pick & pin", "#pickAndPinOption", false);
+		}else{
+			//hide from gui
+			d3.select("#c_modes").style("display","none");
+		}
+		addCheckBoxD("labelWidth","Dynamic label width","#dynamicLabelWidth",graph.options().dynamicLabelWidth,1);
 		addModeItem(nodeScaling, "nodescaling", "Node scaling", "#nodeScalingOption", true);
 		addModeItem(compactNotation, "compactnotation", "Compact notation", "#compactNotationOption", true);
 		var container = addModeItem(colorExternals, "colorexternals", "Color externals", "#colorExternalsOption", true);

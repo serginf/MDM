@@ -252,6 +252,8 @@ module.exports = function () {
             sidebar.updateOntologyInformation(undefined, statistics);
             if(options.defaultConfig().OMQ_mode !== "true") //In case of true, omq module will execute the load.
 			    loadingModule.parseUrlAndLoadOntology(); // loads automatically the ontology provided by the parameters
+            if(options.defaultConfig().selectSG_mode === "true")
+                graph.loadGraphicalSelection();
             options.debugMenu(debugMenu);
             debugMenu.updateSettings();
 
@@ -343,8 +345,10 @@ module.exports = function () {
             exportMenu.setFilename(filename);
             graph.updateZoomSliderValueFromOutside();
             adjustSize();
-
-            var flagOfCheckBox=d3.select("#editorModeModuleCheckbox").node().checked;
+            if(options.showModesGui())
+                var flagOfCheckBox=d3.select("#editorModeModuleCheckbox").node().checked;
+            else
+                var flagOfCheckBox=options.defaultConfig().editorMode==="true";
             graph.editorMode(flagOfCheckBox);// update gui
 
         }

@@ -63,59 +63,56 @@ main#graphmain
                     //#datatypeContainer.accordion-container
         #menuContainer
             // Ontology Menu
-            ul#m_select.toolTipMenu.noselect
-                li
-                    a#foaf(href='#foaf') Friend of a Friend (FOAF) vocabulary
-                li
-                    a#goodrelations(href='#goodrelations') GoodRelations Vocabulary for E-Commerce
-                li
-                    a#muto(href='#muto') Modular and Unified Tagging Ontology (MUTO)
-                li
-                    a#ontovibe(href='#ontovibe') Ontology Visualization Benchmark (OntoViBe)
-                li
-                    a#personasonto(href='#personasonto') Personas Ontology (PersonasOnto)
-                li
-                    a#sioc(href='#sioc') SIOC (Semantically-Interlinked Online Communities) Core Ontology
-                // build:remove release
-                li
-                    a#benchmark(href='#benchmark') Benchmark Graph for VOWL
-                // /build
-                li#converter-option.option
-                    form#iri-converter-form.converter-form
-                        label(for='iri-converter-input') Custom Ontology:
-                        input#iri-converter-input(type='text', placeholder='Enter ontology IRI')
-                        button#iri-converter-button(type='submit', disabled='') Visualize
-                    .converter-form
-                        input#file-converter-input.hidden(type='file', autocomplete='off')
-                        label#file-converter-label.truncate(for='file-converter-input') Select ontology file
-                        button#file-converter-button(type='submit', disabled='')
-                            | Upload
-                    #emptyContainer
-                        a#empty(href='#opts=editorMode=true;#new_ontology1', style='pointer-events:none; padding-left:0') Create new ontology
-                    div
-                        // <button class="debugOption" type="submit" id="direct-text-input">
-                        // Direct input
-                        // </button>
+            //ul#m_select.toolTipMenu.noselect
+            //    li
+            //        a#foaf(href='#foaf') Friend of a Friend (FOAF) vocabulary
+            //    li
+            //        a#goodrelations(href='#goodrelations') GoodRelations Vocabulary for E-Commerce
+            //    li
+            //        a#muto(href='#muto') Modular and Unified Tagging Ontology (MUTO)
+            //    li
+            //        a#ontovibe(href='#ontovibe') Ontology Visualization Benchmark (OntoViBe)
+            //    li
+            //        a#personasonto(href='#personasonto') Personas Ontology (PersonasOnto)
+            //    ligr
+            //        a#sioc(href='#sioc') SIOC (Semantically-Interlinked Online Communities) Core Ontology
+            //    // build:remove release
+            //    li
+            //        a#benchmark(href='#benchmark') Benchmark Graph for VOWL
+            //    // /build
+            //    li#converter-option.option
+            //        form#iri-converter-form.converter-form
+            //            label(for='iri-converter-input') Custom Ontology:
+            //            input#iri-converter-input(type='text', placeholder='Enter ontology IRI')
+            //            button#iri-converter-button(type='submit', disabled='') Visualize
+            //        .converter-form
+            //            input#file-converter-input.hidden(type='file', autocomplete='off')
+            //            label#file-converter-label.truncate(for='file-converter-input') Select ontology file
+            //            button#file-converter-button(type='submit', disabled='')
+            //                | Upload
+            //        #emptyContainer
+            //            a#empty(href='#opts=editorMode=true;#new_ontology1', style='pointer-events:none; padding-left:0') Create new ontology
+            //        div
             // Export Menu
-            ul#m_export.toolTipMenu.noselect
-                li
-                    a#exportJson(href='#', download='') Export as JSON
-                li
-                    a#exportSvg(href='#', download='') Export as SVG
-                li
-                    a#exportTex(href='#', download='')
-                        | Export as TeX
-                        label(style='font-size: 10px') (alpha)
-                li
-                    a#exportTurtle(href='#', download='')
-                        | Export as TTL
-                        label(style='font-size: 10px') (alpha)
-                li#emptyLiHover.option
-                    div
-                        form#url-copy-form.converter-form
-                            label(for='exportedUrl') Export as URL:
-                            input#exportedUrl(type='text', placeholder='#')
-                            button#copyBt(title='Copy to clipboard') Copy
+            //ul#m_export.toolTipMenu.noselect
+            //    li
+            //        a#exportJson(href='#', download='') Export as JSON
+            //    li
+            //        a#exportSvg(href='#', download='') Export as SVG
+            //    li
+            //        a#exportTex(href='#', download='')
+            //            | Export as TeX
+            //            label(style='font-size: 10px') (alpha)
+            //    li
+            //        a#exportTurtle(href='#', download='')
+            //            | Export as TTL
+            //            label(style='font-size: 10px') (alpha)
+            //    li#emptyLiHover.option
+            //        div
+            //            form#url-copy-form.converter-form
+            //                label(for='exportedUrl') Export as URL:
+            //                input#exportedUrl(type='text', placeholder='#')
+            //                button#copyBt(title='Copy to clipboard') Copy
             // Filter Menu
             ul#m_filter.toolTipMenu.noselect
                 li#datatypeFilteringOption.toggleOption
@@ -187,20 +184,20 @@ main#graphmain
                 li#c_locate
                     a#locateSearchResult(style='padding: 0 8px 5px 8px;', draggable='false', title='Nothing to locate, enter search term.', href='#')
                         | &target;
-                li#c_select
-                    a(draggable='false', href='#')
-                        i
-                            svg.menuElementSvgElement(viewbox='0 0 24 24')
-                                g
-                                    path(style='fill : #fff; stroke-width:0;', d='M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z', transform='matrix(0.75,0,0,0.75,3.5,2.5)')
-                        |  Ontology
-                li#c_export
-                    a(draggable='false', href='#')
-                        i
-                            svg.menuElementSvgElement(viewbox='0 0 24 24')
-                                g
-                                    path(style='fill : #fff; stroke-width:0;', d='M19 7v4H5.83l3.58-3.59L8 6l-6 6 6 6 1.41-1.41L5.83 13H21V7z', transform='matrix(0.75,0,0,0.75,3.5,2.5)')
-                        |  Export
+                //li#c_select
+                //    a(draggable='false', href='#')
+                //        i
+                //            svg.menuElementSvgElement(viewbox='0 0 24 24')
+                //                g
+                //                    path(style='fill : #fff; stroke-width:0;', d='M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z', transform='matrix(0.75,0,0,0.75,3.5,2.5)')
+                //        |  Ontology
+                //li#c_export
+                //    a(draggable='false', href='#')
+                //        i
+                //            svg.menuElementSvgElement(viewbox='0 0 24 24')
+                //                g
+                //                    path(style='fill : #fff; stroke-width:0;', d='M19 7v4H5.83l3.58-3.59L8 6l-6 6 6 6 1.41-1.41L5.83 13H21V7z', transform='matrix(0.75,0,0,0.75,3.5,2.5)')
+                //        |  Export
                 li#c_filter
                     a(draggable='false', href='#')
                         i
@@ -215,7 +212,7 @@ main#graphmain
                                 g
                                     path(style='fill : #fff; stroke-width:0;', d='m 21.163138,13.127428 0,-2.356764 -2.546629,-0.424622 C 18.439272,9.5807939 18.137791,8.8661419 17.733863,8.218291 L 19.2356,6.116978 17.569296,4.450673 15.466841,5.951269 C 14.818953,5.548483 14.104338,5.24586 13.33909,5.067482 l -0.424622,-2.545488 -2.356764,0 -0.424622,2.545488 C 9.3689769,5.24586 8.6531829,5.548519 8.0053319,5.951269 l -2.102455,-1.500596 -1.666304,1.666305 1.501737,2.101313 c -0.403928,0.6467469 -0.705409,1.3625029 -0.882646,2.127751 l -2.546629,0.424622 0,2.356764 2.546629,0.424622 c 0.177237,0.765248 0.478718,1.4799 0.882646,2.127751 l -1.501737,2.102455 1.666304,1.666304 2.103596,-1.501737 c 0.646747,0.403928 1.362504,0.705409 2.1266091,0.882646 l 0.424622,2.546629 2.356764,0 0.424622,-2.546629 c 0.764106,-0.177237 1.4799,-0.478718 2.127751,-0.882646 l 2.102455,1.501737 1.666304,-1.666304 -1.501737,-2.102455 c 0.403928,-0.647888 0.705409,-1.363645 0.882646,-2.127751 l 2.546629,-0.424622 z m -9.427053,3.535144 c -2.6030431,0 -4.7135241,-2.110517 -4.7135241,-4.713527 0,-2.6030071 2.110518,-4.713525 4.7135241,-4.713525 2.60301,0 4.713527,2.1105179 4.713527,4.713525 0,2.60301 -2.110481,4.713527 -4.713527,4.713527 z', transform='matrix(0.75,0,0,0.75,3.5,2.5)')
                         | Options
-                li#c_modes
+                li#c_modes(style="display:none")
                     a(draggable='false', href='#')
                         i
                             svg.menuElementSvgElement(viewbox='0 0 24 24')

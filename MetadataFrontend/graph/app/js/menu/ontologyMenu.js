@@ -75,11 +75,14 @@ module.exports = function (graph) {
 	ontologyMenu.setup = function (_loadOntologyFromText) {
 		loadOntologyFromText = _loadOntologyFromText;
 		loadingModule=graph.options().loadingModule();
-		var menuEntry= d3.select("#m_select");
-		menuEntry.on("mouseover",function(){
-			var searchMenu=graph.options().searchMenu();
-			searchMenu.hideSearchEntries();
-		});
+
+		if(graph.options().showSelectOntologyGui()){
+            var menuEntry= d3.select("#m_select");
+            menuEntry.on("mouseover",function(){
+            	var searchMenu=graph.options().searchMenu();
+            	searchMenu.hideSearchEntries();
+            });
+        }
 
 		setupConverterButtons();
 		setupUploadButton();

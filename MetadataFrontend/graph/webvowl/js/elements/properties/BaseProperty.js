@@ -804,6 +804,7 @@ module.exports = (function () {
                     var newLabel=editText.node().value;
                     that.labelElement().selectAll(".foreignelements").remove();
                     // that.setLabelForCurrentLanguage(classNameConvention(editText.node().value));
+					that.originalLabel(that.label());
                     that.label(newLabel);
                     that.backupLabel(newLabel);
                     that.redrawLabelText();

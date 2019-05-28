@@ -28,26 +28,29 @@ module.exports = function (graph) {
 	 * Adds the export button to the website.
 	 */
 	exportMenu.setup = function () {
-		exportSvgButton = d3.select("#exportSvg")
-			.on("click", exportSvg);
-		exportJsonButton = d3.select("#exportJson")
-			.on("click", exportJson);
+        if(graph.options().showExportGui()){
+            exportSvgButton = d3.select("#exportSvg")
+                .on("click", exportSvg);
+            exportJsonButton = d3.select("#exportJson")
+                .on("click", exportJson);
 
-		copyButton=d3.select("#copyBt")
-            .on("click", copyUrl);
+            copyButton=d3.select("#copyBt")
+                .on("click", copyUrl);
 
-        exportTexButton= d3.select("#exportTex")
-			.on("click", exportTex);
+            exportTexButton= d3.select("#exportTex")
+                .on("click", exportTex);
 
-		exportTurtleButton = d3.select("#exportTurtle")
-            .on("click",exportTurtle);
+            exportTurtleButton = d3.select("#exportTurtle")
+                .on("click",exportTurtle);
 
-        var menuEntry= d3.select("#m_export");
-		menuEntry.on("mouseover",function(){
-			var searchMenu=graph.options().searchMenu();
-			searchMenu.hideSearchEntries();
-            exportMenu.exportAsUrl();
-		});
+
+            var menuEntry= d3.select("#m_export");
+            menuEntry.on("mouseover",function(){
+                var searchMenu=graph.options().searchMenu();
+                searchMenu.hideSearchEntries();
+                exportMenu.exportAsUrl();
+            });
+        }
 	};
 
     exportMenu.exportTurtleText = function ()  {

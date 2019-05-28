@@ -289,9 +289,9 @@ module.exports = function (graph) {
 
             }
         }
-
-
-        objectDef+=general_Label_languageExtractor(indent, node.label(), "rdfs:label", true);
+        //replace last dot and comma by a dot
+        objectDef = objectDef.replace(/\s;*$/, ".");
+        // objectDef+=general_Label_languageExtractor(indent, node.label(), "rdfs:label", true);
         return objectDef;
 
     }

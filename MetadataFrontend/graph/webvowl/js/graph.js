@@ -804,7 +804,12 @@ module.exports = function (graphContainerSelector) {
     function defaultIriValue(element) {
         // get the iri of that element;
         if (graph.options().getGeneralMetaObject().iri) {
-            var str2Compare = graph.options().getGeneralMetaObject().iri + element.id();
+            if(element.iriType() === Global.HAS_RELATION.iri)
+                return true;
+            // ----- just works for webvowl logic. In mdm we don't use the id in the iri. --------//
+            // var str2Compare = graph.options().getGeneralMetaObject().iri + element.id();
+            // --------- let update iris when editing elements. --------//
+            var str2Compare = graph.options().getGeneralMetaObject().iri + element.label();
             return element.iri() === str2Compare;
         }
         return false;
@@ -1213,7 +1218,6 @@ module.exports = function (graphContainerSelector) {
         if (graph.options().loadingModule().successfullyLoadedOntology() === false) {
             graph.options().loadingModule().setErrorMode();
         }
-
     };
 
     // Updates only the style of the graph.
@@ -1422,6 +1426,58 @@ module.exports = function (graphContainerSelector) {
     };
 
     /** --------------------------------------------------------- **/
+    /** --      MDM:  Global Graph functions                   -- **/
+    /** --------------------------------------------------------- **/
+
+    graph.prepareChangesObject = function(){
+        var data = new Object();
+        data.isModified = false;
+        data.nodes = [];
+        data.properties = [];
+        //if currentGlobalGraph not contains graphicalGraph, ontology is new. So we don't check for changes.
+        if(graph.options().loadingModule().currentGlobalGraph().graphicalGraph){
+
+            classNodes.forEach(function (node)  {
+                if(node.originalLabel()){
+                    console.log("node modified");
+                    var n  = new Object();
+                    n.old = node.baseIri()+node.originalLabel();
+                    n.new = node.iri();
+                    data.nodes.push(n);
+                }
+            });
+
+            labelNodes.forEach(function (label)  {
+                //just has_relation properties can change.
+                if(label.property().originalLabel() && label.property().iriType() === Global.HAS_RELATION.iri){
+                    var n  = new Object();
+                    n.s = label.link().domain().iri();
+                    n.o = label.link().range().iri();
+                    n.pOld = label.property().baseIri()+ label.property().originalLabel();
+                    n.pNew = label.property().iri();
+                    data.properties.push(n);
+                }
+            });
+
+            if(data.nodes.length || data.properties.length )
+                data.isModified = true;
+        }
+        return data;
+    }
+
+    //once the graph is saved, we need to look for new changes.
+    graph.resetOriginalLabels = function(){
+        classNodes.forEach(function (node)  {
+            node.resetOriginalLabel();
+        });
+        labelNodes.forEach(function (label)  {
+            label.property().resetOriginalLabel();
+        });
+        //need to update currentGlobalGraph
+        graph.options().loadingModule().retrieveCurrentGraph();
+    }
+
+    /** --------------------------------------------------------- **/
     /** --      MDM:  Select subGraph functions                -- **/
     /** --------------------------------------------------------- **/
 
@@ -1510,6 +1566,7 @@ module.exports = function (graphContainerSelector) {
 
     /*
      * Change opacity to 1 if node is selected, then check for possible properties to change opacity too.
+     * If flags is true, check connectivity property. Set to false when drawing.
      */
     function markNode(flag,node){
         if(node)
@@ -1521,7 +1578,7 @@ module.exports = function (graphContainerSelector) {
             var nodesId = [];
             var selector = d3.select(options.graphContainerSelector());
             selectionGraph.all().forEach(function (node)  {
-                // selector.select("#" + node.id()).style("opacity", "1");
+                selector.select("#" + node.id()).style("opacity", "1");
                 nodesId.push(node.id());
             });
             var labs = [];
@@ -1560,6 +1617,24 @@ module.exports = function (graphContainerSelector) {
         return selectedFeatures;
     }
 
+    graph.prepareGraphicalSelObject= function(){
+        var nodesId = [];
+        options.selectionGraph().all().forEach(function (node)  {
+            nodesId.push(node.id());
+        });
+        return nodesId;
+    }
+
+    graph.loadGraphicalSelection = function() {
+        var nodes = graph.options().loadingModule().currentSubGraph();
+        if(nodes){
+            nodeElements.each(function (node)  {
+                if(nodes.includes(node.id()))
+                    graph.options().selectionGraph().add(node);
+            });
+            markNode(false)
+        }
+    }
 
     graph.prepareSelectionObject =function() {
         var selectionGraph = options.selectionGraph();
@@ -2872,23 +2947,25 @@ module.exports = function (graphContainerSelector) {
     }
 
     graph.editorMode=function(val){
-        var create_entry=d3.select("#empty");
-        var create_container=d3.select("#emptyContainer");
-
-        var modeOfOpString=d3.select("#modeOfOperationString").node();
+        if(graph.options().showSelectOntologyGui()) {
+            var create_entry = d3.select("#empty");
+            var create_container = d3.select("#emptyContainer");
+        }
         if(!arguments.length){
-            create_entry.node().checked=editMode;
-            if (editMode===false){
-                create_container.node().title="Enable editing in modes menu to create a new ontology";
-                create_entry.node().title="Enable editing in modes menu to create a new ontology";
-                create_entry.style("pointer-events","none");
-            }else{
-                create_container.node().title="Creates a new empty ontology";
-                create_entry.node().title="Creates a new empty ontology";
-                d3.select("#useAccuracyHelper").style("color", "#2980b9");
-                d3.select("#useAccuracyHelper").style("pointer-events", "auto");
-                create_entry.node().disabled=false;
-                create_entry.style("pointer-events","auto");
+            if(graph.options().showSelectOntologyGui()) {
+                create_entry.node().checked = editMode;
+                if (editMode === false) {
+                    create_container.node().title = "Enable editing in modes menu to create a new ontology";
+                    create_entry.node().title = "Enable editing in modes menu to create a new ontology";
+                    create_entry.style("pointer-events", "none");
+                } else {
+                    create_container.node().title = "Creates a new empty ontology";
+                    create_entry.node().title = "Creates a new empty ontology";
+                    d3.select("#useAccuracyHelper").style("color", "#2980b9");
+                    d3.select("#useAccuracyHelper").style("pointer-events", "auto");
+                    create_entry.node().disabled = false;
+                    create_entry.style("pointer-events", "auto");
+                }
             }
 
             return editMode;
@@ -2949,6 +3026,7 @@ module.exports = function (graphContainerSelector) {
             }
         }
 
+        var modeOfOpString=d3.select("#modeOfOperationString").node();
         if (modeOfOpString) {
             if (touchDevice === true) {
                 modeOfOpString.innerHTML = "touch able device detected";
@@ -3310,6 +3388,8 @@ module.exports = function (graphContainerSelector) {
         if(aProp.label() === undefined)
             aProp.label("newObjectProperty");
         if(aProp.baseIri() === undefined)
+            aProp.baseIri(d3.select("#iriEditor").node().value);
+        if(aProp.iriType() === Global.HAS_RELATION.iri)
             aProp.baseIri(d3.select("#iriEditor").node().value);
         if(aProp.iri() === undefined)
             aProp.iri(aProp.baseIri()+aProp.id());
