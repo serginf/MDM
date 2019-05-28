@@ -706,7 +706,7 @@ module.exports = (function () {
 
         this.raiseDoubleClickEdit=function(forceIRISync){
             d3.selectAll(".foreignelements").remove();
-            if (that.labelElement()===undefined || this.type()==="owl:disjointWith" || this.type()==="rdfs:subClassOf") {
+            if (that.labelElement()===undefined || this.type()==="owl:disjointWith" || this.type()==="rdfs:subClassOf" || this.type() === Global.HAS_FEATURE.name) {
                 console.log("No Container found");
                 return;
             }
