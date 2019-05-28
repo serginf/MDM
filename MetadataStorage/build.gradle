@@ -30,10 +30,10 @@ shadowJar {
     classifier = null
     version = null
     manifest {
-        //attributes 'Main-Class': 'eu.supersede.mdm.storage.ApacheMain'
+        attributes 'Main-Class': 'eu.supersede.mdm.storage.ApacheMain'
 
         //For experiments
-        attributes 'Main-Class': 'eu.supersede.mdm.storage.tests.SIGMOD.ExperimentsRunner'
+        //attributes 'Main-Class': 'eu.supersede.mdm.storage.tests.SIGMOD.ExperimentsRunner'
     }
     append 'META-INF/services/org.apache.jena.system.JenaSubsystemLifecycle'
 }
