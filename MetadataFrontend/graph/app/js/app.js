@@ -197,7 +197,8 @@ module.exports = function () {
 			var defZoom;
 			var w = graph.options().width();
 			var h = graph.options().height();
-			defZoom = Math.min(w, h) / 1000;
+			// defZoom = Math.min(w, h) / 1000;
+            defZoom = Math.min(w, h) / 860;
 
             var hideDebugOptions = true;
             if (hideDebugOptions === false) {
@@ -250,7 +251,7 @@ module.exports = function () {
             options.prefixModule(webvowl.util.prefixTools(graph));
             adjustSize();
             sidebar.updateOntologyInformation(undefined, statistics);
-            if(options.defaultConfig().OMQ_mode !== "true") //In case of true, omq module will execute the load.
+            if(options.defaultConfig().OMQ_mode !== "true") //In case of true, omq module will execute automatically the load.
 			    loadingModule.parseUrlAndLoadOntology(); // loads automatically the ontology provided by the parameters
             if(options.defaultConfig().selectSG_mode === "true")
                 graph.loadGraphicalSelection();
@@ -361,7 +362,7 @@ module.exports = function () {
         //TO DO: add a global option to enable navbar and navbar selector.
         var navbar = d3.select(".navbar");
         if(!navbar.empty()){
-            var dist_nav = parseInt(navbar.style("height"),10);
+            dist_nav = parseInt(navbar.style("height"),10);
             dist_bottom_bar = dist_bottom_bar + dist_nav;
             //padding for gui container
             d3.select(GUI_Container).style("padding-top",dist_nav+"px");
@@ -381,7 +382,8 @@ module.exports = function () {
 
         directInputMod.updateLayout();
         d3.select("#blockGraphInteractions").style("width",window.innerWidth+"px");
-        d3.select("#blockGraphInteractions").style("height",window.innerHeight+"px");
+        d3.select("#blockGraphInteractions").style("height",height+"px");
+        d3.select("#blockGraphInteractions").style("padding-top",dist_nav+"px");
 
         d3.select("#WarningErrorMessagesContainer").style("width",width+"px");
         d3.select("#WarningErrorMessagesContainer").style("height",height+"px");

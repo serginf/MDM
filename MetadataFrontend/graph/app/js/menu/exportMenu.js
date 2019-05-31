@@ -632,71 +632,77 @@ module.exports = function (graph) {
             }
         }
         /** create the variable for settings and set their values **/
-        exportText.settings = {};
+        // disable for MDM
+        if(!graph.options().MDM()){
+            exportText.settings = {};
 
-        // Global Settings
-        var zoom = graph.scaleFactor();
-        var paused = graph.paused();
-        var translation =[parseFloat(graph.translation()[0].toFixed(2)),parseFloat(graph.translation()[1].toFixed(2))];
-        exportText.settings.global = {};
-        exportText.settings.global.zoom = zoom.toFixed(2);
-        exportText.settings.global.translation = translation;
-        exportText.settings.global.paused = paused;
+            // Global Settings
+            var zoom = graph.scaleFactor();
+            var paused = graph.paused();
+            var translation =[parseFloat(graph.translation()[0].toFixed(2)),parseFloat(graph.translation()[1].toFixed(2))];
+            exportText.settings.global = {};
+            exportText.settings.global.zoom = zoom.toFixed(2);
+            exportText.settings.global.translation = translation;
+            exportText.settings.global.paused = paused;
 
-        // shared variable declaration
-        var cb_text;
-        var isEnabled;
-        var cb_obj;
+            // shared variable declaration
+            var cb_text;
+            var isEnabled;
+            var cb_obj;
 
-        // Gravity Settings
-        var classDistance = graph.options().classDistance();
-        var datatypeDistance = graph.options().datatypeDistance();
-        exportText.settings.gravity = {};
-        exportText.settings.gravity.classDistance = classDistance;
-        exportText.settings.gravity.datatypeDistance = datatypeDistance;
+            // Gravity Settings
+            var classDistance = graph.options().classDistance();
+            var datatypeDistance = graph.options().datatypeDistance();
+            exportText.settings.gravity = {};
+            exportText.settings.gravity.classDistance = classDistance;
+            exportText.settings.gravity.datatypeDistance = datatypeDistance;
 
-        // Filter Settings
-        var fMenu = graph.options().filterMenu();
-        var fContainer = fMenu.getCheckBoxContainer();
-        var cbCont = [];
-        for (i = 0; i < fContainer.length; i++) {
-            cb_text = fContainer[i].checkbox.attr("id");
-            isEnabled = fContainer[i].checkbox.property("checked");
-            cb_obj = {};
-            cb_obj.id = cb_text;
-            cb_obj.checked = isEnabled;
-            cbCont.push(cb_obj);
+            // Filter Settings
+            var fMenu = graph.options().filterMenu();
+            var fContainer = fMenu.getCheckBoxContainer();
+            var cbCont = [];
+            for (i = 0; i < fContainer.length; i++) {
+                cb_text = fContainer[i].checkbox.attr("id");
+                isEnabled = fContainer[i].checkbox.property("checked");
+                cb_obj = {};
+                cb_obj.id = cb_text;
+                cb_obj.checked = isEnabled;
+                cbCont.push(cb_obj);
+            }
+            var degreeSliderVal = fMenu.getDegreeSliderValue();
+            exportText.settings.filter = {};
+            exportText.settings.filter.checkBox = cbCont;
+            exportText.settings.filter.degreeSliderValue = degreeSliderVal;
+
+            // Modes Settings
+            var mMenu = graph.options().modeMenu();
+            var mContainer = mMenu.getCheckBoxContainer();
+            var cb_modes = [];
+            for (i = 0; i < mContainer.length; i++) {
+                cb_text = mContainer[i].attr("id");
+                isEnabled = mContainer[i].property("checked");
+                cb_obj = {};
+                cb_obj.id = cb_text;
+                cb_obj.checked = isEnabled;
+                cb_modes.push(cb_obj);
+            }
+            var colorSwitchState = mMenu.colorModeState();
+            exportText.settings.modes = {};
+            exportText.settings.modes.checkBox = cb_modes;
+            exportText.settings.modes.colorSwitchState = colorSwitchState;
+
+
         }
-        var degreeSliderVal = fMenu.getDegreeSliderValue();
-        exportText.settings.filter = {};
-        exportText.settings.filter.checkBox = cbCont;
-        exportText.settings.filter.degreeSliderValue = degreeSliderVal;
-
-        // Modes Settings
-        var mMenu = graph.options().modeMenu();
-        var mContainer = mMenu.getCheckBoxContainer();
-        var cb_modes = [];
-        for (i = 0; i < mContainer.length; i++) {
-            cb_text = mContainer[i].attr("id");
-            isEnabled = mContainer[i].property("checked");
-            cb_obj = {};
-            cb_obj.id = cb_text;
-            cb_obj.checked = isEnabled;
-            cb_modes.push(cb_obj);
-        }
-        var colorSwitchState = mMenu.colorModeState();
-        exportText.settings.modes = {};
-        exportText.settings.modes.checkBox = cb_modes;
-        exportText.settings.modes.colorSwitchState = colorSwitchState;
 
         var exportObj = {};
         // todo: [ ] find better way for ordering the objects
         // hack for ordering of objects, so settings is after metrics
-        exportObj._comment = exportText._comment;
+        // exportObj._comment = exportText._comment;
         exportObj.header = exportText.header;
         exportObj.namespace = exportText.namespace;
         exportObj.metrics = exportText.metrics;
-        exportObj.settings = exportText.settings;
+        if(!graph.options().MDM())
+            exportObj.settings = exportText.settings;
         exportObj.class = exportText.class;
         exportObj.classAttribute = exportText.classAttribute;
         exportObj.property = exportText.property;

@@ -1,5 +1,5 @@
 {
-  "_comment" : "Empty ontology for WebVOWL Editor",
+  "_comment" : "Empty ontology for MDM Editor",
   "header" : {
     "languages" : [ "en" ],
     "baseIris" : [ "http://www.w3.org/2000/01/rdf-schema"],

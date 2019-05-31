@@ -2679,6 +2679,8 @@ module.exports = function (graphContainerSelector) {
         if (graph.options().leftSidebar().isSidebarVisible()===true)
             w-=200;
         var h = graph.options().height();
+        if(graph.options().MDM())
+            h+=120; //to consider navspace
         topLeft.x  += bboxOffset;
         topLeft.y  -= bboxOffset;
         botRight.x -= bboxOffset;
@@ -2705,6 +2707,10 @@ module.exports = function (graphContainerSelector) {
         if (a<b)  newZoomFactor = a;
         else      newZoomFactor = b;
 
+        //make scale graph smaller
+        if(force.nodes().length<15 && newZoomFactor > 1){
+            newZoomFactor -= (0.015 * force.nodes().length);
+        }
 
         // fail saves
         if ( newZoomFactor > zoom.scaleExtent()[1] ) {
