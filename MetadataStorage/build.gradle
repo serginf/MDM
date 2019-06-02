@@ -3,15 +3,6 @@
  * by 'snadal' at '11/10/16 10:22 AM' with Gradle 2.10
  */
 
-apply plugin: 'idea'
-apply plugin: 'java'
-apply plugin: 'maven'
-
-repositories {
-    mavenCentral()
-    jcenter()
-}
-
 buildscript {
     repositories {
         mavenCentral()
@@ -21,6 +12,19 @@ buildscript {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
     }
 }
+
+plugins {
+    id "org.sonarqube" version "2.7"
+}
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'maven'
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
@@ -98,5 +102,9 @@ dependencies {
     compile files('lib/sqlite4java-392/sqlite4java.jar')
     
     compile group: 'io.swagger', name: 'swagger-jersey2-jaxrs', version: '1.5.22'
+//    Powermock
+    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.4'
+    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.4'
+    testCompile group: 'org.powermock', name: 'powermock-core', version: '1.7.4'
 
 }
