@@ -1,5 +1,7 @@
 package eu.supersede.mdm.storage.util;
 
+import org.apache.jena.query.ResultSet;
+
 public class ServiceUtils {
 
 
@@ -27,5 +29,35 @@ public class ServiceUtils {
         // Look and update triples where oldIRI is subject.
         RDFUtil.runAnUpdateQuery("WITH <"+graphIRI+">  DELETE {<"+oldIRI+"> ?p ?o} " +
                 "INSERT {<"+newIRI+"> ?p ?o} WHERE {  <"+oldIRI+"> ?p ?o }");
+    }
+
+    public static void deleteTriplesSubject(String graphIRI, String subjectIRI){
+        RDFUtil.runAnUpdateQuery("DELETE WHERE { GRAPH <" + graphIRI + ">" +
+                " {<"+subjectIRI+"> ?p ?o} }");
+    }
+
+    public static void deleteTriplesObject(String graphIRI, String objectIRI){
+        RDFUtil.runAnUpdateQuery("DELETE WHERE { GRAPH <" + graphIRI + ">" +
+                " {?s ?p <"+objectIRI+"> } }");
+    }
+
+    public static void deleteTriplesProperty(String graphIRI,String subjectIRI, String predicateIRI, String objectIRI){
+        RDFUtil.runAnUpdateQuery("DELETE WHERE { GRAPH <" + graphIRI + ">" +
+                " {<"+subjectIRI+"> <"+predicateIRI+"> <"+objectIRI+">} }");
+    }
+
+    public static ResultSet getTriplesSubject(String graphIRI, String subjectIRI){
+        return RDFUtil.runAQuery("SELECT DISTINCT ?p ?o WHERE { GRAPH <" + graphIRI + "> " +
+                "{<"+subjectIRI+"> ?p ?o} }",graphIRI);
+    }
+
+    public static ResultSet getTriplesObject(String graphIRI, String objectIRI){
+        return RDFUtil.runAQuery("SELECT DISTINCT ?p ?o WHERE { GRAPH <" + graphIRI + ">" +
+                " {?s ?p <"+objectIRI+"> } }",graphIRI);
+    }
+
+    public static ResultSet countTriples(String graphIRI, String subjectIRI, String predicateIRI, String objectIRI){
+        return RDFUtil.runAQuery("SELECT (COUNT(*) AS ?count) WHERE { GRAPH <" + graphIRI + "> " +
+                "{<"+subjectIRI+"> <"+predicateIRI+"> <"+objectIRI+">} }",graphIRI);
     }
 }

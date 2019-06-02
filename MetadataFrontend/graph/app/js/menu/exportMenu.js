@@ -582,12 +582,12 @@ module.exports = function (graph) {
         // var jsonObj = JSON.parse(exportableJsonText);	   // reparse the original input json
 
         /** modify comment **/
-        var comment = exportText._comment;
-        var additionalString = " [Additional Information added by WebVOWL Exporter Version: " + "@@WEBVOWL_VERSION" + "]";
-        // adding new string to comment only if it does not exist
-        if (comment.indexOf(additionalString) === -1) {
-            exportText._comment = comment + " [Additional Information added by WebVOWL Exporter Version: " + "@@WEBVOWL_VERSION" + "]";
-        }
+        // var comment = exportText._comment;
+        // var additionalString = " [Additional Information added by WebVOWL Exporter Version: " + "@@WEBVOWL_VERSION" + "]";
+        // // adding new string to comment only if it does not exist
+        // if (comment.indexOf(additionalString) === -1) {
+        //     exportText._comment = comment + " [Additional Information added by WebVOWL Exporter Version: " + "@@WEBVOWL_VERSION" + "]";
+        // }
 
         var classAttribute = exportText.classAttribute;
         var propAttribute = exportText.propertyAttribute;

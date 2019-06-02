@@ -1595,7 +1595,7 @@ module.exports = function (graphContainerSelector) {
             });
             if(flag)
                 if(!connectivity.isConnected(selectionGraph.all(),labs)){
-                    graph.options().alertModule().showAlert("Warning","Graph need to be convex",1);
+                    graph.options().alertModule().showAlert("Warning","Graph need to be convex");
                     graph.clearSelectionSubGraph();
                     updateNodesForSG();
                 }
@@ -3613,57 +3613,101 @@ module.exports = function (graphContainerSelector) {
                 }
             }
         }
-        var removedItems=propsToRemove.length+nodesToRemove.length;
-        if (removedItems>2){
-            var text="You are about to delete 1 class and "+propsToRemove.length+ " properties";
-            if (datatypes!==0){
-                 text="You are about to delete 1 class, "+datatypes+" datatypes  and "+propsToRemove.length+ " properties";
+
+        console.log("deleting: "+node.iri());
+        var dataDelNode = new Object();
+        dataDelNode.iri = node.iri();
+        $.ajax({
+            type: "DELETE",
+            url: '/globalGraph/'+encodeURIComponent(graph.options().loadingModule().currentGlobalGraph().namedGraph)+'/node',
+            data: dataDelNode,
+            success: function(data) {
+                console.log(data)
+                console.log("successful deletion")
+                graph.removeNodesViaResponse(nodesToRemove,propsToRemove);
+                graph.options().saveGraphMenu().saveGraphicalGraph();
+                graph.options().alertModule().showAlert("Information","Delete successfully");
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log("error deletion: "+xhr.status);
+                alert("Node cannot be deleted, it is used in mappings");
             }
-
-
-            graph.options().warningModule().responseWarning(
-                "Removing elements",
-                text,
-                "Awaiting response!",graph.removeNodesViaResponse,[nodesToRemove,propsToRemove],false);
-
-
-
-            //
-            // if (confirm("Remove :\n"+propsToRemove.length + " properties\n"+nodesToRemove.length+" classes? ")===false){
-            //     return;
-            // }else{
-            //     // todo : store for undo delete button ;
-            // }
-        }else{
-            // splice them;
-            for (i = 0; i < propsToRemove.length; i++) {
-                remId=unfilteredData.properties.indexOf(propsToRemove[i]);
-                if (remId!==-1)
-                    unfilteredData.properties.splice(remId, 1);
-                remId=properties.indexOf(propsToRemove[i]);
-                if (remId!==-1)
-                    properties.splice(remId, 1);
-                propsToRemove[i]=null;
-            }
-            for (i = 0; i < nodesToRemove.length; i++) {
-                remId=unfilteredData.nodes.indexOf(nodesToRemove[i]);
-                if (remId!==-1)
-                    unfilteredData.nodes.splice(remId, 1);
-                remId=classNodes.indexOf(nodesToRemove[i]);
-                if (remId!==-1)
-                    classNodes.splice(remId, 1);
-                nodesToRemove[i]=null;
-            }
-            graph.fastUpdate();
-            generateDictionary(unfilteredData);
-            graph.getUpdateDictionary();
-            options.focuserModule().handle(undefined);
-            nodesToRemove=null;
-            propsToRemove=null;
-        }
+        });
+        // var removedItems=propsToRemove.length+nodesToRemove.length;
+        // if (removedItems>2){
+        //     var text="You are about to delete 1 class and "+propsToRemove.length+ " properties";
+        //     if (datatypes!==0){
+        //          text="You are about to delete 1 class, "+datatypes+" datatypes  and "+propsToRemove.length+ " properties";
+        //     }
+        //
+        //
+        //     graph.options().warningModule().responseWarning(
+        //         "Removing elements",
+        //         text,
+        //         "Awaiting response!",graph.removeNodesViaResponse,[nodesToRemove,propsToRemove],false);
+        //
+        //     //
+        //     // if (confirm("Remove :\n"+propsToRemove.length + " properties\n"+nodesToRemove.length+" classes? ")===false){
+        //     //     return;
+        //     // }else{
+        //     //     // todo : store for undo delete button ;
+        //     // }
+        // }else{
+        //     // splice them;
+        //     for (i = 0; i < propsToRemove.length; i++) {
+        //         remId=unfilteredData.properties.indexOf(propsToRemove[i]);
+        //         if (remId!==-1)
+        //             unfilteredData.properties.splice(remId, 1);
+        //         remId=properties.indexOf(propsToRemove[i]);
+        //         if (remId!==-1)
+        //             properties.splice(remId, 1);
+        //         propsToRemove[i]=null;
+        //     }
+        //     for (i = 0; i < nodesToRemove.length; i++) {
+        //         remId=unfilteredData.nodes.indexOf(nodesToRemove[i]);
+        //         if (remId!==-1)
+        //             unfilteredData.nodes.splice(remId, 1);
+        //         remId=classNodes.indexOf(nodesToRemove[i]);
+        //         if (remId!==-1)
+        //             classNodes.splice(remId, 1);
+        //         nodesToRemove[i]=null;
+        //     }
+        //     graph.fastUpdate();
+        //     generateDictionary(unfilteredData);
+        //     graph.getUpdateDictionary();
+        //     options.focuserModule().handle(undefined);
+        //     nodesToRemove=null;
+        //     propsToRemove=null;
+        // }
     };
 
     graph.removePropertyViaEditor = function (property) {
+        console.log("deleting property: "+property.iri());
+        var dataDelProperty = new Object();
+        dataDelProperty.sIRI = property.domain().iri();
+        dataDelProperty.pIRI = property.iri();
+        dataDelProperty.oIRI = property.range().iri();
+
+        $.ajax({
+            type: "DELETE",
+            url: '/globalGraph/'+encodeURIComponent(graph.options().loadingModule().currentGlobalGraph().namedGraph)+'/property',
+            data: dataDelProperty,
+            success: function(data) {
+                console.log(data)
+                console.log("successful deletion")
+                graph.removePropertyViaResponse(property);
+                graph.options().saveGraphMenu().saveGraphicalGraph();
+                graph.options().alertModule().showAlert("Information","Delete successfully");
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log("error deletion: "+xhr.status);
+                alert("Property cannot be deleted, it is used in mappings");
+            }
+        });
+
+    };
+
+    graph.removePropertyViaResponse = function(property){
         property.domain().removePropertyElement(property);
         property.range().removePropertyElement(property);
         var remId;
@@ -3697,7 +3741,7 @@ module.exports = function (graphContainerSelector) {
         graph.getUpdateDictionary();
         options.focuserModule().handle(undefined);
         property=null;
-    };
+    }
 
     graph.executeColorExternalsModule=function(){
         options.colorExternalsModule().filter(unfilteredData.nodes,unfilteredData.properties);

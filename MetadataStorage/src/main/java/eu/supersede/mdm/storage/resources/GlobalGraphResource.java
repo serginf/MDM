@@ -6,6 +6,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
+import eu.supersede.mdm.storage.service.impl.DeleteGlobalGraphServiceImpl;
 import eu.supersede.mdm.storage.service.impl.UpdateGlobalGraphServiceImpl;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
@@ -192,6 +193,55 @@ public class GlobalGraphResource {
         client.close();
         return Response.ok().build();
     }
+
+    @ApiOperation(value = "Delete a node from the global graph",consumes = MediaType.TEXT_PLAIN)
+    @ApiResponses(value ={
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 409, message = "node cannot be deleted")})
+    @DELETE @Path("globalGraph/{namedGraph}/node")
+    @Consumes("text/plain")
+    public Response DELETE_nodeGlobalGraph(@PathParam("namedGraph") String namedGraph, String body) {
+        LOGGER.info("[DELETE /globalGraph/ "+namedGraph+" /node");
+
+        DeleteGlobalGraphServiceImpl del = new DeleteGlobalGraphServiceImpl();
+        JSONObject objBody = (JSONObject) JSONValue.parse(body);
+        del.deleteNode(namedGraph,objBody.getAsString("iri"));
+        return Response.ok().build();
+    }
+
+    @ApiOperation(value = "Delete a property from the global graph",consumes = MediaType.TEXT_PLAIN)
+    @ApiResponses(value ={
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 409, message = "node cannot be deleted")})
+    @DELETE @Path("globalGraph/{namedGraph}/property")
+    @Consumes("text/plain")
+    public Response DELETE_propertyGlobalGraph(@PathParam("namedGraph") String namedGraph, String body) {
+        LOGGER.info("[DELETE /globalGraph/ "+namedGraph+" /property");
+
+        DeleteGlobalGraphServiceImpl del = new DeleteGlobalGraphServiceImpl();
+        JSONObject objBody = (JSONObject) JSONValue.parse(body);
+        del.deleteProperty(namedGraph,objBody.getAsString("sIRI"),objBody.getAsString("pIRI"),objBody.getAsString("oIRI"));
+        return Response.ok().build();
+    }
+
+//    @ApiOperation(value = "Delete property from the global graph",consumes = MediaType.TEXT_PLAIN)
+//    @ApiResponses(value ={
+//            @ApiResponse(code = 200, message = "OK"),
+//            @ApiResponse(code = 409, message = "property cannot be deleted")})
+//    @DELETE @Path("globalGraph/{globalGraphID}/property")
+//    @Consumes("text/plain")
+//    public Response DELETE_propertyGlobalGraph(@PathParam("globalGraphID") String globalGraphID, String body) {
+//        LOGGER.info("[DELETE /globalGraph/"+globalGraphID+"/property");
+//        validator.validateGraphicalGraphBody(body,"POST /globalGraph/"+globalGraphID+"/graphicalGraph");
+//        MongoClient client = Utils.getMongoDBClient();
+//        MongoCollection<Document> globalGraphCollection = MongoCollections.getGlobalGraphCollection(client);
+//        globalGraphCollection.findOneAndUpdate(
+//                new Document().append("globalGraphID",globalGraphID),
+//                new Document().append("$set", new Document().append("graphicalGraph",body))
+//        );
+//        client.close();
+//        return Response.ok().build();
+//    }
 
 /*
     @POST

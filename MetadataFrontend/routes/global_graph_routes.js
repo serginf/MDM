@@ -117,6 +117,30 @@ exports.postTTL = function (req, res, next) {
     });
 };
 
+exports.deleteNode = function (req, res, next) {
+    request.delete({
+        url: config.METADATA_DATA_LAYER_URL + "globalGraph/"+encodeURIComponent(req.params.namedGraph)+"/node",
+        body: JSON.stringify(req.body)
+    }, function done(err, results) {
+        if(results.statusCode == 409)
+            res.status(409).json("cannot delete");
+        else
+            res.status(200).json("ok");
+    });
+};
+
+exports.deleteProperty = function (req, res, next) {
+    request.delete({
+        url: config.METADATA_DATA_LAYER_URL + "globalGraph/"+encodeURIComponent(req.params.namedGraph)+"/property",
+        body: JSON.stringify(req.body)
+    }, function done(err, results) {
+        if(results.statusCode == 409)
+            res.status(409).json("cannot delete");
+        else
+            res.status(200).json("ok");
+    });
+};
+
 exports.postSparQLQuery = function (req, res) {
     var query = req.body;
     request.post({

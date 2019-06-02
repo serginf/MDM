@@ -109,6 +109,9 @@ app.post('/globalGraph', global_graph_routes.postGlobalGraph);
 //app.post('/globalGraph/:namedGraph/triple', global_graph_routes.postTriple);
 app.post('/globalGraph/:globalGraphID/graphicalGraph', global_graph_routes.postGraphicalGraph);
 app.post('/globalGraph/:namedGraph/TTL', global_graph_routes.postTTL);
+
+app.delete('/globalGraph/:namedGraph/node', global_graph_routes.deleteNode);
+app.delete('/globalGraph/:namedGraph/property', global_graph_routes.deleteProperty);
 /********** Data Source resource ********************************************************/
 
 app.get('/dataSource/', data_source_routes.getAllDataSources);

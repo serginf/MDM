@@ -29,7 +29,7 @@ module.exports = function (graph) {
                         success: function(data) {
                             console.log("success");
                             graph.resetOriginalLabels();
-                            graph.options().alertModule().showAlert("Information","Graph saved",1);
+                            graph.options().alertModule().showAlert("Information","Graph saved");
                         }
                     });
                 } else if(config.selectSG_mode === "true"){
@@ -42,11 +42,21 @@ module.exports = function (graph) {
                         type: 'POST',
                         data: subGraph,
                         success: function(data) {
-                            graph.options().alertModule().showAlert("Information","Mappings saved",1);
+                            graph.options().alertModule().showAlert("Information","Mappings saved");
                         }
                     });
                 }
             });
+    };
+
+    saveGraphMenu.saveGraphicalGraph = function () {
+        loadingModule=graph.options().loadingModule();
+        exportMenu = graph.options().exportMenu();
+        $.ajax({
+            type: "POST",
+            url: '/globalGraph/'+loadingModule.currentGlobalGraph().globalGraphID+'/graphicalGraph',
+            data: {graphicalGraph: exportMenu.getJson()}
+        });
     };
 
     saveGraphMenu.hide = function (flag) {

@@ -119,7 +119,7 @@ module.exports =  function (graph) {
 
 
 
-    alertModule.showAlert=function(title,msg,type){
+    alertModule.showAlert=function(title,msg){
         var id=alertModule.addMessageBox();
         var AlertContainer=_messageContext[id];
         var moduleContainer=_messageContainers[id];
@@ -153,12 +153,12 @@ module.exports =  function (graph) {
             msgReason.node().innerHTML=msg;
         }
         var gotItButton;
-        if (type===1) {
+
             gotItButton= AlertContainer.append("label");
             gotItButton.node().id = "killAlertMessages_"+id;
             gotItButton.node().innerHTML = "Got It";
             gotItButton.on("click",alertModule.closeMessage);
-        }
+
 
         moduleContainer.classed("hidden",false);
         moduleContainer.style("-webkit-animation-name","warn_ExpandAnimation");

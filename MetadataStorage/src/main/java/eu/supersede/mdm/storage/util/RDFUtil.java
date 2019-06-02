@@ -30,6 +30,7 @@ public class RDFUtil {
         graph.commit();
         graph.close();
         ds.commit();
+        ds.end();
         ds.close();
     }
 
@@ -41,6 +42,7 @@ public class RDFUtil {
         graph.commit();
         graph.close();
         ds.commit();
+        ds.end();
         ds.close();
     }
 
@@ -52,6 +54,7 @@ public class RDFUtil {
         graph.commit();
         graph.close();
         ds.commit();
+        ds.end();
         ds.close();
     }
 
@@ -66,6 +69,7 @@ public class RDFUtil {
         graph.commit();
         graph.close();
         ds.commit();
+        ds.end();
         ds.close();
     }
 
@@ -76,10 +80,14 @@ public class RDFUtil {
         try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), ds)) {
             ResultSetRewindable results = ResultSetFactory.copyResults(qExec.execSelect());
             qExec.close();
+            ds.end();
+            ds.close();
             return results;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        ds.end();
+        ds.close();
         return null;
     }
 
@@ -92,6 +100,7 @@ public class RDFUtil {
             e.printStackTrace();
         }
         ds.commit();
+        ds.end();
         ds.close();
     }
 
@@ -150,6 +159,7 @@ public class RDFUtil {
         }
 
         graph.close();
+        ds.end();
         ds.close();
 
         return content;
