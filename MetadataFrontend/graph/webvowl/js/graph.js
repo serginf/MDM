@@ -24,6 +24,7 @@ module.exports = function (graphContainerSelector) {
         parser = require("./parser")(graph),
         language = "default",
         paused = false,
+        newElementID = "@{@-+NewElement+-@}@", //use to identify new nodes with originalLabel()
         // Container for visual elements
         graphContainer,
         nodeContainer,
@@ -1434,32 +1435,56 @@ module.exports = function (graphContainerSelector) {
         data.isModified = false;
         data.nodes = [];
         data.properties = [];
+        data.new = []; //for new nodes and properties
         //if currentGlobalGraph not contains graphicalGraph, ontology is new. So we don't check for changes.
         if(graph.options().loadingModule().currentGlobalGraph().graphicalGraph){
 
             classNodes.forEach(function (node)  {
-                if(node.originalLabel()){
+                if(node.originalLabel() && node.originalLabel() != newElementID){
                     console.log("node modified");
                     var n  = new Object();
                     n.old = node.baseIri()+node.originalLabel();
                     n.new = node.iri();
                     data.nodes.push(n);
+                }else if(node.originalLabel() == newElementID){
+                    var triples  = new Object();
+                    triples.s = node.iri();
+                    triples.p = Namespaces.rdf+"type";
+                    triples.o = node.iriType();
+                    data.new.push(triples);
+                    if(node.type() === Global.FEATURE_ID.name){
+                        var triples  = new Object();
+                        triples.s = node.iri();
+                        triples.p = Namespaces.rdfs+"subClassOf";
+                        triples.o = Namespaces.sc+"identifier";
+                        data.new.push(triples);
+                    }
                 }
             });
 
             labelNodes.forEach(function (label)  {
                 //just has_relation properties can change.
-                if(label.property().originalLabel() && label.property().iriType() === Global.HAS_RELATION.iri){
+                if(label.property().originalLabel() && label.property().originalLabel() != newElementID
+                    && label.property().iriType() === Global.HAS_RELATION.iri){
                     var n  = new Object();
                     n.s = label.link().domain().iri();
                     n.o = label.link().range().iri();
                     n.pOld = label.property().baseIri()+ label.property().originalLabel();
                     n.pNew = label.property().iri();
                     data.properties.push(n);
+                }else if(label.property().originalLabel() == newElementID){
+                    var triples  = new Object();
+                    triples.s = label.link().domain().iri();
+                    if(label.property().iriType() === Global.HAS_RELATION.iri)
+                        triples.p = label.property().iri();
+                    else
+                        triples.p = label.property().iriType();
+                    triples.o = label.link().range().iri();
+                    data.new.push(triples);
                 }
             });
 
-            if(data.nodes.length || data.properties.length )
+            if(data.nodes.length || data.properties.length || data.new.length )
                 data.isModified = true;
         }
         return data;
@@ -3080,9 +3105,11 @@ module.exports = function (graphContainerSelector) {
         var autoEditElement=false;
         if (typeToCreate==="owl:Thing") {
             aNode.label("Thing");
+            aNode.originalLabel(newElementID);
         }
         else{
             aNode.label("NewClass");
+            aNode.originalLabel(newElementID);
             autoEditElement=true;
         }
         aNode.x = pos.x;
@@ -3388,6 +3415,7 @@ module.exports = function (graphContainerSelector) {
         var propPrototype=PropertyPrototypeMap.get(defaultPropertyName.toLowerCase());
         var aProp= new propPrototype(graph);
         aProp.id("objectProperty"+eP++);
+        aProp.originalLabel(newElementID);
         aProp.domain(domain);
         aProp.range(range);
 

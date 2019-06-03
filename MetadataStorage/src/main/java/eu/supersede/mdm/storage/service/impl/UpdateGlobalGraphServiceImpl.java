@@ -53,6 +53,17 @@ public class UpdateGlobalGraphServiceImpl {
       });
     }
 
+    if(changes.containsKey("new")){
+      ((JSONArray)changes.get("new")).forEach(selectedElement -> {
+        JSONObject objSelectedElement = (JSONObject)selectedElement;
+        String sIRI = objSelectedElement.getAsString("s");
+        String pIRI = objSelectedElement.getAsString("p");
+        String oIRI = objSelectedElement.getAsString("o");
+
+        RDFUtil.addTriple(namedGraph,sIRI,pIRI,oIRI);
+      });
+    }
+
     return null;
   }
 
