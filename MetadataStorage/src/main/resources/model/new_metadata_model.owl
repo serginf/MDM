@@ -1,0 +1,297 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.BDIOntology.com/source#"
+     xml:base="http://www.BDIOntology.com/source"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.BDIOntology.com/source"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // RDFS Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.BDIOntology.com/source#hasArray -->
+
+    <owl:ObjectProperty rdf:about="http://www.BDIOntology.com/source#hasArray">
+        <rdfs:subPropertyOf rdf:resource="http://www.BDIOntology.com/source#RDFSMember"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#hasProperty -->
+
+    <owl:ObjectProperty rdf:about="http://www.BDIOntology.com/source#hasProperty">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://www.BDIOntology.com/source#RDFSResource"/>
+        <rdfs:domain rdf:resource="http://www.BDIOntology.com/source#RDFSCMP"/>
+        <rdfs:range rdf:resource="http://www.BDIOntology.com/source#Attribute"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#RDFSMember -->
+
+    <owl:ObjectProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#RDFSMember">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://www.BDIOntology.com/source#RDFSResource"/>
+        <rdfs:domain rdf:resource="http://www.BDIOntology.com/source#RDFSCMP"/>
+        <rdfs:range rdf:resource="http://www.BDIOntology.com/source#RDFSContainer"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#RDFSRange -->
+
+    <owl:ObjectProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#range">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#RDFProperty"/>
+        <rdfs:domain rdf:resource="http://www.BDIOntology.com/source#RDFSCMP"/>
+        <rdfs:range rdf:resource="http://www.BDIOntology.com/source#DataType"/>
+    </owl:ObjectProperty>
+    
+    <!-- http://www.BDIOntology.com/source#RDFSDomain -->
+
+    <owl:ObjectProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#domain">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#RDFProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#hasMember -->
+
+    <owl:ObjectProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#hasMember">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://www.BDIOntology.com/source#RDFSContainer"/>
+        <rdfs:range rdf:resource="http://www.BDIOntology.com/source#RDFSCMP"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#RDFSSubClassOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#RDFSSubClassOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        
+        <rdfs:domain rdf:resource="http://www.BDIOntology.com/source#RDFSCMP"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#hasLiteral -->
+
+    <owl:ObjectProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#hasLiteral">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#range"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#hasNumber -->
+
+    <owl:ObjectProperty rdf:about="^^http://www.w3.org/2001/XMLSchema#integer">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#range"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#hasReferencedObject -->
+
+    <owl:ObjectProperty rdf:about="http://www.BDIOntology.com/source#hasReferencedObject">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#hasSet -->
+
+    <owl:ObjectProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#hasSet">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#RDFSMember"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#hasString -->
+
+    <owl:ObjectProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#hasString">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#range"/>
+    </owl:ObjectProperty>
+     <!--
+<owl:ObjectProperty rdf:about="^^http://www.w3.org/2001/XMLSchema#string">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#range"/>
+    </owl:ObjectProperty>
+    
+    <owl:Class rdf:about="http://www.w3.org/2001/XMLSchema#string/>
+    <owl:Class rdf:about="http://www.w3.org/2001/XMLSchema#integer/>
+  
+    <owl:Class rdf:about="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:Class rdf:about="http://www.w3.org/2001/XMLSchema#integer"/>
+      -->
+ <!--
+<owl:ObjectProperty rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#type">
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+ </owl:ObjectProperty>
+ 
+
+ 
+ ^^<http://www.w3.org/2001/XMLSchema#string
+ ^^xsd:string
+ xsd:integer
+ xsd:decimal
+  
+
+
+<owl:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#string"/>
+<owl:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#integer"/>
+<owl:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#decimal"/>
+<owl:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#date"/>
+<owl:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#boolean"/>
+-->
+
+<owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Datatype">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+</owl:Class>
+
+<owl:Class rdf:about="http://www.w3.org/2001/XMLSchema#string">
+        <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+</owl:Class>
+
+<owl:Class rdf:about="http://www.w3.org/2001/XMLSchema#integer">
+        <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+</owl:Class>
+
+<owl:Class rdf:about="http://www.w3.org/2001/XMLSchema#decimal">
+        <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+</owl:Class>
+<owl:Class rdf:about="http://www.w3.org/2001/XMLSchema#date">
+        <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+</owl:Class>
+<owl:Class rdf:about="http://www.w3.org/2001/XMLSchema#boolean">
+        <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+</owl:Class>
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // RDFS Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+     <!--
+<owl:Class rdf:about="#Resource">
+ <rdf:type resource="#Class"/>
+ </owl:Class>
+
+<owl:Class rdf:about="Class">
+  <rdf:type resource="#Class"/>
+  <rdfs:subClassOf rdf:resource="#Resource"/>
+</owl:Class>
+
+<owl:Class rdf:about="Property">
+  <rdfs:subClassOf rdf:resource="#Resource"/>
+  <rdf:type resource="#Class"/>
+
+</owl:Class>
+  -->
+    <!-- http://www.BDIOntology.com/source#RDFSResource -->
+
+    <owl:Class rdf:about="http://www.BDIOntology.com/source#RDFSResource"/>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#RDFSeq -->
+
+    <owl:Class rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Container"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#Attribute -->
+
+    <owl:Class rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#RDFSContainer -->
+
+    <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Container"/>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#RDFSCMP -->
+
+    <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#ContainerMembershipProperty">
+       <rdfs:subClassOf rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+     </owl:Class>
+
+
+    <!-- http://www.BDIOntology.com/source#DataType -->
+
+    <owl:Class rdf:about="http://www.BDIOntology.com/source#DataType"/>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#Literal -->
+
+    <owl:Class rdf:about="http://www.BDIOntology.com/source#Literal">
+        <rdfs:subClassOf rdf:resource="http://www.BDIOntology.com/source#DataType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#Number -->
+
+    <owl:Class rdf:about="http://www.BDIOntology.com/source#Number">
+        <rdfs:subClassOf rdf:resource="http://www.BDIOntology.com/source#DataType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#Object -->
+
+    <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Class">
+        <rdfs:subClassOf rdf:resource="http://www.BDIOntology.com/source#RDFSResource"/>
+    </owl:Class>
+    
+
+ 
+
+
+    <!-- http://www.BDIOntology.com/source#RDFBag -->
+
+    <owl:Class rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Container"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.BDIOntology.com/source#String -->
+
+    <owl:Class rdf:about="http://www.BDIOntology.com/source#String">
+        <rdfs:subClassOf rdf:resource="http://www.BDIOntology.com/source#DataType"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

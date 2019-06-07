@@ -68,7 +68,7 @@ public class ApacheMain {
         beanConfig.setBasePath("/");
         beanConfig.setResourcePackage("eu.supersede.mdm.storage.resources");
         beanConfig.setPrettyPrint(true);
-        beanConfig.setScan(true);
+        //beanConfig.setScan(true);
     }
 
 

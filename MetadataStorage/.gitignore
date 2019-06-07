@@ -27,3 +27,21 @@ classes
 
 BolsterMetadataStorageBolsterMetadataStorage/
 settings.gradle
+
+
+
+Output/*
+Output/logmap/*
+
+# exception to the rule
+!Output/README.md
+!Output/logmap/
+!Output/logmap/README.md
+
+sqlite
+
+out
+out/*
+
+MDM_TDB
+MDM_TDB/*
