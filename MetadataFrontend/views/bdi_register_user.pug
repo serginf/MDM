@@ -1,0 +1,25 @@
+extends bdi_layout_nologin
+block headers
+    script(src='/js/client_register_user.js')
+block content
+    .row.justify-content-center
+        .card.col-6.bs-component.bg-secondary
+            //.col-xs-12.col-sm-8.col-md-4.col-sm-offset-2.col-md-offset-4
+            .text-center
+                h1 BDI
+                .panel.panel-default
+                    .panel-heading
+                        h3.panel-title Please Sign Up
+                    .panel-body
+                        form(method='POST')#userRegisterForm
+                            .form-group
+                                input#username.form-control.input-sm(type='text', name='username', placeholder='Username')
+                            .row
+                                .col-xs-6.col-sm-6.col-md-6
+                                    .form-group
+                                        input#password.form-control.input-sm(type='password', name='password', placeholder='Password')
+                                .col-xs-6.col-sm-6.col-md-6
+                                    .form-group
+                                        input.form-control.input-sm(type='password', name='password_confirmation', placeholder='Confirm Password')
+                            input.btn.btn-info.btn-block(type='submit', value='Register')
+            br

@@ -39,6 +39,12 @@ var source_level_routes = require(__dirname+'/routes/source_level_routes');
 var release_routes = require(__dirname+'/routes/release_routes');
 var admin_routes = require(__dirname+'/routes/admin_routes');
 
+/*************************************** BDI ROUTES ****************************************/
+var bdi_data_source_routes = require(__dirname + '/routes/bdi_data_source_routes');
+var file_upload = require(__dirname + "/routes/bdi_upload_file");
+var trigger_extraction = require(__dirname + "/routes/bdi_trigger_extraction");
+var integrate_data_Sources = require(__dirname + "/routes/bdi_integrate_data_source_route");
+
 /*****************************************************************************************/
 /*****************************************************************************************/
 /*          Server configuration                                                         */
@@ -148,6 +154,25 @@ app.get('/admin/deleteAll', admin_routes.deleteAll);
 app.get('/admin/demoPrepare', admin_routes.demoPrepare);
 
 
+/********** BDI resource *************************************************************/
+
+app.post('/fileupload', file_upload.uploadFile);
+app.post('/triggerExtraction', trigger_extraction.triggerExtraction);
+app.post('/integrateDataSources', integrate_data_Sources.triggerDataSourcesIntegration);
+//app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
+
+app.get('/bdiDataSources/', bdi_data_source_routes.getAllDataSources);
+app.get('/bdiIntegratedDataSources/', bdi_data_source_routes.getAllIntegratedDataSources);
+app.get('/bdiIntegratedDataSources/:integratedDataSourceID', bdi_data_source_routes.getIntegratedDataSource);
+app.get('/bdiDataSource/:dataSourceID', bdi_data_source_routes.getDataSource);
+app.post('/bdiDataSource', bdi_data_source_routes.postDataSource);
+app.get("/deleteDataSource/:ds_id", bdi_data_source_routes.deleteDataSource);
+app.get('/bdiAlignments/:ds1_id&:ds2_id', integrate_data_Sources.getAlignments);
+app.post('/alignmentsAccept', integrate_data_Sources.acceptAlignment);
+app.post('/finishIntegration', integrate_data_Sources.finishIntegration);
+
+
+
 /*****************************************************************************************/
 /*****************************************************************************************/
 /*          Frontend Pages                                                               */
@@ -242,6 +267,23 @@ app.get('/pose_omq', checkAuthenticated, function(req,res) {
     res.render('pose_omq', {user:req.session.passport.user});
 });
 
+/********** BDI Frontend pages ************************************************************/
+
+app.get('/bdi', checkAuthenticated, function (req, res) {
+    res.render('bdi_index', {user: req.session.passport.user});
+});
+
+app.get('/view/:resource_name&:dsn', checkAuthenticated, function (req, res) {
+    /*console.log(req.params);
+    console.log(req.query);*/
+    res.render('bdi_visualization', {user: req.session.passport.user, resource_name : req.params.resource_name, data_source_name : req.params.dsn});
+});
+
+app.get('/integration/:ids1&:ids2&:ds1_name&:ds2_name', checkAuthenticated, function (req, res) {
+    console.log(req.params);
+    console.log(req.query);
+    res.render('bdi_integration', {user: req.session.passport.user, ids1 :req.params.ids1, ids2: req.params.ids2, ds1_name: req.params.ds1_name, ds2_name: req.params.ds2_name });
+});
 
 /**********************************   END   ********************************************/
 

@@ -1,0 +1,136 @@
+extends bdi_layout
+block headers
+    //script(src='/js/bdi_integration_script.js')
+    //script(src='/js/tablesort.js')
+    link(rel='stylesheet', href='/stylesheets/bdi_style.css')
+block content
+    #overlay
+        .cv-spinner
+            span.spinner
+
+    .col-12.card.bg-white.float-left.border-0
+        .row
+            .col-md-12
+                h3(style="color:black")
+                    | Alignments detected for Data Sources
+                    span.dataSourceClass  #{ds1_name}
+                    span  and
+                    span.dataSourceClass  #{ds2_name}
+
+
+        .card.bg-light.mb-3.bg-white
+            .card-header
+                .row
+                    .col-md-12
+                        h5(style="color:black")
+                            | Add new Properties:
+            .card-body
+                form#dataSourceForm(method ="post" enctype="multipart/form-data")
+                    .form-group#subject.col-lg-3.float-left
+                        //label.col-lg-4.col-form-label Subject
+                        .col-lg-12
+                            input#subjectInput.form-control(type='text', placeholder="Subject" name='subjectInput', required='required')
+
+                    .form-group#predicate.col-lg-3.float-left
+                        //label.col-lg-4.col-form-label Predicate
+                        .col-lg-12
+                            input#predicateInput.form-control(type='text', placeholder="Predicate/Property" name='predicateInput', required='required')
+
+                    .form-group#object.col-lg-3.float-left
+                        //label.col-lg-4.col-form-label Object
+                        .col-lg-12
+                            input#objectInput.form-control(type='text', placeholder="Object" name='objectInput', required='required')
+
+                    .form-group#submitTriple.col-lg-3.float-left
+                        //label.col-lg-4.col-form-label S
+                        .col-lg-12
+                            button#submitTriple.btn.btn-default.btn-md.btn-block(type="submit") Submit
+                //button#integrateDataSourcesButton.btn.btn-primary.btn-md.align-center.btn-block.disabled(type="button") Integrate Selected Sources
+
+        .card.bg-light.mb-3.bg-white
+            .card-header
+                .row
+                    .col-md-12
+                        h4(style="color:black")
+                            | Align Classes
+
+            .card-body
+                p(style="color:black")
+                    i.fa.fa-info-circle.badge-margin(aria-hidden='true')
+                    |  Collection Class should only be aligned with a Collection Class. Please pay attention to this
+                    span.badge.badge-warning.badge-margin
+                        i.fa.fa-exclamation-triangle(aria-hidden='true', data-toggle='tooltip', data-placement='top', title='Warning! Collection classes can only be aligned with collection classes.') NOT
+                    |  Warning symbol.
+
+                .row.d-none#GlobalVsLocalRow
+                    .col-md-11
+                        table.table.table-hover.border-0#alignmentsClass
+                            thead
+                                tr
+                                    th #{ds1_name}
+                                    th #{ds2_name}
+                                    th.confidence-td Confidence
+                                    th.accept-reject-buttons Accept
+                                    th.accept-reject-buttons Reject
+
+                            tbody#alignmentsBodyClasses
+                    .col-md-1
+
+                .row.d-none#LocalVsLocalRow
+                    .col-md-12
+                        table.table.table-hover.border-0#localAlignmentsClass
+                            thead
+                                tr
+                                    th  #{ds1_name}
+                                    th  #{ds2_name}
+                                    th.confidence-td Confidence
+                                    th.accept-reject-buttons Accept
+                                    th.accept-reject-buttons Reject
+
+                            tbody#localAlignmentsClassBody
+
+                div#SuperClassNote
+                div#superClass
+
+        .card.bg-light.mb-3.bg-white
+            .card-header
+                .row
+                    .col-md-12
+                        h4(style="color:black")
+                            | Align data Properties
+            .card-body
+                table.table.table-hover#alignments
+                    thead
+                        tr
+                            th #{ds1_name}
+                            th #{ds2_name}
+                            th.confidence-td Confidence
+                            th.accept-reject-buttons Accept
+                            th.accept-reject-buttons Reject
+                    tbody#alignmentsBody
+
+        .card.bg-light.mb-3.bg-white
+            .card-header
+                .row
+                    .col-md-12
+                        h4(style="color:black")
+                            | Align Object Properties
+            .card-body
+                table.table.table-hover#alignmentsObjProp
+                    thead
+                        tr
+                            th #{ds1_name}
+                            th #{ds2_name}
+                            th.confidence-td Confidence
+                            th.accept-reject-buttons Accept
+                            th.accept-reject-buttons Reject
+                    tbody#alignmentsBodyObjectProperties
+
+
+        #divv.text-center
+            button#integratedDataSourcesButton.btn.btn-primary.btn-md.align-center.btn-block(type="button") Finish Integration
+
+        div#footerBottom.text-center
+
+    script(src='/js/bdi_integration_script.js')
+    script(src='/js/tablesort.js')

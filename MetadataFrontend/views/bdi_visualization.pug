@@ -1,0 +1,24 @@
+extends bdi_layout
+block headers
+    script(src='/js/bdi_visualization.js')
+block content
+    .col-12.card.bg-white.float-left.border-0
+        .card.bg-light.mb-3.bg-white
+            .card-header
+                .row
+                    .col-md-12
+                        h5(style="color:black")
+                            | Visualizing Schema of data source:  #{data_source_name}
+
+    iframe#ViewiframeGraph(style='visibility:hidden;', onload="this.style.visibility = 'visible';" , src='/vowl/#'+resource_name, frameborder='0')
+
+
+
+
+
+
+
+
+
+
+

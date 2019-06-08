@@ -1,0 +1,44 @@
+extends bdi_layout_nologin
+block headers
+    script(src='/js/client_user_login.js')
+block content
+    #hiddenMessage(style='display:none') #{message}
+    #alertBox.bs-component(style='display:none')
+        .alert.alert-dismissible.alert-danger
+            button.close(type='button', data-dismiss='alert') &times;
+            h4 Error
+            p#alertBoxText
+
+    .row.justify-content-center
+        .col-6.bs-component
+            .text-center
+                //h1 BDI
+                h2 Big Data Integration
+                br
+            .col-12.card.bg-transparent
+                br
+                .panel.panel-default
+                    .panel-heading
+                        h4.panel-title Please Login
+                    .panel-body
+                        form(action='/login',method='post')
+                            .form-group
+                                input.form-control.input-sm(id='username', type='text',value='', name='username', placeholder='username')
+                            .form-group
+                                input.form-control.input-sm(id='password', type='password',value='', name='password', placeholder='password')
+                            .checkbox
+                                label
+                                    input(name='remember', type='checkbox', value='Remember Me')
+                                    |  Remember Me
+                                    //a.pull-right(href='/forgot') Forgot Password?
+                            input(id='clientId', type='hidden',value='#{clientId}', name='clientId')
+                            input(id='redirectUri', type='hidden',value='#{redirectUri}', name='redirectUri')
+                            input.btn.btn-info.btn-block(type='submit', value='Login')
+                .text-center
+                    a.text-danger(href='/registration') Don&apos;t have an account? Register
+
+                br
+                //br
+                //.row
+                    .col-md-12.col-md-offset-2
+                        img.img-thumbnail(src='/images/supersede.png')

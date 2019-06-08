@@ -1,0 +1,227 @@
+body {
+    padding: 100px;
+}
+
+a {
+    color: #00B7FF;
+}
+
+svg.line-graph {
+    fill: white;
+}
+
+svg.line-graph text {
+    cursor: default;
+}
+
+svg.line-graph .hover-line {
+    stroke: #6E7B8B;
+}
+
+.line #series_0 {
+    stroke: yellow;
+}
+
+svg.line-graph .hide {
+    opacity: 0;
+}
+
+svg.line-graph .axis {
+    shape-rendering: crispEdges;
+}
+
+svg.line-graph .x.axis line {
+    stroke: #D3D3D3;
+}
+
+svg.line-graph .x.axis .minor {
+    stroke-opacity: .5;
+}
+
+svg.line-graph .x.axis path {
+    display: none;
+}
+
+svg.line-graph .x.axis text {
+    font-size: 14px;
+}
+
+svg.line-graph .y.axis line, .y.axis path {
+    fill: none;
+    stroke: #000;
+}
+
+svg.line-graph .y.axis text {
+    font-size: 16px;
+}
+
+svg.line-graph .scale-button:not(.selected):hover {
+    text-decoration: underline;
+    cursor: pointer !important;
+}
+
+svg.line-graph .date-label {
+    fill: white;
+    font-size: 16px;
+}
+
+svg.line-graph .legend {
+    fill: white;
+    font-size: 14px;
+}
+
+.circle_green {
+    border: 1px solid #a1a1a1;
+    padding: 10px 10px;
+    background: green;
+    border-radius: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1%;
+}
+
+.circle_red {
+    border: 1px solid #a1a1a1;
+    padding: 10px 10px;
+    background: red;
+    width: 3px;
+    border-radius: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1%;
+}
+
+.container {
+    width: 75%;
+}
+
+.box {
+    font: 10px sans-serif;
+}
+
+.box line,
+.box rect,
+.box circle {
+    fill: #fff;
+    stroke: #000;
+    stroke-width: 1.5px;
+}
+
+.box .center {
+    stroke-dasharray: 3, 3;
+}
+
+.box .outlier {
+    fill: none;
+    stroke: #ccc;
+}
+
+.inf {
+    color: white;
+}
+
+.flt {
+    color: black
+}
+
+.flt_multi {
+    color: black
+}
+
+.mdiv {
+    color: white;
+}
+
+.rspg {
+    color: black;
+}
+
+.pgSlc {
+    color: black;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.bar {
+    fill: steelblue;
+}
+
+.x.axis path {
+    display: none;
+}
+
+a {
+    color: black;
+}
+
+#ViewiframeGraph {
+    display: block;
+    width: 100%;
+    /*height:84vh;*/
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.cv-spinner {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px #ddd solid;
+    border-top: 4px #18BC9C solid;
+    border-radius: 50%;
+    animation: sp-anime 0.8s infinite linear;
+}
+
+@keyframes sp-anime {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(359deg);
+    }
+}
+
+.is-hide {
+    display: none;
+}
+
+
+.dataSourceClass {
+    color: #18BC9C;
+}
+
+.table input[type="checkbox"] {
+    width: 20px; /*Desired width*/
+    height: 20px; /*Desired height*/
+    cursor: pointer;
+}
+
+/*
+.bg-white{
+  border-left: 1px solid rgba(0,0,0,0.125)
+}*/
