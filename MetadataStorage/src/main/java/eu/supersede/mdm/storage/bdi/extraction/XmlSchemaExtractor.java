@@ -50,7 +50,7 @@ public class XmlSchemaExtractor {
             if (doc.hasChildNodes()) {
                 //init OntModel
                 model = ModelFactory.createOntologyModel();
-                String path = ConfigManager.getProperty("resources_path") + "/" + "model/new_metadata_model.owl";
+                String path = ConfigManager.getProperty("resources_path") + "model/new_metadata_model.owl";
                 model.read(new File(path).toURI().toURL().toString());
 
                 //init Schema Model

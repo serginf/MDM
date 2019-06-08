@@ -78,7 +78,6 @@ public class RDFUtil {
         ds.close();
     }
 
-
     public static ResultSet runAQuery(String sparqlQuery, String namedGraph) {
         Dataset ds = Utils.getTDBDataset();
         ds.begin(ReadWrite.READ);
@@ -108,7 +107,6 @@ public class RDFUtil {
         ds.end();
         ds.close();
     }
-
 
     public static ResultSet runAQuery(String sparqlQuery, Dataset ds) {
         try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), ds)) {
@@ -185,12 +183,11 @@ public class RDFUtil {
         return Namespaces.sup.val() + name;
     }
 
-
     /**
      * Below are the new methods, variables and declarations coming from BDI Project
      */
 
-    public static String sparqlQueryPrefixes = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n";
+    public static String sparqlQueryPrefixes = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n";
 
     public static void addTriple(OntModel model, String s, String p, String o) {
         model.add(new ResourceImpl(s), new PropertyImpl(p), new ResourceImpl(o));
@@ -255,7 +252,6 @@ public class RDFUtil {
         ds.close();
     }
 
-
     public static void removeProperty(String namedGraph, String property, String domain, String range) {
         Dataset ds = Utils.getTDBDataset();
         ds.begin(ReadWrite.WRITE);
@@ -270,7 +266,6 @@ public class RDFUtil {
         ds.close();
     }
 
-
     public static void addProperty(String namedGraph, String property, String domain, String range) {
         Dataset ds = Utils.getTDBDataset();
         ds.begin(ReadWrite.WRITE);
@@ -284,7 +279,6 @@ public class RDFUtil {
         ds.end();
         ds.close();
     }
-
 
     public static void addPropertyDomain(String namedGraph, String property, String domain) {
         Dataset ds = Utils.getTDBDataset();
@@ -304,7 +298,7 @@ public class RDFUtil {
         Model graph = ds.getNamedModel(namedGraph);
         graph.add(new ResourceImpl(property), RDF.type, RDF.Property);
 
-        for(String domain : domains) {
+        for (String domain : domains) {
             graph.add(new ResourceImpl(property), new PropertyImpl(RDFS.DOMAIN), new ResourceImpl(domain));
         }
         graph.add(new ResourceImpl(property), new PropertyImpl(RDFS.RANGE), new ResourceImpl(range));
@@ -348,7 +342,6 @@ public class RDFUtil {
         return flag;
     }
 
-
     public static boolean removeNamedGraph(String namedGraph) {
         boolean flag;
         Dataset ds = Utils.getTDBDataset();
@@ -367,6 +360,4 @@ public class RDFUtil {
         ds.close();
         return flag;
     }
-
-
 }

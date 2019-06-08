@@ -3,7 +3,7 @@ package eu.supersede.mdm.storage;
 import eu.supersede.mdm.storage.bdi.extraction.JsonSchemaExtractor;
 import eu.supersede.mdm.storage.bdi.extraction.XmlSchemaExtractor;
 import eu.supersede.mdm.storage.bdi.extraction.rdb.MySqlDB;
-import eu.supersede.mdm.storage.bdi.mdm.constructs.CreateConstructs;
+import eu.supersede.mdm.storage.bdi.mdm.constructs.Conversion;
 
 public class BdiMain {
     public static String configPath = "config.kashif.properties";
@@ -31,7 +31,7 @@ public class BdiMain {
                 break;
             case "TRY":
                 //This is just to test some functionality independently - Pass the argument like this : TRY N
-                new CreateConstructs("INTEGRATED-BvuPzx5o-f6mJaYK2");
+                new Conversion("INTEGRATED-UOaRy4bt-y4awOCzE");
                 break;
             default:
                 System.out.println("Please provide the arguments in a correct way: " +

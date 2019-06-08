@@ -67,7 +67,7 @@ public class JsonSchemaExtractor {
             //Load the new metamodel
             model = ModelFactory.createOntologyModel();
 
-            String path = ConfigManager.getProperty("resources_path") + "/" + "model/new_metadata_model.owl";
+            String path = ConfigManager.getProperty("resources_path") + "model/new_metadata_model.owl";
             model.read(new File(path).toURI().toURL().toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
