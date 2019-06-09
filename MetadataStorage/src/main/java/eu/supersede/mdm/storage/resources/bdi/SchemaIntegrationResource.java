@@ -135,16 +135,16 @@ public class SchemaIntegrationResource {
     @Consumes("text/plain")
     public Response GET_finishIntegration(String body) {
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
-        System.out.println("[GET /finishIntegration" + "/" + objBody.getAsString("iri"));
-        String integratedIRI = Namespaces.G.val() + objBody.getAsString("iri");
+        System.out.println("[GET /finishIntegration" + "/" + objBody.getAsString("schema_iri"));
+        String integratedIRI = Namespaces.G.val() + objBody.getAsString("schema_iri");
 
         JSONObject dataSource1Info = new JSONObject();
         JSONObject dataSource2Info = new JSONObject();
         try {
             objBody.put("integratedIRI", integratedIRI);
-            //System.out.println(objBody.toJSONString()); {"iri":"wfFEEDGx-FBFLAdRr","integrationType":"LOCAL-vs-LOCAL", "integratedIRI":"http:\/\/www.BDIOntology.com\/global\/wfFEEDGx-FBFLAdRr","ds2_id":"FBFLAdRr","ds1_id":"wfFEEDGx"}
+            //System.out.println(objBody.toJSONString()); {"schema_iri":"wfFEEDGx-FBFLAdRr","integrationType":"LOCAL-vs-LOCAL", "integratedIRI":"http:\/\/www.BDIOntology.com\/global\/wfFEEDGx-FBFLAdRr","ds2_id":"FBFLAdRr","ds1_id":"wfFEEDGx"}
             new AlignmentAlgorithm(objBody);
-            String integratedModelFileName = schemaIntegrationHelper.writeToFile(objBody.getAsString("iri"), integratedIRI);
+            String integratedModelFileName = schemaIntegrationHelper.writeToFile(objBody.getAsString("schema_iri"), integratedIRI);
             //Convert RDFS to VOWL (Visualization Framework) Compatible JSON
             JSONObject vowlObj = Utils.oWl2vowl(ConfigManager.getProperty("output_path") + integratedModelFileName);
             if (objBody.getAsString("integrationType").equals("GLOBAL-vs-LOCAL")) {

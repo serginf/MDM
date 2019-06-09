@@ -85,7 +85,7 @@ public class DataSourcesResource {
                     new File(dsInfo.getAsString("vowlJsonFilePath")).delete() &&
                     new File(dsInfo.getAsString("sourceFileAddress")).delete()) {
                 schemaIntegrationHelper.deleteDataSourceInfo(id, collectionType);
-                RDFUtil.removeNamedGraph(dsInfo.getAsString("iri"));
+                RDFUtil.removeNamedGraph(dsInfo.getAsString("schema_iri"));
                 System.out.println("Deleted : " + dsInfo.getAsString("parsedFileAddress") + "\n" + dsInfo.getAsString("integratedVowlJsonFilePath"));
                 flag = "DELETED";
             } else {
@@ -96,7 +96,7 @@ public class DataSourcesResource {
         if (collectionType.equals("INTEGRATED")) {
             if (new File(dsInfo.getAsString("parsedFileAddress")).delete() && new File(dsInfo.getAsString("integratedVowlJsonFilePath")).delete()) {
                 schemaIntegrationHelper.deleteDataSourceInfo(id, collectionType);
-                RDFUtil.removeNamedGraph(dsInfo.getAsString("iri"));
+                RDFUtil.removeNamedGraph(dsInfo.getAsString("schema_iri"));
                 System.out.println("Deleted : " + dsInfo.getAsString("parsedFileAddress") + "\n" + dsInfo.getAsString("integratedVowlJsonFilePath"));
                 flag = "DELETED";
             } else {

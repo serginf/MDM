@@ -3,6 +3,7 @@ package eu.supersede.mdm.storage.resources.bdi;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import eu.supersede.mdm.storage.bdi.extraction.JsonSchemaExtractor;
+import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONObject;
@@ -89,7 +90,9 @@ public class SchemaExtractionResource {
         resData.put("sourceFileAddress", objBody.getAsString("filePath"));
         resData.put("parsedFileAddress", fileName);
         resData.put("dataSourceID", RandomStringUtils.randomAlphanumeric(8).replace("-", ""));
-        resData.put("iri", IRI);
+        resData.put("iri", SourceGraph.DATA_SOURCE.val() + "/" + objBody.getAsString("givenName"));
+        //resData.put("iri", IRI);
+        resData.put("schema_iri", IRI);
         resData.put("vowlJsonFilePath", vowlObj.getAsString("vowlJsonFilePath"));
         resData.put("vowlJsonFileName", vowlObj.getAsString("vowlJsonFileName"));
 

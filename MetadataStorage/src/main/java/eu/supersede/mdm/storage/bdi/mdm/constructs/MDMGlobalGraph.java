@@ -8,6 +8,7 @@ import eu.supersede.mdm.storage.util.Utils;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
@@ -42,13 +43,13 @@ public class MDMGlobalGraph {
         System.out.println(mdmGlobalGraph.size());
 
         /*TODO Query to get Classes from BDI Global Graph and convert to Concepts of MDM's Global Graph*/
-        //classesToConcepts(mdmGlobalGraph);
+        classesToConcepts(mdmGlobalGraph);
         /*TODO Query to get Properties from BDI Global Graph and convert to Features of MDM's Global Graph*/
-        //propertiesToFeatures(mdmGlobalGraph);
+        propertiesToFeatures(mdmGlobalGraph);
         /*TODO Query to get Object Properties from BDI Global Graph and convert to ????  of MDM's Global Graph AND Create hasRelation edge*/
-        objectPropertiesToRelations(mdmGlobalGraph);
+        //objectPropertiesToRelations(mdmGlobalGraph);
         /*TODO Query to get Classes and their properties from BDI Global Graph to create hasFeature edges between Concepts and Features of MDM Global Graph*/
-
+        connectConceptsAndFeatures(mdmGlobalGraph);
         mdmGlobalGraph.commit();
         mdmGlobalGraph.close();
         ds.commit();
@@ -72,7 +73,7 @@ public class MDMGlobalGraph {
             System.out.print(triple.get("property") + "\t");
             System.out.print(triple.get("domain") + "\t");
             System.out.print(triple.get("range") + "\n");
-            //mdmGlobalGraph.add(triple.getResource("property"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
+            mdmGlobalGraph.add(triple.getResource("property"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
         });
     }
 
@@ -87,17 +88,19 @@ public class MDMGlobalGraph {
         //connectConcepts
     }
 
-    private void connectConceptsAndFeatures() {
+    private void connectConceptsAndFeatures(Model mdmGlobalGraph) {
         String getClasses = "SELECT * WHERE { GRAPH <" + bdiGlobalGraphIRI + "> { ?s ?p ?o. ?s rdf:type rdfs:Class. }}";
 
         RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getClasses, bdiGlobalGraphIRI).forEachRemaining(triple -> {
             System.out.println();
             System.out.println();
             System.out.print(triple.get("s") + "\n");
-
+            Resource classResource = triple.getResource("s");
             String getClassProperties = " SELECT * WHERE { GRAPH <" + bdiGlobalGraphIRI + "> { ?property rdfs:domain <" + triple.get("s") + ">; rdfs:range ?range. FILTER NOT EXISTS {?range rdf:type rdfs:Class.}}} ";
-            RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getClassProperties, bdiGlobalGraphIRI).forEachRemaining(tripleNested -> {
-                System.out.print(tripleNested.get("property") + "\t");
+            RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getClassProperties, bdiGlobalGraphIRI).forEachRemaining(featureTriples -> {
+                System.out.print(featureTriples.get("property") + "\t");
+
+                mdmGlobalGraph.add(classResource, new PropertyImpl(GlobalGraph.HAS_FEATURE.val()), featureTriples.getResource("property"));
             });
         });
     }

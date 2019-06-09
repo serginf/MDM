@@ -77,7 +77,7 @@ public class GlobalVsLocal {
     }
 
     private void refactorSuperClassesAndSubClasses(LogMapMatcher logMapMatcher, JSONArray superAndSubClassesArray, JSONArray onlyClassesArray) {
-        String iri = dataSource1Info.getAsString("iri");
+        String iri = dataSource1Info.getAsString("schema_iri");
 
         List<Tuple3<String, String, String>> classAlignments = logMapMatcher.getClassesAlignments();
 

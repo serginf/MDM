@@ -336,7 +336,7 @@ $(document).ready(function () {
         $("#overlay").fadeIn(100);
         console.log("IntegratedDataSourcesButton Clicked");
         var postData = {};
-        postData.iri = params[0] + "-" + params[1];
+        postData.schema_iri = params[0] + "-" + params[1];
         postData.integrationType = integrationType;
         postData.ds1_id = ds1_id;
         postData.ds2_id = ds2_id;

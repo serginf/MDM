@@ -140,7 +140,7 @@ public class SchemaIntegrationHelper {
 
         integratedDataSourceObj.put("dataSourceID", "INTEGRATED-" + dataSource1Info.getAsString("dataSourceID") + "-" + dataSource2Info.getAsString("dataSourceID"));
         //integratedDataSourceObj.put("alignmentsIRI", alignmentsIRI.split(Namespaces.Alignments.val())[1]);
-        integratedDataSourceObj.put("iri", Namespaces.G.val() + dataSource1Info.getAsString("dataSourceID") + "-" + dataSource2Info.getAsString("dataSourceID"));
+        integratedDataSourceObj.put("schema_iri", Namespaces.G.val() + dataSource1Info.getAsString("dataSourceID") + "-" + dataSource2Info.getAsString("dataSourceID"));
         integratedDataSourceObj.put("dataSources", dataSourcesArray);
         integratedDataSourceObj.put("name", dataSource1Info.getAsString("name").replaceAll(" ", "") + dataSource2Info.getAsString("name").replaceAll(" ", ""));
         integratedDataSourceObj.put("parsedFileAddress", integratedModelFileName);
@@ -170,7 +170,7 @@ public class SchemaIntegrationHelper {
         System.out.println("NEW DS ID: " + newDataSourceID);
 
         collection.updateOne(eq("dataSourceID", integratedDataSourceInfo.getAsString("dataSourceID")), new Document("$set", new Document("dataSourceID", newDataSourceID)));
-        collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("iri", Namespaces.G.val() + integratedDataSourceInfo.getAsString("dataSourceID") + "-" + dataSource2Info.getAsString("dataSourceID"))));
+        collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("schema_iri", Namespaces.G.val() + integratedDataSourceInfo.getAsString("dataSourceID") + "-" + dataSource2Info.getAsString("dataSourceID"))));
         collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("integratedVowlJsonFileName", vowlObj.getAsString("vowlJsonFileName"))));
         collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("integratedVowlJsonFilePath", vowlObj.getAsString("vowlJsonFilePath"))));
         collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("parsedFileAddress", integratedModelFileName)));
@@ -189,8 +189,8 @@ public class SchemaIntegrationHelper {
         Dataset ds = Utils.getTDBDataset();
         ds.begin(ReadWrite.WRITE);
 
-        Model ds1Model = ds.getNamedModel(dataSource1Info.getAsString("iri"));
-        Model ds2Model = ds.getNamedModel(dataSource2Info.getAsString("iri"));
+        Model ds1Model = ds.getNamedModel(dataSource1Info.getAsString("schema_iri"));
+        Model ds2Model = ds.getNamedModel(dataSource2Info.getAsString("schema_iri"));
         System.out.println("Size of ds1 Model: " + ds1Model.size());
         System.out.println("Size of ds2 Model: " + ds2Model.size());
 

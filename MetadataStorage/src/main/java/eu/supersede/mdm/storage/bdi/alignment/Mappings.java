@@ -33,16 +33,16 @@ public class Mappings {
     }
 
     private void createSameAsMappings() {
-        dataSource1Info.getAsString("iri");
-        dataSource2Info.getAsString("iri");
+        dataSource1Info.getAsString("schema_iri");
+        dataSource2Info.getAsString("schema_iri");
         basicInfo.getAsString("integratedIRI");
 
         Dataset ds = Utils.getTDBDataset();
         ds.begin(ReadWrite.WRITE);
 
         Model globalGraph = ds.getNamedModel(basicInfo.getAsString("integratedIRI"));
-        Model localGraphA = ds.getNamedModel(dataSource1Info.getAsString("iri"));
-        Model localGraphB = ds.getNamedModel(dataSource2Info.getAsString("iri"));
+        Model localGraphA = ds.getNamedModel(dataSource1Info.getAsString("schema_iri"));
+        Model localGraphB = ds.getNamedModel(dataSource2Info.getAsString("schema_iri"));
 
         StmtIterator globalGraphIterator = globalGraph.listStatements();
 

@@ -36,8 +36,8 @@ public class Conversion {
         }
 
         /*IRI of the BDI graph which need to be converted into MDM graph*/
-        //new MDMGlobalGraph(globalGraphInfo.getAsString("iri"), globalGraphInfo.getAsString("dataSourceID"));
-        //schemaIntegrationHelper.writeToFile("MDM_GG_TESTING", "http://www.essi.upc.edu/~snadal/SportsUML/75159425607e474784ce93a65435afd9");
+        //new MDMGlobalGraph(globalGraphInfo.getAsString("schema_iri"), globalGraphInfo.getAsString("dataSourceID"));
+        //schemaIntegrationHelper.writeToFile("WRAPPER", "http://www.BDIOntology.com/schema/Bicycles");
 
         prepareWrapperContent();
     }
@@ -91,7 +91,7 @@ public class Conversion {
         } finally {
             if (graphIterator != null) graphIterator.close();
         }
-        //System.out.println(wrapper.toJSONString());
+        System.out.println(wrapper.toJSONString());
         graph.commit();
         graph.close();
         ds.commit();
