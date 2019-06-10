@@ -18,6 +18,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
+import org.apache.jena.vocabulary.OWL;
 import org.bson.Document;
 import org.semarglproject.vocab.RDF;
 
@@ -94,14 +95,17 @@ public class MDMGlobalGraph {
         Model mdmGlobalGraph = ds.getNamedModel(mdmGgIri);
         System.out.println("Size: " + mdmGlobalGraph.size());
 
-        /*TODO Query to get Classes from BDI Global Graph and convert to Concepts of MDM's Global Graph*/
+        /* Query to get Classes from BDI Global Graph and convert to Concepts of MDM's Global Graph*/
         classesToConcepts(mdmGlobalGraph);
-        /*TODO Query to get Properties from BDI Global Graph and convert to Features of MDM's Global Graph*/
+        /* Query to get Properties from BDI Global Graph and convert to Features of MDM's Global Graph*/
         propertiesToFeatures(mdmGlobalGraph);
-        /*TODO Query to get Object Properties from BDI Global Graph and convert to ????  of MDM's Global Graph AND Create hasRelation edge*/
+        /* Query to get Object Properties from BDI Global Graph and convert to ????  of MDM's Global Graph AND Create hasRelation edge*/
         objectPropertiesToRelations(mdmGlobalGraph);
-        /*TODO Query to get Classes and their properties from BDI Global Graph to create hasFeature edges between Concepts and Features of MDM Global Graph*/
+        /* Query to get Classes and their properties from BDI Global Graph to create hasFeature edges between Concepts and Features of MDM Global Graph*/
         connectConceptsAndFeatures(mdmGlobalGraph);
+        //Query to get the sameAs or equivalentProperty relationship of features
+        handleSameAsEdges(mdmGlobalGraph);
+
         mdmGlobalGraph.commit();
         mdmGlobalGraph.close();
         ds.commit();
@@ -154,6 +158,17 @@ public class MDMGlobalGraph {
 
                 mdmGlobalGraph.add(classResource, new PropertyImpl(GlobalGraph.HAS_FEATURE.val()), featureTriples.getResource("property"));
             });
+        });
+    }
+
+    private void handleSameAsEdges(Model mdmGlobalGraph) {
+        System.out.println(bdiGgIri);
+        String getClasses = "SELECT * WHERE { GRAPH <" + bdiGgIri + "> { ?s  owl:equivalentProperty ?p } }";
+        System.out.println("Finding same as relationships");
+        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getClasses, bdiGgIri).forEachRemaining(triple -> {
+            System.out.print(triple.getResource("p") + "\t");
+            System.out.print(triple.get("s") + "\n");
+            mdmGlobalGraph.add(triple.getResource("p"), OWL.sameAs, triple.getResource("s"));
         });
     }
 }

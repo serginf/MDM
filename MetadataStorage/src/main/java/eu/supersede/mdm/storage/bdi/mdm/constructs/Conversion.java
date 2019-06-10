@@ -38,7 +38,7 @@ public class Conversion {
         /*schema_iri is IRI of the BDI graph which need to be converted into MDM graph*/
         new MDMGlobalGraph(globalGraphInfo.getAsString("name"), globalGraphInfo.getAsString("schema_iri"), globalGraphInfo.getAsString("dataSourceID"));
 
-        new MDMWrapper(globalGraphInfo);
+        //new MDMWrapper(globalGraphInfo);
 
         //schemaIntegrationHelper.writeToFile("WRAPPER", "http://www.BDIOntology.com/schema/Bicycles");
     }
