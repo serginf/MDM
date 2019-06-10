@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created by snadal on 22/11/16.
+ * Updated by Kashif Rabbani June 10 2019
  */
 @Path("metadataStorage")
 public class WrapperResource {
@@ -109,13 +110,10 @@ public class WrapperResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response GET_attributesForWrapper(@PathParam("iri") String iri) {
         System.out.println("[GET /wrapper/attributes/] iri = "+iri);
-        JSONArray attributes = new JSONArray();
-        String SPARQL = "SELECT ?a WHERE { GRAPH ?g { <"+iri+"> <"+SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }";
-        RDFUtil.runAQuery(SPARQL,iri).forEachRemaining(t -> {
-            attributes.add(t.get("a").asNode().getURI());
-        });
+        JSONArray attributes = getWrapperAttributes(iri);
         return Response.ok(attributes.toJSONString()).build();
     }
+
 
     public static JSONObject createWrapper(String body) {
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
@@ -154,6 +152,15 @@ public class WrapperResource {
 
         client.close();
         return objBody;
+    }
+
+    public static JSONArray getWrapperAttributes(String iri) {
+        JSONArray attributes = new JSONArray();
+        String SPARQL = "SELECT ?a WHERE { GRAPH ?g { <"+iri+"> <"+ SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }";
+        RDFUtil.runAQuery(SPARQL,iri).forEachRemaining(t -> {
+            attributes.add(t.get("a").asNode().getURI());
+        });
+        return attributes;
     }
 
 }

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.mongodb.MongoClient;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
+import eu.supersede.mdm.storage.parsers.OWLtoWebVOWL;
 import eu.supersede.mdm.storage.resources.bdi.SchemaIntegrationHelper;
 import eu.supersede.mdm.storage.util.ConfigManager;
 import eu.supersede.mdm.storage.util.MongoCollections;
@@ -33,10 +34,10 @@ public class MDMGlobalGraph {
     private String bdiGgName = "";
     private String mdmGgGraphicalGraph = "";
 
-    MDMGlobalGraph(String name, String iri, String id) {
+    MDMGlobalGraph(String name, String iri, String mdmGgIri) {
         this.bdiGgIri = iri;
         this.bdiGgName = name;
-        this.mdmGgIri = Namespaces.G.val() + id;
+        this.mdmGgIri = mdmGgIri;
         run();
     }
 
@@ -54,14 +55,18 @@ public class MDMGlobalGraph {
             String ttlFileName = bdiGgName.replace(" ", "");
 
             // This method will return JSONObject of containing two elements 'vowlJsonFileName' and 'vowlJsonFilePath'
-            JSONObject vowlObj = Utils.oWl2vowl(ConfigManager.getProperty("output_path") + schemaIntegrationHelper.writeToFile(ttlFileName, mdmGgIri));
+            //JSONObject vowlObj = Utils.oWl2vowl(ConfigManager.getProperty("output_path") + schemaIntegrationHelper.writeToFile(ttlFileName, mdmGgIri));
             /*JSONObject vowlObj = Utils.oWl2vowl(ConfigManager.getProperty("output_path") + schemaIntegrationHelper.writeToFile("MDMGOOGLE", "https://www.google.com/ba1028029c184d06bdcd6eaa00f6a316"));*/
 
-            Gson gson = new Gson();
+            /*Gson gson = new Gson();
             File jsonFile = Paths.get(vowlObj.getAsString("vowlJsonFilePath")).toFile();
             JsonObject jsonObject = gson.fromJson(new FileReader(jsonFile), JsonObject.class);
+*/
 
-            mdmGgGraphicalGraph = "\" " + StringEscapeUtils.escapeJava(jsonObject.toString()) + "\"";
+            OWLtoWebVOWL owltoWebVowl = new OWLtoWebVOWL();
+            owltoWebVowl.setNamespace(Namespaces.G.val());
+            String vowlJson = owltoWebVowl.convert(mdmGgIri);
+            mdmGgGraphicalGraph = "\" " + StringEscapeUtils.escapeJava(vowlJson) + "\"";
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -104,7 +109,7 @@ public class MDMGlobalGraph {
         /* Query to get Classes and their properties from BDI Global Graph to create hasFeature edges between Concepts and Features of MDM Global Graph*/
         connectConceptsAndFeatures(mdmGlobalGraph);
         //Query to get the sameAs or equivalentProperty relationship of features
-        handleSameAsEdges(mdmGlobalGraph);
+        //handleSameAsEdges(mdmGlobalGraph);
 
         mdmGlobalGraph.commit();
         mdmGlobalGraph.close();

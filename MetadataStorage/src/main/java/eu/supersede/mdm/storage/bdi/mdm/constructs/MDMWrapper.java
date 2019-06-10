@@ -1,24 +1,39 @@
 package eu.supersede.mdm.storage.bdi.mdm.constructs;
 
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
 import eu.supersede.mdm.storage.bdi.extraction.Namespaces;
 import eu.supersede.mdm.storage.resources.WrapperResource;
+import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
+import org.bson.Document;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class MDMWrapper {
+    private String mdmGgIri;
     private JSONObject globalGraphInfo;
     private JSONObject wrapper = new JSONObject();
+    private JSONArray wrappersIds = new JSONArray();
 
-    MDMWrapper(JSONObject ggInfo) {
+    MDMWrapper(JSONObject ggInfo, String mdmGlobalGraphIri) {
         this.globalGraphInfo = ggInfo;
-        createWrapper();
+        mdmGgIri = mdmGlobalGraphIri;
+        run();
     }
 
-    private void createWrapper() {
+    private void run() {
+        createWrappers();
+        addWrappersInfoInGGMongoCollection();
+    }
+
+    private void createWrappers() {
+        /*Iterate over all data sources of BDI global graph to convert to wrappers*/
         JSONArray dataSourcesArray = (JSONArray) globalGraphInfo.get("dataSources");
         for (Object o : dataSourcesArray) {
             JSONObject dataSource = (JSONObject) o;
@@ -27,11 +42,13 @@ public class MDMWrapper {
             try {
                 JSONObject res = WrapperResource.createWrapper(wrapper.toJSONString());
                 System.out.println(res.toJSONString());
+                wrappersIds.add(res.getAsString("wrapperID"));
                 //HttpUtils.sendPost(wrapper, postWrapperUrl);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
     }
 
 
@@ -58,10 +75,18 @@ public class MDMWrapper {
         System.out.println(wrapper.toJSONString());
     }
 
-    private void checkNamedGraph(String uri){
+    private void addWrappersInfoInGGMongoCollection() {
+        MongoClient client = Utils.getMongoDBClient();
+        MongoCollection collection = MongoCollections.getGlobalGraphCollection(client);
+        collection.updateOne(eq("namedGraph", mdmGgIri),
+                new Document("$set", new Document("wrappers", wrappersIds)));
+        client.close();
+    }
+
+    private void checkNamedGraph(String uri) {
         Dataset ds = Utils.getTDBDataset();
         ds.begin(ReadWrite.WRITE);
-        if(ds.containsNamedModel(uri)){
+        if (ds.containsNamedModel(uri)) {
             System.out.println("True - Size: " + ds.getNamedModel(uri).size());
             //ds.removeNamedModel(uri);
         } else System.out.println("False");

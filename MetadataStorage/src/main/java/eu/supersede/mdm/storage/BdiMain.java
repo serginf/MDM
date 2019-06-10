@@ -4,6 +4,7 @@ import eu.supersede.mdm.storage.bdi.extraction.JsonSchemaExtractor;
 import eu.supersede.mdm.storage.bdi.extraction.XmlSchemaExtractor;
 import eu.supersede.mdm.storage.bdi.extraction.rdb.MySqlDB;
 import eu.supersede.mdm.storage.bdi.mdm.constructs.Conversion;
+import eu.supersede.mdm.storage.bdi.mdm.constructs.MDMLavMapping;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +35,7 @@ public class BdiMain {
                 break;
             case "TRY":
                 //This is just to test some functionality independently - Pass the argument like this : TRY N
+                //new MDMLavMapping();
                 new Conversion("INTEGRATED-ermaElU0-QbtrOURF");
                 break;
             default:
