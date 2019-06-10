@@ -1,7 +1,11 @@
 package eu.supersede.mdm.storage.util;
 
 import com.google.common.io.Files;
-import javafx.util.Pair;
+//import javafx.util.Pair; Use of this library gives compilation error because javafx is no longer a part of Java JDK
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
 import org.apache.commons.io.filefilter.RegexFileFilter;
 
 import java.io.File;
@@ -56,7 +60,7 @@ public class TempFiles {
         File[] files = DIR.listFiles(fileFilter);
 
         Stream<Pair<Long, File>> fileNumbers = Arrays.stream(files).map(file ->
-                new Pair<Long, File>(Long.parseLong(file.getName().substring(baseFileNamePrefix.length(), file.getName().indexOf(SUFFIX))), file));
+                new MutablePair<Long, File>(Long.parseLong(file.getName().substring(baseFileNamePrefix.length(), file.getName().indexOf(SUFFIX))), file));
 
         return fileNumbers.max((o1, o2) -> (int) (o1.getKey() - o2.getKey()));
     }
@@ -68,7 +72,8 @@ public class TempFiles {
      * @return
      */
     public static String getIncrementalTempFile(String baseFileNamePrefix) {
-        Pair<Long, File> longStringPair = getLatestFile(baseFileNamePrefix).orElse(new Pair<Long, File>(0l, null));
+
+        Pair<Long, File> longStringPair = getLatestFile(baseFileNamePrefix).orElse(new MutablePair<>(0l, null));
 
         File file = new File(DIR, baseFileNamePrefix + (longStringPair.getKey() + 1) + SUFFIX);
         return file.getAbsolutePath();

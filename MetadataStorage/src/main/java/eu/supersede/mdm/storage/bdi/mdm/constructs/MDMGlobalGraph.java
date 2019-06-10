@@ -1,14 +1,17 @@
 package eu.supersede.mdm.storage.bdi.mdm.constructs;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.mongodb.MongoClient;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.resources.bdi.SchemaIntegrationHelper;
+import eu.supersede.mdm.storage.util.ConfigManager;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONObject;
-import net.minidev.json.JSONValue;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -18,29 +21,59 @@ import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.bson.Document;
 import org.semarglproject.vocab.RDF;
 
+import java.io.File;
+import java.io.FileReader;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 public class MDMGlobalGraph {
     private String bdiGgIri = "";
     private String mdmGgIri = "";
+    private String bdiGgName = "";
+    private String mdmGgGraphicalGraph = "";
 
     MDMGlobalGraph(String name, String iri, String id) {
-        SchemaIntegrationHelper schemaIntegrationHelper = new SchemaIntegrationHelper();
         this.bdiGgIri = iri;
-        mdmGgIri = Namespaces.G.val() + id;
-
-        constructGlobalGraph();
-        insertMdmGgInMongo(name);
-        schemaIntegrationHelper.writeToFile(name, mdmGgIri);
+        this.bdiGgName = name;
+        this.mdmGgIri = Namespaces.G.val() + id;
+        run();
     }
 
-    private void insertMdmGgInMongo(String name) {
+    private void run() {
+        constructGlobalGraph();
+        getGraphicalVowlGraph();
+        insertMdmGgInMongo();
+    }
+
+    private void getGraphicalVowlGraph() {
+        try {
+            SchemaIntegrationHelper schemaIntegrationHelper = new SchemaIntegrationHelper();
+
+            //String ttlFileName = bdiGgName.replace(" ", "") + RandomStringUtils.randomAlphanumeric(4).replace("-", "");
+            String ttlFileName = bdiGgName.replace(" ", "");
+
+            // This method will return JSONObject of containing two elements 'vowlJsonFileName' and 'vowlJsonFilePath'
+            JSONObject vowlObj = Utils.oWl2vowl(ConfigManager.getProperty("output_path") + schemaIntegrationHelper.writeToFile(ttlFileName, mdmGgIri));
+            /*JSONObject vowlObj = Utils.oWl2vowl(ConfigManager.getProperty("output_path") + schemaIntegrationHelper.writeToFile("MDMGOOGLE", "https://www.google.com/ba1028029c184d06bdcd6eaa00f6a316"));*/
+
+            Gson gson = new Gson();
+            File jsonFile = Paths.get(vowlObj.getAsString("vowlJsonFilePath")).toFile();
+            JsonObject jsonObject = gson.fromJson(new FileReader(jsonFile), JsonObject.class);
+
+            mdmGgGraphicalGraph = "\" " + StringEscapeUtils.escapeJava(jsonObject.toString()) + "\"";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void insertMdmGgInMongo() {
         JSONObject objBody = new JSONObject();
         MongoClient client = Utils.getMongoDBClient();
         objBody.put("globalGraphID", UUID.randomUUID().toString().replace("-", ""));
         objBody.put("namedGraph", mdmGgIri);
         objBody.put("defaultNamespace", Namespaces.G.val());
-        objBody.put("name", name);
+        objBody.put("name", bdiGgName);
+        objBody.put("graphicalGraph", mdmGgGraphicalGraph);
         MongoCollections.getGlobalGraphCollection(client).insertOne(Document.parse(objBody.toJSONString()));
         client.close();
     }
@@ -53,10 +86,13 @@ public class MDMGlobalGraph {
         ds.begin(ReadWrite.WRITE);
 
         //Create MDM Global Graph i.e. create a named graph in the TDB
-        ds.removeNamedModel(mdmGgIri);
+        if (ds.containsNamedModel(mdmGgIri)) {
+            System.out.println("TRUE, already existed. Removing...");
+            ds.removeNamedModel(mdmGgIri);
+        }
 
         Model mdmGlobalGraph = ds.getNamedModel(mdmGgIri);
-        System.out.println(mdmGlobalGraph.size());
+        System.out.println("Size: " + mdmGlobalGraph.size());
 
         /*TODO Query to get Classes from BDI Global Graph and convert to Concepts of MDM's Global Graph*/
         classesToConcepts(mdmGlobalGraph);

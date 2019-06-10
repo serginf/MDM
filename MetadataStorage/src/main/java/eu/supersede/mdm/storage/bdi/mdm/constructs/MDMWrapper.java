@@ -2,16 +2,12 @@ package eu.supersede.mdm.storage.bdi.mdm.constructs;
 
 import eu.supersede.mdm.storage.bdi.extraction.Namespaces;
 import eu.supersede.mdm.storage.resources.WrapperResource;
+import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.rdf.model.impl.ResourceImpl;
-import org.semarglproject.vocab.RDF;
 
 public class MDMWrapper {
     private JSONObject globalGraphInfo;
@@ -38,42 +34,40 @@ public class MDMWrapper {
         }
     }
 
+
     private void populateWrapperContent(JSONObject dataSource) {
         String sourceIRI = Namespaces.Schema.val() + dataSource.getAsString("dataSourceName");
+        checkNamedGraph(sourceIRI);
         wrapper.put("name", dataSource.getAsString("dataSourceName").replaceAll(" ", "") + "_Wrapper");
         wrapper.put("dataSourceID", dataSource.getAsString("dataSourceID"));
         JSONArray attributes = new JSONArray();
+        String getProperties = " SELECT * WHERE { GRAPH <" + sourceIRI + "> { ?property rdfs:domain ?domain; rdfs:range ?range . FILTER NOT EXISTS {?range rdf:type rdfs:Class.}} }";
+        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getProperties, sourceIRI).forEachRemaining(triple -> {
+            System.out.print(triple.get("property") + "\t");
+            System.out.print(triple.get("domain") + "\t");
+            System.out.print(triple.get("range") + "\n");
 
+            JSONObject temp = new JSONObject();
+            temp.put("isID", "false");
+            temp.put("name", triple.getResource("property").getLocalName());
+            temp.put("iri", triple.getResource("property").getURI());
+            attributes.add(temp);
+            //mdmGlobalGraph.add(triple.getResource("property"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
+        });
+        wrapper.put("attributes", attributes);
+        System.out.println(wrapper.toJSONString());
+    }
+
+    private void checkNamedGraph(String uri){
         Dataset ds = Utils.getTDBDataset();
         ds.begin(ReadWrite.WRITE);
-        Model graph = ds.getNamedModel(sourceIRI);
-
-        StmtIterator graphIterator = graph.listStatements();
-        try {
-            while (graphIterator.hasNext()) {
-                Statement graphStatement = graphIterator.next();
-                if (graphStatement.getObject().equals(new ResourceImpl(RDF.PROPERTY))) {
-                    String name = graphStatement.getSubject().getLocalName();
-                    JSONObject temp = new JSONObject();
-                    temp.put("isID", "false");
-                    temp.put("name", name);
-                    temp.put("iri", graphStatement.getSubject().getURI());
-                    //System.out.println(graphStatement.getSubject().getLocalName());
-                    //System.out.print(" Subject " + graphStatement.getSubject().getURI());
-                    //System.out.print(" Predicate " + graphStatement.getPredicate().getURI());
-                    //System.out.print(" Object " + graphStatement.getObject().toString());
-                    attributes.add(temp);
-                }
-            }
-            wrapper.put("attributes", attributes);
-            //System.out.println();
-        } finally {
-            if (graphIterator != null) graphIterator.close();
-        }
-        System.out.println(wrapper.toJSONString());
-        graph.commit();
-        graph.close();
+        if(ds.containsNamedModel(uri)){
+            System.out.println("True - Size: " + ds.getNamedModel(uri).size());
+            //ds.removeNamedModel(uri);
+        } else System.out.println("False");
         ds.commit();
+        ds.end();
         ds.close();
+
     }
 }

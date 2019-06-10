@@ -5,6 +5,9 @@ import eu.supersede.mdm.storage.bdi.extraction.XmlSchemaExtractor;
 import eu.supersede.mdm.storage.bdi.extraction.rdb.MySqlDB;
 import eu.supersede.mdm.storage.bdi.mdm.constructs.Conversion;
 
+import java.io.File;
+import java.io.IOException;
+
 public class BdiMain {
     public static String configPath = "config.kashif.properties";
 
@@ -31,7 +34,7 @@ public class BdiMain {
                 break;
             case "TRY":
                 //This is just to test some functionality independently - Pass the argument like this : TRY N
-                new Conversion("INTEGRATED-UOaRy4bt-y4awOCzE");
+                new Conversion("INTEGRATED-ermaElU0-QbtrOURF");
                 break;
             default:
                 System.out.println("Please provide the arguments in a correct way: " +

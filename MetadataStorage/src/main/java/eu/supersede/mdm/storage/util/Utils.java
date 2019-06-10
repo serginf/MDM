@@ -55,6 +55,13 @@ public class Utils {
         return in;
     }
 
+    /**
+     * You can access OWL2VOWL Service at owl2vowl_service_url
+     *  Request type: POST
+     *  Parameters of post request: 'rdfsFilePath' and 'vowlJsonFileOutputPath' as JSONObject elements.
+     * @param rdfsFilePath
+     * @return JSONObject of containing two elements 'vowlJsonFileName' and 'vowlJsonFilePath'
+     */
     public static JSONObject oWl2vowl(String rdfsFilePath) {
         JSONObject vowlResponse = new JSONObject();
         Client client = Client.create();
