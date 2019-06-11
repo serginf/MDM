@@ -45,7 +45,10 @@ exports.uploadFile = function (req, res) {
             filename = Date.now() + '-' + file.name;
 
             // Move the file with the new file name
-            fs.rename(file.path, upload_path + "/" + filename);
+            fs.rename(file.path, upload_path + "/" + filename,function (err) {
+                if (err) throw err;
+                console.log('renamed complete');
+            });
 
             // Add to the list of uploads
             uploadedFile.push({
