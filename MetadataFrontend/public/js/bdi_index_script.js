@@ -124,7 +124,7 @@ function parseSource(data) {
                 window.location.href = '/bdi';
             },
             error: function (response) {
-                alert('Upload failed ' + response.toString());
+                alert('Upload failed \n Please check if OWL2VOWL Service is running?\n' + JSON.stringify(response.responseText));
                 console.log(JSON.stringify(response));
             }
         });
