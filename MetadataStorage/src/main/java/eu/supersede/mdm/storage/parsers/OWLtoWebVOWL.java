@@ -47,8 +47,8 @@ public class OWLtoWebVOWL {
     public String convert(String graphIRI) {
 
         List<Triple> triples = new ArrayList<>();
-        RDFUtil.runAQuery("SELECT ?s ?p ?o WHERE { GRAPH <" + graphIRI + "> { ?s ?p ?o } }", graphIRI).forEachRemaining(res -> {
-                triples.add(new Triple(new ResourceImpl(res.get("s").toString()).asNode(),
+        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + " SELECT ?s ?p ?o WHERE { GRAPH <" + graphIRI + "> { ?s ?p ?o . FILTER NOT EXISTS {?s owl:sameAs ?o .}} }", graphIRI).forEachRemaining(res -> {
+            triples.add(new Triple(new ResourceImpl(res.get("s").toString()).asNode(),
                         new PropertyImpl(res.get("p").toString()).asNode(), new ResourceImpl(res.get("o").toString()).asNode()));
         });
 
