@@ -27,7 +27,7 @@ function getIntegratedFileDetails() {
                     ).append($('<td>')
                         .text(dataSource.schema_iri)
                     )//.append($('<td>').append($('<a href="/view_data_source?dataSourceID=' + (dataSource.dataSourceID) + '">').append($('<span class="fa fa-search"></span>'))))
-                    .append($('<td class="text-center">').append($('<a href="/view?' + (dataSource.dataSourceID) + '">').append($('<span class="fa fa-search"></span>')))
+                    .append($('<td class="text-center">').append($('<a href="/view?IntegratedDataSourceID=' + (dataSource.dataSourceID) + '">').append($('<span class="fa fa-search"></span>')))
                     ).append($('<td class="text-center deleteWrapper">')
                         .append($('<button  value="' + dataSource.dataSourceID + '" class="btn btn-outline-light pop-function delete-button" rel="popover" >').append($('<span color="red" class="fa fa-trash"></span></button>'))))
                 );
@@ -55,7 +55,7 @@ function getParsedFileDetails() {
                     ).append($('<td>')
                         .text(dataSource.schema_iri)
                     )//.append($('<td>').append($('<a href="/view_data_source?dataSourceID=' + (dataSource.dataSourceID) + '">').append($('<span class="fa fa-search"></span>'))))
-                    .append($('<td class="text-center">').append($('<a href="/view?' + (dataSource.dataSourceID) + '">').append($('<span class="fa fa-search"></span>')))
+                    .append($('<td class="text-center">').append($('<a href="/view?dataSourceID=' + (dataSource.dataSourceID) + '">').append($('<span class="fa fa-search"></span>')))
                     )
                     .append($('<td class="text-center deleteWrapper">')
                         .append($('<button  value="' + dataSource.dataSourceID + '" class="btn btn-outline-light pop-function delete-button" rel="popover" >').append($('<span color="red" class="fa fa-trash"></span></button>'))))

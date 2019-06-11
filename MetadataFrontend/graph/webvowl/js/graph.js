@@ -1571,6 +1571,8 @@ module.exports = function (graphContainerSelector) {
     };
 
     function updateNodesForSG(){
+        if(graph.options().defaultConfig().bdi === "true")
+            return;
         if(nodeElements){
             if( options.defaultConfig().selectSG_mode === "true" ||
                 options.defaultConfig().OMQ_mode === "true"){

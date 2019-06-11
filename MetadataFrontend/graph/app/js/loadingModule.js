@@ -215,12 +215,7 @@ module.exports =  function (graph) {
         if (storeCache===false){
             autoStore=false;
         }
-        if(graph.options().defaultConfig().bdi === "true"){
-            console.log("TRUE")
-            retrieveGraph(globalgraphid);
-        } else {
-            retrieveGraph(globalgraphid);
-        }
+        retrieveGraph(globalgraphid);
         graph.clearAllGraphData();
         loadingModule.initializeLoader(autoStore);
         var urlString = String(location);
@@ -576,11 +571,48 @@ module.exports =  function (graph) {
 
     /** --- HELPER FUNCTIONS **/
     function retrieveGraph(id) {
+        if(graph.options().defaultConfig().bdi === "true"){
+            console.log("BDI");
+            var IntegratedDSID = getParameterByName("IntegratedDataSourceID");
+            var dataSourceID = getParameterByName("dataSourceID");
+
+            if(IntegratedDSID){
+                currentGlobalGraph = JSON.parse($.ajax({
+                    type: "GET",
+                    url: "/bdiIntegratedDataSources/"+IntegratedDSID,
+                    async: false
+                }).responseText);
+                if(currentGlobalGraph.graphicalGraph){
+                    console.log(currentGlobalGraph);
+                    var json = JSON.parse(JSON.parse(currentGlobalGraph.graphicalGraph));
+                    json.header.title = currentGlobalGraph.name;
+                    json.header.iri = currentGlobalGraph.schema_iri;
+                    currentGlobalGraph.graphicalGraph = JSON.stringify(JSON.stringify(json));
+                }
+            }else if(dataSourceID){
+                currentGlobalGraph = JSON.parse($.ajax({
+                    type: "GET",
+                    url: "/bdiDataSource/"+dataSourceID,
+                    async: false
+                }).responseText);
+                if(currentGlobalGraph.graphicalGraph){
+                    var json = JSON.parse(JSON.parse(currentGlobalGraph.graphicalGraph));
+                    json.header.title = currentGlobalGraph.name;
+                    json.header.iri = currentGlobalGraph.iri;
+                    currentGlobalGraph.graphicalGraph = JSON.stringify(JSON.stringify(json));
+                }
+            }
+
+
+
+
+            return;
+        }
         //there's id provided
         currentSubGraph = undefined;
         currentGlobalGraph = undefined;
         if(id){
-            console.log(id)
+            // console.log(id)
             currentGlobalGraph = JSON.parse($.ajax({
                 type: "GET",
                 url: "/globalGraph/"+id,

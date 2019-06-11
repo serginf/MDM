@@ -60,6 +60,19 @@ public class DataSourcesResource {
     }
 
     @GET
+    @Path("bdiDataSource/{dataSourceID}")
+    @Consumes("text/plain")
+    public Response GET_DataSourceWithIRI(@PathParam("dataSourceID") String iri) {
+        System.out.println("[GET /bdiDataSource" + "/" + iri);
+        String ids = getDataSourceInfo(iri);
+        JSONObject idsInfo = new JSONObject();
+
+        if (!ids.isEmpty())
+            idsInfo = (JSONObject) JSONValue.parse(ids);
+        return Response.ok(new Gson().toJson(idsInfo)).build();
+    }
+
+    @GET
     @Path("bdiDeleteDataSource/{dataSourceID}")
     @Consumes("text/plain")
     public Response GET_DeleteDataSource(@PathParam("dataSourceID") String id) {
@@ -109,7 +122,13 @@ public class DataSourcesResource {
     private String getIntegratedDataSourceInfo(String dataSourceId) {
         MongoClient client = Utils.getMongoDBClient();
         MongoCursor<Document> cursor = MongoCollections.getIntegratedDataSourcesCollection(client).
-                find(new Document("integratedDataSourceID", dataSourceId)).iterator();
+                find(new Document("dataSourceID", dataSourceId)).iterator();
+        return MongoCollections.getMongoObject(client, cursor);
+    }
+    private String getDataSourceInfo(String dataSourceId) {
+        MongoClient client = Utils.getMongoDBClient();
+        MongoCursor<Document> cursor = MongoCollections.getDataSourcesCollection(client).
+                find(new Document("dataSourceID", dataSourceId)).iterator();
         return MongoCollections.getMongoObject(client, cursor);
     }
 
