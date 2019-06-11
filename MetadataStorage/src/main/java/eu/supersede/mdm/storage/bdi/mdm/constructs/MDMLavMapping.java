@@ -2,19 +2,17 @@ package eu.supersede.mdm.storage.bdi.mdm.constructs;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCursor;
-import eu.supersede.mdm.storage.bdi.extraction.NewNamespaces2;
-import eu.supersede.mdm.storage.model.Namespaces;
+import eu.supersede.mdm.storage.bdi.extraction.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.resources.LAVMappingResource;
 import eu.supersede.mdm.storage.resources.WrapperResource;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
-import eu.supersede.mdm.storage.util.Tuple2;
+import eu.supersede.mdm.storage.util.Tuple3;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
-import org.apache.jena.vocabulary.OWL;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -26,10 +24,11 @@ public class MDMLavMapping {
     private String mdmGlobalGraphIri;
     private String mdmGgId;
     private JSONArray wrappers;
-    private Map<String, List<String>> features = new HashMap<>();
+    /*Map<feature, List< Tuple3<localName, sourceName, IRI>, Tuple3<,,>,....*/
+    private Map<String, List<Tuple3<String, String, String>>> features = new HashMap<>();
     //private List<Tuple2<String, String>> lavMappings = new ArrayList<>();
     private JSONObject lavMapping;
-    private JSONArray featureAndAttributes ;
+    private JSONArray featureAndAttributes;
 
     public MDMLavMapping(String mdmGlobalGraphIri) {
         this.mdmGlobalGraphIri = mdmGlobalGraphIri;
@@ -38,6 +37,9 @@ public class MDMLavMapping {
 
     private void run() {
         getFeaturesWithSameAsEdges();
+        System.out.println("FEATURES:");
+
+        System.out.println(features);
         getWrapperInfoFromGg();
         initLavMapping();
     }
@@ -50,16 +52,18 @@ public class MDMLavMapping {
 
             //String featureName = triple.get("f").toString().split("/")[triple.get("f").toString().split("/").length - 1];
             String featureName = triple.get("f").toString();
-            List<String> sameAsfeatures = new ArrayList<>();
+            List<Tuple3<String, String, String>> sameAsfeatures = new ArrayList<>();
 
             if (triple.get("o") != null)
-                sameAsfeatures.add(triple.get("o").toString());
+                sameAsfeatures.add(new Tuple3<>(getLastElementOfIRI(triple.get("o").toString()),
+                        getSourceFromIRI(triple.get("o").toString()), triple.get("o").toString()));
 
             if (features.containsKey(featureName)) {
                 //System.out.println("Printing value of the key : " + features.get(featureName));
-                List<String> tempList = features.get(featureName);
+                List<Tuple3<String, String, String>> tempList = features.get(featureName);
                 if (triple.get("o") != null)
-                    tempList.add(triple.get("o").toString());
+                    tempList.add(new Tuple3<>(getLastElementOfIRI(triple.get("o").toString()),
+                            getSourceFromIRI(triple.get("o").toString()), triple.get("o").toString()));
                 features.put(featureName, tempList);
             } else {
                 features.put(featureName, sameAsfeatures);
@@ -87,7 +91,7 @@ public class MDMLavMapping {
                     find(new Document("wrapperID", wrapperId)).iterator();
             createLavMappings(((JSONObject) JSONValue.parse(MongoCollections.getMongoObject(client, wrapperCursor))).getAsString("iri"));
             lavMapping = new JSONObject();
-            lavMapping.put("wrapperID",wrapperId.toString());
+            lavMapping.put("wrapperID", wrapperId.toString());
             lavMapping.put("isModified", "false");
 
             lavMapping.put("globalGraphID", mdmGgId);
@@ -109,10 +113,10 @@ public class MDMLavMapping {
             String attribute = getLastElementOfIRI(attr.toString());
             features.forEach((key, list) -> {
                 if (list.isEmpty()) {
-                    /*As the list is empty, we will never have a key from the global IRI here*/
-                    /*Check if attributes are the same e.g. Model == Model*/
-                    if (attribute.equals(getLastElementOfIRI(key))) {
+                    /*Check the type of the feature and the attribute*/
 
+                    if (attribute.equals(getLastElementOfIRI(key)) && getSourceFromIRI(key).equals(getWrapperSourceFromIRI(attr.toString()))) {
+                        //System.out.println("Key: " + key);
                         //lavMappings.add(new Tuple2<>(attr.toString(), key));
                         JSONObject temp = new JSONObject();
                         temp.put("feature", key);
@@ -120,13 +124,18 @@ public class MDMLavMapping {
                         featureAndAttributes.add(temp);
                     }
                 } else {
-                    if (list.contains(attribute)) {
-                        //lavMappings.add(new Tuple2<>(attr.toString(), key));
-                        JSONObject temp = new JSONObject();
-                        temp.put("feature", key);
-                        temp.put("attribute", attr.toString());
-                        featureAndAttributes.add(temp);
-                    }
+                    /*For Schema IRI, source type can be checked*/
+                    list.forEach(tuple -> {
+                        if (tuple._1.equals(attribute) && tuple._2.equals(getWrapperSourceFromIRI(attr.toString()))) {
+                            //System.out.println("Key: " + key + " LocalName: " + tuple._1  + " Source: " + tuple._2);
+                            //lavMappings.add(new Tuple2<>(attr.toString(), key));
+                            JSONObject temp = new JSONObject();
+                            temp.put("feature", key);
+                            temp.put("attribute", attr.toString());
+                            featureAndAttributes.add(temp);
+                        }
+                    });
+
                 }
             });
         });
@@ -136,15 +145,26 @@ public class MDMLavMapping {
         return iri.split("/")[iri.split("/").length - 1];
     }
 
-    private String getWrapperSourceFromIRI(String iri){
+    private String getWrapperSourceFromIRI(String iri) {
         return iri.split("/")[iri.split("/").length - 2];
     }
 
-    private String getSourceFromGgIRI(String iri){
+    private String getSourceFromIRI(String iri) {
         // If the global IRI is of a source, e.g. http://www.BDIOntology.com/schema/Bicycles/Bicycle_Manufacturer then
         // the word after http://www.BDIOntology.com/schema/ is the name of the source. However, if the global IRI is from global
         // instances (created while aligning) e.g. http://www.BDIOntology.com/global/ermaElU0-QbtrOURF/Model, then we can not identify the source from this IRI,
-        return NewNamespaces2.schema.val();
+        String source = "";
+        if (iri.contains(Namespaces.G.val())) {
+            source = "global";
+        }
+
+        if (iri.contains(Namespaces.Schema.val())) {
+            /*Extract the source name from the IRI*/
+            /*Source Name is Bicycle in this IRI http://www.BDIOntology.com/schema/Bicycles/Bicycle_Manufacturer */
+            source = iri.split(Namespaces.Schema.val())[1].split("/")[0];
+        }
+
+        return source;
     }
 
 }

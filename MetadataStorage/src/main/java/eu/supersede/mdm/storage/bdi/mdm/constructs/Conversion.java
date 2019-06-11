@@ -11,12 +11,14 @@ import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.semarglproject.vocab.OWL;
 import org.semarglproject.vocab.RDF;
@@ -49,9 +51,9 @@ public class Conversion {
     private void runFlow() {
         /*schema_iri is IRI (namedGraph) of the BDI graph which need to be converted into MDM graph*/
 
-        new MDMGlobalGraph(globalGraphInfo.getAsString("name"), globalGraphInfo.getAsString("schema_iri"), mdmGlobalGraphIri);
+        //new MDMGlobalGraph(globalGraphInfo.getAsString("name"), globalGraphInfo.getAsString("schema_iri"), mdmGlobalGraphIri);
 
-        new MDMWrapper(globalGraphInfo, mdmGlobalGraphIri);
+        //new MDMWrapper(globalGraphInfo, mdmGlobalGraphIri);
 
         new MDMLavMapping(mdmGlobalGraphIri);
 

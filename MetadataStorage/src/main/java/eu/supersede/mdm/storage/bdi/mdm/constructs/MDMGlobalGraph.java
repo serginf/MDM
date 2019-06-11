@@ -1,13 +1,9 @@
 package eu.supersede.mdm.storage.bdi.mdm.constructs;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.mongodb.MongoClient;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.parsers.OWLtoWebVOWL;
-import eu.supersede.mdm.storage.resources.bdi.SchemaIntegrationHelper;
-import eu.supersede.mdm.storage.util.ConfigManager;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
@@ -23,9 +19,6 @@ import org.apache.jena.vocabulary.OWL;
 import org.bson.Document;
 import org.semarglproject.vocab.RDF;
 
-import java.io.File;
-import java.io.FileReader;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 public class MDMGlobalGraph {
@@ -49,20 +42,6 @@ public class MDMGlobalGraph {
 
     private void getGraphicalVowlGraph() {
         try {
-            SchemaIntegrationHelper schemaIntegrationHelper = new SchemaIntegrationHelper();
-
-            //String ttlFileName = bdiGgName.replace(" ", "") + RandomStringUtils.randomAlphanumeric(4).replace("-", "");
-            String ttlFileName = bdiGgName.replace(" ", "");
-
-            // This method will return JSONObject of containing two elements 'vowlJsonFileName' and 'vowlJsonFilePath'
-            //JSONObject vowlObj = Utils.oWl2vowl(ConfigManager.getProperty("output_path") + schemaIntegrationHelper.writeToFile(ttlFileName, mdmGgIri));
-            /*JSONObject vowlObj = Utils.oWl2vowl(ConfigManager.getProperty("output_path") + schemaIntegrationHelper.writeToFile("MDMGOOGLE", "https://www.google.com/ba1028029c184d06bdcd6eaa00f6a316"));*/
-
-            /*Gson gson = new Gson();
-            File jsonFile = Paths.get(vowlObj.getAsString("vowlJsonFilePath")).toFile();
-            JsonObject jsonObject = gson.fromJson(new FileReader(jsonFile), JsonObject.class);
-*/
-
             OWLtoWebVOWL owltoWebVowl = new OWLtoWebVOWL();
             owltoWebVowl.setNamespace(Namespaces.G.val());
             String vowlJson = owltoWebVowl.convert(mdmGgIri);
@@ -109,7 +88,7 @@ public class MDMGlobalGraph {
         /* Query to get Classes and their properties from BDI Global Graph to create hasFeature edges between Concepts and Features of MDM Global Graph*/
         connectConceptsAndFeatures(mdmGlobalGraph);
         //Query to get the sameAs or equivalentProperty relationship of features
-        //handleSameAsEdges(mdmGlobalGraph);
+        handleSameAsEdges(mdmGlobalGraph);
 
         mdmGlobalGraph.commit();
         mdmGlobalGraph.close();
