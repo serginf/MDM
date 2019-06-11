@@ -376,6 +376,7 @@ module.exports = function () {
     defaultOptionsConfig.mode_multiColor="false";
     defaultOptionsConfig.debugFeatures="false";
     defaultOptionsConfig.rect=0;
+    defaultOptionsConfig.bdi = "false";
 
 
     options.initialConfig=function(){
@@ -400,8 +401,15 @@ module.exports = function () {
 	       	initCfg.mode_pnp="false";
 			initCfg.debugFeatures="false";
            	initCfg.rect=0;
+           	initCfg.bdi = "false";
 		return initCfg;
     };
+
+	options.setEditModeForBdiVisualize=function(val){
+		defaultOptionsConfig.bdi=String(val);
+		if(mdmController)
+			mdmController.updateGui();
+	};
 
     options.setEditorModeForDefaultObject=function(val){
         defaultOptionsConfig.editorMode=String(val);

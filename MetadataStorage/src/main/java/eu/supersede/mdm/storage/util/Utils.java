@@ -60,7 +60,7 @@ public class Utils {
      *  Request type: POST
      *  Parameters of post request: 'rdfsFilePath' and 'vowlJsonFileOutputPath' as JSONObject elements.
      * @param rdfsFilePath
-     * @return JSONObject of containing two elements 'vowlJsonFileName' and 'vowlJsonFilePath'
+     * @return JSONObject of containing one element i.e. vowlJson
      */
     public static JSONObject oWl2vowl(String rdfsFilePath) {
         JSONObject vowlResponse = new JSONObject();

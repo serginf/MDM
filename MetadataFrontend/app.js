@@ -273,10 +273,14 @@ app.get('/bdi', checkAuthenticated, function (req, res) {
     res.render('bdi_index', {user: req.session.passport.user});
 });
 
-app.get('/view/:resource_name&:dsn', checkAuthenticated, function (req, res) {
-    /*console.log(req.params);
-    console.log(req.query);*/
-    res.render('bdi_visualization', {user: req.session.passport.user, resource_name : req.params.resource_name, data_source_name : req.params.dsn});
+// app.get('/view/:resource_name&:dsn', checkAuthenticated, function (req, res) {
+//     /*console.log(req.params);
+//     console.log(req.query);*/
+//     res.render('bdi_visualization', {user: req.session.passport.user, resource_name : req.params.resource_name, data_source_name : req.params.dsn});
+// });
+
+app.get('/view', checkAuthenticated, function(req,res) {
+    res.render('bdi_visualization', {user:req.session.passport.user});
 });
 
 app.get('/integration/:ids1&:ids2&:ds1_name&:ds2_name', checkAuthenticated, function (req, res) {

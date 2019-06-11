@@ -215,13 +215,18 @@ module.exports =  function (graph) {
         if (storeCache===false){
             autoStore=false;
         }
-
+        if(graph.options().defaultConfig().bdi === "true"){
+            console.log("TRUE")
+            retrieveGraph(globalgraphid);
+        } else {
+            retrieveGraph(globalgraphid);
+        }
         graph.clearAllGraphData();
         loadingModule.initializeLoader(autoStore);
         var urlString = String(location);
         var parameterArray=identifyParameter(urlString);
         ontologyIdentifierFromURL=DEFAULT_JSON_NAME;
-        retrieveGraph(globalgraphid);
+        // retrieveGraph(globalgraphid);
         loadGraphOptions(parameterArray); // identifies and loads configuration values
         var loadingMethod= identifyOntologyLoadingMethod(ontologyIdentifierFromURL);
         d3.select("#progressBarValue").node().innerHTML=" ";
@@ -476,6 +481,7 @@ module.exports =  function (graph) {
         ontologyMenu.append_bulletPoint("Retrieving ontology: " + currentGlobalGraph.name );
         parseOntologyContent(JSON.parse(currentGlobalGraph.graphicalGraph));
     };
+
 
     function loadPresetOntology(ontology){
         // check if already cached in ontology menu?

@@ -82,11 +82,10 @@ public class DataSourcesResource {
 
         if (collectionType.equals("DATA-SOURCE")) {
             if (new File(dsInfo.getAsString("parsedFileAddress")).delete() &&
-                    new File(dsInfo.getAsString("vowlJsonFilePath")).delete() &&
                     new File(dsInfo.getAsString("sourceFileAddress")).delete()) {
                 schemaIntegrationHelper.deleteDataSourceInfo(id, collectionType);
                 RDFUtil.removeNamedGraph(dsInfo.getAsString("schema_iri"));
-                System.out.println("Deleted : " + dsInfo.getAsString("parsedFileAddress") + "\n" + dsInfo.getAsString("integratedVowlJsonFilePath"));
+                System.out.println("Deleted : " + dsInfo.getAsString("parsedFileAddress") + "\n");
                 flag = "DELETED";
             } else {
                 System.out.println("Error deleting");
@@ -94,10 +93,10 @@ public class DataSourcesResource {
         }
 
         if (collectionType.equals("INTEGRATED")) {
-            if (new File(dsInfo.getAsString("parsedFileAddress")).delete() && new File(dsInfo.getAsString("integratedVowlJsonFilePath")).delete()) {
+            if (new File(dsInfo.getAsString("parsedFileAddress")).delete()) {
                 schemaIntegrationHelper.deleteDataSourceInfo(id, collectionType);
                 RDFUtil.removeNamedGraph(dsInfo.getAsString("schema_iri"));
-                System.out.println("Deleted : " + dsInfo.getAsString("parsedFileAddress") + "\n" + dsInfo.getAsString("integratedVowlJsonFilePath"));
+                System.out.println("Deleted : " + dsInfo.getAsString("parsedFileAddress") + "\n");
                 flag = "DELETED";
             } else {
                 System.out.println("Error deleting");

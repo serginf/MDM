@@ -9,6 +9,7 @@ import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -93,8 +94,8 @@ public class SchemaExtractionResource {
         resData.put("iri", SourceGraph.DATA_SOURCE.val() + "/" + objBody.getAsString("givenName"));
         //resData.put("iri", IRI);
         resData.put("schema_iri", IRI);
-        resData.put("vowlJsonFilePath", vowlObj.getAsString("vowlJsonFilePath"));
-        resData.put("vowlJsonFileName", vowlObj.getAsString("vowlJsonFileName"));
+        resData.put("graphicalGraph",   "\" " + StringEscapeUtils.escapeJava(vowlObj.getAsString("vowlJson")) + "\"" );
+        //resData.put("vowlJsonFileName", vowlObj.getAsString("vowlJsonFileName"));
 
         if (objBody.getAsString("type").equals("json")) {
             resData.put("json_path", objBody.getAsString("filePath"));

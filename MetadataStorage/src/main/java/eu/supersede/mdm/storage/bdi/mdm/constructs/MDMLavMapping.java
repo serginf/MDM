@@ -2,6 +2,7 @@ package eu.supersede.mdm.storage.bdi.mdm.constructs;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCursor;
+import eu.supersede.mdm.storage.bdi.extraction.NewNamespaces2;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.resources.LAVMappingResource;
@@ -108,7 +109,10 @@ public class MDMLavMapping {
             String attribute = getLastElementOfIRI(attr.toString());
             features.forEach((key, list) -> {
                 if (list.isEmpty()) {
+                    /*As the list is empty, we will never have a key from the global IRI here*/
+                    /*Check if attributes are the same e.g. Model == Model*/
                     if (attribute.equals(getLastElementOfIRI(key))) {
+
                         //lavMappings.add(new Tuple2<>(attr.toString(), key));
                         JSONObject temp = new JSONObject();
                         temp.put("feature", key);
@@ -130,6 +134,17 @@ public class MDMLavMapping {
 
     private String getLastElementOfIRI(String iri) {
         return iri.split("/")[iri.split("/").length - 1];
+    }
+
+    private String getWrapperSourceFromIRI(String iri){
+        return iri.split("/")[iri.split("/").length - 2];
+    }
+
+    private String getSourceFromGgIRI(String iri){
+        // If the global IRI is of a source, e.g. http://www.BDIOntology.com/schema/Bicycles/Bicycle_Manufacturer then
+        // the word after http://www.BDIOntology.com/schema/ is the name of the source. However, if the global IRI is from global
+        // instances (created while aligning) e.g. http://www.BDIOntology.com/global/ermaElU0-QbtrOURF/Model, then we can not identify the source from this IRI,
+        return NewNamespaces2.schema.val();
     }
 
 }

@@ -1,24 +1,13 @@
-extends bdi_layout
-block headers
-    script(src='/js/bdi_visualization.js')
+extends layout
+block headersGraphs
+    script(src='/js/metamodel.js')
+    link(rel='stylesheet', type='text/css', href='graph/css/webvowl.css')
+    link(rel='stylesheet', type='text/css', href='graph/css/webvowl.app.css')
+
 block content
-    .col-12.card.bg-white.float-left.border-0
-        .card.bg-light.mb-3.bg-white
-            .card-header
-                .row
-                    .col-md-12
-                        h5(style="color:black")
-                            | Visualizing Schema of data source:  #{data_source_name}
-
-    iframe#ViewiframeGraph(style='visibility:hidden;', onload="this.style.visibility = 'visible';" , src='/vowl/#'+resource_name, frameborder='0')
-
-
-
-
-
-
-
-
-
-
-
+    include includes/webvowl
+    script(src='graph/js/d3.min.js')
+    script(src='graph/js/webvowl.js')
+    script(src='graph/js/webvowl.app.js')
+    script.
+        window.onload = webvowl.app().initialize("bdi_visualization");

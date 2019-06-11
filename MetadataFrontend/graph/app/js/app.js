@@ -76,6 +76,7 @@ module.exports = function () {
         window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame || function(requestID){clearTimeout(requestID);}; //fall back
 
         options.setEditorModeForDefaultObject(mdmConfig.getConf(viewType).editorMode);
+        options.setEditModeForBdiVisualize(mdmConfig.getConf(viewType).bdi);
         options.setModeForSelectionSG(mdmConfig.getConf(viewType).selectSG);
         options.setModeForOMQ(mdmConfig.getConf(viewType).OMQ_mode);
 

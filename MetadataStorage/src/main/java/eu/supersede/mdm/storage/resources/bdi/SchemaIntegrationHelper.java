@@ -8,6 +8,7 @@ import eu.supersede.mdm.storage.util.*;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.QuerySolution;
@@ -144,8 +145,8 @@ public class SchemaIntegrationHelper {
         integratedDataSourceObj.put("dataSources", dataSourcesArray);
         integratedDataSourceObj.put("name", dataSource1Info.getAsString("name").replaceAll(" ", "") + dataSource2Info.getAsString("name").replaceAll(" ", ""));
         integratedDataSourceObj.put("parsedFileAddress", integratedModelFileName);
-        integratedDataSourceObj.put("integratedVowlJsonFileName", vowlObj.getAsString("vowlJsonFileName"));
-        integratedDataSourceObj.put("integratedVowlJsonFilePath", vowlObj.getAsString("vowlJsonFilePath"));
+        integratedDataSourceObj.put("graphicalGraph",    "\" " + StringEscapeUtils.escapeJava(vowlObj.getAsString("vowlJson")) + "\"");
+        //integratedDataSourceObj.put("integratedVowlJsonFilePath", vowlObj.getAsString("vowlJsonFilePath"));
 
         // Adding JSON Response in MongoDB Collection named as IntegratedDataSources
         addIntegratedDataSourceInfoAsMongoCollection(integratedDataSourceObj);
@@ -171,8 +172,8 @@ public class SchemaIntegrationHelper {
 
         collection.updateOne(eq("dataSourceID", integratedDataSourceInfo.getAsString("dataSourceID")), new Document("$set", new Document("dataSourceID", newDataSourceID)));
         collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("schema_iri", Namespaces.G.val() + integratedDataSourceInfo.getAsString("dataSourceID") + "-" + dataSource2Info.getAsString("dataSourceID"))));
-        collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("integratedVowlJsonFileName", vowlObj.getAsString("vowlJsonFileName"))));
-        collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("integratedVowlJsonFilePath", vowlObj.getAsString("vowlJsonFilePath"))));
+        collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("graphicalGraph",  "\" " + StringEscapeUtils.escapeJava(vowlObj.getAsString("vowlJson")) + "\"")));
+        //collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("integratedVowlJsonFilePath", vowlObj.getAsString("vowlJsonFilePath"))));
         collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("parsedFileAddress", integratedModelFileName)));
         collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("dataSources", dataSourcesArray)));
         collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("name", integratedDataSourceInfo.getAsString("name").replaceAll(" ", "") + dataSource2Info.getAsString("name").replaceAll(" ", ""))));
@@ -245,8 +246,8 @@ public class SchemaIntegrationHelper {
     static void updateIntegratedDataSourceInfo(String iri, JSONObject vowlObj) {
         MongoClient client = Utils.getMongoDBClient();
         MongoCollection collection = MongoCollections.getIntegratedDataSourcesCollection(client);
-        collection.updateMany(eq("integratedDataSourceID", iri), new Document("$set", new Document("integratedVowlJsonFilePath", vowlObj.getAsString("vowlJsonFilePath"))));
-        collection.updateMany(eq("integratedDataSourceID", iri), new Document("$set", new Document("integratedVowlJsonFileName", vowlObj.getAsString("vowlJsonFileName"))));
+        collection.updateMany(eq("integratedDataSourceID", iri), new Document("$set", new Document("graphicalGraph",  "\" " + StringEscapeUtils.escapeJava(vowlObj.getAsString("vowlJson")) + "\"")));
+        //collection.updateMany(eq("integratedDataSourceID", iri), new Document("$set", new Document("integratedVowlJsonFileName", vowlObj.getAsString("vowlJsonFileName"))));
         client.close();
     }
 
