@@ -1,9 +1,17 @@
 package eu.supersede.mdm.storage.util;
 
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.result.DeleteResult;
 import org.apache.jena.query.ResultSet;
+import org.bson.Document;
+
+import javax.print.Doc;
+import java.util.logging.Logger;
 
 public class ServiceUtils {
 
+    private static final Logger LOGGER = Logger.getLogger(ServiceUtils.class.getName());
 
     /**
      * Delete triple with oldIri and insert new triple with newIri in jena graph
@@ -59,5 +67,60 @@ public class ServiceUtils {
     public static ResultSet countTriples(String graphIRI, String subjectIRI, String predicateIRI, String objectIRI){
         return RDFUtil.runAQuery("SELECT (COUNT(*) AS ?count) WHERE { GRAPH <" + graphIRI + "> " +
                 "{<"+subjectIRI+"> <"+predicateIRI+"> <"+objectIRI+">} }",graphIRI);
+    }
+
+    public static boolean deleteGlobalGraph(Document filter){
+        MongoClient client = Utils.getMongoDBClient();
+        MongoCollection<Document> collectionGG = MongoCollections.getGlobalGraphCollection(client);
+        DeleteResult result = collectionGG.deleteOne(filter);
+        if (result.getDeletedCount() != 1) {
+            LOGGER.warning("Error occurred while deleting transaction(deleted= "+ result.getDeletedCount()+").");
+            client.close();
+            return false;
+        }
+        client.close();
+        return true;
+    }
+
+
+    public static boolean deleteLAVMapping(Document filter){
+        MongoClient client = Utils.getMongoDBClient();
+        MongoCollection<Document> collectionLAV = MongoCollections.getLAVMappingCollection(client);
+        DeleteResult result = collectionLAV.deleteOne(filter);
+        if (result.getDeletedCount() != 1) {
+            LOGGER.warning("Error occurred while deleting transaction(deleted= "+ result.getDeletedCount()+").");
+            client.close();
+            return false;
+        }
+        client.close();
+        return true;
+    }
+
+    public static Document getGlobalGraph(Document filter){
+        MongoClient client = Utils.getMongoDBClient();
+        Document result =   MongoCollections.getGlobalGraphCollection(client).find(filter).first();
+        client.close();
+        return result;
+    }
+
+    public static Document getDataSource(Document filter){
+        MongoClient client = Utils.getMongoDBClient();
+        Document result =   MongoCollections.getDataSourcesCollection(client).find(filter).first();
+        client.close();
+        return result;
+    }
+
+    public static Document getWrapper(Document filter){
+        MongoClient client = Utils.getMongoDBClient();
+        Document result =   MongoCollections.getDataSourcesCollection(client).find(filter).first();
+        client.close();
+        return result;
+    }
+
+    public static Document getLAVMapping(Document filter){
+        MongoClient client = Utils.getMongoDBClient();
+        Document result =  MongoCollections.getLAVMappingCollection(client).find(filter).first();
+        client.close();
+        return result;
     }
 }

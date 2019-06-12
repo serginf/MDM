@@ -1,6 +1,7 @@
 package eu.supersede.mdm.storage.service.impl;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import eu.supersede.mdm.storage.errorhandling.exception.DeleteNodeGlobalGException;
 import eu.supersede.mdm.storage.service.impl.model.LavObj;
@@ -16,6 +17,22 @@ import java.util.List;
 
 public class DeleteGlobalGraphServiceImpl {
 
+
+    public void deleteGlobalGraph(String namedGraph){
+
+        Document globalGraph = ServiceUtils.getGlobalGraph(new Document("namedGraph",namedGraph));
+        Document LAVMapping = ServiceUtils.getLAVMapping(new Document("globalGraphID",globalGraph.get("globalGraphID")));
+
+        ServiceUtils.deleteGlobalGraph(new Document("namedGraph",namedGraph));
+        ServiceUtils.deleteLAVMapping(new Document("globalGraphID",globalGraph.get("globalGraphID")));
+
+        //delete namedGraph in jena
+        //delete wrapper in jena (subgraph)
+
+        //delete sameAs from datasource in jena
+
+
+    }
 
     /*
      * Deletes a node.
