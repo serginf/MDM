@@ -44,6 +44,7 @@ public class MDMGlobalGraph {
         try {
             OWLtoWebVOWL owltoWebVowl = new OWLtoWebVOWL();
             owltoWebVowl.setNamespace(Namespaces.G.val());
+            owltoWebVowl.setTitle(bdiGgName);
             String vowlJson = owltoWebVowl.convert(mdmGgIri);
             mdmGgGraphicalGraph = "\" " + StringEscapeUtils.escapeJava(vowlJson) + "\"";
         } catch (Exception e) {
@@ -89,6 +90,8 @@ public class MDMGlobalGraph {
         connectConceptsAndFeatures(mdmGlobalGraph);
         //Query to get the sameAs or equivalentProperty relationship of features
         handleSameAsEdges(mdmGlobalGraph);
+        //Query to connect classes having subClassOf relationships
+        connectSuperAndSubClasses(mdmGlobalGraph);
 
         mdmGlobalGraph.commit();
         mdmGlobalGraph.close();
@@ -150,9 +153,20 @@ public class MDMGlobalGraph {
         String getClasses = "SELECT * WHERE { GRAPH <" + bdiGgIri + "> { ?s  owl:equivalentProperty ?p } }";
         System.out.println("Finding same as relationships");
         RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getClasses, bdiGgIri).forEachRemaining(triple -> {
-            System.out.print(triple.getResource("p") + "\t");
-            System.out.print(triple.get("s") + "\n");
+            System.out.print(triple.getResource("p") + "\t" + triple.get("s") + "\n");
+            //System.out.print(triple.get("s") + "\n");
+            /*WARNING: By declaring sameAs property as a feature will result in lot of unconnected nodes in the visualization of global graph*/
+            //mdmGlobalGraph.add(triple.getResource("s"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
             mdmGlobalGraph.add(triple.getResource("p"), OWL.sameAs, triple.getResource("s"));
+        });
+    }
+
+    private void connectSuperAndSubClasses(Model mdmGlobalGraph){
+        String getClasses = "SELECT * WHERE { GRAPH <" + bdiGgIri + "> { ?s ?p ?o. ?s rdfs:subClassOf ?o. }}";
+        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getClasses, bdiGgIri).forEachRemaining(triple -> {
+            System.out.print(triple.getResource("s") + "\t");
+            System.out.print(triple.get("p") + "\t" + triple.get("o")  + "\n");
+            mdmGlobalGraph.add(triple.getResource("s"), new PropertyImpl(triple.get("p").toString()), triple.getResource("o"));
         });
     }
 }

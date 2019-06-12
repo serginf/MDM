@@ -70,6 +70,42 @@ public class LAVMappingResource {
     @Consumes("text/plain")
     public Response POST_LAVMappingSubgraph(String body) {
         LOGGER.info("[POST /LAVMapping/subgraph/] body = " + body);
+        JSONObject objBody = createLAVMappingSubgraph(body);
+        return Response.ok(objBody.toJSONString()).build();
+    }
+
+
+    public static JSONObject createLAVMappingMapsTo(String body) {
+        JSONObject objBody = (JSONObject) JSONValue.parse(body);
+        MongoClient client = Utils.getMongoDBClient();
+
+        Document wrapper = MongoCollections.getWrappersCollection(client)
+                .find(new Document("wrapperID", objBody.getAsString("wrapperID"))).first();
+        Document dataSource = MongoCollections.getDataSourcesCollection(client)
+                .find(new Document("dataSourceID", wrapper.getString("dataSourceID"))).first();
+
+        if (objBody.getAsString("isModified").equals("false")) {
+            objBody.put("LAVMappingID", UUID.randomUUID().toString().replace("-", ""));
+            MongoCollections.getLAVMappingCollection(client).insertOne(Document.parse(objBody.toJSONString()));
+
+            String dsIRI = dataSource.getString("iri");
+
+            ((JSONArray) objBody.get("sameAs")).forEach(mapping -> {
+                JSONObject objMapping = (JSONObject) mapping;
+                RDFUtil.addTriple(dsIRI, objMapping.getAsString("attribute"), Namespaces.owl.val() + "sameAs", objMapping.getAsString("feature"));
+            });
+
+        } else {
+            UpdateLavMappingServiceImpl updateLAVM = new UpdateLavMappingServiceImpl();
+            updateLAVM.updateTriples(((JSONArray) objBody.get("sameAs")), objBody.getAsString("LAVMappingID"),
+                    wrapper.getString("iri"), dataSource.getString("iri"));
+        }
+
+        client.close();
+        return objBody;
+    }
+
+    public static JSONObject createLAVMappingSubgraph(String body) {
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
         MongoClient client = Utils.getMongoDBClient();
 
@@ -113,36 +149,6 @@ public class LAVMappingResource {
 
             }
         });
-
-        client.close();
-        return Response.ok(objBody.toJSONString()).build();
-    }
-
-    public static JSONObject createLAVMappingMapsTo(String body) {
-        JSONObject objBody = (JSONObject) JSONValue.parse(body);
-        MongoClient client = Utils.getMongoDBClient();
-
-        Document wrapper = MongoCollections.getWrappersCollection(client)
-                .find(new Document("wrapperID", objBody.getAsString("wrapperID"))).first();
-        Document dataSource = MongoCollections.getDataSourcesCollection(client)
-                .find(new Document("dataSourceID", wrapper.getString("dataSourceID"))).first();
-
-        if (objBody.getAsString("isModified").equals("false")) {
-            objBody.put("LAVMappingID", UUID.randomUUID().toString().replace("-", ""));
-            MongoCollections.getLAVMappingCollection(client).insertOne(Document.parse(objBody.toJSONString()));
-
-            String dsIRI = dataSource.getString("iri");
-
-            ((JSONArray) objBody.get("sameAs")).forEach(mapping -> {
-                JSONObject objMapping = (JSONObject) mapping;
-                RDFUtil.addTriple(dsIRI, objMapping.getAsString("attribute"), Namespaces.owl.val() + "sameAs", objMapping.getAsString("feature"));
-            });
-
-        } else {
-            UpdateLavMappingServiceImpl updateLAVM = new UpdateLavMappingServiceImpl();
-            updateLAVM.updateTriples(((JSONArray) objBody.get("sameAs")), objBody.getAsString("LAVMappingID"),
-                    wrapper.getString("iri"), dataSource.getString("iri"));
-        }
 
         client.close();
         return objBody;
