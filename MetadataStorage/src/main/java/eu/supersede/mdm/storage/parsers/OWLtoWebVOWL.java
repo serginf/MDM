@@ -17,6 +17,7 @@ public class OWLtoWebVOWL {
 
     String prefix = "G";
     String namespace = "";
+    String title = "";
 
     public OWLtoWebVOWL() {
     }
@@ -36,13 +37,14 @@ public class OWLtoWebVOWL {
         List<String> lang = new ArrayList<>();
         lang.add("en");
         h.setLanguages(lang);
-        h.setTitle(new ElementLangEn("title1"));
+        h.setTitle(new ElementLangEn(this.title));
         return h;
     }
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
     }
+    public void setTitle(String title) {this.title = title; }
 
     public String convert(String graphIRI) {
 
@@ -92,8 +94,6 @@ public class OWLtoWebVOWL {
                         getBaseIri(triple.getPredicate().getURI()), getLastElem(triple.getPredicate().getURI())
                         , nodesId.get(triple.getSubject().getURI()), nodesId.get(triple.getObject().getURI())));
             }
-
-
             iProperties++;
         }
 
