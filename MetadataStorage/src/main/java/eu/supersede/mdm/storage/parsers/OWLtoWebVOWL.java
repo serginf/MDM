@@ -8,6 +8,7 @@ import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
+import org.apache.jena.vocabulary.RDF;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +53,11 @@ public class OWLtoWebVOWL {
         RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + " SELECT ?s ?p ?o WHERE { GRAPH <" + graphIRI + "> { ?s ?p ?o . FILTER NOT EXISTS {?s owl:sameAs ?o .}} }", graphIRI).forEachRemaining(res -> {
             triples.add(new Triple(new ResourceImpl(res.get("s").toString()).asNode(),
                         new PropertyImpl(res.get("p").toString()).asNode(), new ResourceImpl(res.get("o").toString()).asNode()));
+        });
+        /*Hiding the sameAs features from the Graphical Global Graph*/
+        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + " SELECT * WHERE { GRAPH <" + graphIRI + "> " +
+                "{  ?s owl:sameAs ?o . ?o a ?x.  } }", graphIRI).forEachRemaining(res -> {
+            triples.remove( new Triple(new ResourceImpl(res.get("o").toString()).asNode(), RDF.type.asNode(), new ResourceImpl(res.get("x").toString()).asNode()));
         });
 
         List<Nodes> nodes = new ArrayList<>();

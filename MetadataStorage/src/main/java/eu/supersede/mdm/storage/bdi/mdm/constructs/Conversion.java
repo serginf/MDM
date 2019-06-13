@@ -2,7 +2,6 @@ package eu.supersede.mdm.storage.bdi.mdm.constructs;
 
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.resources.bdi.SchemaIntegrationHelper;
-import eu.supersede.mdm.storage.util.ConfigManager;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 

@@ -156,7 +156,7 @@ public class MDMGlobalGraph {
             System.out.print(triple.getResource("p") + "\t" + triple.get("s") + "\n");
             //System.out.print(triple.get("s") + "\n");
             /*WARNING: By declaring sameAs property as a feature will result in lot of unconnected nodes in the visualization of global graph*/
-            //mdmGlobalGraph.add(triple.getResource("s"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
+            mdmGlobalGraph.add(triple.getResource("s"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
             mdmGlobalGraph.add(triple.getResource("p"), OWL.sameAs, triple.getResource("s"));
         });
     }

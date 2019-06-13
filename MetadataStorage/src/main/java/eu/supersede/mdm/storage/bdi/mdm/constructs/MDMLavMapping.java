@@ -100,8 +100,7 @@ public class MDMLavMapping {
             MongoCursor<Document> wrapperCursor = MongoCollections.getWrappersCollection(client).
                     find(new Document("wrapperID", wrapperId)).iterator();
             JSONObject wrapperInfo = (JSONObject) JSONValue.parse(MongoCollections.getMongoObject(client, wrapperCursor));
-            wrappersMongoInformation.add(wrapperInfo);
-/*            createLavMappings(wrapperInfo.getAsString("iri"));
+            createLavMappings(wrapperInfo.getAsString("iri"));
             lavMapping = new JSONObject();
             lavMapping.put("wrapperID", wrapperId.toString());
             lavMapping.put("isModified", "false");
@@ -111,7 +110,10 @@ public class MDMLavMapping {
             System.out.println(lavMapping.toJSONString());
 
             // Call LAV Mapping Resource to save the LAV mapping info accordingly
-            LAVMappingResource.createLAVMappingMapsTo(lavMapping.toJSONString());*/
+            JSONObject lavMappingResourceInfo = LAVMappingResource.createLAVMappingMapsTo(lavMapping.toJSONString());
+            //System.out.println(lavMappingResourceInfo);
+            wrapperInfo.put("LAVMappingID", lavMappingResourceInfo.getAsString("LAVMappingID"));
+            wrappersMongoInformation.add(wrapperInfo);
             client.close();
         });
 
@@ -205,8 +207,6 @@ public class MDMLavMapping {
                     /*Create source and target i.e. edges, for same as relationship */
                     if(triple.getPredicate().getURI().equals(OWL.SAME_AS)){
                         //System.out.println("SAME AS: "+ triple);
-                        /*TODO decide about the type of the sameAs object, for now I declare it as a feature in SubGraph
-                            But it is not of rdf:type feature in Global Graph. It has no type actually. */
                         selectionArray.add( createObject(triple.getObject().getURI() , triple.getObject().getURI(), GlobalGraph.FEATURE.val() ));
                         graphicalGraphArray.add(triple.getObject().getURI());
 
@@ -257,7 +257,7 @@ public class MDMLavMapping {
         });
         lavMappingSubGraph.put("selection", selectionArray);
         lavMappingSubGraph.put("graphicalSubGraph", graphicalGraphArray);
-        lavMappingSubGraph.put("LAVMappingID", wrapperInfo.getAsString("wrapperID"));
+        lavMappingSubGraph.put("LAVMappingID", wrapperInfo.getAsString("LAVMappingID"));
 
         System.out.println(lavMappingSubGraph);
         LAVMappingResource.createLAVMappingSubgraph(lavMappingSubGraph.toJSONString());
