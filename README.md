@@ -47,6 +47,11 @@ gradle war
 ```
 Once the WAR has been generated, it can be deployed into a servlet container such as **Apache Tomcat**
 
+This subcomponent also requires an external **OWL2VOWL** service to be running prior to execution of both the components:
+```sh
+java -jar MDM/OWLtoVOWLService/owl2vowl-rest-service.jar
+```
+Execute the above command to run the service.
 ### Is it working?
 With both services running, issue the following **curl** request.
 ```sh
