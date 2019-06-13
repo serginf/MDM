@@ -25,7 +25,7 @@ block content
             #instructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
                 .card-body
                     p.card-text(style='text-align: left')
-                        | Data sources represent external endpoints where to fetch data from. We support connection to classic databases (e.g., SQL databases), NOSQL stores (e.g., document stores) and REST APIs.
+                        | Data sources represent external endpoints where to fetch data from. We support JSON documents, XML Documents, and connection to classic databases (e.g., SQL databases)
 
         .card.bg-light.mb-3
             form#dataSourceForm(method ="post" enctype="multipart/form-data")
@@ -67,7 +67,7 @@ block content
 
                 .form-group
                     .col-lg-12.col-lg-offset-2
-                        button#submitDataSource.btn.btn-plinrimary.btn-md.btn-block(type="submit") Submit
+                        button#submitDataSource.btn.btn-primary.btn-md.btn-block(type="submit") Submit
                 .row
                     .col-md-12
                         .progress
@@ -96,10 +96,10 @@ block content
                 .row
                     .col-md-12
                         h5(style="color:black")
-                            | Integrated Data Sources (Global Graphs)
+                            | Integrated Data Sources (Metadata Traceability Graphs)
             .card-body.bg-white
 
-                table.table.table-hover#integratedDataSources
+                table.table.table-hover.table-responsive#integratedDataSources
                     thead
                         tr
                             th Select
@@ -117,10 +117,10 @@ block content
                 .row
                     .col-md-12
                         h5(style="color:black")
-                            | Parsed Data Sources (Local Graphs)
+                            | Parsed Data Sources (Canonical Graphs)
 
             .card-body.bg-white
-                table.table.table-hover#dataSources
+                table.table.table-hover.table-responsive#dataSources
                     thead
                         tr
                             th Select

@@ -167,6 +167,14 @@ function handleProgressBar() {
 }
 
 $(function () {
+    $("#instructions").collapse({
+       toggle: true
+    });
+
+    $("#schemaInstructions").collapse({
+        toggle: true
+    });
+
     getParsedFileDetails();
     getIntegratedFileDetails();
     $('#dataSourceForm').on("submit", function (e) {
