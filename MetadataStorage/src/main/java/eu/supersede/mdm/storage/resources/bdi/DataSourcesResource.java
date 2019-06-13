@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 @Path("metadataStorage")
 public class DataSourcesResource {
@@ -41,7 +42,12 @@ public class DataSourcesResource {
         System.out.println("[GET /GET_dataSources/]");
         MongoClient client = Utils.getMongoDBClient();
         List<String> dataSources = Lists.newArrayList();
-        MongoCollections.getDataSourcesCollection(client).find().iterator().forEachRemaining(document -> dataSources.add(document.toJson()));
+        MongoCollections.getDataSourcesCollection(client).find().iterator().forEachRemaining(document -> {
+            String type = (String) document.get("bootstrappingType");
+            if(Objects.equals(type, "auto")){
+                dataSources.add(document.toJson());
+            }
+        });
         client.close();
         return Response.ok(new Gson().toJson(dataSources)).build();
     }
@@ -125,6 +131,7 @@ public class DataSourcesResource {
                 find(new Document("dataSourceID", dataSourceId)).iterator();
         return MongoCollections.getMongoObject(client, cursor);
     }
+
     private String getDataSourceInfo(String dataSourceId) {
         MongoClient client = Utils.getMongoDBClient();
         MongoCursor<Document> cursor = MongoCollections.getDataSourcesCollection(client).

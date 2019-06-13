@@ -93,6 +93,7 @@ public class SchemaExtractionResource {
         resData.put("dataSourceID", RandomStringUtils.randomAlphanumeric(8).replace("-", ""));
         resData.put("iri", SourceGraph.DATA_SOURCE.val() + "/" + objBody.getAsString("givenName"));
         //resData.put("iri", IRI);
+        resData.put("bootstrappingType", "auto");
         resData.put("schema_iri", IRI);
         resData.put("graphicalGraph",   "\" " + StringEscapeUtils.escapeJava(vowlObj.getAsString("vowlJson")) + "\"" );
         //resData.put("vowlJsonFileName", vowlObj.getAsString("vowlJsonFileName"));
