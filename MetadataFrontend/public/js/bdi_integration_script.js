@@ -145,6 +145,7 @@ function getAlignments() {
                                         " <span class=\"badge badge-success\"> Super Class</span> <i class=\"fa fa-info-circle\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"It is recommended to align the matching class with the super class instead of its subclasses.\" aria-hidden=\"true\"></i> <span class=\"badge badge-warning\"><i class=\"fa fa-exclamation-triangle\" aria-hidden=\"true\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Not Recommended. Collection classes can only be aligned with collection classes.\">Not Recommended</i></span> </td>\n" +
                                         "\t<td>" + cB + " <span class=\"badge badge-info\">" + (removeURI(alignment.p)).split("/")[0] + " IRI</span> <span class=\"badge badge-primary\">New Source Graph</span> <span class=\"badge badge-warning\"><i class=\"fa fa-exclamation-triangle\" aria-hidden=\"true\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Not Recommended. Collection classes can only be aligned with collection classes.\">Not Recommended</i></span></td>\n" +
                                         "\t<td class='confidence-td'>" + (Math.round(alignment.confidence * 100) / 100) * 100 + "%</td>\n" +
+                                        '\t<td> <input type="text" class="form-control" name="newClassName" id="classNameValueId' + indexOfAlignment + '" placeholder="Name the Super Class of ' + cA + ' & ' + cB + '" ></td>\n' +
                                         "\t<td class='accept-reject-buttons'><button type=\"button\" id=\"acceptAlignment\" class=\"btn btn-success\" value=\"" + alignmentsInfo.indexOf(alignment) + "\">Accept</button> </td>\n" +
                                         "\t<td class='accept-reject-buttons'><button type=\"button\" id=\"rejectAlignment\" class=\"btn btn-danger\">Reject</button> </td>\n" +
                                         "</tr>";
@@ -155,6 +156,7 @@ function getAlignments() {
                                         " <span class=\"badge badge-success\"> Super Class</span> <i class=\"fa fa-info-circle\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"It is recommended to align the matching class with the super class instead of its subclasses.\" aria-hidden=\"true\"></i>  </td>\n" +
                                         "\t<td>" + cB + " <span class=\"badge badge-info\">" + (removeURI(alignment.p)).split("/")[0] + " IRI</span> <span class=\"badge badge-primary\">New Source Graph</span> </td>\n" +
                                         "\t<td class='confidence-td'>" + (Math.round(alignment.confidence * 100) / 100) * 100 + "%</td>\n" +
+                                        '\t<td> <input disabled type="text" class="form-control" value="Not required in this case..." name="newClassName" id="classNameValueId' + indexOfAlignment + '" placeholder="Not required in this case..." ></td>\n' +
                                         "\t<td class='accept-reject-buttons'><button type=\"button\" id=\"acceptAlignment\" class=\"btn btn-success\" value=\"" + alignmentsInfo.indexOf(alignment) + "\">Accept</button> </td>\n" +
                                         "\t<td class='accept-reject-buttons'><button type=\"button\" id=\"rejectAlignment\" class=\"btn btn-danger\">Reject</button> </td>\n" +
                                         "</tr>";
@@ -173,6 +175,8 @@ function getAlignments() {
                                     " <span class=\"badge badge-success\">SubClass</span></td>\n" +
                                     "\t<td>" + cBO + " <span class=\"badge badge-info\">" + (removeURI(alignment.p)).split("/")[0] + " IRI </span> <span class=\"badge badge-primary\">New Source Graph</span> </td>\n" +
                                     "\t<td class='confidence-td'>" + (Math.round(alignment.confidence * 100) / 100) * 100 + "%</td>\n" +
+                                    '\t<td> <input type="text" class="form-control" name="newClassName" id="classNameValueId' + alignmentsInfo.indexOf(alignment) + '" placeholder="Name the Super Class of ' + cAO + ' & ' + cBO + '" ></td>\n' +
+
                                     "\t<td class='accept-reject-buttons'><button type=\"button\" id=\"acceptAlignment\" class=\"btn btn-success\" value=\"" + alignmentsInfo.indexOf(alignment) + "\">Accept</button> </td>\n" +
                                     "\t<td class='accept-reject-buttons'><button type=\"button\" id=\"rejectAlignment\" class=\"btn btn-danger\">Reject</button> </td>\n" +
                                     "</tr>");
@@ -201,15 +205,16 @@ function getAlignments() {
                                 .append($('<tr id="row' + alignmentsInfo.indexOf(classVal) + '">')
                                     // .append($('<td>').text(i))
                                         .append($('<td>')
-                                            .text(cA).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(classVal.s)).split("/")[0] + ' IRI</span> ' +
+                                            .text(cA).append($('<span class="badge-margin badge badge-info"> <i aria-hidden="true" data-toggle="tooltip" data-placement="top" title="' + classVal.s + '">' + ' ' + (removeURI(classVal.s)).split("/")[0] + ' IRI</i></span> ' +
                                                 '<span class="badge badge-primary">Global Graph</span> ' +
                                                 '<span class="badge badge-warning"><i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Not Recommended. Collection classes can only be aligned with collection classes.">Not Recommended</i></span>'))
                                         ).append($('<td>')
-                                            .text(cB).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(classVal.p)).split("/")[0] + ' IRI</span> ' +
+                                            .text(cB).append($('<span class="badge-margin badge badge-info"> <i aria-hidden="true" data-toggle="tooltip" data-placement="top" title="' + classVal.p + '">' + ' ' + (removeURI(classVal.p)).split("/")[0] + ' IRI</i></span> ' +
                                             '<span class="badge badge-primary">New Source Graph</span> ' +
                                             '<span class="badge badge-warning"><i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Not Recommended. Collection classes can only be aligned with collection classes.">Not Recommended</i></span>'))
                                         ).append($('<td>').text((Math.round(classVal.confidence * 100) / 100) * 100 + '%' + '')
                                         )
+                                        .append($('<td>').append('<input type="text" class="form-control" name="newClassName" id="classNameValueId' + alignmentsInfo.indexOf(classVal) + '" placeholder="Name the Super Class of ' + cA + ' & ' + cB + '" >'))
                                         .append($('<td>').append('<button type="button" id ="acceptAlignment" class="btn btn-success" value="' + alignmentsInfo.indexOf(classVal) + '">Accept</button> '))
                                         .append($('<td>').append('<button type="button" id ="rejectAlignment" class="btn btn-danger">Reject</button> '))
                                 );
@@ -223,6 +228,7 @@ function getAlignments() {
                                             .text(cB).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(classVal.p)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">New Source Graph</span>'))
                                         ).append($('<td>').text((Math.round(classVal.confidence * 100) / 100) * 100 + '%' + '')
                                         )
+                                        .append($('<td>').append('<input type="text" class="form-control" name="newClassName" id="classNameValueId' + alignmentsInfo.indexOf(val) + '" placeholder="Name the Super Class of ' + cA + ' & ' + cB + '" >'))
                                         .append($('<td>').append('<button type="button" id ="acceptAlignment" class="btn btn-success" value="' + alignmentsInfo.indexOf(classVal) + '">Accept</button> '))
                                         .append($('<td>').append('<button type="button" id ="rejectAlignment" class="btn btn-danger">Reject</button> '))
                                 );
@@ -253,6 +259,7 @@ function getAlignments() {
                                         '<span class="badge badge-warning"><i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Not Recommended. Collection classes can only be aligned with collection classes.">Not Recommended</i></span>'))
                                     ).append($('<td>').text((Math.round(val.confidence * 100) / 100) * 100 + '%' + '')
                                     )
+                                    .append($('<td>').append('<input type="text" class="form-control" name="newClassName" id="classNameValueId' + alignmentsInfo.indexOf(val) + '" placeholder="Name the Super Class of ' + cA + ' & ' + cB + '" >'))
                                     .append($('<td>').append('<button type="button" id ="acceptAlignment" class="btn btn-success" value="' + alignmentsInfo.indexOf(val) + '">Accept</button> '))
                                     .append($('<td>').append('<button type="button" id ="rejectAlignment" class="btn btn-danger">Reject</button> '))
                             );
@@ -268,6 +275,7 @@ function getAlignments() {
                                         .text(cB).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.p)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">Source Graph</span>'))
                                     ).append($('<td>').text((Math.round(val.confidence * 100) / 100) * 100 + '%' + '')
                                     )
+                                    .append($('<td>').append('<input type="text" class="form-control" name="newClassName" id="classNameValueId' + alignmentsInfo.indexOf(val) + '" placeholder="Name the Super Class of ' + cA + ' & ' + cB + '" >'))
                                     .append($('<td>').append('<button type="button" id ="acceptAlignment" class="btn btn-success" value="' + alignmentsInfo.indexOf(val) + '">Accept</button> '))
                                     .append($('<td>').append('<button type="button" id ="rejectAlignment" class="btn btn-danger">Reject</button> '))
                             );
@@ -281,6 +289,58 @@ function getAlignments() {
     console.log("Alignments Info");
     console.log(alignmentsInfo);
 }
+
+$(document).ready(function () {
+    /* window.addEventListener('beforeunload', (event) => {
+            // Cancel the event as stated by the standard.
+            console.log("beforeunload");
+            event.preventDefault();
+            // Chrome requires returnValue to be set.
+            event.returnValue = "Please click 'Stay on this Page' and we will give you candy";
+        });*/
+    getAlignments();
+    integrationTypeChecker();
+
+    new Tablesort(document.getElementById('alignments'));
+    new Tablesort(document.getElementById('alignmentsClass'));
+    new Tablesort(document.getElementById('alignmentsObjProp'));
+
+    $(document).on('click', '#acceptAlignment', function () {
+        var acceptButton = $("#acceptAlignment");
+        var index = $(this).val();
+        console.log(index);
+        var userProvidedNameForTheNewClass = $("#classNameValueId" + index).val();
+        console.log(userProvidedNameForTheNewClass);
+        //acceptButtonClickHandler(acceptButton, index);
+    });
+
+    // Click handler for Finish Integration Button
+    $("#integratedDataSourcesButton").on('click', function () {
+        $("#overlay").fadeIn(100);
+        console.log("IntegratedDataSourcesButton Clicked");
+        var postData = {};
+        postData.schema_iri = params[0] + "-" + params[1];
+        postData.integrationType = integrationType;
+        postData.ds1_id = ds1_id;
+        postData.ds2_id = ds2_id;
+        console.log(postData);
+        $.ajax({
+            type: 'POST',
+            data: JSON.stringify(postData),
+            contentType: 'application/json',
+            url: '/finishIntegration',
+            success: function (response) {
+                console.log('Success');
+                window.location.href = '/bdi';
+            },
+            error: function (response) {
+                alert('failure' + JSON.stringify(response));
+                console.log(JSON.stringify(response));
+                $("#overlay").fadeOut(200);
+            }
+        });
+    });
+});
 
 function acceptButtonClickHandler(acceptButton, i) {
     $("#overlay").fadeIn(100);
@@ -316,55 +376,6 @@ function acceptButtonClickHandler(acceptButton, i) {
         }
     });
 }
-
-$(document).ready(function () {
-    /* window.addEventListener('beforeunload', (event) => {
-            // Cancel the event as stated by the standard.
-            console.log("beforeunload");
-            event.preventDefault();
-            // Chrome requires returnValue to be set.
-            event.returnValue = "Please click 'Stay on this Page' and we will give you candy";
-        });*/
-    getAlignments();
-    integrationTypeChecker();
-
-    new Tablesort(document.getElementById('alignments'));
-    new Tablesort(document.getElementById('alignmentsClass'));
-    new Tablesort(document.getElementById('alignmentsObjProp'));
-
-    $(document).on('click', '#acceptAlignment', function () {
-        var acceptButton = $("#acceptAlignment");
-        var index = $(this).val();
-        acceptButtonClickHandler(acceptButton, index);
-    });
-
-    // Click handler for Finish Integration Button
-    $("#integratedDataSourcesButton").on('click', function () {
-        $("#overlay").fadeIn(100);
-        console.log("IntegratedDataSourcesButton Clicked");
-        var postData = {};
-        postData.schema_iri = params[0] + "-" + params[1];
-        postData.integrationType = integrationType;
-        postData.ds1_id = ds1_id;
-        postData.ds2_id = ds2_id;
-        console.log(postData);
-        $.ajax({
-            type: 'POST',
-            data: JSON.stringify(postData),
-            contentType: 'application/json',
-            url: '/finishIntegration',
-            success: function (response) {
-                console.log('Success');
-                window.location.href = '/bdi';
-            },
-            error: function (response) {
-                alert('failure' + JSON.stringify(response));
-                console.log(JSON.stringify(response));
-                $("#overlay").fadeOut(200);
-            }
-        });
-    });
-});
 
 
 function constructHTMLComponent(temp, headerRow, bodyRows, index) {
