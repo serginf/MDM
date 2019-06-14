@@ -19,6 +19,7 @@ import org.apache.jena.vocabulary.OWL;
 import org.bson.Document;
 import org.semarglproject.vocab.RDF;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 public class MDMGlobalGraph {
@@ -26,6 +27,11 @@ public class MDMGlobalGraph {
     private String mdmGgIri = "";
     private String bdiGgName = "";
     private String mdmGgGraphicalGraph = "";
+    HashMap<String, String> nodesIds ;
+
+    public HashMap<String, String> getNodesIds() {
+        return nodesIds;
+    }
 
     MDMGlobalGraph(String name, String iri, String mdmGgIri) {
         this.bdiGgIri = iri;
@@ -46,6 +52,7 @@ public class MDMGlobalGraph {
             owltoWebVowl.setNamespace(Namespaces.G.val());
             owltoWebVowl.setTitle(bdiGgName);
             String vowlJson = owltoWebVowl.convert(mdmGgIri);
+            nodesIds = owltoWebVowl.getNodesId();
             mdmGgGraphicalGraph = "\" " + StringEscapeUtils.escapeJava(vowlJson) + "\"";
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,7 +164,8 @@ public class MDMGlobalGraph {
             //System.out.print(triple.get("s") + "\n");
             /*WARNING: By declaring sameAs property as a feature will result in lot of unconnected nodes in the visualization of global graph*/
             mdmGlobalGraph.add(triple.getResource("s"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
-            mdmGlobalGraph.add(triple.getResource("p"), OWL.sameAs, triple.getResource("s"));
+            //mdmGlobalGraph.add(triple.getResource("p"), OWL.sameAs, triple.getResource("s"));
+            mdmGlobalGraph.add(triple.getResource("p"), new PropertyImpl(GlobalGraph.SAME_AS.val()), triple.getResource("s"));
         });
     }
 

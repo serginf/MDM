@@ -19,6 +19,9 @@ public class OWLtoWebVOWL {
     String prefix = "G";
     String namespace = "";
     String title = "";
+    HashMap<String, String> nodesId;
+
+    public HashMap<String, String> getNodesId() { return nodesId; }
 
     public OWLtoWebVOWL() {
     }
@@ -45,20 +48,23 @@ public class OWLtoWebVOWL {
     public void setNamespace(String namespace) {
         this.namespace = namespace;
     }
-    public void setTitle(String title) {this.title = title; }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public String convert(String graphIRI) {
 
         List<Triple> triples = new ArrayList<>();
         RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + " SELECT ?s ?p ?o WHERE { GRAPH <" + graphIRI + "> { ?s ?p ?o . FILTER NOT EXISTS {?s owl:sameAs ?o .}} }", graphIRI).forEachRemaining(res -> {
             triples.add(new Triple(new ResourceImpl(res.get("s").toString()).asNode(),
-                        new PropertyImpl(res.get("p").toString()).asNode(), new ResourceImpl(res.get("o").toString()).asNode()));
+                    new PropertyImpl(res.get("p").toString()).asNode(), new ResourceImpl(res.get("o").toString()).asNode()));
         });
         /*Hiding the sameAs features from the Graphical Global Graph*/
-        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + " SELECT * WHERE { GRAPH <" + graphIRI + "> " +
+       /* RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + " SELECT * WHERE { GRAPH <" + graphIRI + "> " +
                 "{  ?s owl:sameAs ?o . ?o a ?x.  } }", graphIRI).forEachRemaining(res -> {
-            triples.remove( new Triple(new ResourceImpl(res.get("o").toString()).asNode(), RDF.type.asNode(), new ResourceImpl(res.get("x").toString()).asNode()));
-        });
+            triples.remove(new Triple(new ResourceImpl(res.get("o").toString()).asNode(), RDF.type.asNode(), new ResourceImpl(res.get("x").toString()).asNode()));
+        });*/
 
         List<Nodes> nodes = new ArrayList<>();
         List<Property> properties = new ArrayList<>();
@@ -66,7 +72,7 @@ public class OWLtoWebVOWL {
         List<ClassAttribute> classA = new ArrayList<>();
         List<PropertyAttribute> proA = new ArrayList<>();
 
-        HashMap<String, String> nodesId = new HashMap<String, String>();
+        nodesId = new HashMap<String, String>();
         List<Triple> cleanTriples = new ArrayList<>();
 
         int i = 1;

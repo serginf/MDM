@@ -17,6 +17,7 @@ public enum GlobalGraph {
     DATATYPE(Namespaces.rdfs.val()+"Datatype"),
     HAS_DATATYPE(Namespaces.G.val()+"hasDatatype"),
     HAS_RELATION(Namespaces.G.val()+"hasRelation"),
+    SAME_AS(Namespaces.G.val()+"sameAs"),
 
     PART_OF(Namespaces.G.val()+"partOf"),
     AGGREGATION_FUNCTION(Namespaces.G.val()+"aggregationFunction"),

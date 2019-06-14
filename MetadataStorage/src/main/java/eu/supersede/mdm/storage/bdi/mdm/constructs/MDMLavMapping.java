@@ -39,9 +39,11 @@ public class MDMLavMapping {
     private JSONArray featureAndAttributes;
     /*Map<feature, List< Tuple3<localName, sourceName, IRI>, Tuple3<,,>,....*/
     private Map<String, List<Tuple3<String, String, String>>> features = new HashMap<>();
+    HashMap<String, String> nodesIds;
 
-    public MDMLavMapping(String mdmGlobalGraphIri) {
+    public MDMLavMapping(String mdmGlobalGraphIri, HashMap<String, String> nodesIds) {
         this.mdmGlobalGraphIri = mdmGlobalGraphIri;
+        this.nodesIds = nodesIds;
         run();
     }
 
@@ -196,25 +198,25 @@ public class MDMLavMapping {
                     if(triple.getObject().getURI().equals(GlobalGraph.FEATURE.val())){
                         //System.out.println("Feature: "+ triple);
                        selectionArray.add( createObject(triple.getSubject().getURI() , triple.getSubject().getURI(), triple.getObject().getURI() ));
-                       graphicalGraphArray.add(triple.getSubject().getURI());
+                       graphicalGraphArray.add(nodesIds.get(triple.getSubject().getURI()));
                     }
                     //Filter  concepts
                     if(triple.getObject().getURI().equals(GlobalGraph.CONCEPT.val())){
                         //System.out.println("Concept: "+ triple);
                         selectionArray.add( createObject(triple.getSubject().getURI() , triple.getSubject().getURI(), triple.getObject().getURI() ));
-                        graphicalGraphArray.add(triple.getSubject().getURI());
+                        graphicalGraphArray.add(nodesIds.get(triple.getSubject().getURI()));
                     }
                     /*Create source and target i.e. edges, for same as relationship */
-                    if(triple.getPredicate().getURI().equals(OWL.SAME_AS)){
+                    if(triple.getPredicate().getURI().equals(GlobalGraph.SAME_AS.val())){
                         //System.out.println("SAME AS: "+ triple);
-                        selectionArray.add( createObject(triple.getObject().getURI() , triple.getObject().getURI(), GlobalGraph.FEATURE.val() ));
-                        graphicalGraphArray.add(triple.getObject().getURI());
+                        //selectionArray.add( createObject(triple.getObject().getURI() , triple.getObject().getURI(), GlobalGraph.FEATURE.val() ));
+                        //graphicalGraphArray.add(nodesIds.get(triple.getObject().getURI()));
 
                         JSONObject obj = new JSONObject();
                         obj.put("source", createObject(triple.getSubject().getURI() , triple.getSubject().getURI(), GlobalGraph.FEATURE.val() ) );
                         obj.put("target", createObject(triple.getObject().getURI() , triple.getObject().getURI(), GlobalGraph.FEATURE.val() ));
-                        obj.put("name", OWL.SAME_AS );
-                        obj.put("iri", OWL.SAME_AS);
+                        obj.put("name", GlobalGraph.SAME_AS.val() );
+                        obj.put("iri", GlobalGraph.SAME_AS.val());
                         selectionArray.add(obj);
 
                     }
@@ -265,7 +267,8 @@ public class MDMLavMapping {
 
     private JSONObject createObject(String iri, String name, String namespace){
         JSONObject temp = new JSONObject();
-        temp.put("id", iri);
+        // FIXME: add check for null nodes
+        temp.put("id", nodesIds.get(iri));
         temp.put("iri", iri);
         temp.put("name", name);
         temp.put("namespace", namespace);
