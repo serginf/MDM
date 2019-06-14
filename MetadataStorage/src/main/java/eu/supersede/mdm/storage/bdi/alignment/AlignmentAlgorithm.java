@@ -8,6 +8,8 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDF;
+import org.openrdf.model.vocabulary.RDFS;
 
 import java.util.HashMap;
 
@@ -51,8 +53,17 @@ public class AlignmentAlgorithm {
 
 
                                 // Remove Properties from aligned Classes
-                                RDFUtil.removeProperty(basicInfo.getAsString("integratedIRI"), data.get("PropertyA"), data.get("DomainPropA"), data.get("RangePropA"));
-                                RDFUtil.removeProperty(basicInfo.getAsString("integratedIRI"), data.get("PropertyB"), data.get("DomainPropB"), data.get("RangePropB"));
+                                //RDFUtil.removeProperty(basicInfo.getAsString("integratedIRI"), data.get("PropertyA"), data.get("DomainPropA"), data.get("RangePropA"));
+                                //RDFUtil.removeProperty(basicInfo.getAsString("integratedIRI"), data.get("PropertyB"), data.get("DomainPropB"), data.get("RangePropB"));
+
+                                RDFUtil.removeTriple(basicInfo.getAsString("integratedIRI"), data.get("PropertyA"), RDF.type.getURI().toString(), RDF.Property.getURI().toString());
+                                RDFUtil.removeTriple(basicInfo.getAsString("integratedIRI"), data.get("PropertyB"), RDF.type.getURI().toString(), RDF.Property.getURI().toString());
+
+                                RDFUtil.removeTriple(basicInfo.getAsString("integratedIRI"), data.get("PropertyA"), RDFS.DOMAIN.toString(),data.get("DomainPropA") );
+                                RDFUtil.removeTriple(basicInfo.getAsString("integratedIRI"), data.get("PropertyB"), RDFS.DOMAIN.toString(),data.get("DomainPropB") );
+
+                                RDFUtil.removeTriple(basicInfo.getAsString("integratedIRI"), data.get("PropertyA"), RDFS.RANGE.toString(),data.get("RangePropA") );
+                                RDFUtil.removeTriple(basicInfo.getAsString("integratedIRI"), data.get("PropertyB"), RDFS.RANGE.toString(),data.get("RangePropB") );
 
 
                                 //Move the Properties to the Parent class
