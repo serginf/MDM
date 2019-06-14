@@ -4,31 +4,43 @@ module.exports = function () {
             editorMode: "true",
             selectSG: "false",
             OMQ_mode: "false",
-            bdi: "false"
+            bdi: "false",
+            bdi_manualAl: "false"
         },
         mappings_Graph_select = {
             editorMode: "false",
             selectSG: "true",
             OMQ_mode: "false",
-            bdi: "false"
+            bdi: "false",
+            bdi_manualAl: "false"
         },
         omq = {
             editorMode: "false",
             selectSG: "false",
             OMQ_mode: "true",
-            bdi: "false"
+            bdi: "false",
+            bdi_manualAl: "false"
         },
         bdi_visualization = {
             bdi: "true",
             editorMode: "false",
             selectSG: "false",
-            OMQ_mode: "false"
+            OMQ_mode: "false",
+            bdi_manualAl: "false"
+        },
+        bdi_manual_alignments = {
+            bdi: "false",
+            editorMode: "false",
+            selectSG: "false",
+            OMQ_mode: "false",
+            bdi_manualAl: "true"
         },
         default_Option = {
             editorMode: "false",
             selectSG: "false",
             OMQ_mode: "false",
-            bdi: "false"
+            bdi: "false",
+            bdi_manualAl: "false"
         };
 
     config.getConf = function (type) {
@@ -41,6 +53,8 @@ module.exports = function () {
                 return omq;
             case "bdi_visualization":
                 return bdi_visualization;
+            case "bdi_manual_alignments":
+                return bdi_manual_alignments;
             default:
                 return default_Option;
         }
@@ -62,7 +76,9 @@ module.exports = function () {
     config.bdi_visualization = function () {
         return bdi_visualization;
     };
-
+    config.bdi_manual_alignments = function () {
+        return bdi_manual_alignments;
+    };
     return config;
 
 };

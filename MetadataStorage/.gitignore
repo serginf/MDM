@@ -9,6 +9,10 @@ local.properties
 #.settings/
 .loadpath
 .recommenders
+.DS_Store
+MDM_TDBMDM_TDB/
+out/
+sqlite
 
 # Eclipse Core
 .project

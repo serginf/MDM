@@ -21,6 +21,51 @@ block content
         .card.bg-light.mb-3.bg-white
             .card-header
                 .row
+                    .col-md-11.my-auto
+                        h5(style='color:black') Manually alignments
+                    .col-md-1
+                        button#schemaInstructionsButton.btn.btn-link(data-toggle='collapse' data-target='#schemaInstructions' aria-expanded='true')
+                            svg.svg-inline--fa.fa-chevron-circle-down.fa-w-16.fa-2x(style='color: black;' aria-hidden='true' data-prefix='fas' data-icon='chevron-circle-down' role='img' xmlns='http://www.w3.org/2000/svg' viewbox='0 0 512 512' data-fa-i2svg='')
+                                path(fill='currentColor' d='M504 256c0 137-111 248-248 248S8 393 8 256 119 8 256 8s248 111 248 248zM273 369.9l135.5-135.5c9.4-9.4 9.4-24.6 0-33.9l-17-17c-9.4-9.4-24.6-9.4-33.9 0L256 285.1 154.4 183.5c-9.4-9.4-24.6-9.4-33.9 0l-17 17c-9.4 9.4-9.4 24.6 0 33.9L239 369.9c9.4 9.4 24.6 9.4 34 0z')
+            #schemaInstructions.collapse.show(aria-labelledby='headingOne' data-parent='#accordion' style='')
+                .card-body
+                    .row
+                        .col
+                            p Select an element in each graph to align them.
+                    .row
+                        .col-md-6.text-center
+                            span#titleGraph1.badge.badge-info.graphTitle  #{ds1_name}
+                            iframe#graphIframe1(src='/bdi_graph_alignment?dataSourceID=qdlBNVNG' width='100%' height='500' frameborder="0")
+                        .col-md-6.text-center
+                            span#titleGraph2.badge.badge-info.graphTitle #{ds2_name}
+                            iframe#graphIframe2(src='/bdi_graph_alignment?dataSourceID=qdlBNVNG' width='100%' height='500' frameborder="0")
+
+                    .alert.alert-warning.alert-dismissible#alertSelectElement(role='alert')
+                        |  Incompatible types&mdash;Need to select an element with the same type!
+                        button.close(type='button' onclick='showAlert()' aria-label='Close')
+                            span(aria-hidden='true') &times;
+                    .row
+                        .col-md-6.text-center
+                            .input-group.mb-2
+                                input#selectElement1.form-control(type='text', placeholder="No element selected" name='subjectInput',  disabled)
+                                .input-group-prepend
+                                    .input-group-text
+                                        span Type:
+                                        span#typeElement1
+                        .col-md-6.text-center
+                            .input-group.mb-2
+                                input#selectElement2.form-control(type='text', placeholder="No element selected" name='subjectInput',  disabled)
+                                .input-group-prepend
+                                    .input-group-text
+                                        span Type:
+                                        span#typeElement2
+                    .row.justify-content-md-center
+                        .col-md-4
+                            button.btn.btn-primary.btn-lg.btn-block(type='button') Integrate selected elements
+
+        .card.bg-light.mb-3.bg-white
+            .card-header
+                .row
                     .col-md-12
                         h5(style="color:black")
                             | Add new Properties:

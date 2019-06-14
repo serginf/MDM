@@ -78,6 +78,16 @@ module.exports = (function () {
 
 		this.toggleFocus = function () {
 			that.focused(!that.focused());
+			if(graph.options().defaultConfig().bdi_manualAl ==="true"){
+				var info = new Object();
+				info.iri = that.iri();
+				var url = window.location.href;
+				info.id = url.substring(url.lastIndexOf("=") + 1, url.length);
+				info.type = "Class";
+				info.isSelected = that.focused();
+				var msg = new CustomEvent('clickEle_msg', { detail:info})
+				window.parent.dispatchEvent(msg);
+			}
 			if (that.nodeElement())
 				that.nodeElement().select("circle").classed("focused", that.focused());
 			graph.resetSearchHighlight();

@@ -10,6 +10,9 @@ var params = url_suffix.split('&');
 var ds1_id = params[0];
 var ds2_id = params[1];
 var integrationType;
+var selected_ds1 = "";
+var selected_ds2 = "";
+var url_iframe= "/bdi_graph_alignment";
 
 function integrationTypeChecker() {
 
@@ -19,9 +22,13 @@ function integrationTypeChecker() {
     } else if (ds1_id.includes("INTEGRATED-")) {
         console.log("Integration of a Global graph vs Local graph.");
         integrationType = "GLOBAL-vs-LOCAL";
+        $('#graphIframe1').attr('src',url_iframe+"?IntegratedDataSourceID="+ds1_id);
+        $('#graphIframe2').attr('src',url_iframe+"?dataSourceID="+ds2_id);
     } else {
         console.log("Integration between local graphs");
         integrationType = "LOCAL-vs-LOCAL";
+        $('#graphIframe1').attr('src',url_iframe+"?dataSourceID="+ds1_id);
+        $('#graphIframe2').attr('src',url_iframe+"?dataSourceID="+ds2_id);
     }
 }
 
@@ -57,7 +64,53 @@ function ifCollectionClasses(a, b) {
 
 $(function () {
     $("#infoButton").popover('show');
+    showAlert(false);
+    window.addEventListener('clickEle_msg', function(e) {
+
+        if(e.detail.id == ds1_id ){
+            if(e.detail.isSelected){
+                if(selected_ds2 == e.detail.type || selected_ds2 == ""){
+                    $("#selectElement1").val(e.detail.iri);
+                    $("#typeElement1").text(e.detail.type);
+                    selected_ds1 = e.detail.type;
+                    showAlert(false);
+                }else{
+                    showAlert(true);
+                }
+            }else {
+                $("#selectElement1").val("");
+                $("#typeElement1").text("");
+                selected_ds1 = "";
+            }
+        }else{
+            if(e.detail.isSelected) {
+                if(selected_ds1 == e.detail.type || selected_ds1 == ""){
+                    $("#selectElement2").val(e.detail.iri);
+                    $("#typeElement2").text(e.detail.type);
+                    selected_ds2 = e.detail.type;
+                    showAlert(false);
+                }else{
+                    showAlert(true);
+                }
+
+            }else{
+                $("#selectElement2").val("");
+                $("#typeElement2").text("");
+                selected_ds2 = "";
+            }
+
+        }
+
+        console.log("received msg from id: "+e.detail.id+ " element selected "+e.detail.isSelected+" is "+e.detail.type+" selected: "+e.detail.iri);
+    }, false);
 });
+
+function showAlert(flag) {
+    if(flag)
+        $("#alertSelectElement").show();
+    else
+        $("#alertSelectElement").hide();
+}
 
 function getAlignments() {
     $("#overlay").fadeIn(100);
@@ -392,3 +445,4 @@ function constructHTMLComponent(temp, headerRow, bodyRows, index) {
         "</div>";
     return cardElement;
 }
+

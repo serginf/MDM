@@ -571,7 +571,9 @@ module.exports =  function (graph) {
 
     /** --- HELPER FUNCTIONS **/
     function retrieveGraph(id) {
-        if(graph.options().defaultConfig().bdi === "true"){
+        if(graph.options().defaultConfig().bdi === "true" ||
+            graph.options().defaultConfig().bdi_manualAl ==="true"
+        ){
             console.log("BDI");
             var IntegratedDSID = getParameterByName("IntegratedDataSourceID");
             var dataSourceID = getParameterByName("dataSourceID");
@@ -602,10 +604,6 @@ module.exports =  function (graph) {
                     currentGlobalGraph.graphicalGraph = JSON.stringify(JSON.stringify(json));
                 }
             }
-
-
-
-
             return;
         }
         //there's id provided

@@ -211,6 +211,10 @@ app.get('/edit_global_graph', checkAuthenticated, function(req,res) {
     res.render('edit_global_graph', {user:req.session.passport.user});
 });
 
+app.get('/bdi_graph_alignment', checkAuthenticated, function(req,res) {
+    res.render('bdi_graph_alignment', {user:req.session.passport.user});
+});
+
 /********** Data Source section ***************************************************************/
 
 app.get('/new_data_source', checkAuthenticated, function(req,res) {
