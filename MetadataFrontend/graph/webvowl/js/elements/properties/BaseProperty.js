@@ -201,6 +201,18 @@ module.exports = (function () {
 
 		this.toggleFocus = function () {
 			that.focused(!that.focused());
+			if(graph.options().defaultConfig().bdi_manualAl ==="true"){
+				var info = new Object();
+				info.iri = that.iri();
+				var url = window.location.href;
+				info.id = url.substring(url.lastIndexOf("=") + 1, url.length);
+				info.type = "objectProperty";
+				info.isSelected = that.focused();
+				if(that.domain().baseIri() === "http://www.w3.org/2001/XMLSchema" || that.range().baseIri() === "http://www.w3.org/2001/XMLSchema")
+					info.type = "dataProperty";
+				var msg = new CustomEvent('clickEle_msg', { detail:info})
+				window.parent.dispatchEvent(msg);
+			}
 			labelElement.select("rect").classed("focused", that.focused());
 			graph.resetSearchHighlight();
 			graph.options().searchMenu().clearText();

@@ -377,6 +377,7 @@ module.exports = function () {
     defaultOptionsConfig.debugFeatures="false";
     defaultOptionsConfig.rect=0;
     defaultOptionsConfig.bdi = "false";
+	defaultOptionsConfig.bdi_manualAl = "false"; //for showing just the graph and define manual alignments.
 
 
     options.initialConfig=function(){
@@ -402,6 +403,7 @@ module.exports = function () {
 			initCfg.debugFeatures="false";
            	initCfg.rect=0;
            	initCfg.bdi = "false";
+			initCfg.bdi_manualAl = "false";
 		return initCfg;
     };
 
@@ -428,7 +430,11 @@ module.exports = function () {
 		if(mdmController)
 			mdmController.updateGui();
 	};
-
+	options.setModeBDIManualAlignment = function(val){
+		defaultOptionsConfig.bdi_manualAl =String(val);
+		if(mdmController)
+			mdmController.updateGui();
+	};
     options.setHideDebugFeaturesForDefaultObject=function(val){
         defaultOptionsConfig.debugFeatures=String(!val);
 	};

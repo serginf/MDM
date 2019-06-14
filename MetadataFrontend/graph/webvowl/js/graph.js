@@ -1571,7 +1571,8 @@ module.exports = function (graphContainerSelector) {
     };
 
     function updateNodesForSG(){
-        if(graph.options().defaultConfig().bdi === "true")
+        if(graph.options().defaultConfig().bdi === "true" ||
+            graph.options().defaultConfig().bdi_manualAl ==="true")
             return;
         if(nodeElements){
             if( options.defaultConfig().selectSG_mode === "true" ||

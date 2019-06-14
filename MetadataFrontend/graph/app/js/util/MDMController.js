@@ -30,14 +30,33 @@ module.exports = function (graph) {
                 hideOMQ(false);
                 hideSelection(true);
                 saveGraphMenu.hide(true);
+            }else if(config.bdi_manualAl){
+                hideOMQ(true);
+                hideSelection(true);
+                saveGraphMenu.hide(true);
+                //hide sidebars and menu bar to keep just the graph
+                showJustGraph(false)
             }else{
-                //no mdm mode selected
+                //default mode
                 hideOMQ(true);
                 hideSelection(true);
                 saveGraphMenu.hide(true);
             }
         }
     };
+
+    function showJustGraph(flag) {
+        var sidebar = graph.options().sidebar();
+        if(flag){ //true
+            sidebar.showSidebar(1,true);
+            sidebar.hideExpandButton(!flag);
+            // sidebar.hideMenuArea(!flag);
+        }else{
+            graph.options().sidebar().showSidebar(0,true);
+            sidebar.hideExpandButton(!flag);
+            // sidebar.hideMenuArea(!flag);
+        }
+    }
 
     function hideOMQ(flag){
         clearQueryOMQMenu.hide(flag);
