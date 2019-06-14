@@ -2,6 +2,8 @@ package eu.supersede.mdm.storage.model.metamodel;
 
 import eu.supersede.mdm.storage.model.Namespaces;
 
+import javax.naming.Name;
+
 /**
  * Created by snadal on 6/06/17.
  */
@@ -14,7 +16,7 @@ public enum GlobalGraph {
     HAS_INTEGRITY_CONSTRAINT(Namespaces.G.val()+"hasConstraint"),
     DATATYPE(Namespaces.rdfs.val()+"Datatype"),
     HAS_DATATYPE(Namespaces.G.val()+"hasDatatype"),
-
+    HAS_RELATION(Namespaces.G.val()+"hasRelation"),
 
     PART_OF(Namespaces.G.val()+"partOf"),
     AGGREGATION_FUNCTION(Namespaces.G.val()+"aggregationFunction"),

@@ -187,7 +187,7 @@ public class RDFUtil {
      * Below are the new methods, variables and declarations coming from BDI Project
      */
 
-    public static String sparqlQueryPrefixes = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n";
+    public static String sparqlQueryPrefixes = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + "PREFIX G: <http://www.essi.upc.edu/~snadal/BDIOntology/Global/> \n "+ "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n";
 
     public static void addTriple(OntModel model, String s, String p, String o) {
         model.add(new ResourceImpl(s), new PropertyImpl(p), new ResourceImpl(o));

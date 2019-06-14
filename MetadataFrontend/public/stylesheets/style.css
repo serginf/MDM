@@ -224,3 +224,25 @@ a {
   border-left: 1px solid rgba(0,0,0,0.125)
 }*/
 
+.dropdown-menu-Bootstrapping {
+  min-width: 12rem!important;
+  padding: 0 0 0!important;
+  background-clip: unset!important;
+}
+
+.poseOMG-Bootstrapping {
+  min-width: 15.5rem!important;
+}
+
+.dropdown-header-Bootstrapping {
+  font-size: inherit!important;
+  color: black!important;
+}
+
+.font-increaser{
+  font-size: large;
+}
+
+.logo{
+  font-size: 2em;
+}

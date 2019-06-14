@@ -120,20 +120,26 @@ function getAlignments() {
         $("#overlay").fadeOut(100);
         var i = 1;
         data.forEach(function (val) {
+            var graphBadgeA = "Source Graph";
+            var graphBadgeB = "Source Graph";
+            if (integrationType === "GLOBAL-vs-LOCAL") {
+                graphBadgeA = "Global Graph";
+                graphBadgeB = "New Source Graph";
+            }
+
             var n = i - 1;
             if (val.mapping_type === 'DATA-PROPERTY') {
                 alignmentsInfo.push(val);
 
                 var classA = removeURI(val.s).split("/")[removeURI(val.s).split("/").length - 1];
                 var classB = removeURI(val.p).split("/")[removeURI(val.p).split("/").length - 1];
-
                 $('#alignments').find('#alignmentsBody')
                     .append($('<tr id="row' + n + '">')
                         /*.append($('<td>').text(i))*/
                             .append($('<td>')
-                                .text(classA).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.s)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">Global Graph</span>'))
+                                .text(classA).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.s)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">' + graphBadgeA + '</span>'))
                             ).append($('<td>')
-                                .text(classB).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.p)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">New Source Graph</span>'))
+                                .text(classB).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.p)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">' + graphBadgeB + '</span>'))
                             ).append($('<td>').text((Math.round(val.confidence * 100) / 100) * 100 + '%' + '')
                             )
                             .append($('<td class="accept-reject-buttons">').append('<button type="button" id ="acceptAlignment" class="btn btn-success" value="' + alignmentsInfo.indexOf(val) + '">Accept</button> '))
@@ -145,18 +151,19 @@ function getAlignments() {
                 alignmentsInfo.push(val);
                 var classAobjectP = removeURI(val.s).split("/")[removeURI(val.s).split("/").length - 1];
                 var classBobjectP = removeURI(val.p).split("/")[removeURI(val.p).split("/").length - 1];
+
                 $('#alignmentsObjProp').find('#alignmentsBodyObjectProperties')
                     .append($('<tr id="row' + n + '">')
                         // .append($('<td>').text(i))
                             .append($('<td>')
-                                .text(classAobjectP).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.s)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">Global Graph</span>'))
+                                .text(classAobjectP).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.s)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">' + graphBadgeA + '</span>'))
                             ).append($('<td>')
-                                .text(classBobjectP).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.p)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">New Source Graph</span>'))
+                                .text(classBobjectP).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.p)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">' + graphBadgeB + '</span>'))
                             ).append($('<td>').text((Math.round(val.confidence * 100) / 100) * 100 + '%' + '')
                             )
                             .append($('<td>').append('<button type="button" id ="acceptAlignment" class="btn btn-success" value="' + alignmentsInfo.indexOf(val) + '">Accept</button> '))
                             .append($('<td>').append('<button type="button" id ="rejectAlignment" class="btn btn-danger">Reject</button> '))
-                    );
+                    )
             }
 
             if (integrationType === "GLOBAL-vs-LOCAL") {
@@ -292,10 +299,10 @@ function getAlignments() {
                                 // .append($('<td>').text(i))
                                     .append($('<td>')
                                         .text(cA).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.s)).split("/")[0] + ' IRI</span> ' +
-                                            '<span class="badge badge-primary">Global Graph</span>' +
+                                            '<span class="badge badge-primary">Source Graph</span>' +
                                             '<span class="badge badge-warning"><i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Not Recommended. Collection classes can only be aligned with collection classes.">Not Recommended</i></span>'))
                                     ).append($('<td>')
-                                        .text(cB).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.p)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">New Source Graph</span>' +
+                                        .text(cB).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.p)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">Source Graph</span>' +
                                         '<span class="badge badge-warning"><i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Not Recommended. Collection classes can only be aligned with collection classes.">Not Recommended</i></span>'))
                                     ).append($('<td>').text((Math.round(val.confidence * 100) / 100) * 100 + '%' + '')
                                     )
@@ -309,9 +316,9 @@ function getAlignments() {
                                 // .append($('<td>').text(i))
                                     .append($('<td>')
                                         .text(cA).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.s)).split("/")[0] + ' IRI</span> ' +
-                                            '<span class="badge badge-primary">Global Graph</span>'))
+                                            '<span class="badge badge-primary">Source Graph</span>'))
                                     ).append($('<td>')
-                                        .text(cB).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.p)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">New Source Graph</span>'))
+                                        .text(cB).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.p)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">Source Graph</span>'))
                                     ).append($('<td>').text((Math.round(val.confidence * 100) / 100) * 100 + '%' + '')
                                     )
                                     .append($('<td>').append('<button type="button" id ="acceptAlignment" class="btn btn-success" value="' + alignmentsInfo.indexOf(val) + '">Accept</button> '))
