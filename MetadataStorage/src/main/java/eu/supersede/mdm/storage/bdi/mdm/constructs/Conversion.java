@@ -2,8 +2,11 @@ package eu.supersede.mdm.storage.bdi.mdm.constructs;
 
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.resources.bdi.SchemaIntegrationHelper;
+import eu.supersede.mdm.storage.util.RDFUtil;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Conversion {
     //private JSONObject wrapper = new JSONObject();
@@ -29,10 +32,22 @@ public class Conversion {
      * Sub Graph Mappings
      */
     private void runFlow() {
-        new MDMGlobalGraph(globalGraphInfo.getAsString("name"), globalGraphInfo.getAsString("schema_iri"), mdmGlobalGraphIri); /*schema_iri is IRI (namedGraph) of the BDI graph which need to be converted into MDM graph*/
+        MDMGlobalGraph mdmGlobalGraph = new MDMGlobalGraph(globalGraphInfo.getAsString("name"), globalGraphInfo.getAsString("schema_iri"), mdmGlobalGraphIri); /*schema_iri is IRI (namedGraph) of the BDI graph which need to be converted into MDM graph*/
 
         new MDMWrapper(globalGraphInfo, mdmGlobalGraphIri);
 
-        new MDMLavMapping(mdmGlobalGraphIri);
+        new MDMLavMapping(mdmGlobalGraphIri, mdmGlobalGraph.getNodesIds());
+    }
+
+    /**
+     * This method is for testing
+     */
+    private void seeTheTriplesOfNamedGraph() {
+        String getClassProperties = " SELECT * WHERE { GRAPH <" + globalGraphInfo.getAsString("schema_iri") + "> { ?s ?p ?o .}} ";
+        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getClassProperties, globalGraphInfo.getAsString("schema_iri")).forEachRemaining(triple -> {
+            //System.out.print(featureTriples.get("property") + "\t");
+            //System.out.println(triple);
+            System.out.print(triple.get("s") + "\t" + triple.get("p") + "\t" + triple.get("o") + "\n");
+        });
     }
 }

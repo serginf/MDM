@@ -21,6 +21,7 @@ import org.semarglproject.vocab.RDF;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MDMGlobalGraph {
     private String bdiGgIri = "";
@@ -118,11 +119,19 @@ public class MDMGlobalGraph {
     }
 
     private void propertiesToFeatures(Model mdmGlobalGraph) {
+        System.out.println("******************************* propertiesToFeatures *******************************");
         String getProperties = " SELECT * WHERE { GRAPH <" + bdiGgIri + "> { ?property rdfs:domain ?domain; rdfs:range ?range . FILTER NOT EXISTS {?range rdf:type rdfs:Class.}} }";
         RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getProperties, bdiGgIri).forEachRemaining(triple -> {
             System.out.print(triple.get("property") + "\t");
             System.out.print(triple.get("domain") + "\t");
             System.out.print(triple.get("range") + "\n");
+            mdmGlobalGraph.add(triple.getResource("property"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
+        });
+        /*Properties without domain and range*/
+        String getAloneProperties = " SELECT * WHERE { GRAPH <" + bdiGgIri + "> " +
+                "{ ?property rdf:type rdf:Property . FILTER NOT EXISTS {?property rdfs:domain ?d ; rdfs:range ?r. }} }";
+        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getAloneProperties, bdiGgIri).forEachRemaining(triple -> {
+            System.out.print(triple.get("property") + "\n");
             mdmGlobalGraph.add(triple.getResource("property"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
         });
     }

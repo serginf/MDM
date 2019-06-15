@@ -265,9 +265,9 @@ public class MDMLavMapping {
         LAVMappingResource.createLAVMappingSubgraph(lavMappingSubGraph.toJSONString());
     }
 
-    private JSONObject createObject(String iri, String name, String namespace){
+    private JSONObject createObject(String iri, String name, String namespace)
+    {
         JSONObject temp = new JSONObject();
-        // FIXME: add check for null nodes
         temp.put("id", nodesIds.get(iri));
         temp.put("iri", iri);
         temp.put("name", name);
