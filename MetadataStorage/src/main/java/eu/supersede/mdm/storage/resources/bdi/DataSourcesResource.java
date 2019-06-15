@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCursor;
+import eu.supersede.mdm.storage.bdi.mdm.constructs.Conversion;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
@@ -44,7 +45,7 @@ public class DataSourcesResource {
         List<String> dataSources = Lists.newArrayList();
         MongoCollections.getDataSourcesCollection(client).find().iterator().forEachRemaining(document -> {
             String type = (String) document.get("bootstrappingType");
-            if(Objects.equals(type, "auto")){
+            if (Objects.equals(type, "auto")) {
                 dataSources.add(document.toJson());
             }
         });
@@ -76,6 +77,20 @@ public class DataSourcesResource {
         if (!ids.isEmpty())
             idsInfo = (JSONObject) JSONValue.parse(ids);
         return Response.ok(new Gson().toJson(idsInfo)).build();
+    }
+
+    @GET
+    @Path("bdiBootstrapping/{dataSourceID}")
+    @Consumes("text/plain")
+    public Response GET_Bootstrap(@PathParam("dataSourceID") String id) {
+        System.out.println("[GET /bdiBootstrapping" + "/" + id);
+        try {
+            new Conversion(id);
+            return Response.ok(new Gson().toJson("BOOTSTRAPPED")).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.ok(new Gson().toJson("ERROR")).build();
+        }
     }
 
     @GET

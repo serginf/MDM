@@ -7,6 +7,7 @@ block headers
     script(src='/js/select2-4.0.3/dist/js/select2.min.js')
     link(rel='stylesheet', href='/stylesheets/select2-bootstrap.min.css')
 
+
 block content
     #overlay
         .cv-spinner
@@ -23,7 +24,7 @@ block content
                         button.btn.btn-link(data-toggle="collapse" data-target="#instructions")#instructionsButton
                             i.fas.fa-chevron-circle-down.fa-2x(style="color:black")
             #instructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
-                .card-body
+                .card-body.bg-white
                     p.card-text(style='text-align: left')
                         | Data sources represent external endpoints where to fetch data from. We support JSON documents, XML Documents, and connection to classic databases (e.g., SQL databases)
 
@@ -87,7 +88,7 @@ block content
                         button.btn.btn-link(data-toggle="collapse" data-target="#schemaInstructions")#schemaInstructionsButton
                             i.fas.fa-chevron-circle-down.fa-2x(style="color:black")
             #schemaInstructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
-                .card-body
+                .card-body.bg-white
                     p.card-text(style='text-align: left')
                         | Graphical representation of the data sources...
 
@@ -102,13 +103,14 @@ block content
                 table.table.table-hover.table-responsive#integratedDataSources
                     thead
                         tr
-                            th Select
-                            th #
-                            th Name
-                            th Integrated Sources
-                            th IntegratedIRI
-                            th.text-center View
-                            th.text-center Delete
+                            th.width5 Select
+                            th.width5 #
+                            th.width10 Name
+                            th.width20 Integrated Sources
+                            th.width20 IntegratedIRI
+                            th.width5.text-center View
+                            th.width10.text-center Bootstrap Automatically
+                            th.width5.text-center Delete
                     tbody
 
 
@@ -123,13 +125,13 @@ block content
                 table.table.table-hover.table-responsive#dataSources
                     thead
                         tr
-                            th Select
-                            th #
-                            th Name
-                            th Type
-                            th IRI
-                            th.text-center View
-                            th.text-center Delete
+                            th.width10 Select
+                            th.width5 #
+                            th.width10 Name
+                            th.width10 Type
+                            th.width20 IRI
+                            th.width10.text-center View
+                            th.width10.text-center Delete
                     tbody
 
                 //#div.text-center

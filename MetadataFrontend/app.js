@@ -166,6 +166,7 @@ app.get('/bdiIntegratedDataSources/', bdi_data_source_routes.getAllIntegratedDat
 app.get('/bdiIntegratedDataSources/:integratedDataSourceID', bdi_data_source_routes.getIntegratedDataSource);
 app.get('/bdiDataSource/:dataSourceID', bdi_data_source_routes.getDataSource);
 app.post('/bdiDataSource', bdi_data_source_routes.postDataSource);
+app.get('/bdiBootstrapping/:ds_id', bdi_data_source_routes.bootstrapAutomatically);
 app.get("/deleteDataSource/:ds_id", bdi_data_source_routes.deleteDataSource);
 app.get('/bdiAlignments/:ds1_id&:ds2_id', integrate_data_Sources.getAlignments);
 app.post('/alignmentsAccept', integrate_data_Sources.acceptAlignment);

@@ -50,7 +50,7 @@ public class SchemaIntegrationHelper {
                         System.out.println(String.join(",", listPropertiesClassA));
                         System.out.println(String.join(",", listPropertiesClassB));
 
-                        String sql = "INSERT INTO Class (classA,classB,countPropClassA,countPropClassB,listPropClassA,listPropClassB,actionType,classType) VALUES (" +
+                        String sql = "INSERT INTO Class (classA,classB,countPropClassA,countPropClassB,listPropClassA,listPropClassB,actionType,classType,userProvidedName) VALUES (" +
                                 "'" + objBody.getAsString("p") + "'" + "," +
                                 "'" + objBody.getAsString("s") + "'" + "," +
                                 "'" + listPropertiesClassA.size() + "'" + "," +
@@ -58,7 +58,8 @@ public class SchemaIntegrationHelper {
                                 "'" + String.join(",", listPropertiesClassA) + "'" + "," +
                                 "'" + String.join(",", listPropertiesClassB) + "'" + "," +
                                 "'" + objBody.getAsString("actionType") + "'" + "," +
-                                "'" + objBody.getAsString("classType") + "'" +
+                                "'" + objBody.getAsString("classType") + "'" + "," +
+                                "'" + objBody.getAsString("userProvidedName") + "'" +
                                 " );";
                         System.out.println("Inserting into SQLite Table Class");
                         BdiSQLiteUtils.executeQuery(sql);
@@ -328,6 +329,7 @@ public class SchemaIntegrationHelper {
         classTableAttributes.add("listPropClassB");
         classTableAttributes.add("actionType");
         classTableAttributes.add("classType");
+        classTableAttributes.add("userProvidedName");
         return classTableAttributes;
     }
 

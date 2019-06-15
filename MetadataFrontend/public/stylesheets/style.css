@@ -176,7 +176,7 @@ a {
   width: 100%;
   height: 100%;
   display: none;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.9);
 }
 
 .cv-spinner {
@@ -244,5 +244,36 @@ a {
 }
 
 .logo{
-  font-size: 2em;
+  width: 30%;
+  margin-left: 25%;
+  -ms-transform: scale(1.75); /* IE 9 */
+  -webkit-transform: scale(1.75); /* Safari 3-8 */
+  transform: scale(1.75);
+}
+
+.zoom:hover {
+  -ms-transform: scale(1.8); /* IE 9 */
+  -webkit-transform: scale(1.8); /* Safari 3-8 */
+  transform: scale(1.8);
+}
+
+.width10{
+  width: 10% !important;
+}
+
+.width5{
+  width: 5% !important;
+}
+
+
+.width15{
+  width: 15% !important;
+}
+
+.width20{
+  width: 20% !important;
+}
+
+.bg-dark {
+  /*background-color: #50c49c !important;*/
 }

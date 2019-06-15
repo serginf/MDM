@@ -85,3 +85,16 @@ exports.postDataSource = function (req, res, next) {
         });
     }
 };
+
+
+exports.bootstrapAutomatically = function (req, res, next) {
+    console.log("bdiBootstrapping");
+    console.log(req);
+    request.get(config.BDI_DATA_LAYER_URL + "bdiBootstrapping/" + req.params.ds_id, function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            res.status(200).json(JSON.parse(body));
+        } else {
+            res.status(500).send("Error occurred while bootstrapping.");
+        }
+    });
+};

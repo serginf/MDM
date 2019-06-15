@@ -118,6 +118,7 @@ exports.acceptAlignment = function (req, res, next) {
 };
 
 exports.finishIntegration = function (req, res, next) {
+    req.connection.setTimeout( 1000 * 60 * 10 ); // ten minutes
     console.log("TriggeredFinishIntegration");
     console.log(req.body);
     if (req.body === null) {

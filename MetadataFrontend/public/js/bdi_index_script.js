@@ -28,7 +28,9 @@ function getIntegratedFileDetails() {
                         .text(dataSource.schema_iri)
                     )//.append($('<td>').append($('<a href="/view_data_source?dataSourceID=' + (dataSource.dataSourceID) + '">').append($('<span class="fa fa-search"></span>'))))
                     .append($('<td class="text-center">').append($('<a href="/view?IntegratedDataSourceID=' + (dataSource.dataSourceID) + '">').append($('<span class="fa fa-search"></span>')))
-                    ).append($('<td class="text-center deleteWrapper">')
+                    ) .append($('<td class="text-center BootstrapActionButton">')
+                        .append($('<button  value="' + dataSource.dataSourceID + '" class="btn btn-outline-dark pop-function bootstrap-button" rel="popover" >').append($('<i color="green" class="fa fa-circle-notch "></i></button>'))))
+                    .append($('<td class="text-center deleteWrapper">')
                         .append($('<button  value="' + dataSource.dataSourceID + '" class="btn btn-outline-light pop-function delete-button" rel="popover" >').append($('<span color="red" class="fa fa-trash"></span></button>'))))
                 );
 
@@ -307,6 +309,20 @@ $(document).ready(function () {
         }
     });
 
+    $("body").on('click', '.bootstrap-button', function () {
+        var bodyPopOver =
+            '<div id="popover-content">\n' +
+            '    <p>Bootstrapping will take some time. Are you sure to proceed? <br></p> <button value="' + $(this).val() + '" class="btn btn-sm btn-success bootstrap-confirmed" id="DeleteButtonSaysYes">START</button>\n' +
+            '</div>';
+
+        if ($('.popover').hasClass('in')) {
+            $(this).popover('hide');
+        } else {
+            $(this).attr('data-content', bodyPopOver);
+            $(this).popover('show');
+        }
+    });
+
     $("body").on('click', '.delete-confirmed', function () {
         console.log($(this).val());
         $.get("/deleteDataSource/" + $(this).val(), function (data) {
@@ -316,6 +332,21 @@ $(document).ready(function () {
             }
         });
     });
+
+    $("body").on('click', '.bootstrap-confirmed', function () {
+        console.log($(this).val());
+        $.get("/bdiBootstrapping/" + $(this).val(), function (data) {
+            console.log(data);
+            if (data === "BOOTSTRAPPED") {
+                window.location.href = "/bdi";
+            }
+            else {
+                alert("An error occured while bootstrapping...");
+            }
+        });
+    });
+
+
 
 
     $("body").on('change', 'input[type=checkbox]', function () {
