@@ -11,18 +11,19 @@ block content
     .col-12.card.bg-white.float-left.border-0
         .row
             .col-md-12
-                h3(style="color:black")
-                    | Alignments detected for Data Sources
+                h4(style="color:black")
+                    | Align
                     span.dataSourceClass  #{ds1_name}
                     span  and
                     span.dataSourceClass  #{ds2_name}
-
+                p We have detected most of the alignments with confidence level automatically. However you have the facility to align manually in case some alignments are missing.
 
         .card.bg-light.mb-3.bg-white
             .card-header
                 .row
                     .col-md-11.my-auto
-                        h5(style='color:black') Manually alignments
+                        h5(style='color:#4cbd9c') Manual Alignment
+                        p.subHeading Select an element in each graph to align them.
                     .col-md-1
                         button#schemaInstructionsButton.btn.btn-link(data-toggle='collapse' data-target='#schemaInstructions' aria-expanded='true')
                             svg.svg-inline--fa.fa-chevron-circle-down.fa-w-16.fa-2x(style='color: black;' aria-hidden='true' data-prefix='fas' data-icon='chevron-circle-down' role='img' xmlns='http://www.w3.org/2000/svg' viewbox='0 0 512 512' data-fa-i2svg='')
@@ -30,20 +31,23 @@ block content
             #schemaInstructions.collapse.show(aria-labelledby='headingOne' data-parent='#accordion' style='')
                 .card-body
                     .row
-                        .col
-                            p Select an element in each graph to align them.
-                    .row
                         .col-md-6.text-center
-                            span#titleGraph1.badge.badge-info.graphTitle  #{ds1_name}
+                            span#titleGraph1.badge.badge-success.graphTitle  #{ds1_name}
                             iframe#graphIframe1(src='/bdi_graph_alignment?dataSourceID=qdlBNVNG' width='100%' height='500' frameborder="0")
                         .col-md-6.text-center
-                            span#titleGraph2.badge.badge-info.graphTitle #{ds2_name}
+                            span#titleGraph2.badge.badge-success.graphTitle #{ds2_name}
                             iframe#graphIframe2(src='/bdi_graph_alignment?dataSourceID=qdlBNVNG' width='100%' height='500' frameborder="0")
 
                     .alert.alert-warning.alert-dismissible#alertSelectElement(role='alert')
                         |  Incompatible types&mdash;Need to select an element with the same type!
                         button.close(type='button' onclick='showAlert()' aria-label='Close')
                             span(aria-hidden='true') &times;
+
+                    .alert.alert-success.alert-dismissible#alertAlignmentSuccessful(role='alert')
+                        |  Selected elements accepted for alignment.
+                        button.close(type='button' onclick='showSuccessAlert()' aria-label='Close')
+                            span(aria-hidden='true') &times;
+
                     .row
                         .col-md-6.text-center
                             .input-group.mb-2
@@ -60,10 +64,15 @@ block content
                                         span Type:
                                         span#typeElement2
                     .row.justify-content-md-center
-                        .col-md-4
-                            button.btn.btn-primary.btn-lg.btn-block(type='button') Integrate selected elements
+                        .col-md-8
+                            .input-group.mb-2
+                                input#classNameForManualAlignment.d-none.form-control(placeholder="Please provide a new name for the selected classes/properties" name="manualAlignmentUserProvidedClassName")
+                                .input-group-prepend
+                                    span#superClassTickSpan.d-none.input-group-text isSuperClass:
+                                        input#superClassTick(type="checkbox" name="isSuperClass" value="off")
+                            button.btn.btn-primary.btn-default.btn-block.d-none(type='button' name='acceptManualAlignment' id="acceptManualAlignment") Integrate selected elements
 
-        .card.bg-light.mb-3.bg-white
+        //.card.bg-light.mb-3.bg-white
             .card-header
                 .row
                     .col-md-12

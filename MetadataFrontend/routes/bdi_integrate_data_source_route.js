@@ -86,7 +86,7 @@ exports.acceptAlignment = function (req, res, next) {
     console.log(req.body);
     if (!(req.body.hasOwnProperty('p')) || req.body.p == null ||
         !(req.body.hasOwnProperty('s')) || req.body.s == null ||
-        !(req.body.hasOwnProperty('confidence')) || req.body.confidence == null ||
+        //!(req.body.hasOwnProperty('confidence')) || req.body.confidence == null ||
      //   !(req.body.hasOwnProperty('lexical_confidence')) || req.body.lexical_confidence == null ||
      //   !(req.body.hasOwnProperty('mapping_direction')) || req.body.mapping_direction == null ||
      //   !(req.body.hasOwnProperty('mapping_type')) || req.body.mapping_type == null ||
