@@ -169,13 +169,13 @@ function handleProgressBar() {
 }
 
 $(function () {
-    $("#instructions").collapse({
+/*    $("#instructions").collapse({
        toggle: true
     });
 
     $("#schemaInstructions").collapse({
         toggle: true
-    });
+    });*/
 
     getParsedFileDetails();
     getIntegratedFileDetails();
@@ -274,6 +274,8 @@ $(function () {
 
 
 $(document).ready(function () {
+    introJs().start();
+    introJs().addHints();
     $(document).ajaxSend(function () {
         $("#overlay").fadeIn(100);
     });

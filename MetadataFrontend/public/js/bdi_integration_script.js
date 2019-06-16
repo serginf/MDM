@@ -147,6 +147,11 @@ function showSuccessAlert(flag) {
     }
 }
 
+function showUserGuide() {
+    introJs().start();
+    introJs().addHints();
+}
+
 function getAlignments() {
     $("#overlay").fadeIn(100);
     $.get('/bdiAlignments/' + ds1_id + '&' + ds2_id, function (data) {
@@ -387,6 +392,7 @@ function getAlignments() {
 
             ++i;
         });
+        showUserGuide();
     });
     //console.log("Alignments Info");
     //console.log(alignmentsInfo);

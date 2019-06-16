@@ -18,7 +18,7 @@ block content
             .card-header
                 .row
                     .col-md-10
-                        h3(style="color:black")
+                        h3(style="color:black" data-step="1" data-intro='Welcome to Automatic Bootstrapping. Please follow the guide...')
                             | Data Sources
                     .col-md-2
                         button.btn.btn-link(data-toggle="collapse" data-target="#instructions")#instructionsButton
@@ -29,7 +29,7 @@ block content
                         | Data sources represent external endpoints where to fetch data from. We support JSON documents, XML Documents, and connection to classic databases (e.g., SQL databases)
 
         .card.bg-light.mb-3
-            form#dataSourceForm(method ="post" enctype="multipart/form-data")
+            form#dataSourceForm(method ="post" enctype="multipart/form-data" data-step="2" data-intro='Select a JSON/XML file or provide a connection string for the MySQL Database. Please give a new name to the source.  Note that parsing can take time depending on the size of the source.')
                 .form-group#nameForm
                     label.col-lg-4.col-form-label Name
                     .col-lg-12
@@ -82,21 +82,21 @@ block content
             .card-header
                 .row
                     .col-md-11
-                        h3(style="color:black")
+                        h3(style="color:black" data-hint='Click on the arrow to know more about the schemas.')
                             | Schemas
                     .col-md-1
-                        button.btn.btn-link(data-toggle="collapse" data-target="#schemaInstructions")#schemaInstructionsButton
+                        button.btn.btn-link(data-toggle="collapse" data-target="#schemaInstructions" )#schemaInstructionsButton
                             i.fas.fa-chevron-circle-down.fa-2x(style="color:black")
             #schemaInstructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
                 .card-body.bg-white
-                    p.card-text(style='text-align: left')
+                    p.card-text(style='text-align: left' )
                         | Graphical representation of the data sources...
 
         .card.bg-light.mb-3
             .card-header
                 .row
                     .col-md-12
-                        h5(style="color:black")
+                        h5(style="color:black" data-step="4" data-intro='Once two graphs are integrated, you will see the integrated graphs here.')
                             | Integrated Data Sources (Metadata Traceability Graphs)
             .card-body.bg-white
 
@@ -109,7 +109,7 @@ block content
                             th.width20 Integrated Sources
                             th.width20 IntegratedIRI
                             th.width5.text-center View
-                            th.width10.text-center Bootstrap Automatically
+                            th.width10.text-center(data-hint="Automatic bootstrapping is about transforming the integrated metadata traceability graph into a specific global graph, creating LAV Mappings and defining source mappings via wrappers. ") Bootstrap Automatically
                             th.width5.text-center Delete
                     tbody
 
@@ -118,7 +118,7 @@ block content
             .card-header
                 .row
                     .col-md-12
-                        h5(style="color:black")
+                        h5(style="color:black" data-step="3" data-intro='Once a data source is parsed, you will see the extracted schemas here.')
                             | Parsed Data Sources (Canonical Graphs)
 
             .card-body.bg-white
@@ -163,3 +163,4 @@ block content
             button#integrateDataSourcesButton.btn.btn-primary.btn-md.align-center.btn-block.disabled(type="button") Integrate Selected Sources
 
     script(src='/js/bdi_index_script.js')
+    script(src='/js/intro.js')

@@ -22,7 +22,7 @@ block content
             .card-header
                 .row
                     .col-md-11.my-auto
-                        h5(style='color:#4cbd9c') Manual Alignment
+                        h5(style='color:#4cbd9c' data-step="1" data-intro="What is manual alignment?") Manual Alignment
                         p.subHeading Select an element in each graph to align them.
                     .col-md-1
                         button#schemaInstructionsButton.btn.btn-link(data-toggle='collapse' data-target='#schemaInstructions' aria-expanded='true')
@@ -105,7 +105,7 @@ block content
             .card-header
                 .row
                     .col-md-12
-                        h4(style="color:black")
+                        h4(style="color:black" data-step="2" data-intro="Align Classes")
                             | Align Classes
 
             .card-body
@@ -152,7 +152,7 @@ block content
             .card-header
                 .row
                     .col-md-12
-                        h4(style="color:black")
+                        h4(style="color:black" data-step="3" data-intro="Align data properties")
                             | Align data Properties
             .card-body
                 table.table.table-hover#alignments
@@ -169,7 +169,7 @@ block content
             .card-header
                 .row
                     .col-md-12
-                        h4(style="color:black")
+                        h4(style="color:black" data-step="4" data-intro="Align Object Properties")
                             | Align Object Properties
             .card-body
                 table.table.table-hover#alignmentsObjProp
@@ -190,3 +190,4 @@ block content
 
     script(src='/js/bdi_integration_script.js')
     script(src='/js/tablesort.js')
+    script(src='/js/intro.js')
