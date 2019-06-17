@@ -27,9 +27,17 @@ public class DeleteLavMappingServiceImpl {
         }
 
         //Remove the named graph of that mapping
-        ServiceUtils.deleteGraph(wrapperObject.getString("iri"));
+        removeNamedGraph(wrapperObject.getString("iri"));
 
         //Remove the associated metadata from MongoDB
-        ServiceUtils.deleteLAVMapping(LAVMappingObject);
+        removeLAVMappingFromMongo(LAVMappingObject.getString("LAVMappingID"));
+    }
+
+    public void removeNamedGraph(String wrapperIRI){
+        ServiceUtils.deleteGraph(wrapperIRI);
+    }
+
+    public void removeLAVMappingFromMongo(String LAVMappingID){
+        ServiceUtils.deleteLAVMapping(new Document("LAVMappingID",LAVMappingID));
     }
 }

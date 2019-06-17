@@ -17,6 +17,16 @@ exports.getDataSource = function (req, res, next) {
     });
 };
 
+exports.deleteDataSource = function (req, res, next) {
+    request.delete(config.METADATA_DATA_LAYER_URL + "dataSource/"+req.params.dataSourceID, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.status(200).send("OK");
+        } else {
+            res.status(500).send("Error retrieving data source");
+        }
+    });
+};
+
 exports.getAllDataSources = function (req, res, next) {
     request.get(config.METADATA_DATA_LAYER_URL + "dataSource/", function (error, response, body) {
         if (!error && response.statusCode == 200) {

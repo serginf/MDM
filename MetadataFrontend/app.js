@@ -117,6 +117,7 @@ app.delete('/globalGraph/:namedGraph/property', global_graph_routes.deleteProper
 app.get('/dataSource/', data_source_routes.getAllDataSources);
 app.get('/dataSource/:dataSourceID', data_source_routes.getDataSource);
 app.post('/dataSource', data_source_routes.postDataSource);
+app.delete('/dataSource/:dataSourceID', data_source_routes.deleteDataSource);
 
 /********** Wrapper resource ********************************************************/
 
