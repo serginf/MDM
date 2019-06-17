@@ -23,4 +23,17 @@ block content
                             th Name
                             th Data Source
                             th View Metadata
+                            th Delete
                     tbody
+    #confirm-delete.modal.fade(tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true')
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4#myModalLabel.modal-title Confirm Delete
+                    button.close(type='button' data-dismiss='modal' aria-hidden='true') &times;
+                .modal-body
+                    p You are about to delete a wrapper, deleting a wrapper also deletes its LAVMapping if exist.
+                    p This procedure is irreversible.  Do you want to proceed?
+                .modal-footer
+                    button.btn.btn-default(type='button' data-dismiss='modal') Cancel
+                    a#deleteBtn.btn.btn-danger.btn-ok Delete

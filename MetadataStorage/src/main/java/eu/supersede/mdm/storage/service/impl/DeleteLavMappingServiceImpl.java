@@ -15,6 +15,10 @@ public class DeleteLavMappingServiceImpl {
         Document wrapperObject = ServiceUtils.getWrapper(new Document("wrapperID",LAVMappingObject.get("wrapperID")));
         Document dataSourceObject = ServiceUtils.getDataSource(new Document("dataSourceID",wrapperObject.get("dataSourceID")));
 
+        delete(LAVMappingObject,wrapperObject,dataSourceObject);
+    }
+
+    public void delete(Document LAVMappingObject, Document wrapperObject, Document dataSourceObject){
         // Remove the sameAs edges
         for (Object el : ((ArrayList)LAVMappingObject.get("sameAs"))) {
             String feature = ((Document) el).getString("feature");
@@ -26,12 +30,6 @@ public class DeleteLavMappingServiceImpl {
         ServiceUtils.deleteGraph(wrapperObject.getString("iri"));
 
         //Remove the associated metadata from MongoDB
-        Document query = new Document("dataSourceID",wrapperObject.get("dataSourceID"));
-        Document deleteData = new Document("wrappers",wrapperObject.getString("wrapperID"));
-        Document update = new Document("$pull", deleteData);
-        ServiceUtils.updateDataSource(query,update);
-
-        //delete LAVMapping object from momngodb
         ServiceUtils.deleteLAVMapping(LAVMappingObject);
     }
 }

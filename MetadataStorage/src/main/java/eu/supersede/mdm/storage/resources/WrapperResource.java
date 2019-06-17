@@ -8,10 +8,15 @@ import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
 import eu.supersede.mdm.storage.model.omq.wrapper_implementations.*;
+import eu.supersede.mdm.storage.service.impl.DeleteLavMappingServiceImpl;
+import eu.supersede.mdm.storage.service.impl.DeleteWrapperServiceImpl;
 import eu.supersede.mdm.storage.util.ConfigManager;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
@@ -22,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -29,6 +35,8 @@ import java.util.stream.Collectors;
  */
 @Path("metadataStorage")
 public class WrapperResource {
+
+    private static final Logger LOGGER = Logger.getLogger(WrapperResource.class.getName());
 
     @GET
     @Path("wrapper/")
@@ -150,5 +158,15 @@ public class WrapperResource {
         });
         return Response.ok(attributes.toJSONString()).build();
     }
-
+    @ApiOperation(value = "Delete a Wrapper and a LAVMapping if exist",consumes = MediaType.TEXT_PLAIN)
+    @ApiResponses(value ={
+            @ApiResponse(code = 200, message = "OK")})
+    @DELETE @Path("wrapper/{wrapperID}")
+    @Consumes("text/plain")
+    public Response DELETE_LAVMappingByID(@PathParam("wrapperID") String wrapperID) {
+        LOGGER.info("[DELETE /wrapper/ "+wrapperID);
+        DeleteWrapperServiceImpl del =new DeleteWrapperServiceImpl();
+        del.delete(wrapperID);
+        return Response.ok().build();
+    }
 }

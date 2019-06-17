@@ -16,6 +16,15 @@ exports.getWrapper = function (req, res, next) {
         }
     });
 };
+exports.deleteWrapper = function (req, res, next) {
+    request.delete(config.METADATA_DATA_LAYER_URL + "wrapper/"+req.params.wrapperID, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.status(200).send("OK");
+        } else {
+            res.status(500).send("Error deleting wrapper");
+        }
+    });
+};
 
 exports.getAllWrappers = function (req, res, next) {
     request.get(config.METADATA_DATA_LAYER_URL + "wrapper/", function (error, response, body) {
@@ -80,7 +89,8 @@ exports.previewWrapper = function (req, res, next) {
             body: JSON.stringify(objPreview)
         }, function done(error, response, body) {
             if (!error && response.statusCode == 200) {
-                res.status(200).json(JSON.parse(body));
+                res.status(200).json(JSON.parse("{\"hola\":\"prueba\"}"));
+                // res.status(200).json(JSON.parse(body));
             } else {
                 res.status(500).send("Error previewing query");
             }

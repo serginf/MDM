@@ -108,6 +108,19 @@ public class ServiceUtils {
         return true;
     }
 
+    public static boolean deleteWrapper(Document filter){
+        MongoClient client = Utils.getMongoDBClient();
+        MongoCollection<Document> collectionLAV = MongoCollections.getWrappersCollection(client);
+        DeleteResult result = collectionLAV.deleteOne(filter);
+        if (result.getDeletedCount() != 1) {
+            LOGGER.warning("Error occurred while deleting transaction(deleted= "+ result.getDeletedCount()+").");
+            client.close();
+            return false;
+        }
+        client.close();
+        return true;
+    }
+
     public static void updateDataSource(Document query, Document update){
         MongoClient client = Utils.getMongoDBClient();
         MongoCollections.getDataSourcesCollection(client).updateOne(query,update);

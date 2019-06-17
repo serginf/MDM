@@ -126,7 +126,7 @@ app.post('/wrapper', wrapper_routes.postWrapper);
 app.post('/wrapper/inferSchema/', wrapper_routes.inferSchema);
 app.post('/wrapper/preview/', wrapper_routes.previewWrapper);
 app.get('/wrapper/:namedGraph/attributes', wrapper_routes.getAttributesForGraph);
-
+app.delete('/wrapper/:wrapperID', wrapper_routes.deleteWrapper);
 
 /********** LAV Mapping resource ********************************************************/
 
