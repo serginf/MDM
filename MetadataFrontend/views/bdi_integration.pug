@@ -22,7 +22,7 @@ block content
             .card-header
                 .row
                     .col-md-11.my-auto
-                        h5(style='color:#4cbd9c' data-step="1" data-intro="What is manual alignment?") Manual Alignment
+                        h5(style='color:#4cbd9c' data-step="1" data-intro="What is manual alignment? For large and complex graph models sometimes it becomes difficult to detect all the alignments(Same instances of classes/properties) automatically. You can now privilege the functionality of Manual Alignment to align whatever you want!") Manual Alignment
                         p.subHeading Select an element in each graph to align them.
                     .col-md-1
                         button#schemaInstructionsButton.btn.btn-link(data-toggle='collapse' data-target='#schemaInstructions' aria-expanded='true')
@@ -105,7 +105,7 @@ block content
             .card-header
                 .row
                     .col-md-12
-                        h4(style="color:black" data-step="2" data-intro="Align Classes")
+                        h4(style="color:black" data-step="2" data-intro="This section provides automatically detected classes that may need to be aligned. User can accept/reject each alignment. ")
                             | Align Classes
 
             .card-body
@@ -152,7 +152,7 @@ block content
             .card-header
                 .row
                     .col-md-12
-                        h4(style="color:black" data-step="3" data-intro="Align data properties")
+                        h4(style="color:black" data-step="3" data-intro="This section provides automatically detected data properties that may need to be aligned. User can accept/reject each alignment.")
                             | Align data Properties
             .card-body
                 table.table.table-hover#alignments
@@ -169,7 +169,7 @@ block content
             .card-header
                 .row
                     .col-md-12
-                        h4(style="color:black" data-step="4" data-intro="Align Object Properties")
+                        h4(style="color:black" data-step="4" data-intro="This section provides automatically detected data properties that may need to be aligned. User can accept/reject each alignment.")
                             | Align Object Properties
             .card-body
                 table.table.table-hover#alignmentsObjProp
@@ -184,7 +184,7 @@ block content
 
 
         #divv.text-center
-            button#integratedDataSourcesButton.btn.btn-primary.btn-md.align-center.btn-block(type="button") Finish Integration
+            button#integratedDataSourcesButton.btn.btn-primary.btn-md.align-center.btn-block(type="button" data-step="5" data-intro="Once you are satisfied aligning the similar classes/properties. Click the button to create a metadata traceability graph for the aligned graphs.") Finish Integration
 
         div#footerBottom.text-center
 

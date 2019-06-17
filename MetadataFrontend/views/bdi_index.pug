@@ -82,10 +82,10 @@ block content
             .card-header
                 .row
                     .col-md-11
-                        h3(style="color:black" data-hint='Click on the arrow to know more about the schemas.')
+                        h3(style="color:black")
                             | Schemas
                     .col-md-1
-                        button.btn.btn-link(data-toggle="collapse" data-target="#schemaInstructions" )#schemaInstructionsButton
+                        button.btn.btn-link(data-toggle="collapse" data-target="#schemaInstructions" data-hint='Click on the arrow to know more about the schemas.' )#schemaInstructionsButton
                             i.fas.fa-chevron-circle-down.fa-2x(style="color:black")
             #schemaInstructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
                 .card-body.bg-white
