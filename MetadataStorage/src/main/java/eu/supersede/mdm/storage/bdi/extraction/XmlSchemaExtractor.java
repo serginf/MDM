@@ -4,6 +4,7 @@ import eu.supersede.mdm.storage.bdi.extraction.metamodel.NewSourceLevel2;
 import eu.supersede.mdm.storage.util.AttributeUtil;
 import eu.supersede.mdm.storage.util.ConfigManager;
 import eu.supersede.mdm.storage.util.TempFiles;
+import net.minidev.json.JSONObject;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.w3c.dom.Document;
@@ -15,26 +16,60 @@ import org.xml.sax.InputSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
-import java.util.Objects;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static eu.supersede.mdm.storage.util.NewRDFUtil.addTriple;
 
 
 /**
- *
  * @author Kashif Rabbani
  */
 public class XmlSchemaExtractor {
     private static OntModel model;
     private static final String LANG = "TURTLE"; //"RDF/XML");//"N-TRIPLE");
     private boolean documentRootFlag = false;
+    private String filePath = "";
+    private String globalRootName = "";
+    private String outputFilePath;
+    private String IRI = "";
 
     public XmlSchemaExtractor(String filePath) {
+        this.filePath = filePath;
+        extractSchema();
+    }
+
+    public XmlSchemaExtractor() {
+    }
+
+    public JSONObject initiateXmlExtraction(String filePath, String rootName) {
+        JSONObject res = null;
+        this.globalRootName = rootName;
+        this.filePath = filePath;
+        try {
+            File file = new File(filePath);
+            String body = new String(Files.readAllBytes(Paths.get(file.toURI())));
+            String outputFile = extractSchema();
+            if (outputFile != null) {
+                this.outputFilePath = outputFile;
+                String content = new String(Files.readAllBytes(new File(outputFile).toPath()));
+                res = new JSONObject();
+                res.put("rdf", content);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+
+    private String extractSchema() {
         try {
             File file = new File(filePath);
 
-            InputStream inputStream= new FileInputStream(filePath);
-            Reader reader = new InputStreamReader(inputStream,"UTF-8");
+            InputStream inputStream = new FileInputStream(filePath);
+            Reader reader = new InputStreamReader(inputStream, "UTF-8");
             InputSource inputSource = new InputSource(reader);
             inputSource.setEncoding("UTF-8");
 
@@ -60,7 +95,10 @@ public class XmlSchemaExtractor {
                 //create Root
                 String root = NewSourceLevel2.ROOT.val() + "/" + file.getName().split("\\.")[0];
                 //NewRDFUtil.addTriple(schemaModel, root, NewSourceLevel2.TYPE, NewSourceLevel2.RDFSClass.asOntClass(model));
-
+                if (!globalRootName.isEmpty()) {
+                    root = NewSourceLevel2.ROOT.val() + "/" + globalRootName;
+                }
+                IRI = root;
                 //Call to Parse XML Structure
                 parseXmlStructure(schemaModel, doc.getChildNodes(), root);
             }
@@ -72,9 +110,12 @@ public class XmlSchemaExtractor {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+
+            return outputFile;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
+            return null;
         }
     }
 
@@ -204,6 +245,14 @@ public class XmlSchemaExtractor {
         addTriple(schemaModel, attribute, NewSourceLevel2.RDFSDomain, uri);
         addTriple(schemaModel, attribute, NewSourceLevel2.RDFSRange,
                 AttributeUtil.getStringDataType(attributeNode.getNodeValue().trim()));
+    }
+
+    public String getIRI() {
+        return IRI;
+    }
+
+    public String getOutputFilePath() {
+        return outputFilePath;
     }
 
 /*

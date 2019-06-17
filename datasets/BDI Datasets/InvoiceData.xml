@@ -1,0 +1,58 @@
+<invoices>
+    <invoice>
+        <yourcompany_companyname>Text Control, LLC</yourcompany_companyname>
+        <yourcompany_zip>28226</yourcompany_zip>
+        <yourcompany_city>Charlotte</yourcompany_city>
+        <yourcompany_street>6926 Shannon Willow Rd, Suite 400</yourcompany_street>
+        <yourcompany_phone>704 544 7445</yourcompany_phone>
+        <yourcompany_fax>704-542-0936</yourcompany_fax>
+        <yourcompany_url>www.textcontrol.com</yourcompany_url>
+        <yourcompany_email>sales@textcontrol.com</yourcompany_email>
+
+        <invoice_no>778723</invoice_no>
+
+        <billto_name>Joey Montana</billto_name>
+        <billto_companyname>Montana, LLC</billto_companyname>
+        <billto_customerid>123</billto_customerid>
+        <billto_zip>27878</billto_zip>
+        <billto_city>Charlotte</billto_city>
+        <billto_street>1 Washignton Dr</billto_street>
+        <billto_phone>887 267 3356</billto_phone>
+
+        <payment_due>20/1/2016</payment_due>
+        <payment_terms>NET 30</payment_terms>
+        <salesperson_name>Mark Frontier</salesperson_name>
+        <delivery_date>20/1/2016</delivery_date>
+        <delivery_method>Ground</delivery_method>
+        <delivery_method_terms>NET 30</delivery_method_terms>
+
+        <recipient_name>Joey Montana</recipient_name>
+        <recipient_companyname>Montana, LLC</recipient_companyname>
+        <recipient_zip>27878</recipient_zip>
+        <recipient_city>Charlotte</recipient_city>
+        <recipient_street>1 Washignton Dr</recipient_street>
+        <recipient_phone>887 267 3356</recipient_phone>
+
+        <item>
+            <qty>1</qty>
+            <item_no>1</item_no>
+            <item_description>Item description 1</item_description>
+            <item_unitprice>2663</item_unitprice>
+            <item_discount>20</item_discount>
+            <item_total>2130.40</item_total>
+        </item>
+        <item>
+            <qty>1</qty>
+            <item_no>2</item_no>
+            <item_description>Item description 2</item_description>
+            <item_unitprice>5543</item_unitprice>
+            <item_discount>0</item_discount>
+            <item_total>5543.0</item_total>
+        </item>
+
+        <total_discount>532.60</total_discount>
+        <total_sub>7673.4</total_sub>
+        <total_tax>537.138</total_tax>
+        <total>8210.538</total>
+    </invoice>
+</invoices>

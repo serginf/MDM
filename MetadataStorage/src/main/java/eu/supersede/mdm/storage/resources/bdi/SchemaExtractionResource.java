@@ -3,6 +3,8 @@ package eu.supersede.mdm.storage.resources.bdi;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import eu.supersede.mdm.storage.bdi.extraction.JsonSchemaExtractor;
+import eu.supersede.mdm.storage.bdi.extraction.XmlSchemaExtractor;
+import eu.supersede.mdm.storage.bdi.extraction.rdb.MySqlDB;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.Utils;
@@ -42,7 +44,7 @@ public class SchemaExtractionResource {
             // This process will extract JSON schema from the file and convert it into RDFS Knowledge Graph.
             JSONObject res = jsonSchemaExtractor.initiateExtraction(
                     objBody.getAsString("filePath"),
-                    objBody.getAsString("givenName").replaceAll(" ", ""));
+                    objBody.getAsString("givenName").replaceAll(" ", "_"));
 
             //Convert RDFS to VOWL (Visualization Framework) Compatible JSON
             JSONObject vowlObj = Utils.oWl2vowl(JsonSchemaExtractor.getOutputFile());
@@ -51,7 +53,7 @@ public class SchemaExtractionResource {
             JSONObject resData = prepareResponse(JsonSchemaExtractor.getOutputFile(), JsonSchemaExtractor.getIRI(), objBody, vowlObj);
 
             // Adding the RDFS Schema in Jena TDB Triple Store using IRI
-            addExtractedSchemaIntoTDBStore(JsonSchemaExtractor.getIRI());
+            addExtractedSchemaIntoTDBStore(JsonSchemaExtractor.getIRI(), JsonSchemaExtractor.getOutputFile());
 
             // Adding the response to MongoDB
             addDataSourceInfoAsMongoCollection(resData);
@@ -68,9 +70,39 @@ public class SchemaExtractionResource {
     @Consumes("text/plain")
     @Produces(MediaType.TEXT_PLAIN)
     public Response POST_XmlFileInfo(String body) {
-        System.out.println("[POST /xml] body = " + body);
+        try {
+            System.out.println("[POST /xml] body = " + body);
+            //Parsing body as JSON
+            JSONObject objBody = (JSONObject) JSONValue.parse(body);
 
-        return Response.ok(new Gson().toJson("XML")).build();
+            //Creating XmlSchemaExtractor Object
+            XmlSchemaExtractor xmlSchemaExtractor = new XmlSchemaExtractor();
+
+            //Initiating Extraction Process
+            // This process will extract XML schema from the file and convert it into RDFS Knowledge Graph.
+            JSONObject res = xmlSchemaExtractor.initiateXmlExtraction(
+                    objBody.getAsString("filePath"),
+                    objBody.getAsString("givenName").replaceAll(" ", "_"));
+
+            //Convert RDFS to VOWL (Visualization Framework) Compatible JSON
+            JSONObject vowlObj = Utils.oWl2vowl(xmlSchemaExtractor.getOutputFilePath());
+
+            // Preparing the response to be sent back
+            JSONObject resData = prepareResponse(xmlSchemaExtractor.getOutputFilePath(), xmlSchemaExtractor.getIRI(), objBody, vowlObj);
+
+            // Adding the RDFS Schema in Jena TDB Triple Store using IRI
+            addExtractedSchemaIntoTDBStore(xmlSchemaExtractor.getIRI(), xmlSchemaExtractor.getOutputFilePath());
+
+            // Adding the response to MongoDB
+            addDataSourceInfoAsMongoCollection(resData);
+            return Response.ok(new Gson().toJson("XML")).build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+
+
     }
 
 
@@ -80,6 +112,29 @@ public class SchemaExtractionResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response POST_SqlConnectionInfo(String body) {
         System.out.println("[POST /sql] body = " + body);
+        //Parsing body as JSON
+        JSONObject objBody = (JSONObject) JSONValue.parse(body);
+        String path = objBody.getAsString("filePath");
+        String databaseType = "jdbc:mysql";   // It can be changed and adjusted/configured if MS-SQL database is plugged in
+        //Creating XmlSchemaExtractor Object
+        MySqlDB mySqlDB = new MySqlDB(
+                path.split(",")[0],
+                path.split(",")[1],
+                path.split(",")[2],
+                path.split(",")[3],
+                databaseType);
+
+        //Convert RDFS to VOWL (Visualization Framework) Compatible JSON
+        JSONObject vowlObj = Utils.oWl2vowl(mySqlDB.getRelationalOutputFilePath());
+
+        // Preparing the response to be sent back
+        JSONObject resData = prepareResponse(mySqlDB.getRelationalOutputFilePath(), mySqlDB.getRelationalIRI(), objBody, vowlObj);
+
+        // Adding the RDFS Schema in Jena TDB Triple Store using IRI
+        addExtractedSchemaIntoTDBStore(mySqlDB.getRelationalIRI(), mySqlDB.getRelationalOutputFilePath());
+
+        // Adding the response to MongoDB
+        addDataSourceInfoAsMongoCollection(resData);
 
         return Response.ok(new Gson().toJson("SQL")).build();
     }
@@ -95,11 +150,19 @@ public class SchemaExtractionResource {
         //resData.put("iri", IRI);
         resData.put("bootstrappingType", "auto");
         resData.put("schema_iri", IRI);
-        resData.put("graphicalGraph",   "\" " + StringEscapeUtils.escapeJava(vowlObj.getAsString("vowlJson")) + "\"" );
+        resData.put("graphicalGraph", "\" " + StringEscapeUtils.escapeJava(vowlObj.getAsString("vowlJson")) + "\"");
         //resData.put("vowlJsonFileName", vowlObj.getAsString("vowlJsonFileName"));
 
         if (objBody.getAsString("type").equals("json")) {
             resData.put("json_path", objBody.getAsString("filePath"));
+        }
+
+        if (objBody.getAsString("type").equals("xml")) {
+            resData.put("xml_path", objBody.getAsString("filePath"));
+        }
+
+        if (objBody.getAsString("type").equals("SQL")) {
+            resData.put("sql_path", objBody.getAsString("filePath"));
         }
         return resData;
     }
@@ -110,12 +173,12 @@ public class SchemaExtractionResource {
         client.close();
     }
 
-    private void addExtractedSchemaIntoTDBStore(String iri) {
+    private void addExtractedSchemaIntoTDBStore(String iri, String outputFilePath) {
         Dataset dataset = Utils.getTDBDataset();
         dataset.begin(ReadWrite.WRITE);
         Model model = dataset.getNamedModel(iri);
         //OntModel ontModel = ModelFactory.createOntologyModel();
-        model.read(JsonSchemaExtractor.getOutputFile());
+        model.read(outputFilePath);
         model.commit();
         model.close();
         dataset.commit();

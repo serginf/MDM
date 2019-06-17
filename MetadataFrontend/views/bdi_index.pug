@@ -44,7 +44,7 @@ block content
                             li.nav-item
                                 a.text-primary#xml-tab.nav-link(data-toggle="tab" href="#xml" role="tab" aria-controls="messages" aria-selected="false") XML file
                             li.nav-item
-                                a.text-primary#sqldatabase-tab.nav-link(data-toggle="tab" href="#sqldatabase" role="tab" aria-controls="settings" aria-selected="false") MySQL Database
+                                a.text-primary#sqldatabase-tab.nav-link(data-toggle="tab" href="#sqldatabase" role="tab" aria-controls="settings" aria-selected="false" data-hint='Please provide a String with UserName, Password, Database Name and Server e.g. localhost/IP in a following order separated by commas \"UserName, Password, databaseName, databaseServer \"') MySQL Database
 
                 .tab-content
 
@@ -64,7 +64,7 @@ block content
                         .form-group#sql_jdbcForm
                             label.col-lg-4.col-form-label JDBC
                             .col-lg-12
-                                input#sql_path.form-control(type='text', name='sql_file_path')
+                                input#sql_path.form-control(type='text', name='sql_file_path' placeholder='UserName,Password,databaseName,databaseServer')
 
                 .form-group
                     .col-lg-12.col-lg-offset-2

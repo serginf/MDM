@@ -18,6 +18,14 @@ public class MySqlDB extends AbstractDB {
         createDbConnection();
     }
 
+    public String getRelationalOutputFilePath(){
+        return relationalToRDFS.getOutputFilePath();
+    }
+
+    public String getRelationalIRI(){
+        return relationalToRDFS.getIRI();
+    }
+
     @Override
     public void createDbConnection() {
         try {

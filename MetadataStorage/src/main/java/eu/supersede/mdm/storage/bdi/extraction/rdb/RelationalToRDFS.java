@@ -23,8 +23,20 @@ public class RelationalToRDFS {
     private static final String LANG = "TURTLE"; //"RDF/XML");//"N-TRIPLE");
     private OntModel schemaModel = null;
     private String root = null;
+    private String outputFilePath = null;
+
+    public String getIRI() {
+        return root;
+    }
+
+    public String getOutputFilePath() {
+        return outputFilePath;
+    }
 
     public RelationalToRDFS() {
+        initiateExtraction();
+    }
+    private void initiateExtraction(){
         try {
             model = ModelFactory.createOntologyModel();
             String path = ConfigManager.getProperty("resources_path")  + "model/new_metadata_model.owl";
@@ -41,10 +53,10 @@ public class RelationalToRDFS {
     }
 
     public void schemaModelToFile() {
-        String outputFile = TempFiles.getIncrementalTempFile(AbstractDB.getDbName());
+        outputFilePath = TempFiles.getIncrementalTempFile(AbstractDB.getDbName());
         try {
             assert schemaModel != null;
-            schemaModel.write(new FileOutputStream(outputFile), LANG);
+            schemaModel.write(new FileOutputStream(outputFilePath), LANG);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
