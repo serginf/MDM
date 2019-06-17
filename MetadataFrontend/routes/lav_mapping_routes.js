@@ -14,6 +14,16 @@ exports.getLAVMapping = function (req, res, next) {
     });
 };
 
+exports.deleteLAVMapping = function (req, res, next) {
+    request.delete(config.METADATA_DATA_LAYER_URL + "LAVMapping/"+req.params.LAVMappingID, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.status(200).json(JSON.parse(body));
+        } else {
+            res.status(500).send("Error retrieving LAV mapping");
+        }
+    });
+};
+
 exports.getAllLAVMappings = function (req, res, next) {
     request.get(config.METADATA_DATA_LAYER_URL + "LAVMapping/", function (error, response, body) {
         if (!error && response.statusCode == 200) {

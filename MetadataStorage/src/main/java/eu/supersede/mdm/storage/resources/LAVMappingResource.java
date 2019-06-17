@@ -4,10 +4,15 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import eu.supersede.mdm.storage.model.Namespaces;
+import eu.supersede.mdm.storage.service.impl.DeleteGlobalGraphServiceImpl;
+import eu.supersede.mdm.storage.service.impl.DeleteLavMappingServiceImpl;
 import eu.supersede.mdm.storage.service.impl.UpdateLavMappingServiceImpl;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
@@ -139,6 +144,19 @@ public class LAVMappingResource {
 
         client.close();
         return Response.ok(objBody.toJSONString()).build();
+    }
+
+
+    @ApiOperation(value = "Delete a LAVMapping",consumes = MediaType.TEXT_PLAIN)
+    @ApiResponses(value ={
+            @ApiResponse(code = 200, message = "OK")})
+    @DELETE @Path("LAVMapping/{LAVMappingID}")
+    @Consumes("text/plain")
+    public Response DELETE_LAVMappingByID(@PathParam("LAVMappingID") String LAVMappingID) {
+        LOGGER.info("[DELETE /LAVMapping/ "+LAVMappingID);
+        DeleteLavMappingServiceImpl service = new DeleteLavMappingServiceImpl();
+        service.delete(LAVMappingID);
+        return Response.ok().build();
     }
 
 }

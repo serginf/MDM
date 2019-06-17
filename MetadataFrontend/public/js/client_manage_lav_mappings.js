@@ -2,6 +2,7 @@
  * Created by snadal on 29/05/16.
  */
 
+var selectLAVMappingID = "";
 function getLAVMappings() {
     $.get("/LAVMapping", function(data) {
         var i = 1;
@@ -23,6 +24,7 @@ function getLAVMappings() {
                             ).append($('<td>').append($('<a href="/view_global_graph?globalGraphID='+(LAVMapping.globalGraphID)+'">'+globalGraph.name+'</a>'))
                             ).append($('<td>').append($('<a href="/view_lav_mapping_sameAs?LAVMappingID='+(LAVMapping.LAVMappingID)+'">').append($('<span class="fa fa-search"></span>')))
                             ).append($('<td>').append($('<a href="/view_lav_mapping_subgraph?LAVMappingID='+(LAVMapping.LAVMappingID)+'">').append($('<span class="fa fa-search"></span>')))
+                            ).append($('<td>').append($('<a onclick="showModal(\''+(LAVMapping.LAVMappingID)+'\')">').append($('<span class="fa fa-trash"></span>')))
                             )
                         );
                     ++i;
@@ -34,4 +36,28 @@ function getLAVMappings() {
 
 $(function() {
     getLAVMappings();
+    $("#deleteBtn").click(function (e) {
+        e.preventDefault();
+        deleteLAVMapping();
+    });
 });
+
+function showModal(id){
+    console.log("showing")
+    selectLAVMappingID = id;
+    $('#confirm-delete').modal('show');
+}
+
+function deleteLAVMapping(){
+    $('#confirm-delete').modal('hide');
+    $.ajax({
+        url: '/LAVMapping/'+selectLAVMappingID,
+        method: "DELETE"
+    }).done(function() {
+        window.location.href = '/manage_lav_mappings';
+    }).fail(function(err) {
+        alert("There was a problem deleting the element. ");
+    });
+    selectLAVMappingID = "";
+}
+

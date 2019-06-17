@@ -134,7 +134,7 @@ app.get('/LAVMapping/', lav_mapping_routes.getAllLAVMappings);
 app.get('/LAVMapping/:LAVMappingID', lav_mapping_routes.getLAVMapping);
 app.post('/LAVMapping/sameAs', lav_mapping_routes.postLAVMappingSameAs);
 app.post('/LAVMapping/subgraph', lav_mapping_routes.postLAVMappingSubgraph);
-
+app.delete('/LAVMapping/:LAVMappingID', lav_mapping_routes.deleteLAVMapping);
 /********** OMQ resource ********************************************************/
 
 app.post('/OMQ/fromGraphicalToSPARQL', omq_routes.postFromGraphicalToSPARQL);

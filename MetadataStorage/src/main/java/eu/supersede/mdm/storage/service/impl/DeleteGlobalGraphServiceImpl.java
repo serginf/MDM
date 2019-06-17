@@ -1,7 +1,6 @@
 package eu.supersede.mdm.storage.service.impl;
 
 import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import eu.supersede.mdm.storage.errorhandling.exception.DeleteNodeGlobalGException;
 import eu.supersede.mdm.storage.service.impl.model.LavObj;
@@ -77,7 +76,7 @@ public class DeleteGlobalGraphServiceImpl {
             });
         }
 
-        ServiceUtils.deleteTriplesProperty(namedGraph,sIRI,pIRI,oIRI);
+        ServiceUtils.deleteTriples(namedGraph,sIRI,pIRI,oIRI);
         return true;
     }
 

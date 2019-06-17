@@ -6,9 +6,11 @@ import com.mongodb.client.result.DeleteResult;
 import org.apache.jena.query.ResultSet;
 import org.bson.Document;
 
-import javax.print.Doc;
 import java.util.logging.Logger;
 
+/**
+ * Class with general queries for Jena TDB and Mongo.
+ */
 public class ServiceUtils {
 
     private static final Logger LOGGER = Logger.getLogger(ServiceUtils.class.getName());
@@ -49,9 +51,19 @@ public class ServiceUtils {
                 " {?s ?p <"+objectIRI+"> } }");
     }
 
-    public static void deleteTriplesProperty(String graphIRI,String subjectIRI, String predicateIRI, String objectIRI){
+    public static void deleteTriples(String graphIRI,String subjectIRI, String predicateIRI, String objectIRI){
         RDFUtil.runAnUpdateQuery("DELETE WHERE { GRAPH <" + graphIRI + ">" +
                 " {<"+subjectIRI+"> <"+predicateIRI+"> <"+objectIRI+">} }");
+    }
+
+    public static void deleteTriplesByProperty(String graphIRI, String predicateIRI){
+        RDFUtil.runAnUpdateQuery("DELETE WHERE { GRAPH <" + graphIRI + ">" +
+                " {?s <"+predicateIRI+"> ?o} }");
+    }
+
+    public static void deleteGraph(String graphIRI){
+        RDFUtil.runAnUpdateQuery("DELETE WHERE { GRAPH <" + graphIRI + ">" +
+                " {?s ?p ?o} }");
     }
 
     public static ResultSet getTriplesSubject(String graphIRI, String subjectIRI){
@@ -96,6 +108,12 @@ public class ServiceUtils {
         return true;
     }
 
+    public static void updateDataSource(Document query, Document update){
+        MongoClient client = Utils.getMongoDBClient();
+        MongoCollections.getDataSourcesCollection(client).updateOne(query,update);
+        client.close();
+    }
+
     public static Document getGlobalGraph(Document filter){
         MongoClient client = Utils.getMongoDBClient();
         Document result =   MongoCollections.getGlobalGraphCollection(client).find(filter).first();
@@ -112,7 +130,7 @@ public class ServiceUtils {
 
     public static Document getWrapper(Document filter){
         MongoClient client = Utils.getMongoDBClient();
-        Document result =   MongoCollections.getDataSourcesCollection(client).find(filter).first();
+        Document result =   MongoCollections.getWrappersCollection(client).find(filter).first();
         client.close();
         return result;
     }
