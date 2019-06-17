@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 @Path("metadataStorage")
 public class LAVMappingResource {
 
-    private static final Logger LOGGER = Logger.getLogger(GlobalGraphResource.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(LAVMappingResource.class.getName());
 
     @GET
     @Path("LAVMapping/")
