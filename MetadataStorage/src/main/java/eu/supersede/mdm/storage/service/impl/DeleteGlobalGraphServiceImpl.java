@@ -17,19 +17,30 @@ import java.util.List;
 public class DeleteGlobalGraphServiceImpl {
 
 
-    public void deleteGlobalGraph(String namedGraph){
+    public void deleteGlobalGraph(String globalGraphID){
 
-        Document globalGraph = ServiceUtils.getGlobalGraph(new Document("namedGraph",namedGraph));
-        Document LAVMapping = ServiceUtils.getLAVMapping(new Document("globalGraphID",globalGraph.get("globalGraphID")));
+        Document globalGraphObj = ServiceUtils.getGlobalGraph(new Document("globalGraphID",globalGraphID));
+        DeleteLavMappingServiceImpl delLAV = new DeleteLavMappingServiceImpl();
 
-        ServiceUtils.deleteGlobalGraph(new Document("namedGraph",namedGraph));
-        ServiceUtils.deleteLAVMapping(new Document("globalGraphID",globalGraph.get("globalGraphID")));
+        MongoClient client = Utils.getMongoDBClient();
+        try (MongoCursor<Document> cursor =  MongoCollections.getLAVMappingCollection(client).find
+                (new Document("globalGraphID", globalGraphID)).iterator()) {
 
-        //delete namedGraph in jena
-        //delete wrapper in jena (subgraph)
+            while (cursor.hasNext()) {
+                Document lavMappingObj = cursor.next();
+                // Remove all associated LAV mappings (as well as their metadata from MongoDB)
+                delLAV.delete(lavMappingObj.getString("LAVMappingID"));
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        client.close();
 
-        //delete sameAs from datasource in jena
+        // Remove its named graph
+        ServiceUtils.deleteGraph(globalGraphObj.getString("namedGraph"));
 
+        // Remove its metadata from MongoDB
+        ServiceUtils.deleteGlobalGraph(new Document("globalGraphID",globalGraphID));
 
     }
 

@@ -17,6 +17,16 @@ exports.getGlobalGraph = function (req, res, next) {
     });
 };
 
+exports.deleteGlobalGraph = function (req, res, next) {
+    request.delete(config.METADATA_DATA_LAYER_URL + "globalGraph/"+req.params.globalGraphID, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.status(200).send("OK");
+        } else {
+            res.status(500).send("Error retrieving global graph");
+        }
+    });
+};
+
 exports.getGlobalGraphFromNamedGraph = function (req, res, next) {
     request.get(config.METADATA_DATA_LAYER_URL + "globalGraph/namedGraph/"+encodeURIComponent(req.params.namedGraph), function (error, response, body) {
         if (!error && response.statusCode == 200) {

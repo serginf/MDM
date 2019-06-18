@@ -25,4 +25,18 @@ block content
                             th Named Graph
                             th View Metadata
                             th Edit Graph
+                            th Delete Graph
                     tbody
+    #confirm-delete.modal.fade(tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true')
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4#myModalLabel.modal-title Confirm Delete
+                    button.close(type='button' data-dismiss='modal' aria-hidden='true') &times;
+                .modal-body
+                    p You are about to delete a Global Graph which also deletes its related LAVMappings.
+                    p This procedure is irreversible.
+                    p Do you want to proceed?
+                .modal-footer
+                    button.btn.btn-default(type='button' data-dismiss='modal') Cancel
+                    a#deleteBtn.btn.btn-danger.btn-ok Delete

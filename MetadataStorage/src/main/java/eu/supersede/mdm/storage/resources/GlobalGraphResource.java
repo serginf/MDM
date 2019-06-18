@@ -224,6 +224,19 @@ public class GlobalGraphResource {
         return Response.ok().build();
     }
 
+    @ApiOperation(value = "Delete a global graph and its related LAVMappings, if exist",consumes = MediaType.TEXT_PLAIN)
+    @ApiResponses(value ={
+            @ApiResponse(code = 200, message = "OK")})
+    @DELETE @Path("globalGraph/{globalGraphID}")
+    @Consumes("text/plain")
+    public Response DELETE_GlobalGraph(@PathParam("globalGraphID") String globalGraphID) {
+        LOGGER.info("[DELETE /globalGraph/ "+globalGraphID);
+
+        DeleteGlobalGraphServiceImpl del = new DeleteGlobalGraphServiceImpl();
+        del.deleteGlobalGraph(globalGraphID);
+        return Response.ok().build();
+    }
+
 //    @ApiOperation(value = "Delete property from the global graph",consumes = MediaType.TEXT_PLAIN)
 //    @ApiResponses(value ={
 //            @ApiResponse(code = 200, message = "OK"),
