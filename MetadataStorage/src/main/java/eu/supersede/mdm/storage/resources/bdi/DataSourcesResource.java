@@ -18,15 +18,20 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
 
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
 @Path("metadataStorage")
 public class DataSourcesResource {
+    private static final Logger LOGGER = Logger.getLogger(DataSourcesResource.class.getName());
     @GET
     @Path("bdiIntegratedDataSources/")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public Response GET_integrated_dataSource() {
-        System.out.println("[GET /GET_bdiIntegratedDataSources/]");
+        LOGGER.info("[GET /GET_bdiIntegratedDataSources/]");
         MongoClient client = Utils.getMongoDBClient();
         List<String> integratedDataSources = Lists.newArrayList();
         MongoCollections.getIntegratedDataSourcesCollection(client).find().iterator().forEachRemaining(document -> integratedDataSources.add(document.toJson()));
@@ -57,7 +62,7 @@ public class DataSourcesResource {
     @Path("bdiIntegratedDataSources/{integratedIRI}")
     @Consumes("text/plain")
     public Response GET_IntegratedDataSourceWithIRI(@PathParam("integratedIRI") String iri) {
-        System.out.println("[GET /bdiIntegratedDataSources" + "/" + iri);
+        LOGGER.info("[GET /bdiIntegratedDataSources" + "/" + iri);
         String ids = getIntegratedDataSourceInfo(iri);
         JSONObject idsInfo = new JSONObject();
 
@@ -70,7 +75,7 @@ public class DataSourcesResource {
     @Path("bdiDataSource/{dataSourceID}")
     @Consumes("text/plain")
     public Response GET_DataSourceWithIRI(@PathParam("dataSourceID") String iri) {
-        System.out.println("[GET /bdiDataSource" + "/" + iri);
+        LOGGER.info("[GET /bdiDataSource" + "/" + iri);
         String ids = getDataSourceInfo(iri);
         JSONObject idsInfo = new JSONObject();
 
@@ -83,7 +88,7 @@ public class DataSourcesResource {
     @Path("bdiBootstrapping/{dataSourceID}")
     @Consumes("text/plain")
     public Response GET_Bootstrap(@PathParam("dataSourceID") String id) {
-        System.out.println("[GET /bdiBootstrapping" + "/" + id);
+        LOGGER.info("[GET /bdiBootstrapping" + "/" + id);
         try {
             new Conversion(id);
             return Response.ok(new Gson().toJson("BOOTSTRAPPED")).build();

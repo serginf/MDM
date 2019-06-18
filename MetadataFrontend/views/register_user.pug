@@ -13,13 +13,13 @@ block content
                     .panel-body
                         form(method='POST')#userRegisterForm
                             .form-group
-                                input#username.form-control.input-sm(type='text', name='username', placeholder='Username')
+                                input#username.form-control.input-sm(type='text', name='username', placeholder='Username' required)
                             .row
                                 .col-xs-6.col-sm-6.col-md-6
                                     .form-group
-                                        input#password.form-control.input-sm(type='password', name='password', placeholder='Password')
+                                        input#password.form-control.input-sm(type='password', name='password', placeholder='Password' required)
                                 .col-xs-6.col-sm-6.col-md-6
                                     .form-group
-                                        input.form-control.input-sm(type='password', name='password_confirmation', placeholder='Confirm Password')
+                                        input.form-control.input-sm(type='password', name='password_confirmation', placeholder='Confirm Password' required)
                             input.btn.btn-info.btn-block(type='submit', value='Register')
             br

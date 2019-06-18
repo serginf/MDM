@@ -23,7 +23,7 @@ import static eu.supersede.mdm.storage.util.NewRDFUtil.addTriple;
 
 
 /**
- * @author Kashif Rabbani
+ * Created by Kashif-Rabbani in June 2019
  */
 public class XmlSchemaExtractor {
     private static OntModel model;
@@ -79,7 +79,7 @@ public class XmlSchemaExtractor {
             Document doc = dBuilder.parse(inputSource);
             doc.getDocumentElement().normalize();
             String rootName = doc.getDocumentElement().getNodeName();
-            System.out.println("Root element :" + rootName);
+            //System.out.println("Root element :" + rootName);
 
             OntModel schemaModel = null;
             if (doc.hasChildNodes()) {
@@ -132,7 +132,7 @@ public class XmlSchemaExtractor {
             // Element Node
             if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
                 // get node name and value
-                System.out.println("\n Node " + currentNode.getNodeName() + " [OPEN]");
+                //System.out.println("\n Node " + currentNode.getNodeName() + " [OPEN]");
 
                 int childNodesCount = countNodeChildren(currentNode);
 
@@ -176,7 +176,7 @@ public class XmlSchemaExtractor {
                     checkForChildAttributes(schemaModel, currentNode, root, newRoot, root_Collection);
                 }
 
-                System.out.println("Node " + currentNode.getNodeName() + " [CLOSE]");
+                //System.out.println("Node " + currentNode.getNodeName() + " [CLOSE]");
             }
         }
         //schemaModel.write(System.out, LANG);
@@ -190,12 +190,12 @@ public class XmlSchemaExtractor {
             for (int x = 0; x < nodeList1.getLength(); x++) {
                 Node temp = nodeList1.item(x);
                 if (temp.getNodeType() != Node.TEXT_NODE) {
-                    System.out.println(temp.getNodeName());
+                    //System.out.println(temp.getNodeName());
                     nodeCounter++;
                 }
             }
         }
-        System.out.println(currentNode.getNodeName() + " has " + nodeCounter + " children");
+        //System.out.println(currentNode.getNodeName() + " has " + nodeCounter + " children");
         return nodeCounter;
     }
 
@@ -229,8 +229,8 @@ public class XmlSchemaExtractor {
             NamedNodeMap nodeMap = currentNode.getAttributes();
             for (int i = 0; i < nodeMap.getLength(); i++) {
                 Node attributeNode = nodeMap.item(i);
-                System.out.println("attr name : " + attributeNode.getNodeName());
-                System.out.println("attr value : " + attributeNode.getNodeValue());
+                //System.out.println("attr name : " + attributeNode.getNodeName());
+                //System.out.println("attr value : " + attributeNode.getNodeValue());
                 String attribute = root + "/" + attributeNode.getNodeName();
                 createAttributeTriples(schemaModel, attribute, attributeNode, root);
                 /*NewRDFUtil.addTriple(schemaModel, attribute, NewSourceLevel2.TYPE, NewSourceLevel2.RDFProperty);

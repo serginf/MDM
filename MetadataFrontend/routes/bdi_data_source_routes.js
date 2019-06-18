@@ -88,6 +88,7 @@ exports.postDataSource = function (req, res, next) {
 
 
 exports.bootstrapAutomatically = function (req, res, next) {
+    req.connection.setTimeout( 1000 * 60 * 10 ); // ten minutes
     console.log("bdiBootstrapping");
     console.log(req);
     request.get(config.BDI_DATA_LAYER_URL + "bdiBootstrapping/" + req.params.ds_id, function (error, response, body) {

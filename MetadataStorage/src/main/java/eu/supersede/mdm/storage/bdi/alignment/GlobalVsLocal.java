@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
 public class GlobalVsLocal {
     private JSONObject dataSource1Info = new JSONObject();
     private JSONObject dataSource2Info = new JSONObject();
@@ -58,8 +61,8 @@ public class GlobalVsLocal {
         JSONArray onlyClassesArray = new JSONArray();
         refactorSuperClassesAndSubClasses(logMapMatcher, superAndSubClassesArray, onlyClassesArray);
 
-        System.out.println(superAndSubClassesArray.toJSONString());
-        System.out.println(onlyClassesArray.toJSONString());
+        //System.out.println(superAndSubClassesArray.toJSONString());
+        //System.out.println(onlyClassesArray.toJSONString());
 
         RDFUtil.runAQuery("SELECT * WHERE { GRAPH <" + alignmentsIRI + "> {?s ?p ?o} }", alignmentsIRI).forEachRemaining(triple -> {
             JSONObject alignments = new JSONObject();
@@ -82,14 +85,14 @@ public class GlobalVsLocal {
         List<Tuple3<String, String, String>> classAlignments = logMapMatcher.getClassesAlignments();
 
         Map<String, List<Tuple3<String, String, String>>> classAlignmentsGroupedByClassB = classAlignments.stream().collect(Collectors.groupingBy(w -> w._2));
-        System.out.println(classAlignmentsGroupedByClassB.values());
+        //System.out.println(classAlignmentsGroupedByClassB.values());
 
         /* classAlignmentsGroupedByClassB looks like this:
          * [groupedByClass, List[ Tuple3<classA, groupedByClass, Confidence>, Tuple3<,,>,....] ] */
 
         // Iterate over list Of Class Pairs grouped by Class B
         classAlignmentsGroupedByClassB.forEach((groupedClass, listOfClassPairs) -> {
-            System.out.println("Grouped Class: ------------> " + groupedClass);
+            //System.out.println("Grouped Class: ------------> " + groupedClass);
             // This map contains the information about the super classes (IF EXISTS) and their sub classes (Result of Query)
             // Map<Tuple2<ClassIRI, ConfidenceValue>, List<AllSubClassesOfClass>>
             Map<Tuple2<String, String>, List<String>> superClassesPlusSubClasses = new HashMap<>();
@@ -135,10 +138,10 @@ public class GlobalVsLocal {
 
     private void populateSuperSubClasses(JSONArray superAndSubClassesArray, JSONArray onlyClassesArray, String groupedClass, Map<Tuple2<String, String>, List<String>> superClassesPlusSubClasses, List<String> classes, List<Tuple2> classesAndConfidence) {
         superClassesPlusSubClasses.forEach((superClass, subClasses) -> {
-            System.out.println("********* Printing Super and Sub Classes: ");
-            System.out.println(superClass._1);
-            System.out.println(subClasses.toString());
-            System.out.println();
+            //System.out.println("********* Printing Super and Sub Classes: ");
+            //System.out.println(superClass._1);
+            //System.out.println(subClasses.toString());
+            //System.out.println();
             // Creating a wrapper array to wrap the information about this super class
             JSONArray wrapperArray = new JSONArray();
             // Creating an object to store the ClassA, GroupedByClass i.e. class B, and the Confidence Value. Note that we know that this is a superClass Info only.
@@ -153,11 +156,11 @@ public class GlobalVsLocal {
             List<String> classesSameAsSubClasses = classes.stream().filter(subClasses::contains).collect(Collectors.toList());
             // Filter out those classes which are not same as subclasses of the superclass we are iterating
             List<String> classesDifferentFromSubClasses = classes.stream().filter(obj -> !subClasses.contains(obj)).collect(Collectors.toList());
-            System.out.println("classesSameAsSubClasses: ");
-            System.out.println(classesSameAsSubClasses);
+            //System.out.println("classesSameAsSubClasses: ");
+            //System.out.println(classesSameAsSubClasses);
 
-            System.out.println("classesDifferentFromSubClasses: ");
-            System.out.println(classesDifferentFromSubClasses);
+            //System.out.println("classesDifferentFromSubClasses: ");
+            //System.out.println(classesDifferentFromSubClasses);
 
             //Iterate over the list of ClassesAndConfidence (These are the classes which are not superClasses)
             for (Tuple2 tuple : classesAndConfidence) {

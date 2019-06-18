@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
 public class MDMLavMapping {
     private static final Logger LOGGER = Logger.getLogger(MDMLavMapping.class.getName());
     private String mdmGlobalGraphIri;
@@ -47,17 +50,36 @@ public class MDMLavMapping {
         run();
     }
 
+    public MDMLavMapping(String mdmGlobalGraphIri) {
+        this.mdmGlobalGraphIri = mdmGlobalGraphIri;
+        run();
+    }
+
     private void run() {
         getFeaturesWithSameAsEdges();
-        /*System.out.println("FEATURES:");
-        System.out.println(features);*/
+        System.out.println("FEATURES:");
+        System.out.println(features);
         getWrapperInfoFromGg();
         initLavMapping();
         initViewOfSourceGraphsOverGlobalGraph();
     }
 
+    /**
+     * This method is to extract all the features from the MDM global Graph which was generated automatically from Metadata Traceability graph
+     * It fills a map with values like this:
+     * {feature, [tuple3< _1:LocalName, _2: Source Name, _3: IRI>, tuple3<>, ...]} e.g. one of the real example is shown below:
+     * {http://www.BDIOntology.com/global/uKHAoVbK-kphiyJAL/Registration_Number=
+     * [
+     * Tuple3{_1=Registration_Number, _2=Bicycles, _3=http://www.BDIOntology.com/schema/Bicycles/Bicycle/Registration_Number},
+     * Tuple3{_1=Registration_Number, _2=Bikes, _3=http://www.BDIOntology.com/schema/Bikes/Bike/Registration_Number}
+     * ],  http://www.BDIOntology.com/schema/Bicycles/Bicing_Details/Total_Clients=[]}
+     * In the above example, a feature with a global IRI is pointing to two other features with a sameAs relationship.
+     * Note that the features having localIRIs are not pointing to any other features
+     * e.g. in the above example, the feature ..../Total_Clients has empty list for sameAs features. Which states that it does not have any relationship with any other feature.
+     * As MDM does not support features to features relationships in its global graph. We need to subsume these intelligently
+     */
     private void getFeaturesWithSameAsEdges() {
-        String SPARQL = "SELECT * WHERE { GRAPH <" + mdmGlobalGraphIri + "> { ?f rdf:type <" + GlobalGraph.FEATURE.val() + "> . OPTIONAL {?f owl:sameAs ?o.} } }";
+        String SPARQL = "SELECT * WHERE { GRAPH <" + mdmGlobalGraphIri + "> { ?f rdf:type <" + GlobalGraph.FEATURE.val() + "> . OPTIONAL {?f G:sameAs ?o.} } }";
         RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + SPARQL, mdmGlobalGraphIri).forEachRemaining(triple -> {
             //System.out.print(triple.getResource("f") + "\t");
             //System.out.print(triple.get("o") + "\n");
@@ -85,6 +107,12 @@ public class MDMLavMapping {
         //System.out.println(features);
     }
 
+
+    /**
+     * This method is to know that the generated MDM global graph is merger of how many sources e.g. BikesBicyclesCycles Metadata traceability graph is a result of
+     * 3 sources. So there must be 3 wrappers associated for the generated MDM global graph.
+     * Let's get the ids of the associated wrappers and store them in JsonArray named wrappersCoveringGlobalGraph
+     */
     private void getWrapperInfoFromGg() {
         MongoClient client = Utils.getMongoDBClient();
         MongoCursor<Document> cursor = MongoCollections.getGlobalGraphCollection(client).find(new Document("namedGraph", mdmGlobalGraphIri)).iterator();
@@ -95,21 +123,29 @@ public class MDMLavMapping {
         client.close();
     }
 
+    /**
+     * This method is to create LAV mappings i.e. feature sameAs attribute relationships
+     */
     private void initLavMapping() {
-
+        //Let's iterate over all the wrappers
         wrappersCoveringGlobalGraph.forEach(wrapperId -> {
             MongoClient client = Utils.getMongoDBClient();
             MongoCursor<Document> wrapperCursor = MongoCollections.getWrappersCollection(client).
                     find(new Document("wrapperID", wrapperId)).iterator();
             JSONObject wrapperInfo = (JSONObject) JSONValue.parse(MongoCollections.getMongoObject(client, wrapperCursor));
+
+            //For each wrapper call this method to get the job done
             createLavMappings(wrapperInfo.getAsString("iri"));
+
             lavMapping = new JSONObject();
             lavMapping.put("wrapperID", wrapperId.toString());
             lavMapping.put("isModified", "false");
 
             lavMapping.put("globalGraphID", mdmGgId);
             lavMapping.put("sameAs", featureAndAttributes);
-            System.out.println(lavMapping.toJSONString());
+            //System.out.println(lavMapping.toJSONString());
+            LOGGER.info("FeaturesAndAttributes for this wrapper: ");
+            LOGGER.info(featureAndAttributes.toJSONString());
 
             // Call LAV Mapping Resource to save the LAV mapping info accordingly
             JSONObject lavMappingResourceInfo = LAVMappingResource.createLAVMappingMapsTo(lavMapping.toJSONString());
@@ -122,15 +158,22 @@ public class MDMLavMapping {
     }
 
     private void createLavMappings(String wrapperIri) {
+        //Get attributes of all the wrappers
         JSONArray wrapperAttributes = WrapperResource.getWrapperAttributes(wrapperIri);
         //System.out.println(wrapperAttributes.toJSONString());
         featureAndAttributes = new JSONArray();
+
+        // iterate over all the wrapper attributes
         wrapperAttributes.forEach(attr -> {
             String attribute = getLastElementOfIRI(attr.toString());
-            features.forEach((key, list) -> {
-                if (list.isEmpty()) {
-                    /*Check the type of the feature and the attribute*/
 
+            // Now consider the map containing features as explained above
+            features.forEach((key, list) -> {
+                //Check if the list is empty or not, if it is empty it means the current feature does not have any sameAs edge to other features
+                //It also indicates that the current feature is not the one having global IRI (MOST PROBABLY)
+                if (list.isEmpty()) {
+
+                    /*Check the type of the feature and the attribute*/
                     if (attribute.equals(getLastElementOfIRI(key)) && getSourceFromIRI(key).equals(getWrapperSourceFromIRI(attr.toString()))) {
                         //System.out.println("Key: " + key);
                         //lavMappings.add(new Tuple2<>(attr.toString(), key));
@@ -189,66 +232,66 @@ public class MDMLavMapping {
         triples.forEach(triple -> {
             if (triple.getSubject().getURI().contains(dataSourceSchemaIri) || triple.getObject().getURI().contains(dataSourceSchemaIri) || triple.getSubject().getURI().contains(Namespaces.G.val())) {
                 /*Avoiding other sources IRIs*/
-                if(!temp.containsKey(getSourceIRIFromIRI(triple.getObject().getURI()))) {
+                if (!temp.containsKey(getSourceIRIFromIRI(triple.getObject().getURI()))) {
 
                     //System.out.println(triple.getSubject().toString() + " " + triple.getPredicate().toString() + " " + triple.getObject().toString());
                     //System.out.println(triple.toString());
 
                     //Filter features
-                    if(triple.getObject().getURI().equals(GlobalGraph.FEATURE.val())){
+                    if (triple.getObject().getURI().equals(GlobalGraph.FEATURE.val())) {
                         //System.out.println("Feature: "+ triple);
-                       selectionArray.add( createObject(triple.getSubject().getURI() , triple.getSubject().getURI(), triple.getObject().getURI() ));
-                       graphicalGraphArray.add(nodesIds.get(triple.getSubject().getURI()));
+                        selectionArray.add(createObject(triple.getSubject().getURI(), triple.getSubject().getURI(), triple.getObject().getURI()));
+                        graphicalGraphArray.add(nodesIds.get(triple.getSubject().getURI()));
                     }
                     //Filter  concepts
-                    if(triple.getObject().getURI().equals(GlobalGraph.CONCEPT.val())){
+                    if (triple.getObject().getURI().equals(GlobalGraph.CONCEPT.val())) {
                         //System.out.println("Concept: "+ triple);
-                        selectionArray.add( createObject(triple.getSubject().getURI() , triple.getSubject().getURI(), triple.getObject().getURI() ));
+                        selectionArray.add(createObject(triple.getSubject().getURI(), triple.getSubject().getURI(), triple.getObject().getURI()));
                         graphicalGraphArray.add(nodesIds.get(triple.getSubject().getURI()));
                     }
                     /*Create source and target i.e. edges, for same as relationship */
-                    if(triple.getPredicate().getURI().equals(GlobalGraph.SAME_AS.val())){
+                    if (triple.getPredicate().getURI().equals(GlobalGraph.SAME_AS.val())) {
                         //System.out.println("SAME AS: "+ triple);
                         //selectionArray.add( createObject(triple.getObject().getURI() , triple.getObject().getURI(), GlobalGraph.FEATURE.val() ));
                         //graphicalGraphArray.add(nodesIds.get(triple.getObject().getURI()));
 
                         JSONObject obj = new JSONObject();
-                        obj.put("source", createObject(triple.getSubject().getURI() , triple.getSubject().getURI(), GlobalGraph.FEATURE.val() ) );
-                        obj.put("target", createObject(triple.getObject().getURI() , triple.getObject().getURI(), GlobalGraph.FEATURE.val() ));
-                        obj.put("name", GlobalGraph.SAME_AS.val() );
+                        obj.put("source", createObject(triple.getSubject().getURI(), triple.getSubject().getURI(), GlobalGraph.FEATURE.val()));
+                        obj.put("target", createObject(triple.getObject().getURI(), triple.getObject().getURI(), GlobalGraph.FEATURE.val()));
+                        obj.put("name", GlobalGraph.SAME_AS.val());
                         obj.put("iri", GlobalGraph.SAME_AS.val());
                         selectionArray.add(obj);
 
                     }
                     /*Create source and target i.e. edges, by connecting Concepts with Features*/
-                    if(triple.getPredicate().getURI().equals(GlobalGraph.HAS_FEATURE.val())){
+                    if (triple.getPredicate().getURI().equals(GlobalGraph.HAS_FEATURE.val())) {
                         //System.out.println(triple);
                         JSONObject obj = new JSONObject();
-                        obj.put("source", createObject(triple.getSubject().getURI() , triple.getSubject().getURI(), GlobalGraph.CONCEPT.val() ) );
-                        obj.put("target", createObject(triple.getObject().getURI() , triple.getObject().getURI(), GlobalGraph.FEATURE.val() ));
+                        obj.put("source", createObject(triple.getSubject().getURI(), triple.getSubject().getURI(), GlobalGraph.CONCEPT.val()));
+                        obj.put("target", createObject(triple.getObject().getURI(), triple.getObject().getURI(), GlobalGraph.FEATURE.val()));
                         obj.put("name", GlobalGraph.HAS_FEATURE.val());
                         obj.put("iri", GlobalGraph.HAS_FEATURE.val());
                         selectionArray.add(obj);
                     }
 
                     /*Create source and target i.e. edges, for subClassOf  relationship i.e. Connect Concept with Concept*/
-                    if(triple.getPredicate().getURI().equals(RDFS.SUB_CLASS_OF)){
+                    if (triple.getPredicate().getURI().equals(RDFS.SUB_CLASS_OF)) {
                         //System.out.println(" SUB CLASS OF: "+ triple);
                         JSONObject obj = new JSONObject();
-                        obj.put("source", createObject(triple.getSubject().getURI() , triple.getSubject().getURI(), GlobalGraph.CONCEPT.val() ) );
-                        obj.put("target", createObject(triple.getObject().getURI() , triple.getObject().getURI(), GlobalGraph.CONCEPT.val() ));
+                        obj.put("source", createObject(triple.getSubject().getURI(), triple.getSubject().getURI(), GlobalGraph.CONCEPT.val()));
+                        obj.put("target", createObject(triple.getObject().getURI(), triple.getObject().getURI(), GlobalGraph.CONCEPT.val()));
                         obj.put("name", RDFS.SUB_CLASS_OF);
                         obj.put("iri", GlobalGraph.HAS_RELATION.val());
                         selectionArray.add(obj);
 
                     }
                     /*Connecting concepts with concepts which are not subClasses*/
-                    if(!triple.getPredicate().getURI().equals(RDFS.SUB_CLASS_OF) && !triple.getPredicate().getURI().equals(OWL.SAME_AS) &&
-                            !triple.getPredicate().getURI().equals(RDF.TYPE) && !triple.getPredicate().getURI().equals(GlobalGraph.HAS_FEATURE.val())){
+                    if (!triple.getPredicate().getURI().equals(RDFS.SUB_CLASS_OF) && !triple.getPredicate().getURI().equals(OWL.SAME_AS) &&
+                            !triple.getPredicate().getURI().equals(RDF.TYPE) && !triple.getPredicate().getURI().equals(GlobalGraph.HAS_FEATURE.val())) {
                         //System.out.println(triple);
                         JSONObject obj = new JSONObject();
-                        obj.put("source", createObject(triple.getSubject().getURI() , triple.getSubject().getURI(), GlobalGraph.CONCEPT.val() ) );
-                        obj.put("target", createObject(triple.getObject().getURI() , triple.getObject().getURI(), GlobalGraph.CONCEPT.val() ));
+                        obj.put("source", createObject(triple.getSubject().getURI(), triple.getSubject().getURI(), GlobalGraph.CONCEPT.val()));
+                        obj.put("target", createObject(triple.getObject().getURI(), triple.getObject().getURI(), GlobalGraph.CONCEPT.val()));
                         obj.put("name", triple.getPredicate().getURI());
                         obj.put("iri", GlobalGraph.HAS_RELATION.val());
                         selectionArray.add(obj);
@@ -261,12 +304,11 @@ public class MDMLavMapping {
         lavMappingSubGraph.put("graphicalSubGraph", graphicalGraphArray);
         lavMappingSubGraph.put("LAVMappingID", wrapperInfo.getAsString("LAVMappingID"));
 
-        System.out.println(lavMappingSubGraph);
+        //System.out.println(lavMappingSubGraph);
         LAVMappingResource.createLAVMappingSubgraph(lavMappingSubGraph.toJSONString());
     }
 
-    private JSONObject createObject(String iri, String name, String namespace)
-    {
+    private JSONObject createObject(String iri, String name, String namespace) {
         JSONObject temp = new JSONObject();
         temp.put("id", nodesIds.get(iri));
         temp.put("iri", iri);

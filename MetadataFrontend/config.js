@@ -14,6 +14,6 @@ config.FILES_PATH = "/home/kashif/Documents/GIT/MDM/MetadataFrontend/Uploads";
 
 config.BDI_FRONTEND_URL = "http://localhost:" + config.PORT + "/";
 config.BDI_DATA_LAYER_URL = "http://localhost:8082/metadataStorage/";
-config.BDI_FILES_PATH = "/home/kashif/Documents/GIT/MDM/MetadataFrontend/Uploads";
+
 
 module.exports = config;

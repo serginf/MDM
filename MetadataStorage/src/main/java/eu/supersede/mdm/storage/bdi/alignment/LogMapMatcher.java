@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
 public class LogMapMatcher {
     private String iri_onto1;
     private String iri_onto2;

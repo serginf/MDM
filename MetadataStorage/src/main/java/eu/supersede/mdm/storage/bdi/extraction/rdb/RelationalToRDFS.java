@@ -1,6 +1,5 @@
 package eu.supersede.mdm.storage.bdi.extraction.rdb;
 
-import eu.supersede.mdm.storage.bdi.extraction.JsonSchemaExtractor;
 import eu.supersede.mdm.storage.bdi.extraction.NewNamespaces2;
 import eu.supersede.mdm.storage.bdi.extraction.metamodel.NewSourceLevel2;
 import eu.supersede.mdm.storage.util.AttributeUtil;
@@ -13,11 +12,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.MalformedURLException;
-import java.util.Objects;
 
 import static eu.supersede.mdm.storage.util.NewRDFUtil.addTriple;
 
-
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
 public class RelationalToRDFS {
     private static OntModel model;
     private static final String LANG = "TURTLE"; //"RDF/XML");//"N-TRIPLE");

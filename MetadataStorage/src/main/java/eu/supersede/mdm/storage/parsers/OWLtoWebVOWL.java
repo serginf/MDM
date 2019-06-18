@@ -1,11 +1,9 @@
 package eu.supersede.mdm.storage.parsers;
 
-import com.google.gson.*;
-import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
+import com.google.gson.Gson;
 import eu.supersede.mdm.storage.parsers.models.*;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import org.apache.jena.graph.Triple;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.apache.jena.vocabulary.RDF;
@@ -56,15 +54,18 @@ public class OWLtoWebVOWL {
     public String convert(String graphIRI) {
 
         List<Triple> triples = new ArrayList<>();
-        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + " SELECT ?s ?p ?o WHERE { GRAPH <" + graphIRI + "> { ?s ?p ?o . FILTER NOT EXISTS {?s owl:sameAs ?o .}} }", graphIRI).forEachRemaining(res -> {
+        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + " SELECT ?s ?p ?o WHERE { GRAPH <" + graphIRI + "> { ?s ?p ?o . FILTER NOT EXISTS {?s G:sameAs ?o .}} }", graphIRI).forEachRemaining(res -> {
             triples.add(new Triple(new ResourceImpl(res.get("s").toString()).asNode(),
                     new PropertyImpl(res.get("p").toString()).asNode(), new ResourceImpl(res.get("o").toString()).asNode()));
         });
         /*Hiding the sameAs features from the Graphical Global Graph*/
-       /* RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + " SELECT * WHERE { GRAPH <" + graphIRI + "> " +
-                "{  ?s owl:sameAs ?o . ?o a ?x.  } }", graphIRI).forEachRemaining(res -> {
-            triples.remove(new Triple(new ResourceImpl(res.get("o").toString()).asNode(), RDF.type.asNode(), new ResourceImpl(res.get("x").toString()).asNode()));
-        });*/
+        //List<Triple> triplesToBeRemoved = new ArrayList<>();
+        HashMap<Triple, String> triplesHashMap = new HashMap<>();
+        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + " SELECT * WHERE { GRAPH <" + graphIRI + "> " +
+                "{  ?s G:sameAs ?o . ?o a ?x.  } }", graphIRI).forEachRemaining(res -> {
+            //triplesToBeRemoved.add(new Triple(new ResourceImpl(res.get("o").toString()).asNode(), RDF.type.asNode(), new ResourceImpl(res.get("x").toString()).asNode()));
+            triplesHashMap.put(new Triple(new ResourceImpl(res.get("o").toString()).asNode(), RDF.type.asNode(), new ResourceImpl(res.get("x").toString()).asNode()), "");
+        });
 
         List<Nodes> nodes = new ArrayList<>();
         List<Property> properties = new ArrayList<>();
@@ -76,13 +77,16 @@ public class OWLtoWebVOWL {
         List<Triple> cleanTriples = new ArrayList<>();
 
         int i = 1;
-        //look for types triples and creates nodes;
+        //look for types triples and create nodes;
         for (Triple triple : triples) {
             if (triple.getPredicate().getURI().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")) {
                 String id = "Class" + i;
-                nodes.add(new Nodes(id, getType(triple.getObject().getURI())));
                 nodesId.put(triple.getSubject().getURI(), id);
-                classA.add(new ClassAttribute(id, triple.getSubject().getURI(), getBaseIri(triple.getSubject().getURI()), getLastElem(triple.getSubject().getURI())));
+                //this check is to hide to triples like feature sameAs feature. Such features are not required because they are subsumed by the global iri feature.
+                if(!triplesHashMap.containsKey(triple)){
+                    nodes.add(new Nodes(id, getType(triple.getObject().getURI())));
+                    classA.add(new ClassAttribute(id, triple.getSubject().getURI(), getBaseIri(triple.getSubject().getURI()), getLastElem(triple.getSubject().getURI())));
+                }
                 i++;
             } else {
                 cleanTriples.add(triple);

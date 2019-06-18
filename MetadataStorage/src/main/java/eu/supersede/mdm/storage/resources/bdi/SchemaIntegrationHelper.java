@@ -22,16 +22,22 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static com.mongodb.client.model.Filters.eq;
 
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
 public class SchemaIntegrationHelper {
+    private static final Logger LOGGER = Logger.getLogger(SchemaIntegrationHelper.class.getName());
+
     public SchemaIntegrationHelper() {
     }
 
     void processAlignment(JSONObject objBody, String integratedIRI, Resource s, Resource p, String query, String[] checkIfQueryContainsResult, String integrationType) {
         RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + query, integratedIRI).forEachRemaining(triple -> {
-            System.out.println(triple.get("o") + " oo " + triple.get("oo"));
+            //System.out.println(triple.get("o") + " oo " + triple.get("oo"));
             checkIfQueryContainsResult[0] = "Query Returned Result > 0";
 
             if (triple.get("o") != null && triple.get("oo") != null) {
@@ -47,8 +53,8 @@ public class SchemaIntegrationHelper {
                         List<String> listPropertiesClassA = getSparqlQueryResult(integratedIRI, sparqlClassAProperties);
                         List<String> listPropertiesClassB = getSparqlQueryResult(integratedIRI, sparqlClassBProperties);
 
-                        System.out.println(String.join(",", listPropertiesClassA));
-                        System.out.println(String.join(",", listPropertiesClassB));
+                        //System.out.println(String.join(",", listPropertiesClassA));
+                        //System.out.println(String.join(",", listPropertiesClassB));
 
                         String sql = "INSERT INTO Class (classA,classB,countPropClassA,countPropClassB,listPropClassA,listPropClassB,actionType,classType,userProvidedName) VALUES (" +
                                 "'" + objBody.getAsString("p") + "'" + "," +
@@ -61,7 +67,7 @@ public class SchemaIntegrationHelper {
                                 "'" + objBody.getAsString("classType") + "'" + "," +
                                 "'" + objBody.getAsString("userProvidedName") + "'" +
                                 " );";
-                        System.out.println("Inserting into SQLite Table Class");
+                        //System.out.println("Inserting into SQLite Table Class");
                         BdiSQLiteUtils.executeQuery(sql);
                     }
 
@@ -80,7 +86,7 @@ public class SchemaIntegrationHelper {
                                 "'" + propDomainRange.get("hasSameName") + "'" + ',' +
                                 "'" + objBody.getAsString("actionType") + "'" +
                                 " ); ";
-                        System.out.println("Inserting into SQLite Table Property");
+                        //System.out.println("Inserting into SQLite Table Property");
                         BdiSQLiteUtils.executeQuery(sql);
                     }
                 }
@@ -98,9 +104,9 @@ public class SchemaIntegrationHelper {
         OntModel ontModel = org.apache.jena.rdf.model.ModelFactory.createOntologyModel();
         ontModel.addSubModel(graph);
 
-        System.out.println("if Properties: -> Printing Domain and Range: ... ");
-        System.out.println(ontModel.getOntProperty(objBody.getAsString("s")).getLocalName());
-        System.out.println(ontModel.getOntProperty(objBody.getAsString("p")).getLocalName());
+        //System.out.println("if Properties: -> Printing Domain and Range: ... ");
+        //System.out.println(ontModel.getOntProperty(objBody.getAsString("s")).getLocalName());
+        //System.out.println(ontModel.getOntProperty(objBody.getAsString("p")).getLocalName());
 
         propCharacteristics.put("sDomain", ontModel.getOntProperty(objBody.getAsString("s")).getDomain().toString());
         propCharacteristics.put("sRange", ontModel.getOntProperty(objBody.getAsString("s")).getRange().toString());
@@ -146,7 +152,7 @@ public class SchemaIntegrationHelper {
         integratedDataSourceObj.put("dataSources", dataSourcesArray);
         integratedDataSourceObj.put("name", dataSource1Info.getAsString("name").replaceAll(" ", "") + dataSource2Info.getAsString("name").replaceAll(" ", ""));
         integratedDataSourceObj.put("parsedFileAddress", integratedModelFileName);
-        integratedDataSourceObj.put("graphicalGraph",    "\" " + StringEscapeUtils.escapeJava(vowlObj.getAsString("vowlJson")) + "\"");
+        integratedDataSourceObj.put("graphicalGraph", "\" " + StringEscapeUtils.escapeJava(vowlObj.getAsString("vowlJson")) + "\"");
         //integratedDataSourceObj.put("integratedVowlJsonFilePath", vowlObj.getAsString("vowlJsonFilePath"));
 
         // Adding JSON Response in MongoDB Collection named as IntegratedDataSources
@@ -165,15 +171,15 @@ public class SchemaIntegrationHelper {
 
         MongoClient client = Utils.getMongoDBClient();
         MongoCollection collection = MongoCollections.getIntegratedDataSourcesCollection(client);
-        System.out.println("Mongo Collection About to Upadte: ");
+        //System.out.println("Mongo Collection About to Upadte: ");
         String newDataSourceID = integratedDataSourceInfo.getAsString("dataSourceID") + "-" + dataSource2Info.getAsString("dataSourceID");
 
-        System.out.println("OLD DS ID: " + integratedDataSourceInfo.getAsString("dataSourceID"));
-        System.out.println("NEW DS ID: " + newDataSourceID);
+        //System.out.println("OLD DS ID: " + integratedDataSourceInfo.getAsString("dataSourceID"));
+        //System.out.println("NEW DS ID: " + newDataSourceID);
 
         collection.updateOne(eq("dataSourceID", integratedDataSourceInfo.getAsString("dataSourceID")), new Document("$set", new Document("dataSourceID", newDataSourceID)));
         collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("schema_iri", Namespaces.G.val() + integratedDataSourceInfo.getAsString("dataSourceID") + "-" + dataSource2Info.getAsString("dataSourceID"))));
-        collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("graphicalGraph",  "\" " + StringEscapeUtils.escapeJava(vowlObj.getAsString("vowlJson")) + "\"")));
+        collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("graphicalGraph", "\" " + StringEscapeUtils.escapeJava(vowlObj.getAsString("vowlJson")) + "\"")));
         //collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("integratedVowlJsonFilePath", vowlObj.getAsString("vowlJsonFilePath"))));
         collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("parsedFileAddress", integratedModelFileName)));
         collection.updateOne(eq("dataSourceID", newDataSourceID), new Document("$set", new Document("dataSources", dataSourcesArray)));
@@ -187,14 +193,14 @@ public class SchemaIntegrationHelper {
         String integratedIRI = Namespaces.G.val()
                 + dataSource1Info.getAsString("dataSourceID") + "-"
                 + dataSource2Info.getAsString("dataSourceID");
-        System.out.println("********** Integrated IRI ********** " + integratedIRI);
+        LOGGER.info("Integrated IRI :" + integratedIRI);
         Dataset ds = Utils.getTDBDataset();
         ds.begin(ReadWrite.WRITE);
 
         Model ds1Model = ds.getNamedModel(dataSource1Info.getAsString("schema_iri"));
         Model ds2Model = ds.getNamedModel(dataSource2Info.getAsString("schema_iri"));
-        System.out.println("Size of ds1 Model: " + ds1Model.size());
-        System.out.println("Size of ds2 Model: " + ds2Model.size());
+        LOGGER.info("Size of ds1 Model: " + ds1Model.size());
+        LOGGER.info("Size of ds2 Model: " + ds2Model.size());
 
         Model integratedModel = ds1Model.union(ds2Model);
         ds1Model.commit();
@@ -208,7 +214,7 @@ public class SchemaIntegrationHelper {
         integratedDataset.begin(ReadWrite.WRITE);
         Model model = integratedDataset.getNamedModel(integratedIRI);
         model.add(integratedModel);
-        System.out.println("Size of Integrated Model: " + integratedModel.size());
+        LOGGER.info("Size of Integrated Model: " + integratedModel.size());
 
         try {
             model.write(new FileOutputStream("Output/integrated-model.ttl"), "TURTLE");
@@ -238,7 +244,7 @@ public class SchemaIntegrationHelper {
     }
 
     private void addIntegratedDataSourceInfoAsMongoCollection(JSONObject objBody) {
-        System.out.println("Successfully Added to MongoDB");
+        LOGGER.info("Successfully Added to MongoDB");
         MongoClient client = Utils.getMongoDBClient();
         MongoCollections.getIntegratedDataSourcesCollection(client).insertOne(Document.parse(objBody.toJSONString()));
         client.close();
@@ -247,7 +253,7 @@ public class SchemaIntegrationHelper {
     static void updateIntegratedDataSourceInfo(String iri, JSONObject vowlObj) {
         MongoClient client = Utils.getMongoDBClient();
         MongoCollection collection = MongoCollections.getIntegratedDataSourcesCollection(client);
-        collection.updateMany(eq("integratedDataSourceID", iri), new Document("$set", new Document("graphicalGraph",  "\" " + StringEscapeUtils.escapeJava(vowlObj.getAsString("vowlJson")) + "\"")));
+        collection.updateMany(eq("integratedDataSourceID", iri), new Document("$set", new Document("graphicalGraph", "\" " + StringEscapeUtils.escapeJava(vowlObj.getAsString("vowlJson")) + "\"")));
         //collection.updateMany(eq("integratedDataSourceID", iri), new Document("$set", new Document("integratedVowlJsonFileName", vowlObj.getAsString("vowlJsonFileName"))));
         client.close();
     }
@@ -289,7 +295,7 @@ public class SchemaIntegrationHelper {
         Dataset integratedDataset = Utils.getTDBDataset();
         integratedDataset.begin(ReadWrite.WRITE);
         Model model = integratedDataset.getNamedModel(integratedIRI);
-        System.out.println("iri: " + iri);
+        //System.out.println("iri: " + iri);
         String integratedModelFileName = iri + ".ttl";
         //String integratedModelFileName = objBody.getAsString("dataSource1Name") + "-" + objBody.getAsString("dataSource2Name") + ".ttl";
         try {

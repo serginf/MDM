@@ -23,17 +23,20 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.logging.Logger;
 
-
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
 @Path("metadataStorage")
 public class SchemaExtractionResource {
-
+    private static final Logger LOGGER = Logger.getLogger(SchemaExtractionResource.class.getName());
     @POST
     @Path("jsonSchema/")
     @Consumes("text/plain")
     @Produces(MediaType.TEXT_PLAIN)
     public Response POST_JsonFileInfo(String body) {
-        System.out.println("[POST /json] body = " + body);
+        LOGGER.info("[POST /json] body = " + body);
         try {
             //Parsing body as JSON
             JSONObject objBody = (JSONObject) JSONValue.parse(body);
@@ -71,7 +74,7 @@ public class SchemaExtractionResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response POST_XmlFileInfo(String body) {
         try {
-            System.out.println("[POST /xml] body = " + body);
+            LOGGER.info("[POST /xml] body = " + body);
             //Parsing body as JSON
             JSONObject objBody = (JSONObject) JSONValue.parse(body);
 
@@ -111,7 +114,7 @@ public class SchemaExtractionResource {
     @Consumes("text/plain")
     @Produces(MediaType.TEXT_PLAIN)
     public Response POST_SqlConnectionInfo(String body) {
-        System.out.println("[POST /sql] body = " + body);
+        LOGGER.info("[POST /sql] body = " + body);
         //Parsing body as JSON
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
         String path = objBody.getAsString("filePath");

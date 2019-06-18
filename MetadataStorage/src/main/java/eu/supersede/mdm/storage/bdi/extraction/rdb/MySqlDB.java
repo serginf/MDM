@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
 public class MySqlDB extends AbstractDB {
     private String mySqlDriver = "com.mysql.jdbc.Driver";
     private DatabaseMetaData databaseMetaData = null;

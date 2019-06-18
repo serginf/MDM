@@ -6,9 +6,13 @@ import eu.supersede.mdm.storage.util.RDFUtil;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
 public class Conversion {
+    private static final Logger LOGGER = Logger.getLogger(Conversion.class.getName());
     //private JSONObject wrapper = new JSONObject();
     private JSONObject globalGraphInfo = new JSONObject();
     //private String postWrapperUrl = ConfigManager.getProperty("metadata_data_storage_url") + "wrapper/";
@@ -32,10 +36,11 @@ public class Conversion {
      * Sub Graph Mappings
      */
     private void runFlow() {
+        LOGGER.info("Creating MDM Global Graph");
         MDMGlobalGraph mdmGlobalGraph = new MDMGlobalGraph(globalGraphInfo.getAsString("name"), globalGraphInfo.getAsString("schema_iri"), mdmGlobalGraphIri); /*schema_iri is IRI (namedGraph) of the BDI graph which need to be converted into MDM graph*/
-
+        LOGGER.info("Creating MDM Wrappers");
         new MDMWrapper(globalGraphInfo, mdmGlobalGraphIri);
-
+        LOGGER.info("Creating MDM LAV Mappings including subgraphs covering");
         new MDMLavMapping(mdmGlobalGraphIri, mdmGlobalGraph.getNodesIds());
     }
 
@@ -43,11 +48,10 @@ public class Conversion {
      * This method is for testing
      */
     private void seeTheTriplesOfNamedGraph() {
-        String getClassProperties = " SELECT * WHERE { GRAPH <" + globalGraphInfo.getAsString("schema_iri") + "> { ?s ?p ?o .}} ";
-        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getClassProperties, globalGraphInfo.getAsString("schema_iri")).forEachRemaining(triple -> {
-            //System.out.print(featureTriples.get("property") + "\t");
-            //System.out.println(triple);
-            System.out.print(triple.get("s") + "\t" + triple.get("p") + "\t" + triple.get("o") + "\n");
+        String getClassProperties = " SELECT * WHERE { GRAPH <" + mdmGlobalGraphIri + "> { ?s ?p ?o .}} ";
+        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getClassProperties, mdmGlobalGraphIri).forEachRemaining(triple -> {
+            //System.out.print(triple.get("s") + "\t" + triple.get("p") + "\t" + triple.get("o") + "\n");
         });
     }
+
 }

@@ -416,7 +416,7 @@ public class JsonSchemaExtractor {
         q.addResultVar(o);
 
         QueryExecution qe = QueryExecutionFactory.create(q, schemaModel);
-        System.out.println(q.toString());
+        //System.out.println(q.toString());
         ResultSet results = qe.execSelect();
         while (results.hasNext()) {
             return results.next();

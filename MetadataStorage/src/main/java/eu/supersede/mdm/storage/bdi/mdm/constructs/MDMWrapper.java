@@ -15,6 +15,9 @@ import org.bson.Document;
 
 import static com.mongodb.client.model.Filters.eq;
 
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
 public class MDMWrapper {
     private String mdmGgIri;
     private JSONObject globalGraphInfo;
@@ -41,7 +44,7 @@ public class MDMWrapper {
             populateWrapperContent(dataSource);
             try {
                 JSONObject res = WrapperResource.createWrapper(wrapper.toJSONString());
-                System.out.println(res.toJSONString());
+                //System.out.println(res.toJSONString());
                 wrappersIds.add(res.getAsString("wrapperID"));
                 //HttpUtils.sendPost(wrapper, postWrapperUrl);
             } catch (Exception e) {
@@ -60,9 +63,9 @@ public class MDMWrapper {
         JSONArray attributes = new JSONArray();
         String getProperties = " SELECT * WHERE { GRAPH <" + sourceIRI + "> { ?property rdfs:domain ?domain; rdfs:range ?range . FILTER NOT EXISTS {?range rdf:type rdfs:Class.}} }";
         RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getProperties, sourceIRI).forEachRemaining(triple -> {
-            System.out.print(triple.get("property") + "\t");
-            System.out.print(triple.get("domain") + "\t");
-            System.out.print(triple.get("range") + "\n");
+            //System.out.print(triple.get("property") + "\t");
+            //System.out.print(triple.get("domain") + "\t");
+            //System.out.print(triple.get("range") + "\n");
 
             JSONObject temp = new JSONObject();
             temp.put("isID", "false");
@@ -72,7 +75,7 @@ public class MDMWrapper {
             //mdmGlobalGraph.add(triple.getResource("property"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
         });
         wrapper.put("attributes", attributes);
-        System.out.println(wrapper.toJSONString());
+        //System.out.println(wrapper.toJSONString());
     }
 
     private void addWrappersInfoInGGMongoCollection() {
@@ -87,7 +90,7 @@ public class MDMWrapper {
         Dataset ds = Utils.getTDBDataset();
         ds.begin(ReadWrite.WRITE);
         if (ds.containsNamedModel(uri)) {
-            System.out.println("True - Size: " + ds.getNamedModel(uri).size());
+            //System.out.println("True - Size: " + ds.getNamedModel(uri).size());
             //ds.removeNamedModel(uri);
         } else System.out.println("False");
         ds.commit();

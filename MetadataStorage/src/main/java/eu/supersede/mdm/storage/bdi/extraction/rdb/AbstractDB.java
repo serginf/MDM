@@ -1,7 +1,9 @@
 package eu.supersede.mdm.storage.bdi.extraction.rdb;
 
 import java.sql.Connection;
-
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
 public abstract class AbstractDB {
     private static String dbName;
     private String dbType;

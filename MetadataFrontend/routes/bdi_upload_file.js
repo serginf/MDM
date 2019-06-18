@@ -4,7 +4,7 @@
 var formidable = require('formidable'),
     fs = require('fs'),
     config = require(__dirname + '/../config'),
-    upload_path = config.BDI_FILES_PATH;
+    upload_path = config.FILES_PATH;
 
 exports.uploadFile = function (req, res) {
 
@@ -13,7 +13,7 @@ exports.uploadFile = function (req, res) {
         givenFileName = '',
         fileType = '',
         sql_JDBC = '';
-    form.uploadDir = config.BDI_FILES_PATH;
+    form.uploadDir = config.FILES_PATH;
 
     // form.parse
     /* form.parse(req, function (err, fields, files) {

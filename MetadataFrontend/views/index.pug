@@ -3,10 +3,9 @@ extends layout
 block content
   .container-fluid
     .jumbotron
-      h1.display-4 MDM: Governing Evolution in Big Data Ecosystems
+      h1.display-4 Data-Driven Incremental Consolidation of Dataspaces
       p.lead
-        | On-demand integration of multiple data sources is a critical requirement in many Big Data settings. This has been coined as the data variety challenge, which refers to the complexity of dealing with an heterogeneous set of data sources to enable their integrated analysis. In Big Data settings, data sources are commonly represented by external REST APIs, which provide data in their original format and continously apply changes in their structure (i.e., schema). Thus, data analysts face the challenge to integrate such multiple sources, and then continuosly adapt their analytical processes to changes in the schema. To address this challenges we present the Metadata Management System, shortly MDM, a tool that supports data stewards and analysts to manage the integration and analysis of multiple heterogeneous sources under schema evolution. MDM adopts a vocabulary-based integration-oriented ontology to conceptualize the domain of interest and relies on local-as-view mappings to link it with the sources. MDM provides user-friendly mechanisms to manage the ontology and mappings. Finally, a query rewriting algorithm ensures that queries posed to the ontology are correctly resolved to the sources in the presence of multiple schema versions, a transparent process to data analysts.
-
+        | We demonstrate ODIN, a tool supporting the automatic incremental evolution of dataspaces from data sources, as well as user-friendly querying mechanisms. We describe some of its characteristics and underlying assumptions, including the kind of interactions offered by the system. Odin’s novelty lies in including users on the loop, and use their feedback for ontology merging. The on-site demonstration will feature an ongoing project with the World Health Organization (WHO).
       //p.lead
         | This work is partly supported by the H2020 SUPERSEDE project, funded by the EU Information and Communication Technologies Programme under grant agreement no 644018, and the GENESIS project, funded by the Spanish Ministerio de Ciencia e Innovación under project TIN2016-79269-R.
         .row.justify-content-center

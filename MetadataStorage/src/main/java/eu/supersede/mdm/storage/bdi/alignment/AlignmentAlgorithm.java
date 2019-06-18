@@ -8,11 +8,13 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.RDF;
 import org.openrdf.model.vocabulary.RDFS;
 
 import java.util.HashMap;
 
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
 public class AlignmentAlgorithm {
     private JSONObject basicInfo;
 
@@ -37,31 +39,32 @@ public class AlignmentAlgorithm {
                 case "ACCEPTED":
                     switch (data.get("AlignmentType")) {
                         case "OBJECT-PROPERTY":
-                            System.out.println("OBJECT-PROPERTY");
+                            //System.out.println("OBJECT-PROPERTY");
                             //TODO Handle the Object Property
                             //RDFUtil.addCustomTriple(basicInfo.getAsString("integratedIRI"), data.get("PropertyA"), "EQUIVALENT_PROPERTY", data.get("PropertyB"));
                             break;
                         case "DATA-PROPERTY":
-                            System.out.println("DATA-PROPERTY");
+                            //System.out.println("DATA-PROPERTY");
                             String query = "SELECT * FROM Class WHERE classA = '" + data.get("DomainPropA") + "' and classB = '" + data.get("DomainPropB") + "'";
-                            System.out.println(query);
+                            //System.out.println(query);
                             JSONArray result = SQLiteUtils.executeSelect(query, SchemaIntegrationHelper.getClassTableFeatures());
 
-                            Object[] rowResult = ((JSONArray) result.get(0)).toArray();
-                            HashMap<String, String> sqliteRow = new HashMap<>();
-                            for (Object element : rowResult) {
-                                JSONObject obj = (JSONObject) element;
-                                sqliteRow.put(obj.getAsString("feature"), obj.getAsString("value"));
-                            }
 
                             //TODO Case 1 -  When classes of the properties are aligned
                             if (result.size() > 0) {
-                                System.out.println("CLASSES PRESENT");
+                                //System.out.println("CLASSES PRESENT");
                                 // Remove Properties from aligned Classes
                                 //RDFUtil.removeProperty(basicInfo.getAsString("integratedIRI"), data.get("PropertyA"), data.get("DomainPropA"), data.get("RangePropA"));
                                 //RDFUtil.removeProperty(basicInfo.getAsString("integratedIRI"), data.get("PropertyB"), data.get("DomainPropB"), data.get("RangePropB"));
                                 //RDFUtil.removeTriple(basicInfo.getAsString("integratedIRI"), data.get("PropertyA"), RDF.type.getURI().toString(), RDF.Property.getURI().toString());
                                 //RDFUtil.removeTriple(basicInfo.getAsString("integratedIRI"), data.get("PropertyB"), RDF.type.getURI().toString(), RDF.Property.getURI().toString());
+
+                                Object[] rowResult = ((JSONArray) result.get(0)).toArray();
+                                HashMap<String, String> sqliteRow = new HashMap<>();
+                                for (Object element : rowResult) {
+                                    JSONObject obj = (JSONObject) element;
+                                    sqliteRow.put(obj.getAsString("feature"), obj.getAsString("value"));
+                                }
 
                                 RDFUtil.removeTriple(basicInfo.getAsString("integratedIRI"), data.get("PropertyA"), RDFS.DOMAIN.toString(), data.get("DomainPropA"));
                                 RDFUtil.removeTriple(basicInfo.getAsString("integratedIRI"), data.get("PropertyB"), RDFS.DOMAIN.toString(), data.get("DomainPropB"));
@@ -115,8 +118,8 @@ public class AlignmentAlgorithm {
                                 RDFUtil.addProperty(basicInfo.getAsString("integratedIRI"), newGlobalGraphProperty, domainsForNewGlobalPropertyResource, data.get("RangePropA"));
 
                                 // Handle SameAs
-                                RDFUtil.addCustomTriple(basicInfo.getAsString("integratedIRI"), newGlobalGraphProperty, "EQUIVALENT_PROPERTY", data.get("PropertyA"));
-                                RDFUtil.addCustomTriple(basicInfo.getAsString("integratedIRI"), newGlobalGraphProperty, "EQUIVALENT_PROPERTY", data.get("PropertyB"));
+                                RDFUtil.addCustomTriple(basicInfo.getAsString("integratedIRI"), data.get("PropertyA"), "EQUIVALENT_PROPERTY", newGlobalGraphProperty);
+                                RDFUtil.addCustomTriple(basicInfo.getAsString("integratedIRI"), data.get("PropertyB"), "EQUIVALENT_PROPERTY", newGlobalGraphProperty);
                             }
                             break;
                     }
@@ -153,7 +156,7 @@ public class AlignmentAlgorithm {
                             String newGlobalGraphClassResource = basicInfo.getAsString("integratedIRI") + "/" + classRow.get("userProvidedName");
                             // }
 
-                            System.out.println("GG Resource: " + newGlobalGraphClassResource);
+                            //System.out.println("GG Resource: " + newGlobalGraphClassResource);
 
                             RDFUtil.addClassOrPropertyTriple(basicInfo.getAsString("integratedIRI"), newGlobalGraphClassResource, "CLASS");
                             RDFUtil.addCustomTriple(basicInfo.getAsString("integratedIRI"), classRow.get("classA"), "SUB_CLASS_OF", newGlobalGraphClassResource);

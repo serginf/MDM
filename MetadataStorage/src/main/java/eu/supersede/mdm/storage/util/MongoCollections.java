@@ -35,9 +35,9 @@ public class MongoCollections {
         client.close();
 
         if (itIs) {
-            System.out.println(out);
+            //System.out.println(out);
         } else {
-            System.out.println("Not Found");
+            System.out.println("Not Found in MongoDB");
         }
         return out;
     }

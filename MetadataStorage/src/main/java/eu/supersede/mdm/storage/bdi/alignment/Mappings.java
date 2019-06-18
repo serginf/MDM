@@ -18,6 +18,11 @@ import org.semarglproject.vocab.RDF;
 import java.util.Collection;
 import java.util.HashSet;
 
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
+
+/*TODO This class is not used anywhere*/
 public class Mappings {
     private JSONObject basicInfo;
     private SchemaIntegrationHelper schemaIntegrationHelper = new SchemaIntegrationHelper();

@@ -243,7 +243,7 @@ function getAlignments() {
                                         " <span class=\"badge badge-success\"> Super Class</span> <i class=\"fa fa-info-circle\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"It is recommended to align the matching class with the super class instead of its subclasses.\" aria-hidden=\"true\"></i> <span class=\"badge badge-warning\"><i class=\"fa fa-exclamation-triangle\" aria-hidden=\"true\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Not Recommended. Collection classes can only be aligned with collection classes.\">Not Recommended</i></span> </td>\n" +
                                         "\t<td>" + cB + " <span class=\"badge badge-info\">" + (removeURI(alignment.p)).split("/")[0] + " IRI</span> <span class=\"badge badge-primary\">New Source Graph</span> <span class=\"badge badge-warning\"><i class=\"fa fa-exclamation-triangle\" aria-hidden=\"true\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Not Recommended. Collection classes can only be aligned with collection classes.\">Not Recommended</i></span></td>\n" +
                                         "\t<td class='confidence-td'>" + newConfidence + "%</td>\n" +
-                                        '\t<td> <input type="text" class="form-control" name="newClassName" id="classNameValueId' + indexOfAlignment + '" placeholder="Name the Super Class of ' + cA + ' & ' + cB + '" ></td>\n' +
+                                        '\t<td class="opacity"> <input disabled type="text" class="form-control" value="Not required in this case..." name="newClassName" id="classNameValueId' + alignmentsInfo.indexOf(alignment) + '" placeholder="Name the Super Class of ' + cA + ' & ' + cB + '" ></td>\n' +
                                         "\t<td class='accept-reject-buttons'><button type=\"button\" id=\"acceptAlignment\" class=\"btn btn-success\" value=\"" + alignmentsInfo.indexOf(alignment) + "\">Accept</button> </td>\n" +
                                         "\t<td class='accept-reject-buttons'><button type=\"button\" id=\"rejectAlignment\" class=\"btn btn-danger\" value=\"" + alignmentsInfo.indexOf(alignment) + "\">Reject</button> </td>\n" +
                                         "</tr>";
@@ -263,7 +263,7 @@ function getAlignments() {
                                         " <span class=\"badge badge-success\"> Super Class</span> <i class=\"fa fa-info-circle\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"It is recommended to align the matching class with the super class instead of its subclasses.\" aria-hidden=\"true\"></i>  </td>\n" +
                                         "\t<td>" + cB + " <span class=\"badge badge-info\">" + (removeURI(alignment.p)).split("/")[0] + " IRI</span> <span class=\"badge badge-primary\">New Source Graph</span> </td>\n" +
                                         "\t<td class='confidence-td'>" + updatedConfidence + "%</td>\n" +
-                                        '\t<td> <input disabled type="text" class="form-control" value="Not required in this case..." name="newClassName" id="classNameValueId' + indexOfAlignment + '" placeholder="Not required in this case..." ></td>\n' +
+                                        '\t<td class="opacity"> <input disabled type="text" class="form-control" value="Not required in this case..." name="newClassName" id="classNameValueId' + alignmentsInfo.indexOf(alignment) + '" placeholder="Not required in this case..." ></td>\n' +
                                         "\t<td class='accept-reject-buttons'><button type=\"button\" id=\"acceptAlignment\" class=\"btn btn-success\" value=\"" + alignmentsInfo.indexOf(alignment) + "\">Accept</button> </td>\n" +
                                         "\t<td class='accept-reject-buttons'><button type=\"button\" id=\"rejectAlignment\" class=\"btn btn-danger\" value=\"" + alignmentsInfo.indexOf(alignment) + "\">Reject</button> </td>\n" +
                                         "</tr>";
@@ -335,7 +335,7 @@ function getAlignments() {
                                             .text(cB).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(classVal.p)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">New Source Graph</span>'))
                                         ).append($('<td>').text((Math.round(classVal.confidence * 100) / 100) * 100 + '%' + '')
                                         )
-                                        .append($('<td>').append('<input type="text" class="form-control" name="newClassName" id="classNameValueId' + alignmentsInfo.indexOf(val) + '" placeholder="Name the Super Class of ' + cA + ' & ' + cB + '" >'))
+                                        .append($('<td>').append('<input type="text" class="form-control" name="newClassName" id="classNameValueId' + alignmentsInfo.indexOf(classVal) + '" placeholder="Name the Super Class of ' + cA + ' & ' + cB + '" >'))
                                         .append($('<td>').append('<button type="button" id ="acceptAlignment" class="btn btn-success" value="' + alignmentsInfo.indexOf(classVal) + '">Accept</button> '))
                                         .append($('<td>').append('<button type="button" id ="rejectAlignment" class="btn btn-danger" value="' + alignmentsInfo.indexOf(classVal) + '">Reject</button> '))
                                 );
@@ -422,7 +422,7 @@ $(document).ready(function () {
             $("#classNameValueId" + index).addClass("border-danger");
             $("#classNameValueId" + index).addClass("danger-shadow");
         } else {
-            console.log("Else condition");
+            console.log(userProvidedNameForTheNewClass);
             acceptButtonClickHandler(acceptButton, index, userProvidedNameForTheNewClass);
         }
 

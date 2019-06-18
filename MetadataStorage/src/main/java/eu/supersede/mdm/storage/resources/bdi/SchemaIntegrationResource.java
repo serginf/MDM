@@ -16,16 +16,20 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import java.util.logging.Logger;
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
 @Path("metadataStorage")
 public class SchemaIntegrationResource {
+    private static final Logger LOGGER = Logger.getLogger(SchemaIntegrationResource.class.getName());
     private final SchemaIntegrationHelper schemaIntegrationHelper = new SchemaIntegrationHelper();
 
     @GET
     @Path("getSchemaAlignments/{dataSource1_id}/{dataSource2_id}")
     @Consumes("text/plain")
     public Response GET_IntegratedSchemaAlignment(@PathParam("dataSource1_id") String ds1, @PathParam("dataSource2_id") String ds2) {
-        System.out.println("[GET /getSchemaAlignments" + "/" + ds1 + ds2);
+        LOGGER.info("[GET /getSchemaAlignments" + "/" + ds1 + ds2);
         try {
             JSONObject dataSource1Info = new JSONObject();
             JSONObject dataSource2Info = new JSONObject();
@@ -34,12 +38,12 @@ public class SchemaIntegrationResource {
             JSONArray alignmentsArray = new JSONArray();
 
             if (ds1.contains("INTEGRATED-") && ds2.contains("INTEGRATED-")) {
-                System.out.println("------------------- GLOBAL-vs-GLOBAL ------------------- ");
+                LOGGER.info("------------------- GLOBAL-vs-GLOBAL ------------------- ");
                 dataSource1 = schemaIntegrationHelper.getIntegratedDataSourceInfo(ds1);
                 dataSource2 = schemaIntegrationHelper.getIntegratedDataSourceInfo(ds2);
 
             } else if (ds1.contains("INTEGRATED-")) {
-                System.out.println("------------------- GLOBAL-vs-LOCAL ------------------- ");
+                LOGGER.info("------------------- GLOBAL-vs-LOCAL ------------------- ");
                 dataSource1 = schemaIntegrationHelper.getIntegratedDataSourceInfo(ds1);
                 dataSource2 = schemaIntegrationHelper.getDataSourceInfo(ds2);
 
@@ -50,7 +54,7 @@ public class SchemaIntegrationResource {
                 }
 
             } else {
-                System.out.println("------------------- LOCAL-vs-LOCAL ------------------- ");
+                LOGGER.info("------------------- LOCAL-vs-LOCAL ------------------- ");
                 dataSource1 = schemaIntegrationHelper.getDataSourceInfo(ds1);
                 dataSource2 = schemaIntegrationHelper.getDataSourceInfo(ds2);
 
@@ -93,7 +97,7 @@ public class SchemaIntegrationResource {
     @Consumes("text/plain")
     @Produces(MediaType.TEXT_PLAIN)
     public Response POST_AcceptAlignment(String body) {
-        System.out.println("[POST /acceptAlignment] body = " + body);
+        LOGGER.info("[POST /acceptAlignment] body = " + body);
         try {
             // Alignments are stored in a triple store because it is more convenient to deal with them this way
             // p: Contains Alignment of Class/Property A , s: Contains Alignment of Class/Property B, and o: Contains the confidence value between both mappings
@@ -102,26 +106,28 @@ public class SchemaIntegrationResource {
             String integratedIRI = Namespaces.G.val() + objBody.getAsString("integrated_iri");
             Resource s = ResourceFactory.createResource(objBody.getAsString("s"));
             Resource p = ResourceFactory.createResource(objBody.getAsString("p"));
-            System.out.println(s.getLocalName() + " " + p.getLocalName() + " URI " + s.getURI());
+            //System.out.println(s.getLocalName() + " " + p.getLocalName() + " URI " + s.getURI());
 
             String query = " SELECT * WHERE { GRAPH <" + integratedIRI + "> { <" + objBody.getAsString("s") + "> rdf:type ?o ." + "<" + objBody.getAsString("p") + "> rdf:type ?oo .  } }";
 
             final String[] checkIfQueryContainsResult = new String[5];
 
             if (objBody.getAsString("ds1_id").contains("INTEGRATED-") && objBody.getAsString("ds2_id").contains("INTEGRATED-")) {
-                System.out.println("GLOBAL-vs-GLOBAL");
+                //System.out.println("GLOBAL-vs-GLOBAL");
             } else if (objBody.getAsString("ds1_id").contains("INTEGRATED-")) {
-                System.out.println("GLOBAL-vs-LOCAL");
+                //System.out.println("GLOBAL-vs-LOCAL");
                 schemaIntegrationHelper.processAlignment(objBody, integratedIRI, s, p, query, checkIfQueryContainsResult, "GLOBAL-vs-LOCAL");
             } else {
                 schemaIntegrationHelper.processAlignment(objBody, integratedIRI, s, p, query, checkIfQueryContainsResult, "LOCAL-vs-LOCAL");
-                System.out.println("LOCAL-vs-LOCAL");
+                //System.out.println("LOCAL-vs-LOCAL");
             }
 
-            System.out.println(checkIfQueryContainsResult[0] + " " + checkIfQueryContainsResult[1]);
+            //System.out.println(checkIfQueryContainsResult[0] + " " + checkIfQueryContainsResult[1]);
             if (checkIfQueryContainsResult[0] != null && checkIfQueryContainsResult[1] != null) {
+                LOGGER.info("Alignment Succeeded");
                 return Response.ok(("AlignmentSucceeded")).build();
             } else {
+                LOGGER.info("Alignment Failed");
                 return Response.ok(("AlignmentFailed")).build();
             }
         } catch (Exception e) {
@@ -135,7 +141,7 @@ public class SchemaIntegrationResource {
     @Consumes("text/plain")
     public Response GET_finishIntegration(String body) {
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
-        System.out.println("[GET /finishIntegration" + "/" + objBody.getAsString("schema_iri"));
+        LOGGER.info("[GET /finishIntegration" + "/" + objBody.getAsString("schema_iri"));
         String integratedIRI = Namespaces.G.val() + objBody.getAsString("schema_iri");
 
         JSONObject dataSource1Info = new JSONObject();
@@ -156,7 +162,7 @@ public class SchemaIntegrationResource {
 
                 if (!dataSource2.isEmpty())
                     dataSource2Info = (JSONObject) JSONValue.parse(dataSource2);
-                System.out.println("Global-vs-Local - About to UpdateInfo");
+                //System.out.println("Global-vs-Local - About to UpdateInfo");
                 schemaIntegrationHelper.updateInfo(dataSource1Info, dataSource2Info, ConfigManager.getProperty("output_path") + integratedModelFileName, vowlObj);
             }
             if (objBody.getAsString("integrationType").equals("LOCAL-vs-LOCAL")) {

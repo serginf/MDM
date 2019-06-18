@@ -348,6 +348,7 @@ public class RDFUtil {
         ds.begin(ReadWrite.WRITE);
         try {
             ds.removeNamedModel(namedGraph);
+            System.out.println("True - Size: " + ds.getNamedModel(namedGraph).size());
 
             flag = true;
         } catch (Exception e) {

@@ -3,12 +3,14 @@ package eu.supersede.mdm.storage;
 import eu.supersede.mdm.storage.bdi.extraction.JsonSchemaExtractor;
 import eu.supersede.mdm.storage.bdi.extraction.XmlSchemaExtractor;
 import eu.supersede.mdm.storage.bdi.extraction.rdb.MySqlDB;
-import eu.supersede.mdm.storage.bdi.mdm.constructs.Conversion;
-import eu.supersede.mdm.storage.bdi.mdm.constructs.MDMLavMapping;
 
-import java.io.File;
-import java.io.IOException;
+/**
+ * Created by Kashif-Rabbani in June 2019
+ */
 
+/**
+ * This class is to test the functionality of the Extraction manually
+ */
 public class BdiMain {
     public static String configPath = "config.kashif.properties";
 
@@ -36,7 +38,7 @@ public class BdiMain {
             case "TRY":
                 //This is just to test some functionality independently - Pass the argument like this : TRY N
                 //new MDMLavMapping();
-                //new Conversion("INTEGRATED-uKHAoVbK-kphiyJAL-DtzuQMHr");
+                //new Conversion("INTEGRATED-uKHAoVbK-kphiyJAL");
                 break;
             default:
                 System.out.println("Please provide the arguments in a correct way: " +
