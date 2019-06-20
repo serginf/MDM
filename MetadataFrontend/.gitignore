@@ -28,5 +28,3 @@ Uploads/*
 
 # exception to the rule
 !Uploads/README.md
-
-package-lock.json
