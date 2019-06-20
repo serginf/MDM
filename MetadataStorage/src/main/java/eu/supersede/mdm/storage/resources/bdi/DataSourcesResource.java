@@ -6,7 +6,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCursor;
 import eu.supersede.mdm.storage.bdi.mdm.constructs.Conversion;
 import eu.supersede.mdm.storage.util.MongoCollections;
-import eu.supersede.mdm.storage.util.*;
+import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
