@@ -1,0 +1,193 @@
+extends layout
+block headers
+    //script(src='/js/bdi_integration_script.js')
+    //script(src='/js/tablesort.js')
+    link(rel='stylesheet', href='/stylesheets/bdi_style.css')
+block content
+    #overlay
+        .cv-spinner
+            span.spinner
+
+    .col-12.card.bg-white.float-left.border-0
+        .row
+            .col-md-12
+                h4(style="color:black")
+                    | Align
+                    span.dataSourceClass  #{ds1_name}
+                    span  and
+                    span.dataSourceClass  #{ds2_name}
+                p We have detected most of the alignments with confidence level automatically. However you have the facility to align manually in case some alignments are missing.
+
+        .card.bg-light.mb-3.bg-white
+            .card-header
+                .row
+                    .col-md-11.my-auto
+                        h5(style='color:#4cbd9c' data-step="1" data-intro="What is manual alignment? For large and complex graph models sometimes it becomes difficult to detect all the alignments(Same instances of classes/properties) automatically. You can now privilege the functionality of Manual Alignment to align whatever you want!") Manual Alignment
+                        p.subHeading Select an element in each graph to align them.
+                    .col-md-1
+                        button#schemaInstructionsButton.btn.btn-link(data-toggle='collapse' data-target='#schemaInstructions' aria-expanded='true')
+                            svg.svg-inline--fa.fa-chevron-circle-down.fa-w-16.fa-2x(style='color: black;' aria-hidden='true' data-prefix='fas' data-icon='chevron-circle-down' role='img' xmlns='http://www.w3.org/2000/svg' viewbox='0 0 512 512' data-fa-i2svg='')
+                                path(fill='currentColor' d='M504 256c0 137-111 248-248 248S8 393 8 256 119 8 256 8s248 111 248 248zM273 369.9l135.5-135.5c9.4-9.4 9.4-24.6 0-33.9l-17-17c-9.4-9.4-24.6-9.4-33.9 0L256 285.1 154.4 183.5c-9.4-9.4-24.6-9.4-33.9 0l-17 17c-9.4 9.4-9.4 24.6 0 33.9L239 369.9c9.4 9.4 24.6 9.4 34 0z')
+            #schemaInstructions.collapse.show(aria-labelledby='headingOne' data-parent='#accordion' style='')
+                .card-body
+                    .row
+                        .col-md-6.text-center
+                            span#titleGraph1.badge.badge-success.graphTitle  #{ds1_name}
+                            iframe#graphIframe1( width='100%' height='500' frameborder="0")
+                        .col-md-6.text-center
+                            span#titleGraph2.badge.badge-success.graphTitle #{ds2_name}
+                            iframe#graphIframe2( width='100%' height='500' frameborder="0")
+
+                    .alert.alert-warning.alert-dismissible#alertSelectElement(role='alert')
+                        |  Incompatible types&mdash;Need to select an element with the same type!
+                        button.close(type='button' onclick='showAlert()' aria-label='Close')
+                            span(aria-hidden='true') &times;
+
+                    .alert.alert-success.alert-dismissible#alertAlignmentSuccessful(role='alert')
+                        |  Selected elements accepted for alignment.
+                        button.close(type='button' onclick='showSuccessAlert()' aria-label='Close')
+                            span(aria-hidden='true') &times;
+
+                    .row
+                        .col-md-6.text-center
+                            .input-group.mb-2
+                                input#selectElement1.form-control(type='text', placeholder="No element selected" name='subjectInput',  disabled)
+                                .input-group-prepend
+                                    .input-group-text
+                                        span Type:
+                                        span#typeElement1
+                        .col-md-6.text-center
+                            .input-group.mb-2
+                                input#selectElement2.form-control(type='text', placeholder="No element selected" name='subjectInput',  disabled)
+                                .input-group-prepend
+                                    .input-group-text
+                                        span Type:
+                                        span#typeElement2
+                    .row.justify-content-md-center
+                        .col-md-8
+                            .input-group.mb-2
+                                input#classNameForManualAlignment.d-none.form-control(placeholder="Please provide a new name for the selected classes/properties" name="manualAlignmentUserProvidedClassName")
+                                .input-group-prepend
+                                    span#superClassTickSpan.d-none.input-group-text isSuperClass:
+                                        input#superClassTick(type="checkbox" name="isSuperClass" value="off")
+                            button.btn.btn-primary.btn-default.btn-block.d-none(type='button' name='acceptManualAlignment' id="acceptManualAlignment") Integrate selected elements
+
+        //.card.bg-light.mb-3.bg-white
+            .card-header
+                .row
+                    .col-md-12
+                        h5(style="color:black")
+                            | Add new Properties:
+            .card-body
+                form#dataSourceForm(method ="post" enctype="multipart/form-data")
+                    .form-group#subject.col-lg-3.float-left
+                        //label.col-lg-4.col-form-label Subject
+                        .col-lg-12
+                            input#subjectInput.form-control(type='text', placeholder="Subject" name='subjectInput', required='required')
+
+                    .form-group#predicate.col-lg-3.float-left
+                        //label.col-lg-4.col-form-label Predicate
+                        .col-lg-12
+                            input#predicateInput.form-control(type='text', placeholder="Predicate/Property" name='predicateInput', required='required')
+
+                    .form-group#object.col-lg-3.float-left
+                        //label.col-lg-4.col-form-label Object
+                        .col-lg-12
+                            input#objectInput.form-control(type='text', placeholder="Object" name='objectInput', required='required')
+
+                    .form-group#submitTriple.col-lg-3.float-left
+                        //label.col-lg-4.col-form-label S
+                        .col-lg-12
+                            button#submitTriple.btn.btn-default.btn-md.btn-block(type="submit") Submit
+                //button#integrateDataSourcesButton.btn.btn-primary.btn-md.align-center.btn-block.disabled(type="button") Integrate Selected Sources
+
+        .card.bg-light.mb-3.bg-white
+            .card-header
+                .row
+                    .col-md-12
+                        h4(style="color:black" data-step="2" data-intro="This section provides automatically detected classes that may need to be aligned. User can accept/reject each alignment. ")
+                            | Align Classes
+
+            .card-body
+                p(style="color:black")
+                    i.fa.fa-info-circle.badge-margin(aria-hidden='true')
+                    |  Collection Class should only be aligned with a Collection Class. Please pay attention to this
+                    span.badge.badge-warning.badge-margin
+                        i.fa.fa-exclamation-triangle(aria-hidden='true', data-toggle='tooltip', data-placement='top', title='Warning! Collection classes can only be aligned with collection classes.') NOT
+                    |  Warning symbol.
+
+                .row.d-none#GlobalVsLocalRow
+                    .col-md-11
+                        table.table.table-hover.border-0#alignmentsClass
+                            thead
+                                tr
+                                    th #{ds1_name}
+                                    th #{ds2_name}
+                                    th.confidence-td Confidence
+                                    th Edit Name
+                                    th.accept-reject-buttons Accept
+                                    th.accept-reject-buttons Reject
+
+                            tbody#alignmentsBodyClasses
+                    .col-md-1
+
+                .row.d-none#LocalVsLocalRow
+                    .col-md-12
+                        table.table.table-hover.border-0#localAlignmentsClass
+                            thead
+                                tr
+                                    th  #{ds1_name}
+                                    th  #{ds2_name}
+                                    th.confidence-td Confidence
+                                    th Edit Name
+                                    th.accept-reject-buttons Accept
+                                    th.accept-reject-buttons Reject
+
+                            tbody#localAlignmentsClassBody
+
+                div#SuperClassNote
+                div#superClass
+
+        .card.bg-light.mb-3.bg-white
+            .card-header
+                .row
+                    .col-md-12
+                        h4(style="color:black" data-step="3" data-intro="This section provides automatically detected data properties that may need to be aligned. User can accept/reject each alignment.")
+                            | Align data Properties
+            .card-body
+                table.table.table-hover#alignments
+                    thead
+                        tr
+                            th #{ds1_name}
+                            th #{ds2_name}
+                            th.confidence-td Confidence
+                            th.accept-reject-buttons Accept
+                            th.accept-reject-buttons Reject
+                    tbody#alignmentsBody
+
+        .card.bg-light.mb-3.bg-white
+            .card-header
+                .row
+                    .col-md-12
+                        h4(style="color:black" data-step="4" data-intro="This section provides automatically detected data properties that may need to be aligned. User can accept/reject each alignment.")
+                            | Align Object Properties
+            .card-body
+                table.table.table-hover#alignmentsObjProp
+                    thead
+                        tr
+                            th #{ds1_name}
+                            th #{ds2_name}
+                            th.confidence-td Confidence
+                            th.accept-reject-buttons Accept
+                            th.accept-reject-buttons Reject
+                    tbody#alignmentsBodyObjectProperties
+
+
+        #divv.text-center
+            button#integratedDataSourcesButton.btn.btn-primary.btn-md.align-center.btn-block(type="button" data-step="5" data-intro="Once you are satisfied aligning the similar classes/properties. Click the button to create a metadata traceability graph for the aligned graphs.") Finish Integration
+
+        div#footerBottom.text-center
+
+    script(src='/js/bdi_integration_script.js')
+    script(src='/js/tablesort.js')
+    script(src='/js/intro.js')

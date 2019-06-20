@@ -52,98 +52,111 @@ public class LAVMappingResource {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public Response GET_LAVMappingByID(@PathParam("LAVMappingID") String LAVMappingID) {
-        LOGGER.info("[GET /LAVMapping/] LAVMappingID = "+LAVMappingID);
+        LOGGER.info("[GET /LAVMapping/] LAVMappingID = " + LAVMappingID);
 
         MongoClient client = Utils.getMongoDBClient();
-        Document query = new Document("LAVMappingID",LAVMappingID);
+        Document query = new Document("LAVMappingID", LAVMappingID);
         Document res = MongoCollections.getLAVMappingCollection(client).find(query).first();
         client.close();
         return Response.ok((res.toJson())).build();
     }
 
-    @POST @Path("LAVMapping/sameAs")
+    @POST
+    @Path("LAVMapping/sameAs")
     @Consumes("text/plain")
     public Response POST_LAVMappingMapsTo(String body) {
-        LOGGER.info("[POST /LAVMapping/mapsTo/] body = "+body);
+        LOGGER.info("[POST /LAVMapping/mapsTo/] body = " + body);
+        JSONObject objBody = createLAVMappingMapsTo(body);
+        return Response.ok(objBody.toJSONString()).build();
+    }
+
+    @POST
+    @Path("LAVMapping/subgraph")
+    @Consumes("text/plain")
+    public Response POST_LAVMappingSubgraph(String body) {
+        LOGGER.info("[POST /LAVMapping/subgraph/] body = " + body);
+        JSONObject objBody = createLAVMappingSubgraph(body);
+        return Response.ok(objBody.toJSONString()).build();
+    }
+
+
+    public static JSONObject createLAVMappingMapsTo(String body) {
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
         MongoClient client = Utils.getMongoDBClient();
 
         Document wrapper = MongoCollections.getWrappersCollection(client)
-                .find(new Document("wrapperID",objBody.getAsString("wrapperID"))).first();
+                .find(new Document("wrapperID", objBody.getAsString("wrapperID"))).first();
         Document dataSource = MongoCollections.getDataSourcesCollection(client)
-                .find(new Document("dataSourceID",wrapper.getString("dataSourceID"))).first();
+                .find(new Document("dataSourceID", wrapper.getString("dataSourceID"))).first();
 
-        if(objBody.getAsString("isModified").equals("false")){
-            objBody.put("LAVMappingID", UUID.randomUUID().toString().replace("-",""));
+        if (objBody.getAsString("isModified").equals("false")) {
+            objBody.put("LAVMappingID", UUID.randomUUID().toString().replace("-", ""));
             MongoCollections.getLAVMappingCollection(client).insertOne(Document.parse(objBody.toJSONString()));
 
             String dsIRI = dataSource.getString("iri");
 
-            ((JSONArray)objBody.get("sameAs")).forEach(mapping -> {
-                JSONObject objMapping = (JSONObject)mapping;
-                RDFUtil.addTriple(dsIRI,objMapping.getAsString("attribute"),Namespaces.owl.val()+"sameAs",objMapping.getAsString("feature"));
+            ((JSONArray) objBody.get("sameAs")).forEach(mapping -> {
+                JSONObject objMapping = (JSONObject) mapping;
+                RDFUtil.addTriple(dsIRI, objMapping.getAsString("attribute"), Namespaces.owl.val() + "sameAs", objMapping.getAsString("feature"));
             });
 
-        }else{
+        } else {
             UpdateLavMappingServiceImpl updateLAVM = new UpdateLavMappingServiceImpl();
-            updateLAVM.updateTriples(((JSONArray)objBody.get("sameAs")),objBody.getAsString("LAVMappingID"),
-                    wrapper.getString("iri"),dataSource.getString("iri"));
+            updateLAVM.updateTriples(((JSONArray) objBody.get("sameAs")), objBody.getAsString("LAVMappingID"),
+                    wrapper.getString("iri"), dataSource.getString("iri"));
         }
 
         client.close();
-        return Response.ok(objBody.toJSONString()).build();
+        return objBody;
     }
 
-    @POST @Path("LAVMapping/subgraph")
-    @Consumes("text/plain")
-    public Response POST_LAVMappingSubgraph(String body) {
-        LOGGER.info("[POST /LAVMapping/subgraph/] body = "+body);
+    public static JSONObject createLAVMappingSubgraph(String body) {
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
         MongoClient client = Utils.getMongoDBClient();
 
         Document objMapping = MongoCollections.getLAVMappingCollection(client).find
-                (new Document("LAVMappingID",objBody.getAsString("LAVMappingID"))).first();
+                (new Document("LAVMappingID", objBody.getAsString("LAVMappingID"))).first();
 
-        Document filter = new Document("_id",objMapping.get("_id"));
+        Document filter = new Document("_id", objMapping.get("_id"));
         Document updateOperationDocument = new Document("$set", new Document("graphicalSubGraph", objBody.get("graphicalSubGraph")));
         MongoCollections.getLAVMappingCollection(client).updateOne(filter, updateOperationDocument);
 
         Document wrapper = MongoCollections.getWrappersCollection(client)
-                .find(new Document("wrapperID",objMapping.getString("wrapperID"))).first();
+                .find(new Document("wrapperID", objMapping.getString("wrapperID"))).first();
         Document globalGraph = MongoCollections.getGlobalGraphCollection(client)
-                .find(new Document("globalGraphID",objMapping.getString("globalGraphID"))).first();
+                .find(new Document("globalGraphID", objMapping.getString("globalGraphID"))).first();
         String globalGraphIRI = globalGraph.getString("namedGraph");
 
         String wIRI = wrapper.getString("iri");
         RDFUtil.deleteTriplesNamedGraph(wIRI);
-        ((JSONArray)objBody.get("selection")).forEach(selectedElement -> {
-            JSONObject objSelectedElement = (JSONObject)selectedElement;
+        ((JSONArray) objBody.get("selection")).forEach(selectedElement -> {
+            JSONObject objSelectedElement = (JSONObject) selectedElement;
             if (objSelectedElement.containsKey("target")) {
-                String sourceIRI = ((JSONObject)objSelectedElement.get("source")).getAsString("iri");
+                String sourceIRI = ((JSONObject) objSelectedElement.get("source")).getAsString("iri");
                 String relIRI = objSelectedElement.getAsString("name");
-                String targetIRI = ((JSONObject)objSelectedElement.get("target")).getAsString("iri");
-                RDFUtil.addTriple(wIRI,sourceIRI,relIRI,targetIRI);
+                String targetIRI = ((JSONObject) objSelectedElement.get("target")).getAsString("iri");
+                RDFUtil.addTriple(wIRI, sourceIRI, relIRI, targetIRI);
 
                 //Extend to also incorporate the type of the added triple. This is obtained from the original global graph
-                String typeOfSource = RDFUtil.runAQuery("SELECT ?t WHERE { GRAPH <"+globalGraphIRI+"> { <"+sourceIRI+"> <"
-                        +Namespaces.rdf.val()+"type> ?t } }",globalGraphIRI).next().get("t").toString();
-                String typeOfTarget = RDFUtil.runAQuery("SELECT ?t WHERE { GRAPH <"+globalGraphIRI+"> { <"+targetIRI+"> <"
-                        +Namespaces.rdf.val()+"type> ?t } }",globalGraphIRI).next().get("t").toString();
+                String typeOfSource = RDFUtil.runAQuery("SELECT ?t WHERE { GRAPH <" + globalGraphIRI + "> { <" + sourceIRI + "> <"
+                        + Namespaces.rdf.val() + "type> ?t } }", globalGraphIRI).next().get("t").toString();
+                String typeOfTarget = RDFUtil.runAQuery("SELECT ?t WHERE { GRAPH <" + globalGraphIRI + "> { <" + targetIRI + "> <"
+                        + Namespaces.rdf.val() + "type> ?t } }", globalGraphIRI).next().get("t").toString();
 
-                RDFUtil.addTriple(wIRI,sourceIRI,Namespaces.rdf.val()+"type",typeOfSource);
-                RDFUtil.addTriple(wIRI,targetIRI,Namespaces.rdf.val()+"type",typeOfTarget);
+                RDFUtil.addTriple(wIRI, sourceIRI, Namespaces.rdf.val() + "type", typeOfSource);
+                RDFUtil.addTriple(wIRI, targetIRI, Namespaces.rdf.val() + "type", typeOfTarget);
 
                 //Check if the target is an ID feature
-                if (RDFUtil.runAQuery("SELECT ?sc WHERE { GRAPH <"+globalGraphIRI+"> { <"+targetIRI+"> <"+
-                        Namespaces.rdfs.val()+"subClassOf> <"+Namespaces.sc.val()+"identifier> } }",globalGraphIRI).hasNext()) {
-                    RDFUtil.addTriple(wIRI,targetIRI,Namespaces.rdfs.val()+"subClassOf",Namespaces.sc.val()+"identifier");
+                if (RDFUtil.runAQuery("SELECT ?sc WHERE { GRAPH <" + globalGraphIRI + "> { <" + targetIRI + "> <" +
+                        Namespaces.rdfs.val() + "subClassOf> <" + Namespaces.sc.val() + "identifier> } }", globalGraphIRI).hasNext()) {
+                    RDFUtil.addTriple(wIRI, targetIRI, Namespaces.rdfs.val() + "subClassOf", Namespaces.sc.val() + "identifier");
                 }
 
             }
         });
 
         client.close();
-        return Response.ok(objBody.toJSONString()).build();
+        return objBody;
     }
 
 

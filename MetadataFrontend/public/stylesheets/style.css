@@ -153,3 +153,147 @@ svg.line-graph .legend {
 a {
   color: black;
 }
+
+
+/*BDI STYLE ELEMENTS*/
+
+#ViewiframeGraph {
+  display: block;
+  width: 100%;
+  /*height:84vh;*/
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  display: none;
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.cv-spinner {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  width: 119px;
+  height: 119px;
+  border: 4px #ddd solid;
+  border-top: 4px #18BC9C solid;
+  border-radius: 62%;
+  animation:  sp-anime 0.8s infinite linear;
+}
+
+@keyframes sp-anime {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+}
+
+.is-hide {
+  display: none;
+}
+
+
+.dataSourceClass {
+  color: #18BC9C;
+}
+
+.table input[type="checkbox"] {
+  width: 20px; /*Desired width*/
+  height: 20px; /*Desired height*/
+  cursor: pointer;
+}
+
+/*
+.bg-white{
+  border-left: 1px solid rgba(0,0,0,0.125)
+}*/
+
+.dropdown-menu-Bootstrapping {
+  min-width: 12rem!important;
+  padding: 0 0 0!important;
+  background-clip: unset!important;
+}
+
+.poseOMG-Bootstrapping {
+  min-width: 15.5rem!important;
+}
+
+.dropdown-header-Bootstrapping {
+  font-size: inherit!important;
+  color: black!important;
+}
+
+.font-increaser{
+  font-size: large;
+}
+
+.logo{
+  width: 30%;
+  margin-left: 25%;
+  -ms-transform: scale(1.75); /* IE 9 */
+  -webkit-transform: scale(1.75); /* Safari 3-8 */
+  transform: scale(1.75);
+}
+
+.zoom:hover {
+  -ms-transform: scale(1.8); /* IE 9 */
+  -webkit-transform: scale(1.8); /* Safari 3-8 */
+  transform: scale(1.8);
+}
+
+.width10{
+  width: 10% !important;
+}
+
+.width5{
+  width: 5% !important;
+}
+
+
+.width15{
+  width: 15% !important;
+}
+
+.width20{
+  width: 20% !important;
+}
+
+.bg-dark {
+  /*background-color: #50c49c !important;*/
+}
+#superClassTick {
+  margin-left: 10px;
+  margin-top: 5px;
+  float: right;
+}
+
+.danger-shadow{
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6);
+}
+.form-control:focus {
+  border-color: #3498db!important;
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.24) !important;
+}
+.subHeading{
+  margin-bottom: -8px;
+}
+
+.opacity{
+    opacity : 0.4;
+}

@@ -518,6 +518,14 @@ module.exports = function (graph) {
         }
     };
 
+    sidebar.hideExpandButton = function(flag){
+		collapseButton.classed("hidden",flag);
+	};
+
+    sidebar.hideMenuArea = function(flag){
+    	menuArea.classed("hidden",flag);
+	};
+
     sidebar.isSidebarVisible=function(){return visibleSidebar;};
 
     sidebar.updateSideBarVis=function(init){

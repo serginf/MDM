@@ -9,71 +9,61 @@ html
     //script(src='/js/bootswatch.js')
     //script(src='/js/bootstrap.js')
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+    script(src="/js/popper.js")
     script(src="/js/bootstrap.min.js")
     link(rel='stylesheet', href='/stylesheets/style.css')
     script(src='/js/fontawesome-all.js')
     //link(rel='stylesheet', href='/stylesheets/bootswatch.min.css')
     script(src='/js/client_button_instructions.js')
+    link(rel='stylesheet', href='/stylesheets/introjs.min.css')
     block headers
 
   body
-    .navbar.navbar-expand-lg.fixed-top.navbar-dark.bg-dark
-      .container-fluid
-        #navbar-main.navbar-collapse.collapse.lead
-          .col-md-2
-            ul.nav.navbar-nav.navbar-left
-              li
-                a.lead.navbar-brand.navbar-left(href='/')
-                  h3 MDM
-          .col-md-8.align-self-center
-            .collapse.navbar-collapse
-              ul.navbar-nav
-                li.nav-item.dropdown
-                  a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
-                    | Global Graph
-                  .dropdown-menu(aria-labelledby="themes")
-                    a.dropdown-item.lead(href='/new_global_graph') Create
-                    a.dropdown-item.lead(href='/manage_global_graphs') Manage
+    .navbar.navbar-expand-lg.fixed-top.navbar-dark.bg-dark.just
+      .container-fluid.font-increaser
+        a.width20(href='/')
+          img.logo.d-inline-block.align-top.zoom(src='/images/oddi-bg.png')
+        button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbar-main', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
+          span.navbar-toggler-icon
+        #navbar-main.collapse.navbar-collapse
+          ul.navbar-nav.ml-auto.mr-5
+            li.nav-item
+              a.nav-link(href='/bdi')
+                | Automatic Bootstrapping
+                span.sr-only (current)
+            li.nav-item
+              .dropdown
+                a.nav-link(href='/')#dropdownMenu2.dropdown-toggle(data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
+                  | Manual Bootstrapping
+                .dropdown-menu.dropdown-menu-Bootstrapping(aria-labelledby='dropdownMenu2')
+                  h6.dropdown-header.bg-light.dropdown-header-Bootstrapping Global Graph
+                  a.dropdown-item(href='/new_global_graph') Create
+                  a.dropdown-item(href='/manage_global_graphs') Manage
+                  .dropdown-divider
+                  h6.dropdown-header.bg-light.dropdown-header-Bootstrapping  Data Sources
+                  a.dropdown-item(href='/new_data_source') Create
+                  a.dropdown-item(href='/manage_data_sources') Manage
+                  .dropdown-divider
+                  h6.dropdown-header.bg-light.dropdown-header-Bootstrapping  Wrappers
+                  a.dropdown-item(href='/new_wrapper') Create
+                  a.dropdown-item(href='/manage_wrappers') Manage
+                  .dropdown-divider
+                  h6.dropdown-header.bg-light.dropdown-header-Bootstrapping  LAV Mappings
+                  a.dropdown-item(href='/new_lav_mapping') Create
+                  a.dropdown-item(href='/manage_lav_mappings') Manage
 
-              ul.navbar-nav
-                li.nav-item.dropdown
-                  a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
-                    | Data Sources
-                  .dropdown-menu(aria-labelledby="themes")
-                    a.dropdown-item.lead(href='/new_data_source') Create
-                    a.dropdown-item.lead(href='/manage_data_sources') Manage
+            li.nav-item.dropdown
+              a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
+                | Ontology-Mediated Queries
+                span.caret
+              .dropdown-menu(aria-labelledby="themes")
+                a.dropdown-item.text-center(href='/pose_omq') Pose OMQ
 
-              ul.navbar-nav
-                li.nav-item.dropdown
-                  a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
-                    | Wrappers
-                  .dropdown-menu(aria-labelledby="themes")
-                    a.dropdown-item.lead(href='/new_wrapper') Create
-                    a.dropdown-item.lead(href='/manage_wrappers') Manage
+            li.nav-item.dropdown
+              a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
+                | Signed in as #{user.username}
+              .dropdown-menu(aria-labelledby="themes")
+                a.dropdown-item(href='/logout') Logout
 
-              ul.navbar-nav
-                li.nav-item.dropdown
-                  a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
-                    | LAV Mappings
-                  .dropdown-menu(aria-labelledby="themes")
-                    a.dropdown-item.lead(href='/new_lav_mapping') Create
-                    a.dropdown-item.lead(href='/manage_lav_mappings') Manage
-
-              ul.navbar-nav
-                li.nav-item.dropdown
-                  a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
-                    | Ontology-Mediated Queries
-                    span.caret
-                  .dropdown-menu(aria-labelledby="themes")
-                    a.dropdown-item.lead(href='/pose_omq') Pose OMQ
-
-          .col-md-2
-            .collapse.navbar-collapse
-              ul.navbar-nav
-                li.nav-item.dropdown
-                  a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
-                    | Signed in as #{user.username}
-                  .dropdown-menu(aria-labelledby="themes")
-                    a.dropdown-item.lead(href='/logout') Logout
 
   block content

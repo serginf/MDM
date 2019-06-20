@@ -73,6 +73,7 @@ public class DataSourceResource {
         //Save metadata
         objBody.put("dataSourceID", UUID.randomUUID().toString().replace("-",""));
         objBody.put("iri", iri);
+        objBody.put("bootstrappingType", "manual");
         MongoCollections.getDataSourcesCollection(client).insertOne(Document.parse(objBody.toJSONString()));
 
         RDFUtil.addTriple(iri, iri, Namespaces.rdf.val()+"type", SourceGraph.DATA_SOURCE.val());

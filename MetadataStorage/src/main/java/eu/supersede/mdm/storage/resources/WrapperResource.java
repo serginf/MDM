@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created by snadal on 22/11/16.
+ * Updated by Kashif Rabbani June 10 2019
  */
 @Path("metadataStorage")
 public class WrapperResource {
@@ -71,41 +72,7 @@ public class WrapperResource {
     @Consumes("text/plain")
     public Response POST_wrapper(String body) {
         System.out.println("[POST /wrapper/] body = " + body);
-        JSONObject objBody = (JSONObject) JSONValue.parse(body);
-        MongoClient client = Utils.getMongoDBClient();
-        //Metadata for the wrapper
-        objBody.put("wrapperID", "w"+UUID.randomUUID().toString().replace("-",""));
-        String wrapperName = objBody.getAsString("name")/*.trim().replace(" ","")*/;
-        String wIRI = SourceGraph.WRAPPER.val()+"/"+wrapperName;
-        objBody.put("iri",wIRI);
-
-        MongoCollections.getWrappersCollection(client).insertOne(Document.parse(objBody.toJSONString()));
-
-        //Update the data source with the new wrapper
-        MongoCollections.getDataSourcesCollection(client).findOneAndUpdate(
-                new Document().append("dataSourceID",objBody.getAsString("dataSourceID")),
-                new Document().append("$push", new Document().append("wrappers",objBody.getAsString("wrapperID")))
-        );
-
-        //RDF - we use as named graph THE SAME as the data source
-        String dsIRI = MongoCollections.getDataSourcesCollection(client).
-                find(new Document().append("dataSourceID",objBody.getAsString("dataSourceID"))).first()
-                .getString("iri");
-
-        RDFUtil.addTriple(dsIRI, wIRI, Namespaces.rdf.val() + "type", SourceGraph.WRAPPER.val());
-        RDFUtil.addTriple(dsIRI, dsIRI, SourceGraph.HAS_WRAPPER.val(), wIRI);
-        ((JSONArray) objBody.get("attributes")).forEach(attribute -> {
-            String attName = ((JSONObject) attribute).getAsString("name");
-            //String attIRI = dsIRI + "/" + wrapperName + "." + attName/*.trim().replace(" ", "")*/;
-            String attIRI = dsIRI + "/" + attName/*.trim().replace(" ", "")*/;
-            RDFUtil.addTriple(dsIRI, attIRI, Namespaces.rdf.val() + "type", SourceGraph.ATTRIBUTE.val());
-            RDFUtil.addTriple(dsIRI, wIRI, SourceGraph.HAS_ATTRIBUTE.val(), attIRI);
-                //if (Boolean.parseBoolean(((JSONObject)attribute).getAsString("isID"))) {
-                //    RDFUtil.addTriple(S,attIRI,Namespaces.rdfs.val()+"subClassOf",Namespaces.sc.val()+"identifier");
-                //}
-        });
-
-        client.close();
+        JSONObject objBody = createWrapper(body);
         return Response.ok(objBody.toJSONString()).build();
     }
 
@@ -151,12 +118,57 @@ public class WrapperResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response GET_attributesForWrapper(@PathParam("iri") String iri) {
         System.out.println("[GET /wrapper/attributes/] iri = "+iri);
+        JSONArray attributes = getWrapperAttributes(iri);
+        return Response.ok(attributes.toJSONString()).build();
+    }
+
+
+    public static JSONObject createWrapper(String body) {
+        JSONObject objBody = (JSONObject) JSONValue.parse(body);
+        MongoClient client = Utils.getMongoDBClient();
+        //Metadata for the wrapper
+        objBody.put("wrapperID", "w"+ UUID.randomUUID().toString().replace("-",""));
+        String wrapperName = objBody.getAsString("name")/*.trim().replace(" ","")*/;
+        String wIRI = SourceGraph.WRAPPER.val()+"/"+wrapperName;
+        objBody.put("iri",wIRI);
+
+        MongoCollections.getWrappersCollection(client).insertOne(Document.parse(objBody.toJSONString()));
+
+        //Update the data source with the new wrapper
+        MongoCollections.getDataSourcesCollection(client).findOneAndUpdate(
+                new Document().append("dataSourceID",objBody.getAsString("dataSourceID")),
+                new Document().append("$push", new Document().append("wrappers",objBody.getAsString("wrapperID")))
+        );
+
+        //RDF - we use as named graph THE SAME as the data source
+        String dsIRI = MongoCollections.getDataSourcesCollection(client).
+                find(new Document().append("dataSourceID",objBody.getAsString("dataSourceID"))).first()
+                .getString("iri");
+
+        RDFUtil.addTriple(dsIRI, wIRI, Namespaces.rdf.val() + "type", SourceGraph.WRAPPER.val());
+        RDFUtil.addTriple(dsIRI, dsIRI, SourceGraph.HAS_WRAPPER.val(), wIRI);
+        ((JSONArray) objBody.get("attributes")).forEach(attribute -> {
+            String attName = ((JSONObject) attribute).getAsString("name");
+            //String attIRI = dsIRI + "/" + wrapperName + "." + attName/*.trim().replace(" ", "")*/;
+            String attIRI = dsIRI + "/" + attName/*.trim().replace(" ", "")*/;
+            RDFUtil.addTriple(dsIRI, attIRI, Namespaces.rdf.val() + "type", SourceGraph.ATTRIBUTE.val());
+            RDFUtil.addTriple(dsIRI, wIRI, SourceGraph.HAS_ATTRIBUTE.val(), attIRI);
+            //if (Boolean.parseBoolean(((JSONObject)attribute).getAsString("isID"))) {
+            //    RDFUtil.addTriple(S,attIRI,Namespaces.rdfs.val()+"subClassOf",Namespaces.sc.val()+"identifier");
+            //}
+        });
+
+        client.close();
+        return objBody;
+    }
+
+    public static JSONArray getWrapperAttributes(String iri) {
         JSONArray attributes = new JSONArray();
-        String SPARQL = "SELECT ?a WHERE { GRAPH ?g { <"+iri+"> <"+SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }";
+        String SPARQL = "SELECT ?a WHERE { GRAPH ?g { <"+iri+"> <"+ SourceGraph.HAS_ATTRIBUTE.val()+"> ?a } }";
         RDFUtil.runAQuery(SPARQL,iri).forEachRemaining(t -> {
             attributes.add(t.get("a").asNode().getURI());
         });
-        return Response.ok(attributes.toJSONString()).build();
+        return attributes;
     }
     @ApiOperation(value = "Delete a Wrapper and a LAVMapping if exist",consumes = MediaType.TEXT_PLAIN)
     @ApiResponses(value ={

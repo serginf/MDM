@@ -76,8 +76,10 @@ module.exports = function () {
         window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame || function(requestID){clearTimeout(requestID);}; //fall back
 
         options.setEditorModeForDefaultObject(mdmConfig.getConf(viewType).editorMode);
+        options.setEditModeForBdiVisualize(mdmConfig.getConf(viewType).bdi);
         options.setModeForSelectionSG(mdmConfig.getConf(viewType).selectSG);
         options.setModeForOMQ(mdmConfig.getConf(viewType).OMQ_mode);
+        options.setModeBDIManualAlignment(mdmConfig.getConf(viewType).bdi_manualAl);
 
         options.graphContainerSelector(GRAPH_SELECTOR);
 		options.selectionModules().push(focuser);
@@ -128,7 +130,8 @@ module.exports = function () {
 			d3.select("#optionsArea" ).classed("hidden", true);
 			d3.select("#logo").classed("hidden", true);
         } else {
-			d3.select("#logo").classed("hidden", false);
+			// d3.select("#logo").classed("hidden", false); //original
+            d3.select("#logo").classed("hidden", true);
 			if (agentVersion===12) {
 				// allow Mircosoft Edge Browser but with warning
                 d3.select("#browserCheck").classed("hidden", false);

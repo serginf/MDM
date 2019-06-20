@@ -1,0 +1,16 @@
+{
+      "Year of Purchase": "2018",
+      "Info": "Vehicles",
+      "Bicycle Manufacturer": "ABC",
+      "Bicycle": {
+        "Registration Number": "12345",
+        "Year of Release": "2005",
+        "Model": "XXX"
+      },
+      "Bicing Details": {
+        "Type of Clients": "X",
+        "Total Clients": 100,
+        "Permanent Clients": 50,
+	"Other Info": "Not Any"
+      }
+}

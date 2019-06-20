@@ -15,6 +15,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.LogManager;
+
 /**
  * Created by snadal on 6/06/17.
  */
@@ -28,6 +29,8 @@ public class ApacheMain {
         }
         configPath = args[0];
 
+        int port = 8082;
+
         setLoggerConfig();
 
         ResourceConfig config = new ResourceConfig();
@@ -39,7 +42,7 @@ public class ApacheMain {
         configSwagger();
 
         ServletHolder servlet = new ServletHolder(new ServletContainer(config));
-        Server server = new Server(8082);
+        Server server = new Server(port);
 
         ServletContextHandler context = new ServletContextHandler(server, "/*");
         context.addServlet(servlet, "/*");
@@ -50,15 +53,18 @@ public class ApacheMain {
 
         server.setHandler(contexts);
         try {
+
             server.start();
+            System.out.println("Server " + server.getState() + " at port " + port);
             server.join();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     // http://localhost:8082/swagger.json
-    public static void  configSwagger() {
+    public static void configSwagger() {
         BeanConfig beanConfig = new BeanConfig();
         beanConfig.setVersion("1");
         beanConfig.setTitle("MetadataStorage");
@@ -68,7 +74,7 @@ public class ApacheMain {
         beanConfig.setBasePath("/");
         beanConfig.setResourcePackage("eu.supersede.mdm.storage.resources");
         beanConfig.setPrettyPrint(true);
-        beanConfig.setScan(true);
+        //beanConfig.setScan(true);
     }
 
 
@@ -82,12 +88,12 @@ public class ApacheMain {
 
         ContextHandler context = new ContextHandler();
         context.setContextPath("/docs/");
-        context.setWelcomeFiles(new String[] { "index.html" });
+        context.setWelcomeFiles(new String[]{"index.html"});
         context.setHandler(rh);
         return context;
     }
 
-    private static void setLoggerConfig(){
+    private static void setLoggerConfig() {
         InputStream stream = ApacheMain.class.getClassLoader().
                 getResourceAsStream("logging.properties");
         try {

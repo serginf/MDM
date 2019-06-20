@@ -1,0 +1,13 @@
+extends layout
+block headersGraphs
+    script(src='/js/metamodel.js')
+    link(rel='stylesheet', type='text/css', href='graph/css/webvowl.css')
+    link(rel='stylesheet', type='text/css', href='graph/css/webvowl.app.css')
+
+block content
+    include includes/webvowl
+    script(src='graph/js/d3.min.js')
+    script(src='graph/js/webvowl.js')
+    script(src='graph/js/webvowl.app.js')
+    script.
+        window.onload = webvowl.app().initialize("bdi_visualization");

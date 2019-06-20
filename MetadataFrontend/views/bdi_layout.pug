@@ -1,0 +1,86 @@
+doctype html
+html
+    head
+        title="BDI"
+        //script(src='/js/jquery-3.3.1.min.js')
+        script(src='/js/jquery-3.4.min.js')
+        //script(src='/js/jquery-2.2.3.min.js')
+        script(src='/js/underscore-1.8.3.min.js')
+        //script(src='/js/bootswatch.js')
+        //script(src='/js/bootstrap.js')
+        link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+        script(src="/js/popper.js")
+        script(src="/js/bootstrap.min.js")
+        link(rel='stylesheet', href='/stylesheets/style.css')
+        script(src='/js/fontawesome-all.js')
+        //link(rel='stylesheet', href='/stylesheets/bootswatch.min.css')
+        script(src='/js/client_button_instructions.js')
+        block headers
+
+    body
+        .navbar.navbar-expand-lg.fixed-top.navbar-dark.bg-dark
+            .container-fluid
+                #navbar-main.navbar-collapse.collapse.lead
+                    .col-md-10
+                        ul.nav.navbar-nav.navbar-left
+                            li
+                                a.lead.navbar-brand.navbar-left(href='/bdi')
+                                    h3 BDI
+
+                            li
+                                a.lead.navbar-brand.navbar-left(href='/')
+                                    h3 - MDM
+
+
+                    //.col-md-8.align-self-center
+                    //    .collapse.navbar-collapse
+                    //        ul.navbar-nav
+                    //            li.nav-item.dropdown
+                    //                a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
+                    //                    | Global Graph
+                    //                .dropdown-menu(aria-labelledby="themes")
+                    //                    a.dropdown-item.lead(href='/new_global_graph') Create
+                    //                    a.dropdown-item.lead(href='/manage_global_graphs') Manage
+                    //
+                    //        ul.navbar-nav
+                    //            li.nav-item.dropdown
+                    //                a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
+                    //                    | Data Sources
+                    //                .dropdown-menu(aria-labelledby="themes")
+                    //                    a.dropdown-item.lead(href='/new_data_source') Create
+                    //                    a.dropdown-item.lead(href='/manage_data_sources') Manage
+                    //
+                    //        ul.navbar-nav
+                    //            li.nav-item.dropdown
+                    //                a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
+                    //                    | Wrappers
+                    //                .dropdown-menu(aria-labelledby="themes")
+                    //                    a.dropdown-item.lead(href='/new_wrapper') Create
+                    //                    a.dropdown-item.lead(href='/manage_wrappers') Manage
+                    //
+                    //        ul.navbar-nav
+                    //            li.nav-item.dropdown
+                    //                a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
+                    //                    | LAV Mappings
+                    //                .dropdown-menu(aria-labelledby="themes")
+                    //                    a.dropdown-item.lead(href='/new_lav_mapping') Create
+                    //                    a.dropdown-item.lead(href='/manage_lav_mappings') Manage
+                    //
+                    //        ul.navbar-nav
+                    //            li.nav-item.dropdown
+                    //                a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
+                    //                    | Ontology-Mediated Queries
+                    //                    span.caret
+                    //                .dropdown-menu(aria-labelledby="themes")
+                    //                    a.dropdown-item.lead(href='/pose_omq') Pose OMQ
+                    //
+                    .col-md-2
+                        .collapse.navbar-collapse
+                            ul.navbar-nav
+                                li.nav-item.dropdown
+                                    a.nav-link.dropdown-toggle(data-toggle="dropdown" href="#")
+                                        | Signed in as #{user.username}
+                                    .dropdown-menu(aria-labelledby="themes")
+                                        a.dropdown-item.lead(href='/logout') Logout
+
+    block content
