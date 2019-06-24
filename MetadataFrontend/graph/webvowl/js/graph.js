@@ -3387,8 +3387,7 @@ module.exports = function (graphContainerSelector) {
                 return true;
             }
             graph.options().warningModule().showWarning("Warning",
-                Global.HAS_FEATURE.gui_name +" can only be used connecting a "+Global.CONCEPT.gui_name
-                +" node to a "+Global.FEATURE_ID.gui_name +" node or "+Global.FEATURE.gui_name +"node",
+                "Cannot connect node of type "+domain.guiLabel()+" to node "+range.guiLabel(),
                 "Element not created!",1,false);
             return false;
         }
@@ -3399,19 +3398,40 @@ module.exports = function (graphContainerSelector) {
                 return true;
             }
             graph.options().warningModule().showWarning("Warning",
-                Global.HAS_RELATION.gui_name+" can only be used connecting a "+Global.CONCEPT.gui_name
-                +" node to a "+Global.CONCEPT.gui_name +" node",
+                "Cannot connect node of type "+domain.guiLabel()+" to node "+range.guiLabel(),
                 "Element not created!",1,false);
             return false;
         }
         return true; // we can create a property
     };
 
+    /**
+     * MDM
+     * Function to check what property type should connect two nodes.
+     * Returns the gui name since in createNewObjectProperty there is a mapper between the gui-name and the property.
+     */
+    function getPropertyTypeFor(domain, range) {
+
+        //We do not compare by iri since feature and feature ID has the same iri.
+        if(domain.guiLabel() == Global.CONCEPT.gui_name && range.guiLabel() == Global.CONCEPT.gui_name)
+            return Global.HAS_RELATION.gui_name
+
+        if(domain.guiLabel() == Global.CONCEPT.gui_name && range.guiLabel() == Global.FEATURE.gui_name)
+            return Global.HAS_FEATURE.gui_name
+
+        if(domain.guiLabel() == Global.CONCEPT.gui_name && range.guiLabel() == Global.FEATURE_ID.gui_name)
+            return Global.HAS_FEATURE.gui_name
+
+        //default - has relation. The property is validate for other cases in createNewObjectProperty().
+        // It does not allow to connect Feature to Concept by any property.
+
+        return Global.HAS_RELATION.gui_name;
+
+    }
 
     function createNewObjectProperty(domain,range, draggerEndposition){
         // check type of the property that we want to create;
-
-        var defaultPropertyName=d3.select("#defaultProperty").node().title;
+        var defaultPropertyName = getPropertyTypeFor(domain,range);
 
         // check if we are allow to create that property
         if (graph.sanityCheckProperty(domain,range,defaultPropertyName)===false) return false;
