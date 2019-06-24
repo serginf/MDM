@@ -805,11 +805,13 @@ module.exports = function (graphContainerSelector) {
     function defaultIriValue(element) {
         // get the iri of that element;
         if (graph.options().getGeneralMetaObject().iri) {
-            if(element.iriType() === Global.HAS_RELATION.iri)
+
+            // elements that are editable and want to update iri's in gui
+            if(element.iriType() === Global.HAS_RELATION.iri
+                || element.iriType() === Global.FEATURE_ID.iri
+                || element.iriType() === Global.CONCEPT.iri
+                || element.iriType() === Global.FEATURE.iri)
                 return true;
-            // ----- just works for webvowl logic. In mdm we don't use the id in the iri. --------//
-            // var str2Compare = graph.options().getGeneralMetaObject().iri + element.id();
-            // --------- let update iris when editing elements. --------//
             var str2Compare = graph.options().getGeneralMetaObject().iri + element.label();
             return element.iri() === str2Compare;
         }
