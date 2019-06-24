@@ -1,0 +1,26 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    script(src='/js/client_manage_pose_omq.js')
+    link(rel='stylesheet', href='/stylesheets/manage_styles.css')
+
+
+block content
+    .container-fluid
+        .card.bg-secondary.mb-3
+            .card-header
+                .row
+                    .col-md-11
+                        h2(style="color:black")
+                            | Manage Pose OMQ
+
+        .card.bg-secondary.mb-3
+            form
+                table.table.table-hover#globalGraphs
+                    thead
+                        tr
+                            th #
+                            th Name
+                            th Default namespace
+                            th OMQ
+                    tbody
