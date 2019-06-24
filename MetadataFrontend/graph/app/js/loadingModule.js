@@ -210,18 +210,18 @@ module.exports =  function (graph) {
     };
 
     /** ------------------ URL Interpreter -------------- **/
-    loadingModule.parseUrlAndLoadOntology=function(storeCache,globalgraphid) {
+    loadingModule.parseUrlAndLoadOntology=function(storeCache) {
         var autoStore=true;
         if (storeCache===false){
             autoStore=false;
         }
-        retrieveGraph(globalgraphid);
+        retrieveGraph();
+        if((graph.options().defaultConfig().OMQ_mode === "true")) setProjectedFeatures();
         graph.clearAllGraphData();
         loadingModule.initializeLoader(autoStore);
         var urlString = String(location);
         var parameterArray=identifyParameter(urlString);
         ontologyIdentifierFromURL=DEFAULT_JSON_NAME;
-        // retrieveGraph(globalgraphid);
         loadGraphOptions(parameterArray); // identifies and loads configuration values
         var loadingMethod= identifyOntologyLoadingMethod(ontologyIdentifierFromURL);
         d3.select("#progressBarValue").node().innerHTML=" ";
@@ -570,7 +570,19 @@ module.exports =  function (graph) {
 
 
     /** --- HELPER FUNCTIONS **/
-    function retrieveGraph(id) {
+    function setProjectedFeatures() {
+        $("#projectedFeatures").empty().end();
+        $.get("/globalGraph/"+encodeURIComponent(currentGlobalGraph.namedGraph)+"/features", function(features) {
+            _.each(features,function(feature) {
+                $('#projectedFeatures').append($('<option value="'+feature+'">').text(feature));
+            });
+            $("#projectedFeatures").select2({
+                theme: "bootstrap"
+            });
+        });
+    }
+
+    function retrieveGraph() {
         if(graph.options().defaultConfig().bdi === "true" ||
             graph.options().defaultConfig().bdi_manualAl ==="true"
         ){
@@ -606,18 +618,10 @@ module.exports =  function (graph) {
             }
             return;
         }
-        //there's id provided
+
         currentSubGraph = undefined;
         currentGlobalGraph = undefined;
-        if(id){
-            // console.log(id)
-            currentGlobalGraph = JSON.parse($.ajax({
-                type: "GET",
-                url: "/globalGraph/"+id,
-                async: false
-            }).responseText);
-            return;
-        }
+
         var lavMappingID = getParameterByName("LAVMappingID");
         var globalGraphID = getParameterByName("globalGraphID");
 

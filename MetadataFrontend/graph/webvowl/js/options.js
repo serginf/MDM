@@ -37,7 +37,6 @@ module.exports = function () {
 		clearQueryOMQMenu,
 		generateSparqlOMQMenu,
 		getFeaturesOMQMenu,
-		graphOMQdropdown,
 		searchMenu,
 		ontologyMenu,
 		sidebar,
@@ -537,11 +536,6 @@ module.exports = function () {
 	options.getFeaturesOMQMenu = function (m) {
 		if (!arguments.length) return getFeaturesOMQMenu;
 		getFeaturesOMQMenu = m;
-		return options;
-	};
-	options.graphOMQdropdown = function (m) {
-		if (!arguments.length) return graphOMQdropdown;
-		graphOMQdropdown = m;
 		return options;
 	};
 

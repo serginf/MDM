@@ -16,7 +16,7 @@ module.exports = function (graph) {
                 else {
                     graphical_omq.selection = selection;
                     graphical_omq.projectedFeatures = $("#projectedFeatures").val();
-                    console.log(graphical_omq.selection);
+                    // console.log(graphical_omq.selection);
                     $.ajax({
                         url: '/OMQ/fromGraphicalToSPARQL',
                         method: "POST",
@@ -25,7 +25,7 @@ module.exports = function (graph) {
                         var sparql_omq = new Object();
                         sparql_omq.sparql = res.sparql;
                         // sparql_omq.namedGraph = currGlobalGraph.namedGraph;
-                        sparql_omq.namedGraph = graph.options().graphOMQdropdown().getCurrGlobalGraph().namedGraph;
+                        sparql_omq.namedGraph = graph.options().loadingModule().currentGlobalGraph().namedGraph;
                         sparql_omq.features = $('#projectedFeatures').val();
                         $.ajax({
                             url: '/OMQ/fromSPARQLToRA',

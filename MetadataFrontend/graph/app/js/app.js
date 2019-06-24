@@ -24,7 +24,6 @@ module.exports = function () {
         clearQueryOMQ  = require("./menu/clearQueryOMQMenu") (graph),
         genSparqlOMQ   = require("./menu/GenSparqlOMQMenu")  (graph),
         getFeaturesOMQ = require("./menu/getFeaturesOMQMenu")(graph),
-        graphOMQdrop   = require("./menu/graphOMQDropdown")  (graph),
         searchMenu     = require("./menu/searchMenu")        (graph),
 		navigationMenu = require("./menu/navigationMenu")    (graph),
         zoomSlider     = require("./menu/zoomSlider")        (graph),
@@ -115,7 +114,6 @@ module.exports = function () {
         clearQueryOMQ.setup();
         genSparqlOMQ.setup();
         getFeaturesOMQ.setup();
-        graphOMQdrop.setup();
 		sidebar.setup();
 		loadingModule.setup();
 		leftSidebar.setup();
@@ -160,7 +158,6 @@ module.exports = function () {
 			options.clearQueryOMQMenu(clearQueryOMQ);
             options.generateSparqlOMQMenu(genSparqlOMQ);
             options.getFeaturesOMQMenu(getFeaturesOMQ);
-            options.graphOMQdropdown(graphOMQdrop);
 			options.searchMenu(searchMenu);
 			options.ontologyMenu(ontologyMenu);
 			options.navigationMenu(navigationMenu);
@@ -254,8 +251,7 @@ module.exports = function () {
             options.prefixModule(webvowl.util.prefixTools(graph));
             adjustSize();
             sidebar.updateOntologyInformation(undefined, statistics);
-            if(options.defaultConfig().OMQ_mode !== "true") //In case of true, omq module will execute automatically the load.
-			    loadingModule.parseUrlAndLoadOntology(); // loads automatically the ontology provided by the parameters
+            loadingModule.parseUrlAndLoadOntology(); // loads automatically the ontology provided by the parameters
             if(options.defaultConfig().selectSG_mode === "true")
                 graph.loadGraphicalSelection();
             options.debugMenu(debugMenu);

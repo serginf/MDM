@@ -62,7 +62,7 @@ module.exports = function (graph) {
         clearQueryOMQMenu.hide(flag);
         genSparqlOMQ.hide(flag);
         getFeaturesOMQ.hide(flag);
-        graphDropdown.hide(flag);
+        // graphDropdown.hide(flag);
     }
 
     function hideSelection(flag){
@@ -75,7 +75,6 @@ module.exports = function (graph) {
         clearSelectSGMenu = graph.options().clearSelectSGMenu();
         genSparqlOMQ = graph.options().generateSparqlOMQMenu();
         clearQueryOMQMenu = graph.options().clearQueryOMQMenu();
-        graphDropdown = graph.options().graphOMQdropdown();
         getFeaturesOMQ = graph.options().getFeaturesOMQMenu();
         saveGraphMenu = graph.options().saveGraphMenu();
         controller.updateGui();

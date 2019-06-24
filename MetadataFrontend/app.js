@@ -270,6 +270,10 @@ app.get('/view_lav_mapping_subgraph', checkAuthenticated, function(req,res) {
 
 /********** OMQ section ************************************************************/
 
+app.get('/manage_pose_omq', checkAuthenticated, function(req,res) {
+    res.render('manage_pose_omq', {user:req.session.passport.user});
+});
+
 app.get('/pose_omq', checkAuthenticated, function(req,res) {
     res.render('pose_omq', {user:req.session.passport.user});
 });
