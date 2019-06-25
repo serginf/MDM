@@ -8,15 +8,17 @@ module.exports = function (graph) {
         clearQueryButton = d3.select("#generate-sparql-omq-button")
             .on("click", function (d) {
 
-                $("#dataModal").modal("show");
+
 
                 var selection = graph.prepareSelectionObject();
                 var graphical_omq = new Object();
-                if (selection.length == 0) alert("Select subgraph first");
-                else {
+                if (selection.length == 0){
+                    alert("Select subgraph first");
+                    return;
+                }else {
+                    $("#dataModal").modal("show");
                     graphical_omq.selection = selection;
-                    graphical_omq.projectedFeatures = $("#projectedFeatures").val();
-                    // console.log(graphical_omq.selection);
+                    graphical_omq.projectedFeatures = graph.getSelectedFeatures();
                     $.ajax({
                         url: '/OMQ/fromGraphicalToSPARQL',
                         method: "POST",
@@ -24,9 +26,8 @@ module.exports = function (graph) {
                     }).done(function (res) {
                         var sparql_omq = new Object();
                         sparql_omq.sparql = res.sparql;
-                        // sparql_omq.namedGraph = currGlobalGraph.namedGraph;
                         sparql_omq.namedGraph = graph.options().loadingModule().currentGlobalGraph().namedGraph;
-                        sparql_omq.features = $('#projectedFeatures').val();
+                        sparql_omq.features = graph.getSelectedFeatures();
                         $.ajax({
                             url: '/OMQ/fromSPARQLToRA',
                             method: "POST",
@@ -37,7 +38,7 @@ module.exports = function (graph) {
                             var sql_omq = new Object();
                             sql_omq.sql = currOMQ.sql
                             sql_omq.wrappers = currOMQ.wrappers;
-                            sql_omq.features = $('#projectedFeatures').val();
+                            sql_omq.features = graph.getSelectedFeatures();
 
                             $.ajax({
                                 url: '/OMQ/fromSQLtoDATA',
@@ -45,7 +46,7 @@ module.exports = function (graph) {
                                 data: sql_omq
                             }).done(function(data) {
                                 $("#spinner").hide();
-                                _.each($('#projectedFeatures').val(), function(f) {
+                                _.each(graph.getSelectedFeatures(), function(f) {
                                     $('#dataTable').find('thead > tr').append($('<td>').append($('<b>').text(f)));
                                 });
                                 $('#dataTable').show();

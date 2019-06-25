@@ -10,15 +10,7 @@ module.exports = function (graph) {
                 // e.preventDefault();
                 d3.selectAll(".selection").remove();
                 $("#text").remove();
-                // $("#labelGeneratedSparql").remove();
-                // $('pre code').each(function(i, e) {hljs.highlightBlock(e)});
-                // selection=[];
                 graph.clearSelectionSubGraph();
-                $("#projectedFeatures").select2({
-                    theme: "bootstrap"
-                });
-                // $("#generateRelationalAlgebraButton").addClass("invisible");
-                // $("#relationalAlgebraArea").addClass("invisible");
             });
     };
 

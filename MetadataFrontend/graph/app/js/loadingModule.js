@@ -216,7 +216,6 @@ module.exports =  function (graph) {
             autoStore=false;
         }
         retrieveGraph();
-        if((graph.options().defaultConfig().OMQ_mode === "true")) setProjectedFeatures();
         graph.clearAllGraphData();
         loadingModule.initializeLoader(autoStore);
         var urlString = String(location);
@@ -570,17 +569,6 @@ module.exports =  function (graph) {
 
 
     /** --- HELPER FUNCTIONS **/
-    function setProjectedFeatures() {
-        $("#projectedFeatures").empty().end();
-        $.get("/globalGraph/"+encodeURIComponent(currentGlobalGraph.namedGraph)+"/features", function(features) {
-            _.each(features,function(feature) {
-                $('#projectedFeatures').append($('<option value="'+feature+'">').text(feature));
-            });
-            $("#projectedFeatures").select2({
-                theme: "bootstrap"
-            });
-        });
-    }
 
     function retrieveGraph() {
         if(graph.options().defaultConfig().bdi === "true" ||
