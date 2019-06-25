@@ -2352,6 +2352,8 @@ module.exports = function (graphContainerSelector) {
     function transform(p, cx, cy) {
         // one iteration step for the locate target animation
         zoomFactor = graph.options().height() / p[2];
+        if(force.nodes().length<15 && zoomFactor >0.55)
+            zoomFactor =  0.55;
         graphTranslation = [(cx - p[0] * zoomFactor), (cy - p[1] * zoomFactor)];
         updateHaloRadius();
         // update the values in case the user wants to break the animation
