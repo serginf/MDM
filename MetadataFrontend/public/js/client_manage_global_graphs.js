@@ -17,8 +17,6 @@ function getGlobalGraphs() {
                         ).append($('<td>')
                             .text(globalGraph.name)
                         ).append($('<td>')
-                            .text(globalGraph.defaultNamespace)
-                        ).append($('<td>')
                             .text(globalGraph.namedGraph)
                         ).append($('<td>').append($('<a href="/view_global_graph?globalGraphID='+(globalGraph.globalGraphID)+'">').append($('<span class="fa fa-search"></span>')))
                         ).append($('<td>').append($('<a href="/edit_global_graph?globalGraphID='+(globalGraph.globalGraphID)+'">').append($('<span class="fa fa-search"></span>')))
