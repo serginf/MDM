@@ -109,13 +109,13 @@ public class Wrapper extends RelationalOperator {
             case "json":
                 w = new JSON_Wrapper("preview");
                 ((JSON_Wrapper)w).setPath(ds.getString("json_path"));
-                ((JSON_Wrapper)w).setExplodeLevels(
-                    ((JSONArray)((JSONObject) JSONValue.parse(queryParameters)).get("explodeLevels")).stream().map(a -> (String)a).collect(Collectors.toList())
-                );
-                ((JSON_Wrapper)w).setArrayOfValues(ds.getString("array"));
-                ((JSON_Wrapper)w).setAttributeForSchema(ds.getString("key"));
-                ((JSON_Wrapper)w).setValueForAttribute(ds.getString("values"));
-                ((JSON_Wrapper)w).setCopyToParent(ds.getString("copyToParent"));
+                //((JSON_Wrapper)w).setExplodeLevels(
+                //    ((JSONArray)((JSONObject) JSONValue.parse(queryParameters)).get("explodeLevels")).stream().map(a -> (String)a).collect(Collectors.toList())
+                //);
+                //((JSON_Wrapper)w).setArrayOfValues(ds.getString("array"));
+                //((JSON_Wrapper)w).setAttributeForSchema(ds.getString("key"));
+                //((JSON_Wrapper)w).setValueForAttribute(ds.getString("values"));
+                //((JSON_Wrapper)w).setCopyToParent(ds.getString("copyToParent"));
         }
         return w;
     }
