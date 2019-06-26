@@ -297,3 +297,20 @@ a {
 .opacity{
     opacity : 0.4;
 }
+
+.login-shadow{
+  box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+}
+
+.top-green{
+  border-top: 1px solid #18BC9C;
+  border-top-width: .35rem;
+}
+
+.center-card{
+  width: 100%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+}

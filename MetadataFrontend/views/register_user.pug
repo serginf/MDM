@@ -3,23 +3,39 @@ block headers
     script(src='/js/client_register_user.js')
 block content
     .row.justify-content-center
-        .card.col-6.bs-component.bg-secondary
-            //.col-xs-12.col-sm-8.col-md-4.col-sm-offset-2.col-md-offset-4
-            .text-center
-                h1 MDM
-                .panel.panel-default
-                    .panel-heading
-                        h3.panel-title Please Sign Up
-                    .panel-body
-                        form(method='POST')#userRegisterForm
-                            .form-group
-                                input#username.form-control.input-sm(type='text', name='username', placeholder='Username' required)
-                            .row
-                                .col-xs-6.col-sm-6.col-md-6
-                                    .form-group
-                                        input#password.form-control.input-sm(type='password', name='password', placeholder='Password' required)
-                                .col-xs-6.col-sm-6.col-md-6
-                                    .form-group
-                                        input.form-control.input-sm(type='password', name='password_confirmation', placeholder='Confirm Password' required)
-                            input.btn.btn-info.btn-block(type='submit', value='Register')
-            br
+        .col-6.center-card
+            .login-shadow.top-green.p-3.mb-5.bg-white.rounded
+                .text-center
+                    h1 ODIN
+                    h2 On-Demand Data Integration
+                    br
+                    .panel.panel-default
+                        .panel-heading
+                            h4.panel-title Please Sign Up
+                            br
+                        .panel-body
+                            form(method='POST')#userRegisterForm
+                                .form-group
+                                    .input-group.mb-2.mr-sm-2
+                                        .input-group-prepend
+                                            .input-group-text
+                                                i.fas.fa-user
+                                        input#username.form-control(type='text', name='username', placeholder='Username' required)
+                                .row
+                                    .col-xs-6.col-sm-6.col-md-6
+                                        .form-group
+                                            .input-group.mb-2.mr-sm-2
+                                                .input-group-prepend
+                                                    .input-group-text
+                                                        i.fas.fa-lock
+                                                input#password.form-control(type='password', name='password', placeholder='Password' required)
+                                    .col-xs-6.col-sm-6.col-md-6
+                                        .form-group
+                                            .input-group.mb-2.mr-sm-2
+                                                .input-group-prepend
+                                                    .input-group-text
+                                                        i.fas.fa-lock
+                                                input.form-control.input-sm(type='password', name='password_confirmation', placeholder='Confirm Password' required)
+                                br
+                                input.btn.btn-info.btn-block(type='submit', value='Register')
+                br

@@ -6,26 +6,36 @@ block content
     #alertBox.bs-component(style='display:none')
         .alert.alert-dismissible.alert-danger
             button.close(type='button', data-dismiss='alert') &times;
-            h4 Error
-            p#alertBoxText
+            strong Error:
+            span#alertBoxText
 
     .row.justify-content-center
-        .col-6.bs-component
-            .text-center
-                h1 MDM
-                h2 Governing Evolution in Big Data Ecosystems
+        .col-6.bs-component.center-card
+            .login-shadow.top-green.p-3.mb-5.bg-white.rounded
                 br
-            .col-12.card.bg-secondary
-                br
+                .text-center
+                    h1 ODIN
+                    h2 On-Demand Data Integration
+                    br
                 .panel.panel-default
                     .panel-heading
                         h4.panel-title Please Login
                     .panel-body
                         form(action='/login',method='post')
+
                             .form-group
-                                input.form-control.input-sm(id='username', type='text',value='', name='username', placeholder='username')
+                                .input-group.mb-2.mr-sm-2
+                                    .input-group-prepend
+                                        .input-group-text
+                                            i.fas.fa-user
+                                    input.form-control(id='username',type='text',value='', name='username', placeholder='Username')
+
                             .form-group
-                                input.form-control.input-sm(id='password', type='password',value='', name='password', placeholder='password')
+                                .input-group.mb-2.mr-sm-2
+                                    .input-group-prepend
+                                        .input-group-text
+                                            i.fas.fa-lock
+                                    input.form-control(id='password', type='password',value='', name='password', placeholder='password')
                             .checkbox
                                 label
                                     input(name='remember', type='checkbox', value='Remember Me')
@@ -34,6 +44,7 @@ block content
                             input(id='clientId', type='hidden',value='#{clientId}', name='clientId')
                             input(id='redirectUri', type='hidden',value='#{redirectUri}', name='redirectUri')
                             input.btn.btn-info.btn-block(type='submit', value='Login')
+                br
                 .text-center
                     a.text-danger(href='/registration') Don&apos;t have an account? Register
 
