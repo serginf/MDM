@@ -94,10 +94,10 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.6'
     compile 'org.apache.httpcomponents:httpclient:4.5.3'
 
-    compile 'org.scala-lang:scala-library:2.10.0-M3'
+    //compile 'org.scala-lang:scala-library:2.10.0-M3'
 
-    compile 'org.apache.spark:spark-core_2.10:2.2.0'
-    compile 'org.apache.spark:spark-sql_2.10:2.2.0'
+    compile 'org.apache.spark:spark-core_2.11:2.4.3'
+    compile 'org.apache.spark:spark-sql_2.11:2.4.3'
 
     compile files('lib/sqlite4java-392/sqlite4java.jar')
 
@@ -114,5 +114,7 @@ dependencies {
     compile group: 'com.sun.jersey', name: 'jersey-client', version: '1.9.1'
     
     compile files('lib/logmap-matcher-3.0.jar')
+
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-scala_2.11', version: '2.9.8'
 
 }

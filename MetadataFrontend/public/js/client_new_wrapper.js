@@ -21,13 +21,13 @@ function getJSONQueryByType() {
     else if (currDataSource.type == "neo4j") queryParameters.query = $("#cypherQuery").val();
     else if (currDataSource.type == "parquet") queryParameters.query = $("#sparksqlQuery").val();
     else if (currDataSource.type == "json") {
-        queryParameters.explodeLevels = new Array();
-        $('input[name^="explodeLevels"]').each(function() { queryParameters.explodeLevels.push(($(this).val()));});
+        //queryParameters.explodeLevels = new Array();
+        //$('input[name^="explodeLevels"]').each(function() { queryParameters.explodeLevels.push(($(this).val()));});
 
-        queryParameters.array = $("#array").val();
-        queryParameters.key = $("#key").val();
-        queryParameters.values = $("#values").val();
-        queryParameters.copyToParent = $("#copyToParent").val();
+        //queryParameters.array = $("#array").val();
+        //queryParameters.key = $("#key").val();
+        //queryParameters.values = $("#values").val();
+        //queryParameters.copyToParent = $("#copyToParent").val();
     }
     else if (currDataSource.type == "restapi") queryParameters.query = $("#restapiQuery").val();
     else if (currDataSource.type == "sqldatabase") queryParameters.query = $("#sqlQuery").val();
@@ -78,6 +78,7 @@ $(function(){
                 $('#dataTable').find('thead > tr').append($('<td>').text($(this).val()));
             });
             $('#dataTable').show();
+            console.log("data is "+data)
             _.each(data.data,function(row) {
                 $('#dataTable').find('tbody').append($('<tr>'));
                 _.each(row,function(item) {
