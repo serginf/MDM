@@ -39,7 +39,8 @@ exports.uploadFile = function (req, res) {
         console.log("Inside form.on function");
         var filename = '';
         // Check the file type, must be xml or json
-        if (file.type === 'text/xml' || file.type === 'application/json') {
+        console.log(file.type);
+        if (file.type === 'text/xml' || file.type === 'application/json' || file.type === 'application/vnd.ms-excel') {
             // Assign new file name
 
             filename = Date.now() + '-' + file.name;

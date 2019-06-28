@@ -40,25 +40,34 @@ block content
                     .col-lg-12
                         ul#typeTabs.nav.nav-tabs(role="tablist").border-white
                             li.nav-item
-                                a.text-primary#json-tab.nav-link.active(data-toggle="tab" href="#json" role="tab" aria-controls="messages" aria-selected="false") JSON file
+                                a.text-primary#json-tab.nav-link.active(data-toggle="tab" href="#json" role="tab" aria-controls="messages" aria-selected="false" data-hint="Please provide a JSON file starting with JSON object {} not an array []").font-weight-bold JSON
                             li.nav-item
-                                a.text-primary#xml-tab.nav-link(data-toggle="tab" href="#xml" role="tab" aria-controls="messages" aria-selected="false") XML file
+                                a.text-primary#xml-tab.nav-link(data-toggle="tab" href="#xml" role="tab" aria-controls="messages" aria-selected="false").font-weight-bold XML
                             li.nav-item
-                                a.text-primary#sqldatabase-tab.nav-link(data-toggle="tab" href="#sqldatabase" role="tab" aria-controls="settings" aria-selected="false" data-hint='Please provide a String with UserName, Password, Database Name and Server e.g. localhost/IP in a following order separated by commas \"UserName, Password, databaseName, databaseServer \"') MySQL Database
+                                a.text-primary#csv-tab.nav-link(data-toggle="tab" href="#csv" role="tab" aria-controls="messages" aria-selected="false" ).font-weight-bold CSV
+                            li.nav-item
+                                a.text-primary#sqldatabase-tab.nav-link(data-toggle="tab" href="#sqldatabase" role="tab" aria-controls="settings" aria-selected="false" data-hint='Please provide a String with UserName, Password, Database Name and Server e.g. localhost/IP in a following order separated by commas \"UserName, Password, databaseName, databaseServer \"').font-weight-bold MySQL
 
                 .tab-content
 
                     #json.tab-pane.active
                         .form-group#json_pathForm
-                            label.col-lg-4.col-form-label File path
+                            label.col-lg-4.col-form-label JSON File path
                             .col-lg-12
                                 input#file_path.form-control(type='file', name='json_file_path')
 
                     #xml.tab-pane
                         .form-group#xml_pathForm
-                            label.col-lg-4.col-form-label File path
+                            label.col-lg-4.col-form-label XML File path
                             .col-lg-12
                                 input#xml_path.form-control(type='file', name='xml_file_path')
+
+                    #csv.tab-pane
+                        .form-group#csv_pathForm
+                            label.col-lg-4.col-form-label CSV File path
+                            .col-lg-12
+                                input#csv_path.form-control(type='file', name='csv_file_path')
+
 
                     #sqldatabase.tab-pane(role="tabpanel" aria-labelledby="sqldatabase-tab")
                         .form-group#sql_jdbcForm
@@ -97,7 +106,7 @@ block content
                 .row
                     .col-md-12
                         h5(style="color:black" data-step="4" data-intro='Once two graphs are integrated, you will see the integrated graphs here.')
-                            | Integrated Data Sources (Metadata Traceability Graphs)
+                            | Integrated Data Sources (Metadata Provenance Graphs)
             .card-body.bg-white
 
                 table.table.table-hover.table-responsive#integratedDataSources

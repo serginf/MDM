@@ -2,6 +2,7 @@ package eu.supersede.mdm.storage.resources.bdi;
 
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
+import eu.supersede.mdm.storage.bdi.extraction.CsvSchemaExtractor;
 import eu.supersede.mdm.storage.bdi.extraction.JsonSchemaExtractor;
 import eu.supersede.mdm.storage.bdi.extraction.XmlSchemaExtractor;
 import eu.supersede.mdm.storage.bdi.extraction.rdb.MySqlDB;
@@ -62,6 +63,43 @@ public class SchemaExtractionResource {
             addDataSourceInfoAsMongoCollection(resData);
 
             return Response.ok(new Gson().toJson("JSON")).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @POST
+    @Path("csvSchema/")
+    @Consumes("text/plain")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response POST_CsvFileInfo(String body) {
+        LOGGER.info("[POST /csv] body = " + body);
+        try {
+            //Parsing body as JSON
+            JSONObject objBody = (JSONObject) JSONValue.parse(body);
+            System.out.println(objBody.toJSONString());
+            //Creating CsvSchemaExtractor Object
+            CsvSchemaExtractor csvSchemaExtractor = new CsvSchemaExtractor();
+
+            boolean validity =  csvSchemaExtractor.initCsvSchemaExtractor(objBody.getAsString("filePath"), objBody.getAsString("givenName").replaceAll(" ", "_"));
+            if(validity) {
+                //Convert RDFS to VOWL (Visualization Framework) Compatible JSON
+                JSONObject vowlObj = Utils.oWl2vowl(csvSchemaExtractor.getCsvModelOutputFilePath());
+
+                // Preparing the response to be sent back
+                JSONObject resData = prepareResponse(csvSchemaExtractor.getCsvModelOutputFilePath(), csvSchemaExtractor.getCsvModelIRI(), objBody, vowlObj);
+
+                // Adding the RDFS Schema in Jena TDB Triple Store using IRI
+                addExtractedSchemaIntoTDBStore(csvSchemaExtractor.getCsvModelIRI(), csvSchemaExtractor.getCsvModelOutputFilePath());
+
+                // Adding the response to MongoDB
+                addDataSourceInfoAsMongoCollection(resData);
+
+                return Response.ok(new Gson().toJson("CSV")).build();
+            } else {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -166,6 +204,10 @@ public class SchemaExtractionResource {
 
         if (objBody.getAsString("type").equals("SQL")) {
             resData.put("sql_path", objBody.getAsString("filePath"));
+        }
+
+        if (objBody.getAsString("type").equals("csv")) {
+            resData.put("csv_path", objBody.getAsString("filePath"));
         }
         return resData;
     }
