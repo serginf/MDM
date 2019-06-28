@@ -28,7 +28,7 @@ function getIntegratedFileDetails() {
                         .text(dataSource.schema_iri)
                     )//.append($('<td>').append($('<a href="/view_data_source?dataSourceID=' + (dataSource.dataSourceID) + '">').append($('<span class="fa fa-search"></span>'))))
                     .append($('<td class="text-center">').append($('<a href="/view?IntegratedDataSourceID=' + (dataSource.dataSourceID) + '">').append($('<span class="fa fa-search"></span>')))
-                    ) .append($('<td class="text-center BootstrapActionButton">')
+                    ).append($('<td class="text-center BootstrapActionButton">')
                         .append($('<button  value="' + dataSource.dataSourceID + '" class="btn btn-outline-dark pop-function bootstrap-button" rel="popover" >').append($('<i color="green" class="fa fa-circle-notch "></i></button>'))))
                     .append($('<td class="text-center deleteWrapper">')
                         .append($('<button  value="' + dataSource.dataSourceID + '" class="btn btn-outline-light pop-function delete-button" rel="popover" >').append($('<span color="red" class="fa fa-trash"></span></button>'))))
@@ -77,6 +77,8 @@ function handler(dataSource) {
         contentType: false,
         xhr: function () {
             var xhr = new XMLHttpRequest();
+            console.log("Printing data source information");
+            console.log(dataSource);
             if (dataSource.get("givenType") !== 'SQL') {
                 // Add progress event listener to the upload.
                 xhr.upload.addEventListener('progress', function (event) {
@@ -96,11 +98,12 @@ function handler(dataSource) {
         }
     }).done(function (data) {
         console.log("Return: " + JSON.stringify(data));
-        if (data[0].status === true) {
+        console.log( data[0].filename.split('.').pop());
+        var fileExtension =  data[0].filename.split('.').pop();
+        if (data[0].status === true && data[0].type === fileExtension) {
             parseSource(data);
         } else {
-            //TODO handle it, notify the user about the invalid format
-            console.log("Invalid format");
+            alert("Please check the file format. You have selected " + data[0].type + " but you are uploading a " + fileExtension + " file");
         }
 
     }).fail(function (err) {
@@ -150,6 +153,11 @@ function handleProgressBar() {
         $(this).closest('form').find("input[type=file],input[type=text]").val("");
     });
 
+    $('#csv-tab').on('click', function () {
+        $('.progress-bar').width('0%');
+        $(this).closest('form').find("input[type=file],input[type=text]").val("");
+    });
+
     $('#sqldatabase-tab').on('click', function () {
         $('.progress-bar').width('0%');
         $(this).closest('form').find("input[type=file],input[type=text]").val("");
@@ -169,13 +177,13 @@ function handleProgressBar() {
 }
 
 $(function () {
-/*    $("#instructions").collapse({
-       toggle: true
-    });
+    /*    $("#instructions").collapse({
+           toggle: true
+        });
 
-    $("#schemaInstructions").collapse({
-        toggle: true
-    });*/
+        $("#schemaInstructions").collapse({
+            toggle: true
+        });*/
 
     getParsedFileDetails();
     getIntegratedFileDetails();
@@ -219,6 +227,24 @@ $(function () {
 
                 break;
 
+            case "csv-tab":
+                if ($("#csv_path").get(0).files.length === 0) {
+                    console.log("csvtab");
+                    return false;
+                }
+                dataSource.append("givenName", $("#givenName").val());
+                dataSource.append("givenType", "csv");
+                // Get the files from input, create new FormData.
+                var filesCSV = $('#csv_path').get(0).files;
+
+                // Append the files to the formData.
+                for (var k = 0; k < filesCSV.length; k++) {
+                    var fileCSV = filesCSV[k];
+                    dataSource.append('CSV_FILE', fileCSV, fileCSV.name);
+                }
+
+                break;
+
             case "sqldatabase-tab":
 
                 if ($("#sql_path").val() === '') {
@@ -254,19 +280,6 @@ $(function () {
             } else {
                 window.location.href = '/integration/' + object.id1 + '&' + object.id2 + '&' + object.s1Name + '&' + object.s2Name;
             }
-
-
-            /*$.ajax({
-                url: '/integrateDataSources',
-                method: "POST",
-                data: object
-            }).done(function (data) {
-                console.log('Success');
-                console.log(data);
-                goToAlignmentsView(data);
-            }).fail(function (err) {
-                alert("Error Integrating sources " + JSON.stringify(err));
-            });*/
         }
     });
     handleProgressBar();
@@ -341,14 +354,11 @@ $(document).ready(function () {
             console.log(data);
             if (data === "BOOTSTRAPPED") {
                 window.location.href = "/bdi";
-            }
-            else {
+            } else {
                 alert("An error occured while bootstrapping...");
             }
         });
     });
-
-
 
 
     $("body").on('change', 'input[type=checkbox]', function () {
@@ -375,16 +385,3 @@ $(document).ready(function () {
 
 
 });
-
-/*function goToAlignmentsView(data) {
-    //console.log("Inside Alignments" + data + '/integration/:ids_id&ds1_id&:ds2_id&:ds1_name&:ds2_name&:align_iri');
-    var d = JSON.parse(data);
-    // var url = '/integration/' + d.integratedDataSourceID + '&' + d.dataSourceID1 + '&' + d.dataSourceID2 + '&' +
-    //     d.dataSource1Name + '&' + d.dataSource2Name + '&' + d.alignmentsIRI + '&' + d.integratedIRI;
-    var url = '/integration/' + d.integratedDataSourceID + '&' +
-        d.dataSource1Name + '&' + d.dataSource2Name;
-    console.log(url);
-
-    $("#overlay").fadeOut(300);
-    window.location.href = url;
-}*/

@@ -1,6 +1,7 @@
 package eu.supersede.mdm.storage.resources.bdi;
 
 import eu.supersede.mdm.storage.bdi.alignment.AlignmentAlgorithm;
+import eu.supersede.mdm.storage.bdi.alignment.Finder;
 import eu.supersede.mdm.storage.bdi.alignment.GlobalVsLocal;
 import eu.supersede.mdm.storage.bdi.alignment.LogMapMatcher;
 import eu.supersede.mdm.storage.bdi.extraction.Namespaces;
@@ -71,12 +72,18 @@ public class SchemaIntegrationResource {
                             dataSource2Info.getAsString("parsedFileAddress"),
                             alignmentsIRI
                     );
+
+                    Finder finder = new Finder(dataSource1Info.getAsString("schema_iri"), dataSource2Info.getAsString("schema_iri"));
+                    JSONArray dataPropertiesSpecialAlignments = finder.getAlignmentsArray();
                     JSONArray tempAlignmentsArray = alignmentsArray;
                     RDFUtil.runAQuery("SELECT * WHERE { GRAPH <" + alignmentsIRI + "> {?s ?p ?o} }", alignmentsIRI).forEachRemaining(triple -> {
                         JSONObject alignments = new JSONObject();
                        schemaIntegrationHelper.populateResponseArray(tempAlignmentsArray, triple, alignments);
                     });
                     alignmentsArray = tempAlignmentsArray;
+                    alignmentsArray.addAll(dataPropertiesSpecialAlignments);
+                    System.out.println(alignmentsArray.toJSONString());
+
                 }
             } // end else condition here
             String integratedIRI = schemaIntegrationHelper.integrateTDBDatasets(dataSource1Info, dataSource2Info);

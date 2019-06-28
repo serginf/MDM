@@ -50,6 +50,24 @@ $(function () {
 
                 break;
 
+            case "csv-tab":
+                if ($("#csv_path").get(0).files.length === 0) {
+                    console.log("csvtab");
+                    return false;
+                }
+                dataSource.append("givenName", $("#givenName").val());
+                dataSource.append("givenType", "csv");
+                // Get the files from input, create new FormData.
+                var filesCSV = $('#xml_path').get(0).files;
+
+                // Append the files to the formData.
+                for (var k = 0; k < filesCSV.length; k++) {
+                    var fileCSV = filesCSV[k];
+                    dataSource.append('CSV_FILE', fileCSV, fileCSV.name);
+                }
+
+                break;
+
             case "sqldatabase-tab":
 
                 if ($("#sql_path").val() === '') {
@@ -148,6 +166,11 @@ function handleProgressBar() {
     });
 
     $('#xml-tab').on('click', function () {
+        $('.progress-bar').width('0%');
+        $(this).closest('form').find("input[type=file],input[type=text]").val("");
+    });
+
+    $('#csv-tab').on('click', function () {
         $('.progress-bar').width('0%');
         $(this).closest('form').find("input[type=file],input[type=text]").val("");
     });

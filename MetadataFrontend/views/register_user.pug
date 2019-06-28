@@ -5,37 +5,35 @@ block content
     .row.justify-content-center
         .col-6.center-card
             .login-shadow.top-green.p-3.mb-5.bg-white.rounded
-                .text-center
-                    h1 ODIN
-                    h2 On-Demand Data Integration
-                    br
-                    .panel.panel-default
-                        .panel-heading
-                            h4.panel-title Please Sign Up
+                div.loginLogoDiv
+                    img.loginLogo.d-inline-block.align-top(src='/images/OnDemandDI-Black.png')
+                .panel.panel-default
+                    .panel-heading
+                        h4.panel-title Please Sign Up
+                        br
+                    .panel-body
+                        form(method='POST')#userRegisterForm
+                            .form-group
+                                .input-group.mb-2.mr-sm-2
+                                    .input-group-prepend
+                                        .input-group-text
+                                            i.fas.fa-user
+                                    input#username.form-control(type='text', name='username', placeholder='Username' required)
+                            .row
+                                .col-xs-6.col-sm-6.col-md-6
+                                    .form-group
+                                        .input-group.mb-2.mr-sm-2
+                                            .input-group-prepend
+                                                .input-group-text
+                                                    i.fas.fa-lock
+                                            input#password.form-control(type='password', name='password', placeholder='Password' required)
+                                .col-xs-6.col-sm-6.col-md-6
+                                    .form-group
+                                        .input-group.mb-2.mr-sm-2
+                                            .input-group-prepend
+                                                .input-group-text
+                                                    i.fas.fa-lock
+                                            input.form-control.input-sm(type='password', name='password_confirmation', placeholder='Confirm Password' required)
                             br
-                        .panel-body
-                            form(method='POST')#userRegisterForm
-                                .form-group
-                                    .input-group.mb-2.mr-sm-2
-                                        .input-group-prepend
-                                            .input-group-text
-                                                i.fas.fa-user
-                                        input#username.form-control(type='text', name='username', placeholder='Username' required)
-                                .row
-                                    .col-xs-6.col-sm-6.col-md-6
-                                        .form-group
-                                            .input-group.mb-2.mr-sm-2
-                                                .input-group-prepend
-                                                    .input-group-text
-                                                        i.fas.fa-lock
-                                                input#password.form-control(type='password', name='password', placeholder='Password' required)
-                                    .col-xs-6.col-sm-6.col-md-6
-                                        .form-group
-                                            .input-group.mb-2.mr-sm-2
-                                                .input-group-prepend
-                                                    .input-group-text
-                                                        i.fas.fa-lock
-                                                input.form-control.input-sm(type='password', name='password_confirmation', placeholder='Confirm Password' required)
-                                br
-                                input.btn.btn-info.btn-block(type='submit', value='Register')
+                            input.btn.btn-info.btn-block(type='submit', value='Register')
                 br

@@ -37,8 +37,6 @@ public class BdiMain {
                 break;
             case "TRY":
                 //This is just to test some functionality independently - Pass the argument like this : TRY N
-                //new MDMLavMapping();
-                //new Conversion("INTEGRATED-uKHAoVbK-kphiyJAL");
                 break;
             default:
                 System.out.println("Please provide the arguments in a correct way: " +

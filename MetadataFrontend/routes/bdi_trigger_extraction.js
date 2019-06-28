@@ -6,6 +6,7 @@ var config = require(__dirname + '/../config'),
 
 exports.triggerExtraction = function (req, res) {
     req.connection.setTimeout( 1000 * 60 * 10 ); // ten minutes
+    console.log("Printing body received in Trigger Extraction: ");
     console.log(req.body);
     req.body = req.body[0];
 
@@ -19,7 +20,7 @@ exports.triggerExtraction = function (req, res) {
 
         if (req.body.type === 'SQL') {
             url = url + "sql/";
-            //sendPostRequest(url, objDataSource, res);
+            sendPostRequest(url, objDataSource, res);
         }
 
         if (req.body.type === 'xml') {
@@ -29,6 +30,12 @@ exports.triggerExtraction = function (req, res) {
 
         if (req.body.type === 'json') {
             url = url + "jsonSchema/";
+            sendPostRequest(url, objDataSource, res);
+        }
+
+        if (req.body.type === 'csv') {
+            console.log("INSIDE CSV");
+            url = url + "csvSchema/";
             sendPostRequest(url, objDataSource, res);
         }
     }

@@ -70,6 +70,11 @@ public class GlobalVsLocal {
                 schemaIntegrationHelper.populateResponseArray(alignmentsArray, triple, alignments);
             }
         });
+
+        Finder finder = new Finder(dataSource1Info.getAsString("schema_iri"), dataSource2Info.getAsString("schema_iri"));
+        JSONArray dataPropertiesSpecialAlignments = finder.getAlignmentsArray();
+        alignmentsArray.addAll(dataPropertiesSpecialAlignments);
+
         JSONObject o = new JSONObject();
         o.put("mapping_type", "CLASS");
         o.put("super_classes", superAndSubClassesArray);
