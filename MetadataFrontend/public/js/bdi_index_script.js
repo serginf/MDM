@@ -16,6 +16,14 @@ function getIntegratedFileDetails() {
                 dataSourcesNames.push(ds.dataSourceName);
             });
 
+            // if(dataSource.name){
+            //    var fakeName = "WISCENTD";
+            // }
+
+            // if(dataSource.schema_iri){
+            //     var fakeIri = "http://who.int/a8412bf6c634499e93f2b58b0c4d56e8";
+            // }
+
             $('#integratedDataSources').find('tbody')
                 .append($('<tr>')
                     .append($('<td>').append('<input type="checkbox" class="dataSourceCheckbox" name="dataSource" value = "' + dataSource.dataSourceID + "__" + dataSource.name + '" /> '))
