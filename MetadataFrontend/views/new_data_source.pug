@@ -60,9 +60,14 @@ block content
 
                     #csv.tab-pane
                         .form-group#csv_pathForm
-                            label.col-lg-4.col-form-label CSV path (with protocol)
+                            label.col-lg-4.col-form-label CSV file
                             .col-lg-12
-                                input#csv_path.form-control(type='text', name='csv_path', required='required')
+                                input-group.mb-3
+                                    .custom-file
+                                        input#csv_path.custom-file-input(type='file', name='csv_path', required='required')
+                                        label.custom-file-label(for='csv_path') Choose file
+
+                                //input#csv_path.form-control(type='text', name='csv_path', required='required')
                 
                     #mongodb.tab-pane(role="tabpanel" aria-labelledby="mongodb-tab")
                         .form-group#mongodb_hostnameForm
@@ -97,9 +102,13 @@ block content
                 
                     #json.tab-pane
                         .form-group#json_pathForm
-                            label.col-lg-4.col-form-label File path
+                            label.col-lg-4.col-form-label File
                             .col-lg-12
-                                input#json_path.form-control(type='text', name='json_path', required='required')
+                                .input-group.mb-3
+                                    .custom-file
+                                        input#json_path.custom-file-input(type='file', name='json_path', required='required')
+                                        label.custom-file-label(for='json_path') Choose file
+                                //input#json_path.form-control(type='text', name='json_path', required='required')
                 
                     #sqldatabase.tab-pane(role="tabpanel" aria-labelledby="sqldatabase-tab")
                         .form-group#sql_jdbcForm

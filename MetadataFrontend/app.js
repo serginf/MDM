@@ -26,6 +26,7 @@ var user_routes = require(__dirname+'/routes/user_routes');
 var graph_routes = require(__dirname+'/routes/graph_routes');
 var global_graph_routes = require(__dirname+'/routes/global_graph_routes');
 var data_source_routes = require(__dirname+'/routes/data_source_routes');
+var ds_file_upload = require(__dirname + "/routes/datasource_upload_file");
 var wrapper_routes = require(__dirname+'/routes/wrapper_routes');
 var lav_mapping_routes = require(__dirname+'/routes/lav_mapping_routes');
 var omq_routes = require(__dirname+'/routes/omq_routes');
@@ -122,6 +123,7 @@ app.delete('/globalGraph/:globalGraphID', global_graph_routes.deleteGlobalGraph)
 /********** Data Source resource ********************************************************/
 
 app.get('/dataSource/', data_source_routes.getAllDataSources);
+app.post('/dataSource/fileupload', ds_file_upload.uploadFile);
 app.get('/dataSource/:dataSourceID', data_source_routes.getDataSource);
 app.post('/dataSource', data_source_routes.postDataSource);
 app.delete('/dataSource/:dataSourceID', data_source_routes.deleteDataSource);

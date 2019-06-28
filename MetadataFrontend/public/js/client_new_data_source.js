@@ -11,11 +11,26 @@ function getParameterByName(name) {
 
 $(function() {
 
+    //Trigger label for filename
+    $('#json_path').on('change',function(){
+        var fileName = $(this).val().replace("C:\\fakepath\\", "");;
+        $(this).next('.custom-file-label').html(fileName);
+    });
+    $('#csv_path').on('change',function(){
+        var fileName = $(this).val().replace("C:\\fakepath\\", "");;
+        $(this).next('.custom-file-label').html(fileName);
+    });
+
     $('#submitDataSource').on("click", function(e){
         e.preventDefault();
 
         var dataSource = new Object();
         dataSource.name = $("#name").val();
+        if(dataSource.name == ""){
+            alert("It's required to give a name.")
+            return;
+        }
+
         switch ($('.nav-tabs .active').attr('id')) {
             case "avro-tab":
                 dataSource.type = "avro";
@@ -24,7 +39,7 @@ $(function() {
 
             case "csv-tab":
                 dataSource.type = "csv";
-                dataSource.csv_path = $("#csv_path").val();
+                dataSource.csv_path = uploadFile('#csv_path');
                 break;
 
             case "mongodb-tab":
@@ -44,7 +59,8 @@ $(function() {
 
             case "json-tab":
                 dataSource.type = "json";
-                dataSource.json_path = $("#json_path").val();
+                dataSource.json_path = uploadFile('#json_path');
+                // dataSource.json_path = $("#json_path").val();
                 break;
 
             case "restapi-tab":
@@ -70,3 +86,26 @@ $(function() {
     });
 
 });
+
+
+function uploadFile(selector,callback){
+    var dataSource = new FormData();
+    dataSource.append('file',$(selector).prop('files')[0]);
+
+    var path = "";
+    $.ajax({
+        url: '/dataSource/fileupload',
+        method: "POST",
+        data: dataSource,
+        processData: false,
+        async: false,
+        contentType: false,
+    }).done(function (data) {
+        console.log("Return: " + JSON.stringify(data));
+        path = data.path;
+    }).fail(function (err) {
+        console.log("Error " + JSON.stringify(err));
+    });
+    return path;
+}
+
