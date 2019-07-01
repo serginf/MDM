@@ -4,6 +4,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCursor;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
+import eu.supersede.mdm.storage.util.ServiceUtils;
 import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -61,6 +62,17 @@ public class UpdateGlobalGraphServiceImpl {
         String oIRI = objSelectedElement.getAsString("o");
 
         RDFUtil.addTriple(namedGraph,sIRI,pIRI,oIRI);
+      });
+    }
+
+    if(changes.containsKey("delete")){
+      ((JSONArray)changes.get("delete")).forEach(selectedElement -> {
+        JSONObject objSelectedElement = (JSONObject)selectedElement;
+        String sIRI = objSelectedElement.getAsString("s");
+        String pIRI = objSelectedElement.getAsString("p");
+        String oIRI = objSelectedElement.getAsString("o");
+
+        ServiceUtils.deleteTriples(namedGraph,sIRI,pIRI,oIRI);
       });
     }
 

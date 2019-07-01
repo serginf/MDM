@@ -1438,6 +1438,7 @@ module.exports = function (graphContainerSelector) {
         data.nodes = [];
         data.properties = [];
         data.new = []; //for new nodes and properties
+        data.delete = []; //to delete triples from change type nodes.
         //if currentGlobalGraph not contains graphicalGraph, ontology is new. So we don't check for changes.
         if(graph.options().loadingModule().currentGlobalGraph().graphicalGraph){
 
@@ -1449,6 +1450,8 @@ module.exports = function (graphContainerSelector) {
                     n.new = node.iri();
                     data.nodes.push(n);
                 }else if(node.originalLabel() == newElementID){
+                    //In case we add new nodes and at the same type update labels,
+                    // we need to add the new triples.
                     var triples  = new Object();
                     triples.s = node.iri();
                     triples.p = Namespaces.rdf+"type";
@@ -1460,6 +1463,27 @@ module.exports = function (graphContainerSelector) {
                         triples.p = Namespaces.rdfs+"subClassOf";
                         triples.o = Namespaces.sc+"identifier";
                         data.new.push(triples);
+                    }
+                }
+
+                if(node.changeTypeNode()){
+                    //the element change its type
+                    if(node.type() === Global.FEATURE_ID.name){
+                        //if now the element is feature id, before was feature.
+                        // We just need to add the triples for identifier.
+                        var triples  = new Object();
+                        triples.s = node.iri();
+                        triples.p = Namespaces.rdfs+"subClassOf";
+                        triples.o = Namespaces.sc+"identifier";
+                        data.new.push(triples);
+                    }else if(node.type() === Global.FEATURE.name){
+                        //if now the element is feature, before was feature id.
+                        // We need to delete the triples for identifier.
+                        var triples  = new Object();
+                        triples.s = node.iri();
+                        triples.p = Namespaces.rdfs+"subClassOf";
+                        triples.o = Namespaces.sc+"identifier";
+                        data.delete.push(triples);
                     }
                 }
             });
@@ -1490,19 +1514,20 @@ module.exports = function (graphContainerSelector) {
                 data.isModified = true;
         }
         return data;
-    }
+    };
 
     //once the graph is saved, we need to look for new changes.
     graph.resetOriginalLabels = function(){
         classNodes.forEach(function (node)  {
             node.resetOriginalLabel();
+            node.resetchangeTypeNode();
         });
         labelNodes.forEach(function (label)  {
             label.property().resetOriginalLabel();
         });
         //need to update currentGlobalGraph
         graph.options().loadingModule().retrieveCurrentGraph();
-    }
+    };
 
     /** --------------------------------------------------------- **/
     /** --      MDM:  Select subGraph functions                -- **/
@@ -2820,6 +2845,7 @@ module.exports = function (graphContainerSelector) {
         aNode.py = element.y;
         aNode.id(element.id());
         aNode.copyInformation(element);
+        aNode.changeTypeNode(true);
 
         if (typeString==="owl:Thing") {
             aNode.label("Thing");
@@ -2830,7 +2856,8 @@ module.exports = function (graphContainerSelector) {
             }else if (aNode.backupLabel()!==undefined){
                 aNode.label(aNode.backupLabel());
             }else {
-                aNode.label("NewClass");
+                if(aNode.label() === undefined)
+                    aNode.label("NewClass");
             }
         }
 
@@ -3269,6 +3296,39 @@ module.exports = function (graphContainerSelector) {
                             "Element type not changed!",1,true);
                         return false;
                     }
+                    //
+                    //   // ---------------------------------  //
+                    //  //             MDM Sanity             //
+                    // // ---------------------------------- //
+                    // if (allProps[i].type() ===Global.HAS_FEATURE.gui_name){
+                    //
+                    //     if (allProps[i].range()===classElement ||allProps[i].domain()===classElement){
+                    //
+                    //     }
+                    //
+                    //     if( domain.type() === Global.CONCEPT.name
+                    //         && (   range.type() === Global.FEATURE.name
+                    //             || targetType === Global.FEATURE_ID.gui_name)){
+                    //         return true;
+                    //     }
+                    //     graph.options().warningModule().showWarning("Warning",
+                    //         "Cannot connect node of type "+domain.guiLabel()+" to node "+range.guiLabel(),
+                    //         "Element not created!",1,false);
+                    //     return false;
+                    // }
+                    // if (allProps[i].type() ===Global.HAS_RELATION.gui_name){
+                    //
+                    //     if( domain.type() === Global.CONCEPT.name
+                    //         &&  range.type() === Global.CONCEPT.name){
+                    //         return true;
+                    //     }
+                    //     graph.options().warningModule().showWarning("Warning",
+                    //         "Cannot connect node of type "+domain.guiLabel()+" to node "+range.guiLabel(),
+                    //         "Element not created!",1,false);
+                    //     return false;
+                    // }
+                    //
+
                 }
             }
 

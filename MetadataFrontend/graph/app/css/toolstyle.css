@@ -2120,6 +2120,12 @@ a#locateSearchResult{
 	color: #939798;
 }
 
+.converter-form-Editor select:disabled{
+	background-color: #545350;
+	border: 1px solid #34495E;
+	color: #939798;
+}
+
 .disabledLabelForSlider{
 	color: #808080;
 }

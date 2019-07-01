@@ -91,6 +91,10 @@ module.exports = (function () {
 			if (other.backupLabel()!==undefined){
             	that.backupLabel(other.backupLabel());
 			}
+            if (other.originalLabel()!==undefined){
+                that.originalLabel(other.originalLabel());
+            }
+
         };
 
         this.enableEditing=function(autoEditing){

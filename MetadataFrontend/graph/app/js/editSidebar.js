@@ -564,7 +564,7 @@ module.exports = function (graph) {
         var givenName = datatypeEditorSelection.value;
         var identifier = givenName.split(":")[1];
 
-        if (datatypeEditorSelection.value !== "undefined") {
+        if (datatypeEditorSelection.value !== "undefined" || graph.options().MDM()) {
             d3.select("#element_iriEditor").node().disabled = true;
             d3.select("#element_labelEditor").node().disabled = true;
         } else {
@@ -975,9 +975,22 @@ module.exports = function (graph) {
                 elementTypeSelectionChanged(element);
             });
 
+            //enable the selector just if its feature or feature ID. Otherwise is disable
+            if(element.type() == Global.FEATURE_ID.name ||
+                element.type() == Global.FEATURE.name){
+                typeEditorSelection.disabled = false;
+            }else{
+                typeEditorSelection.disabled = true;
+            }
 
+            if (graph.options().MDM()) {
+                d3.select("#element_iriEditor").node().disabled = true;
+                d3.select("#element_labelEditor").node().disabled = true;
+            }
             // add characteristics selection
-            var needChar = elementNeedsCharacteristics(element);
+            var needChar = false;
+            if(!graph.options().MDM())
+                needChar = elementNeedsCharacteristics(element);
             d3.select("#property_characteristics_Container").classed("hidden", !needChar);
             if (needChar === true) {
                 addElementsCharacteristics(element);
@@ -1285,7 +1298,7 @@ module.exports = function (graph) {
             else
             {
                 availiblePrototypes = options.supportedProperties();
-                //MDM_TODO: possible error, options define property as "objectProperty" but here start with Uppercase
+                //MDM_TODO: possible error of webvowl, options define property as "objectProperty" but here start with Uppercase
                 //          ObjectProperty just works for property with source and target to same node.
                 availiblePrototypes.push("owl:ObjectProperty");
 
@@ -1307,7 +1320,26 @@ module.exports = function (graph) {
             availiblePrototypes.push("rdfs:Literal");
             availiblePrototypes.push("rdfs:Datatype");
         }else {
-            availiblePrototypes = options.supportedClasses();
+
+            if(graph.options().MDM()){
+
+                //If element is a feature or feature ID, we push both options since
+                // these types are interchangeable. Otherwise we just push the element type
+                // since that element cannot change its type
+
+                if(selectedElement.type() == Global.FEATURE.name ||
+                    selectedElement.type() == Global.FEATURE_ID.name){
+                    availiblePrototypes.push(Global.FEATURE.gui_name);
+                    availiblePrototypes.push(Global.FEATURE_ID.gui_name);
+                }else{
+                    availiblePrototypes.push(selectedElement.guiLabel());
+                }
+            }else{
+                availiblePrototypes = options.supportedClasses();
+            }
+
+
+
             // availiblePrototypes.push("owl:Class");
             // availiblePrototypes.push("owl:Thing");
             //  TODO: ADD MORE TYPES

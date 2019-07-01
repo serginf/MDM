@@ -30,6 +30,7 @@ module.exports = (function () {
 			background,
 
 			originalLabel, //keeps the original label, in case label is modified.
+			changeTypeNode =false,
 			backupLabel,
 		// Other
 			languageTools = require("../util/languageTools")();
@@ -38,6 +39,13 @@ module.exports = (function () {
 		this.backupLabel=function(label){
 			if (!arguments.length) return backupLabel;
 			backupLabel=label;
+		};
+		this.changeTypeNode=function(flag){
+			if (!arguments.length) return changeTypeNode;
+			changeTypeNode=flag;
+		};
+		this.resetchangeTypeNode=function(){
+			changeTypeNode=false;
 		};
 		this.originalLabel=function(label){
 			//Disallow overwriting the label more than one time.
