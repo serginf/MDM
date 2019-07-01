@@ -68,12 +68,20 @@ public class GlobalVsLocal {
             JSONObject alignments = new JSONObject();
             if (!triple.get("o").toString().split("__")[1].equals("CLASS")) {
                 schemaIntegrationHelper.populateResponseArray(alignmentsArray, triple, alignments);
+
             }
         });
+
+
+        System.out.println("Detected by LogMap: ");
+        System.out.println(alignmentsArray.toJSONString());
 
         Finder finder = new Finder(dataSource1Info.getAsString("schema_iri"), dataSource2Info.getAsString("schema_iri"));
         JSONArray dataPropertiesSpecialAlignments = finder.getAlignmentsArray();
         alignmentsArray.addAll(dataPropertiesSpecialAlignments);
+
+        System.out.println("Detected by Kashif");
+        System.out.println(dataPropertiesSpecialAlignments.toJSONString());
 
         JSONObject o = new JSONObject();
         o.put("mapping_type", "CLASS");

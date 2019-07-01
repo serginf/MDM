@@ -18,7 +18,7 @@ block content
             .card-header
                 .row
                     .col-md-10
-                        h3(style="color:black" data-step="1" data-intro='Welcome to Automatic Bootstrapping. Please follow the guide...')
+                        h3(style="color:black" data-step="1" data-intro='Welcome to On-Demand Data Integration. Please follow the guide...')
                             | Data Sources
                     .col-md-2
                         button.btn.btn-link(data-toggle="collapse" data-target="#instructions")#instructionsButton
@@ -26,10 +26,10 @@ block content
             #instructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
                 .card-body.bg-white
                     p.card-text(style='text-align: left')
-                        | Data sources represent external endpoints where to fetch data from. We support JSON documents, XML Documents, and connection to classic databases (e.g., SQL databases)
+                        | Data sources represent external endpoints where to fetch data from. We support JSON/CSV/XML Documents, and connection to classic databases (e.g., SQL databases)
 
         .card.bg-light.mb-3
-            form#dataSourceForm(method ="post" enctype="multipart/form-data" data-step="2" data-intro='Select a JSON/XML file or provide a connection string for the MySQL Database. Please give a new name to the source.  Note that parsing can take time depending on the size of the source.')
+            form#dataSourceForm(method ="post" enctype="multipart/form-data" data-step="2" data-intro='Select a JSON/XML/CSV file or provide a connection string for the MySQL Database. Please give a new name to the source.  Note that parsing can take time depending on the size of the source.')
                 .form-group#nameForm
                     label.col-lg-4.col-form-label Name
                     .col-lg-12
@@ -118,7 +118,7 @@ block content
                             th.width20 Integrated Sources
                             th.width20 IntegratedIRI
                             th.width5.text-center View
-                            th.width10.text-center(data-hint="Automatic bootstrapping is about transforming the integrated metadata traceability graph into a specific global graph, creating LAV Mappings and defining source mappings via wrappers. ") Bootstrap Automatically
+                            th.width10.text-center(data-hint="Generating query constructs automatically is about transforming the integrated metadata provenance graph into a specific global graph, creating LAV Mappings and defining source mappings via wrappers. ") Generate Querying Constructs
                             th.width5.text-center Delete
                     tbody
 

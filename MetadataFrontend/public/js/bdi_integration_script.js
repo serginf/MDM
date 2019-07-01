@@ -172,6 +172,7 @@ function getAlignments() {
 
                 var classA = removeURI(val.s).split("/")[removeURI(val.s).split("/").length - 1];
                 var classB = removeURI(val.p).split("/")[removeURI(val.p).split("/").length - 1];
+
                 $('#alignments').find('#alignmentsBody')
                     .append($('<tr id="row' + n + '">')
                         /*.append($('<td>').text(i))*/
@@ -179,7 +180,7 @@ function getAlignments() {
                                 .text(classA).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.s)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">' + graphBadgeA + '</span>'))
                             ).append($('<td>')
                                 .text(classB).append($('<span class="badge-margin badge badge-info"> ' + ' ' + (removeURI(val.p)).split("/")[0] + ' IRI</span> <span class="badge badge-primary">' + graphBadgeB + '</span>'))
-                            ).append($('<td>').text((Math.round(val.confidence * 100) / 100) * 100 + '%' + '')
+                            ).append($('<td>').text((Math.round(val.confidence * 100) ) + '%' + '')
                             )
                             .append($('<td class="accept-reject-buttons">').append('<button type="button" id ="acceptAlignment" class="btn btn-success" value="' + alignmentsInfo.indexOf(val) + '">Accept</button> '))
                             .append($('<td class="accept-reject-buttons">').append('<button type="button" id ="rejectAlignment" class="btn btn-danger" value="' + alignmentsInfo.indexOf(val) + '">Reject</button> '))

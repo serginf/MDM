@@ -2,6 +2,7 @@ package eu.supersede.mdm.storage.bdi.alignment;
 
 import eu.supersede.mdm.storage.util.ConfigManager;
 import eu.supersede.mdm.storage.util.RDFUtil;
+import eu.supersede.mdm.storage.util.Tuple2;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.jena.rdf.model.Resource;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,17 +47,18 @@ public class Finder {
         }
         String stopwordsRegex = stopwords.stream().collect(Collectors.joining("|", "\\b(", ")\\b\\s?"));
 
-
+        HashMap<String, String> map = new HashMap<String, String>();
         for (Resource rA : propertiesA) {
             for (Resource rB : propertiesB) {
                 //TODO Handle all cases here
                 if (!rA.getLocalName().trim().equals(rB.getLocalName().trim())) {
                     //Split based on words
-                    int countWordsA = rA.getLocalName().split("_").length;
-                    int countWordsB = rB.getLocalName().split("_").length;
 
                     String rAwithoutStopWords = rA.getLocalName().replaceAll("_", " ").toLowerCase().replaceAll(stopwordsRegex, "");
                     String rBwithoutStopWords = rB.getLocalName().replaceAll("_", " ").toLowerCase().replaceAll(stopwordsRegex, "");
+
+                    int countWordsA = rAwithoutStopWords.split(" ").length;
+                    int countWordsB = rBwithoutStopWords.split(" ").length;
 
                     String[] wordsInA = rAwithoutStopWords.split(" ");
                     String[] wordsInB = rBwithoutStopWords.split(" ");
@@ -74,21 +77,25 @@ public class Finder {
 
                     if (set.size() > 0) {
                         double setSize = set.size();
-                        double c = setSize / total;
+                        double c = setSize / (total - setSize);
                         double confidence = c * 100;
-                        System.out.println(set + " --> " + rA.getLocalName() + " --- And ---- " + rB.getLocalName() + " -- " + confidence);
-                        if (confidence > 10.0) {
-                            JSONObject alignments = new JSONObject();
-                            alignments.put("s", rA.getURI());
-                            alignments.put("p", rB.getURI());
-                            alignments.put("confidence", Double.toString(c));
-                            alignments.put("mapping_type", "DATA-PROPERTY");
-                            alignments.put("lexical_confidence", Double.toString(c));
-                            alignments.put("structural_confidence", Double.toString(c));
-                            alignments.put("mapping_direction", Double.toString(c));
-                            alignmentsArray.add(alignments);
-                        }
+                        System.out.println(set + " --> " + rA.getLocalName() + " --- And ---- " + rB.getLocalName() + " -- " + c);
+                        if (confidence > 20.0) {
+                            if (!map.containsKey(rA.getURI() + rB.getURI())) {
+                                map.put(rA.getURI() + rB.getURI(), Double.toString(c));
 
+                                JSONObject alignments = new JSONObject();
+                                alignments.put("s", rA.getURI());
+                                alignments.put("p", rB.getURI());
+                                alignments.put("confidence", Double.toString(c));
+                                alignments.put("mapping_type", "DATA-PROPERTY");
+                                alignments.put("lexical_confidence", Double.toString(c));
+                                alignments.put("structural_confidence", Double.toString(c));
+                                alignments.put("mapping_direction", Double.toString(c));
+                                alignmentsArray.add(alignments);
+
+                            }
+                        }
                     }
 
                 }
