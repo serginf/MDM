@@ -73,26 +73,41 @@ $(function(){
             method: "POST",
             data: previewObj
         }).done(function(data) {
-            $("#spinner").hide();
-            $('input[name^="attributeSet"]').each(function() {
-                $('#dataTable').find('thead > tr').append($('<td>').text($(this).val()));
-            });
-            $('#dataTable').show();
-            console.log("data is "+data)
+
+            var tableCol = [];
+            var atributesSize = $('input[name^="attributeSet"]').length;
+            for(i=0; i<atributesSize;i++){
+                var col = new Object();
+                col.title = $('input[name^="attributeSet"]')[i].value;
+                col.field = $('input[name^="attributeSet"]')[i].value;
+                col.align = "center";
+                tableCol.push(col);
+            }
+
+            var tabledata = [];
             _.each(data.data,function(row) {
-                $('#dataTable').find('tbody').append($('<tr>'));
+                var rowT = new Object();
                 _.each(row,function(item) {
-                    $('#dataTable').find('tbody > tr:last').append($('<td>').text(item.value));
+                    rowT[item.attribute] = item.value;
                 });
+                tabledata.push(rowT);
             });
+
+            var table = new Tabulator("#dataTable", {
+                data:tabledata, //assign data to table
+                layout:"fitColumns", //fit columns to width of table (optional)
+                columns:tableCol
+            });
+
+            $("#spinner").hide();
+            $('#dataTable').show();
+
         }).fail(function(err) {
             alert("error "+JSON.stringify(err));
         });
 
         //reset modal when hidden
         $('#previewModal').on('hidden.bs.modal', function (e) {
-            $('#dataTable').find('thead > tr').remove();
-            $('#dataTable').find('tbody > tr').remove();
             $('#dataTable').hide();
             $("#spinner").show();
         })

@@ -3,10 +3,10 @@
 /*-----------------------------------------------------------------
  Integration with MDM
 -----------------------------------------------------------------*/
-#graphmain *{
-	-webkit-box-sizing: content-box;
-	box-sizing: content-box;
-}
+/*#graphmain *{*/
+/*	-webkit-box-sizing: content-box;*/
+/*	box-sizing: content-box;*/
+/*}*/
 #graphmain a#reset-button {
 	-webkit-appearance: none;
 }

@@ -46,24 +46,44 @@ module.exports = function (graph) {
                                 data: sql_omq
                             }).done(function(data) {
                                 $("#spinner").hide();
+                                var tableCol = [];
                                 _.each(graph.getSelectedFeatures(), function(f) {
-                                    $('#dataTable').find('thead > tr').append($('<td>').append($('<b>').text(f)));
+
+                                    var col = new Object();
+                                    col.title = f;
+                                    col.field = getLastElementURI(f);
+                                    col.align = "center";
+                                    tableCol.push(col);
+                                    // $('#dataTable').find('thead > tr').append($('<td>').append($('<b>').text(f)));
                                 });
+                        
+
                                 $('#dataTable').show();
+
+                                var tabledata = [];
                                 _.each(data.data,function(row) {
-                                    $('#dataTable').find('tbody').append($('<tr>'));
+                                    var rowT = new Object();
                                     _.each(row,function(item) {
-                                        $('#dataTable').find('tbody > tr:last').append($('<td>').text(item.value));
+                                        rowT[getLastElementURI(item.feature)] = item.value;
                                     });
+                                    tabledata.push(rowT);
                                 });
+
+                                var table = new Tabulator("#dataTable", {
+                                    data:tabledata, //assign data to table
+                                    layout:"fitColumns", //fit columns to width of table (optional)
+                                    columns:tableCol,
+                                    pagination:"local",
+                                    paginationSize:10,
+                                    paginationSizeSelector:[5, 10, 15, 20,50,100],
+                                });
+
                             }).fail(function(err) {
                                 alert("error "+JSON.stringify(err));
                             });
 
                             //reset modal when hidden
                             $('#dataModal').on('hidden.bs.modal', function (e) {
-                                $('#dataTable').find('thead > tr').remove();
-                                $('#dataTable').find('tbody > tr').remove();
                                 $('#dataTable').hide();
                                 $("#spinner").show();
                             });
@@ -85,6 +105,14 @@ module.exports = function (graph) {
             d3.select("#c_generate-sparql-omq").style("display","")
         }
     };
+
+    function getLastElementURI(ele){
+        var parts = ele.split("/");
+        if(parts.length >1)
+            return parts[parts.length-1]
+        else
+            ele
+    }
 
     return clearQuery;
 };

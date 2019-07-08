@@ -73,7 +73,8 @@ module.exports = (env, argv) => {
             d3: "d3",
             Global: "Global",
             Namespaces: "Namespaces",
-            $:"$"
+            $:"$",
+            Tabulator:"Tabulator",
         },
         devServer: {
             contentBase: path.join(__dirname, outputPath),
