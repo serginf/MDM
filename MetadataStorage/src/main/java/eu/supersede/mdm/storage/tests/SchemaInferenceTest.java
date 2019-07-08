@@ -1,6 +1,7 @@
 package eu.supersede.mdm.storage.tests;
 
 import com.google.common.collect.Sets;
+import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
@@ -52,7 +53,7 @@ public class SchemaInferenceTest {
     }
 
     public static void main(String[] args) {
-        SparkSession spark = SparkSession.builder().master("local").appName("parquetPreview").getOrCreate();
+        SparkSession spark = Utils.getSparkSession();
         Dataset<Row> ds = spark.read().option("multiline","true").json(aggregatedYearDrugDist);
 
         ds.createOrReplaceTempView("testTable");
@@ -126,5 +127,6 @@ public class SchemaInferenceTest {
 
         //System.out.println(spark.sql("select * from (select explode(events.dataValues) from (select explode(events) as events from testTable))").schema().prettyJson());
         //System.out.println(spark.sql("select events.coordinate.latitude from (select explode(events) as events from testTable)").schema().prettyJson());
+        spark.close();
     }
 }
