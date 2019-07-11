@@ -1,6 +1,7 @@
 package eu.supersede.mdm.storage.model.omq.relational_operators;
 
 import com.clearspring.analytics.util.Lists;
+import com.google.gson.Gson;
 import eu.supersede.mdm.storage.model.omq.wrapper_implementations.*;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import net.minidev.json.JSONArray;
@@ -105,6 +106,9 @@ public class Wrapper extends RelationalOperator {
                 break;
             case "sql":
                 w = new SQL_Wrapper("preview");
+                ((SQL_Wrapper)w).setURL_JDBC(ds.getString("sql_jdbc"));
+                JSONObject jsonObject =  (JSONObject) JSONValue.parse(queryParameters);
+                ((SQL_Wrapper)w).setQuery(jsonObject.getAsString("query"));
                 break;
             case "json":
                 w = new JSON_Wrapper("preview");

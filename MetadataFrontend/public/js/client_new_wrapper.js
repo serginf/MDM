@@ -30,7 +30,7 @@ function getJSONQueryByType() {
         //queryParameters.copyToParent = $("#copyToParent").val();
     }
     else if (currDataSource.type == "restapi") queryParameters.query = $("#restapiQuery").val();
-    else if (currDataSource.type == "sqldatabase") queryParameters.query = $("#sqlQuery").val();
+    else if (currDataSource.type == "sql") queryParameters.query = $("#sqlQuery").val();
     return queryParameters;
 }
 
@@ -93,14 +93,20 @@ $(function(){
                 tabledata.push(rowT);
             });
 
+            $("#spinner").hide();
+            $('#dataTable').show();
+
             var table = new Tabulator("#dataTable", {
                 data:tabledata, //assign data to table
+                layoutColumnsOnNewData:true,
+                autoResize:true,
+                columnMinWidth:120,
                 layout:"fitColumns", //fit columns to width of table (optional)
                 columns:tableCol
             });
+            table.redraw(true);
 
-            $("#spinner").hide();
-            $('#dataTable').show();
+
 
         }).fail(function(err) {
             alert("error "+JSON.stringify(err));
@@ -139,7 +145,7 @@ $(function() {
                 $("#jsonValueToAttribute").show();
             }
             else if (currDataSource.type == "restapi") query = $("#restapiQueryForm").show();
-            else if (currDataSource.type == "sqldatabase") query = $("#sqlQueryForm").show();
+            else if (currDataSource.type == "sql") query = $("#sqlQueryForm").show();
         });
         $("#dataSource").trigger("change");
     });
