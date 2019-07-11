@@ -1,0 +1,43 @@
+extends layout
+block headers
+    link(rel='stylesheet', href='/stylesheets/loading.css')
+    script(src='/js/client_import_global_graph.js')
+
+block content
+
+    .container-fluid
+        .card.bg-secondary.mb-3
+            .card-header
+                .row
+                    .col-md-11
+                        h2(style="color:black")
+                            | Import Global Graph
+                    .col-md-1
+                        button.btn.btn-link(data-toggle="collapse" data-target="#instructions")#instructionsButton
+                            i.fas.fa-chevron-circle-down.fa-3x(style="color:black")
+            #instructions.collapse(aria-labelledby="headingOne" data-parent="#accordion")
+                .card-body
+                    p.card-text(style='text-align: left')
+                        | The Global graph G reflects the main domain concepts, relationships among them and features of analysis (i.e., maps to the role of a UML diagram in a machine-readable format). Its elements are defined in terms of the vocabulary users will use when posing queries. The metadata model for G distinguishes concepts from features, the former mimicking classes and the latter attributes in a UML diagram. Concepts can be linked by means of domain-specific object properties, which implicitly determine their domain and range. Such properties will be used for data analysts to navigate the graph, dismissing the need of specifying how the underlying sources are joined.
+                        | The link between a concept and its set of features is represented via G:hasFeature. In order to disambiguate the query rewriting process we restrict features to belong to only one concept. Additionally, it is possible to define a taxonomy of features, which will denote related semantic domains.
+
+        .card.bg-secondary.mb-3
+                        form#globalGraphForm
+                            .form-group#nameForm
+                                label.col-lg-4.col-form-label Name
+                                .col-lg-12
+                                    input#name.form-control(type='text', name='name', required='required')
+
+                            .form-group#defaultNamespaceForm
+                                label.col-lg-4.col-form-label File
+                                .col-lg-12
+                                    .input-group.mb-3
+                                        .custom-file
+                                            input#owl_file.custom-file-input(type='file', name='owl_file',accept=".owl", required='required')
+                                            label.custom-file-label(for='owl_file') Choose file
+                                //.col-lg-12
+                                //    input#defaultNamespace.form-control(type='text', name='defaultNamespace', required='required')
+
+                            .form-group
+                                .col-lg-12.col-lg-offset-2
+                                    button#submitGlobalGraph.btn.btn-primary.btn-lg.btn-block(type="submit") Submit
