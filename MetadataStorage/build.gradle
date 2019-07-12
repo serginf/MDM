@@ -99,6 +99,8 @@ dependencies {
     compile 'org.apache.spark:spark-core_2.11:2.4.3'
     compile 'org.apache.spark:spark-sql_2.11:2.4.3'
 
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.6'
+
     compile files('lib/sqlite4java-392/sqlite4java.jar')
 
     compile group: 'io.swagger', name: 'swagger-jersey2-jaxrs', version: '1.5.22'
