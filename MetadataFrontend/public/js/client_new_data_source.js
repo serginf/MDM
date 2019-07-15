@@ -85,6 +85,24 @@ $(function() {
         });
     });
 
+    $('#sql_jdbc_test').on("click", function(e){
+        e.preventDefault();
+
+        var dataSource = new Object();
+        dataSource.type = "sql";
+        dataSource.sql_jdbc = $("#sql_jdbc").val();
+
+        $.ajax({
+            url: 'dataSource/test/connection',
+            method: "POST",
+            data: dataSource
+        }).done(function() {
+            alert("Sucessful connection")
+        }).fail(function(err) {
+            alert("Fail connection ");
+        });
+    });
+
 });
 
 

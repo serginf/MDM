@@ -125,6 +125,7 @@ app.delete('/globalGraph/:globalGraphID', global_graph_routes.deleteGlobalGraph)
 
 app.get('/dataSource/', data_source_routes.getAllDataSources);
 app.post('/dataSource/fileupload', ds_file_upload.uploadFile);
+app.post('/dataSource/test/connection',data_source_routes.testConnection)
 app.get('/dataSource/:dataSourceID', data_source_routes.getDataSource);
 app.post('/dataSource', data_source_routes.postDataSource);
 app.delete('/dataSource/:dataSourceID', data_source_routes.deleteDataSource);

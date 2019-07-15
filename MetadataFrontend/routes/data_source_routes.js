@@ -64,3 +64,25 @@ exports.postDataSource = function (req, res, next) {
         });
     }
 };
+
+exports.testConnection= function (req, res, next) {
+    console.log(req.body);
+    if (!(req.body.hasOwnProperty('sql_jdbc')) || req.body.sql_jdbc==null ||
+        !(req.body.hasOwnProperty('type')) || req.body.type==null){
+        res.status(400).json({msg: "(Bad Request) data format: {name, type}"});
+    } else {
+
+        request.post({
+            url: config.METADATA_DATA_LAYER_URL + "dataSource/test/connection",
+            body: JSON.stringify(req.body)
+        }, function done(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                console.log(body);
+                res.status(200).json("ok");
+
+            } else {
+                res.status(500).send("Error with the connection"+error);
+            }
+        });
+    }
+};

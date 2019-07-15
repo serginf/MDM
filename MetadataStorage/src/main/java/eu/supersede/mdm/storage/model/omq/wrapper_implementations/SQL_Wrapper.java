@@ -87,6 +87,26 @@ public class SQL_Wrapper extends Wrapper {
         return res.toJSONString();
     }
 
+    public boolean testConnection(){
+        try (Connection conn = DriverManager.getConnection(
+                this.url_jdbc)) {
+
+            if (conn != null) {
+                conn.close();
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     @Override
     public String preview(List<String> attributes) throws Exception {
 
