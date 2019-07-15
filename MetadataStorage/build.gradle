@@ -107,6 +107,10 @@ dependencies {
     testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.4'
     testCompile group: 'org.powermock', name: 'powermock-core', version: '1.7.4'
 
+    //JDBC
+    compile group: 'postgresql', name: 'postgresql', version: '9.1-901-1.jdbc4'
+
+
 //  BDI dependencies
     // https://mvnrepository.com/artifact/org.semarglproject/semargl-sesame
     compile group: 'org.semarglproject', name: 'semargl-sesame', version: '0.7'
