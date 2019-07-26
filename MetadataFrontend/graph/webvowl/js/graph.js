@@ -1438,7 +1438,7 @@ module.exports = function (graphContainerSelector) {
         data.nodes = [];
         data.properties = [];
         data.new = []; //for new nodes and properties
-        data.delete = []; //to delete triples from change type nodes.
+        data.changeNodeType = []; //to delete triples from change type nodes.
         //if currentGlobalGraph not contains graphicalGraph, ontology is new. So we don't check for changes.
         if(graph.options().loadingModule().currentGlobalGraph().graphicalGraph){
 
@@ -1475,7 +1475,8 @@ module.exports = function (graphContainerSelector) {
                         triples.s = node.iri();
                         triples.p = Namespaces.rdfs+"subClassOf";
                         triples.o = Namespaces.sc+"identifier";
-                        data.new.push(triples);
+                        triples.operation = "add";
+                        data.changeNodeType.push(triples);
                     }else if(node.type() === Global.FEATURE.name){
                         //if now the element is feature, before was feature id.
                         // We need to delete the triples for identifier.
@@ -1483,7 +1484,8 @@ module.exports = function (graphContainerSelector) {
                         triples.s = node.iri();
                         triples.p = Namespaces.rdfs+"subClassOf";
                         triples.o = Namespaces.sc+"identifier";
-                        data.delete.push(triples);
+                        triples.operation = "delete";
+                        data.changeNodeType.push(triples);
                     }
                 }
             });
@@ -1510,7 +1512,7 @@ module.exports = function (graphContainerSelector) {
                 }
             });
 
-            if(data.nodes.length || data.properties.length || data.new.length )
+            if(data.nodes.length || data.properties.length || data.new.length || data.changeNodeType.length )
                 data.isModified = true;
         }
         return data;

@@ -2,10 +2,12 @@
  * Created by snadal on 18/05/16.
  */
 var fs = require('fs'),
+    formidable = require('formidable'),
     config = require(__dirname+'/../config'),
     request = require('request'),
     randomstring = require("randomstring"),
-    async = require('async');
+    async = require('async'),
+    upload_path = config.FILES_PATH;
 
 exports.getGlobalGraph = function (req, res, next) {
     request.get(config.METADATA_DATA_LAYER_URL + "globalGraph/"+req.params.globalGraphID, function (error, response, body) {
@@ -125,6 +127,41 @@ exports.postTTL = function (req, res, next) {
     }, function done(err, results) {
         res.status(200).json("ok");
     });
+};
+
+exports.postImport = function (req, res, next) {
+    var form = new formidable.IncomingForm({uploadDir: upload_path});
+    var resultForm = new Object();
+
+    form.on('file', function(field, file) {
+        var newFilePath = form.uploadDir + "/"+Date.now() + '-' + file.name
+        fs.rename(file.path, newFilePath,
+            function (err) {if (err) throw err;});
+
+        resultForm.path = newFilePath;
+
+    });
+
+    form.on('field', function(name, field) {
+        resultForm.name = field;
+    });
+
+    form.on('error', function (err) {
+        console.log('An error has occured with datasource form upload' + err);
+    });
+
+    form.parse(req, function (err, fields, files) {
+        console.log(files)
+        request.post({
+                    url: config.METADATA_DATA_LAYER_URL + "globalGraph/import",
+                    body:JSON.stringify(resultForm)
+        }, function done(err, results) {
+            fs.unlinkSync(resultForm.path)
+            res.status(200).json("ok");
+        });
+    });
+
+
 };
 
 exports.deleteNode = function (req, res, next) {

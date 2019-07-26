@@ -11,6 +11,7 @@ import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.tdb.TDBFactory;
+import org.apache.spark.sql.SparkSession;
 
 import java.io.File;
 import java.io.InputStream;
@@ -22,6 +23,13 @@ public class Utils {
 
     public static MongoClient getMongoDBClient() {
         return new MongoClient(ConfigManager.getProperty("system_metadata_db_server"));
+    }
+
+    public static SparkSession getSparkSession(){
+        return SparkSession.builder()
+                .appName("parquetPreview")
+                .master("local[*]")
+                .config("spark.driver.bindAddress","localhost").getOrCreate();
     }
 
     public static Dataset copyOfTheDataset = null;

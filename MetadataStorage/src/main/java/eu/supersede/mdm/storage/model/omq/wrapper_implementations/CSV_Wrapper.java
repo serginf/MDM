@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
 import eu.supersede.mdm.storage.util.SQLiteUtils;
+import eu.supersede.mdm.storage.util.Utils;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
@@ -63,19 +64,20 @@ public class CSV_Wrapper extends Wrapper {
 
     @Override
     public String inferSchema() throws Exception {
-        SparkSession spark = SparkSession.builder().master("local").appName("parquetPreview").getOrCreate();
+        SparkSession spark = Utils.getSparkSession();
         Dataset<Row> ds = spark.read()
                 .option("header",String.valueOf(this.headerInFirstRow))
                 .option("delimiter",this.columnDelimiter)
                 .csv(this.path);
         JSONObject res = new JSONObject(); res.put("schema",new Gson().toJson(ds.schema().fieldNames()));
+        spark.close();
         return res.toJSONString();
     }
 
     @Override
     public String preview(List<String> attributes) throws Exception {
         JSONArray data = new JSONArray();
-        SparkSession spark = SparkSession.builder().master("local").appName("parquetPreview").getOrCreate();
+        SparkSession spark = Utils.getSparkSession();
         Dataset<Row> ds = spark.read()
                 .option("header",String.valueOf(this.headerInFirstRow))
                 .option("delimiter",this.columnDelimiter)
@@ -106,7 +108,7 @@ public class CSV_Wrapper extends Wrapper {
     @Override
     public void populate(String table, List<String> attributes) throws Exception {
         JSONArray data = new JSONArray();
-        SparkSession spark = SparkSession.builder().master("local").appName("parquetPreview").getOrCreate();
+        SparkSession spark = Utils.getSparkSession();
         Dataset<Row> ds = spark.read()
                 .option("header",String.valueOf(this.headerInFirstRow))
                 .option("delimiter",this.columnDelimiter)

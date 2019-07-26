@@ -114,8 +114,13 @@ block content
                         .form-group#sql_jdbcForm
                             label.col-lg-4.col-form-label JDBC
                             .col-lg-12
-                                input#sql_jdbc.form-control(type='text', name='name', required='required')
-                
+                                //input#sql_jdbc.form-control(type='text', name='name', required='required')
+                                .input-group.mb-3
+                                    input#sql_jdbc.form-control(type='text' required='required' aria-label="Recipient's username" aria-describedby='sql_jdbc_test')
+                                    .input-group-append
+                                        button#sql_jdbc_test.btn.btn-info(type='button') Test connection
+
+
                 .form-group
                     .col-lg-12.col-lg-offset-2
                         button#submitDataSource.btn.btn-primary.btn-lg.btn-block(type="submit") Submit

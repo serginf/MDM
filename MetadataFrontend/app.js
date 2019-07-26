@@ -116,6 +116,7 @@ app.post('/globalGraph', global_graph_routes.postGlobalGraph);
 //app.post('/globalGraph/:namedGraph/triple', global_graph_routes.postTriple);
 app.post('/globalGraph/:globalGraphID/graphicalGraph', global_graph_routes.postGraphicalGraph);
 app.post('/globalGraph/:namedGraph/TTL', global_graph_routes.postTTL);
+app.post('/globalGraph/import', global_graph_routes.postImport);
 
 app.delete('/globalGraph/:namedGraph/node', global_graph_routes.deleteNode);
 app.delete('/globalGraph/:namedGraph/property', global_graph_routes.deleteProperty);
@@ -124,6 +125,7 @@ app.delete('/globalGraph/:globalGraphID', global_graph_routes.deleteGlobalGraph)
 
 app.get('/dataSource/', data_source_routes.getAllDataSources);
 app.post('/dataSource/fileupload', ds_file_upload.uploadFile);
+app.post('/dataSource/test/connection',data_source_routes.testConnection)
 app.get('/dataSource/:dataSourceID', data_source_routes.getDataSource);
 app.post('/dataSource', data_source_routes.postDataSource);
 app.delete('/dataSource/:dataSourceID', data_source_routes.deleteDataSource);
@@ -202,6 +204,10 @@ app.get('/registration', function(req, res) {
 
 app.get('/new_global_graph', checkAuthenticated, function(req,res) {
     res.render('new_global_graph', {user:req.session.passport.user});
+});
+
+app.get('/import_global_graph', checkAuthenticated, function(req,res) {
+    res.render('import_global_graph', {user:req.session.passport.user});
 });
 
 app.get('/manage_global_graphs', checkAuthenticated, function(req,res) {

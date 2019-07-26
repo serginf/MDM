@@ -6,6 +6,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
+import eu.supersede.mdm.storage.parsers.ImportOWLtoGlobalGraph;
 import eu.supersede.mdm.storage.service.impl.DeleteGlobalGraphServiceImpl;
 import eu.supersede.mdm.storage.service.impl.UpdateGlobalGraphServiceImpl;
 import eu.supersede.mdm.storage.util.MongoCollections;
@@ -136,6 +137,26 @@ public class GlobalGraphResource {
         MongoCollections.getGlobalGraphCollection(client).insertOne(Document.parse(objBody.toJSONString()));
 
         client.close();
+        return Response.ok(objBody.toJSONString()).build();
+    }
+
+
+    @ApiOperation(value = "Create a new global graph from a OWL file",produces = MediaType.TEXT_PLAIN)
+    @ApiResponses(value ={
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "body is missing")})
+    @POST @Path("globalGraph/import")
+    @Consumes("text/plain")
+    public Response POST_importGlobalGraph(
+            @ApiParam(value = "json object2 with global graph information", required = true)
+                    String body) {
+
+        LOGGER.info("[POST /globalGraph/import] body = "+body);
+        validator.validateGeneralBody(body,"POST /globalGraph");
+        JSONObject objBody = (JSONObject) JSONValue.parse(body);
+
+        ImportOWLtoGlobalGraph parser = new ImportOWLtoGlobalGraph();
+        parser.convert(objBody.getAsString("path"), objBody.getAsString("name"));
         return Response.ok(objBody.toJSONString()).build();
     }
 

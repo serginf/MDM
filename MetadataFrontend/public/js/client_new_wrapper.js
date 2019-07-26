@@ -30,7 +30,7 @@ function getJSONQueryByType() {
         //queryParameters.copyToParent = $("#copyToParent").val();
     }
     else if (currDataSource.type == "restapi") queryParameters.query = $("#restapiQuery").val();
-    else if (currDataSource.type == "sqldatabase") queryParameters.query = $("#sqlQuery").val();
+    else if (currDataSource.type == "sql") queryParameters.query = $("#sqlQuery").val();
     return queryParameters;
 }
 
@@ -73,26 +73,47 @@ $(function(){
             method: "POST",
             data: previewObj
         }).done(function(data) {
-            $("#spinner").hide();
-            $('input[name^="attributeSet"]').each(function() {
-                $('#dataTable').find('thead > tr').append($('<td>').text($(this).val()));
-            });
-            $('#dataTable').show();
-            console.log("data is "+data)
+
+            var tableCol = [];
+            var atributesSize = $('input[name^="attributeSet"]').length;
+            for(i=0; i<atributesSize;i++){
+                var col = new Object();
+                col.title = $('input[name^="attributeSet"]')[i].value;
+                col.field = $('input[name^="attributeSet"]')[i].value;
+                col.align = "center";
+                tableCol.push(col);
+            }
+
+            var tabledata = [];
             _.each(data.data,function(row) {
-                $('#dataTable').find('tbody').append($('<tr>'));
+                var rowT = new Object();
                 _.each(row,function(item) {
-                    $('#dataTable').find('tbody > tr:last').append($('<td>').text(item.value));
+                    rowT[item.attribute] = item.value;
                 });
+                tabledata.push(rowT);
             });
+
+            $("#spinner").hide();
+            $('#dataTable').show();
+
+            var table = new Tabulator("#dataTable", {
+                data:tabledata, //assign data to table
+                layoutColumnsOnNewData:true,
+                autoResize:true,
+                columnMinWidth:120,
+                layout:"fitColumns", //fit columns to width of table (optional)
+                columns:tableCol
+            });
+            table.redraw(true);
+
+
+
         }).fail(function(err) {
             alert("error "+JSON.stringify(err));
         });
 
         //reset modal when hidden
         $('#previewModal').on('hidden.bs.modal', function (e) {
-            $('#dataTable').find('thead > tr').remove();
-            $('#dataTable').find('tbody > tr').remove();
             $('#dataTable').hide();
             $("#spinner").show();
         })
@@ -124,7 +145,7 @@ $(function() {
                 $("#jsonValueToAttribute").show();
             }
             else if (currDataSource.type == "restapi") query = $("#restapiQueryForm").show();
-            else if (currDataSource.type == "sqldatabase") query = $("#sqlQueryForm").show();
+            else if (currDataSource.type == "sql") query = $("#sqlQueryForm").show();
         });
         $("#dataSource").trigger("change");
     });

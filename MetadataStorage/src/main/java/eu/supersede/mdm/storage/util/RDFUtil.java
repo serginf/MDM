@@ -51,6 +51,18 @@ public class RDFUtil {
         ds.close();
     }
 
+    public static void loadModel(String namedGraph, Model model) {
+        Dataset ds = Utils.getTDBDataset();
+        ds.begin(ReadWrite.WRITE);
+        Model graph = ds.getNamedModel(namedGraph);
+        graph.add(model);
+        graph.commit();
+        graph.close();
+        ds.commit();
+        ds.end();
+        ds.close();
+    }
+
     public static void deleteTriplesNamedGraph(String namedGraph) {
         Dataset ds = Utils.getTDBDataset();
         ds.begin(ReadWrite.WRITE);
@@ -110,6 +122,17 @@ public class RDFUtil {
 
     public static ResultSet runAQuery(String sparqlQuery, Dataset ds) {
         try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), ds)) {
+            ResultSetRewindable results = ResultSetFactory.copyResults(qExec.execSelect());
+            qExec.close();
+            return results;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static ResultSet runAQuery(String sparqlQuery, Model model) {
+        try (QueryExecution qExec = QueryExecutionFactory.create(QueryFactory.create(sparqlQuery), model)) {
             ResultSetRewindable results = ResultSetFactory.copyResults(qExec.execSelect());
             qExec.close();
             return results;

@@ -65,14 +65,37 @@ public class UpdateGlobalGraphServiceImpl {
       });
     }
 
-    if(changes.containsKey("delete")){
-      ((JSONArray)changes.get("delete")).forEach(selectedElement -> {
+    if(changes.containsKey("changeNodeType")){
+
+      List<String> currentIris = new ArrayList<>();
+      ((JSONArray)changes.get("changeNodeType")).forEach(el -> currentIris.add(((JSONObject)el).getAsString("s")));
+      // Check which mappings contains the change node.
+      List<LavObj> LavM = getLavMappingsAffected(getGlobalGraphId(namedGraph),currentIris);
+
+      ((JSONArray)changes.get("changeNodeType")).forEach(selectedElement -> {
         JSONObject objSelectedElement = (JSONObject)selectedElement;
         String sIRI = objSelectedElement.getAsString("s");
         String pIRI = objSelectedElement.getAsString("p");
         String oIRI = objSelectedElement.getAsString("o");
+        String operation = objSelectedElement.getAsString("operation");
 
-        ServiceUtils.deleteTriples(namedGraph,sIRI,pIRI,oIRI);
+        if(operation.equals("add")){
+          RDFUtil.addTriple(namedGraph,sIRI,pIRI,oIRI);
+        }else{
+          ServiceUtils.deleteTriples(namedGraph,sIRI,pIRI,oIRI);
+        }
+
+
+        if (!LavM.isEmpty()) {
+          LavM.forEach( obj -> {
+            if(operation.equals("add")){
+              RDFUtil.addTriple(obj.wrapperIRI,sIRI,pIRI,oIRI);
+            }else{
+              ServiceUtils.deleteTriples(obj.wrapperIRI,sIRI,pIRI,oIRI);
+            }
+          });
+        }
+
       });
     }
 

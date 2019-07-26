@@ -6,6 +6,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
+import eu.supersede.mdm.storage.model.omq.wrapper_implementations.SQL_Wrapper;
 import eu.supersede.mdm.storage.parsers.OWLtoD3;
 import eu.supersede.mdm.storage.service.impl.DeleteDataSourceServiceImpl;
 import eu.supersede.mdm.storage.service.impl.DeleteWrapperServiceImpl;
@@ -82,6 +83,22 @@ public class DataSourceResource {
 
         client.close();
         return Response.ok(objBody.toJSONString()).build();
+    }
+
+    @POST
+    @Path("dataSource/test/connection")
+    @Consumes("text/plain")
+    public Response POST_dataSourceTestConnection(String body) {
+        System.out.println("[POST /dataSource/test/connection] body = " + body);
+        JSONObject objBody = (JSONObject) JSONValue.parse(body);
+
+        SQL_Wrapper w = new SQL_Wrapper("preview");
+        w.setURL_JDBC(objBody.getAsString("sql_jdbc"));
+        Boolean result = w.testConnection();
+
+        if(result)
+            return Response.ok().build();
+        return Response.serverError().build();
     }
 
     @ApiOperation(value = "Delete a Data Source and its related Wrappers and LAVMappings, if exist.",consumes = MediaType.TEXT_PLAIN)
