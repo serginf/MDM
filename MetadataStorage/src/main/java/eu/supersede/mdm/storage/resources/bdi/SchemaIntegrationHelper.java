@@ -17,6 +17,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.bson.Document;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -342,5 +343,36 @@ public class SchemaIntegrationHelper {
     public void initAlignmentTables() {
         BdiSQLiteUtils.createTable("Property", getPropertyTableFeatures());
         BdiSQLiteUtils.createTable("Class", getClassTableFeatures());
+    }
+
+    public static String calculateFileSize(String fileAddress) {
+        File file = new File(fileAddress);
+
+        if (file.exists()) {
+
+            double bytes = file.length();
+            double kilobytes = (bytes / 1024);
+            double megabytes = (kilobytes / 1024);
+            double gigabytes = (megabytes / 1024);
+            double terabytes = (gigabytes / 1024);
+            double petabytes = (terabytes / 1024);
+            double exabytes = (petabytes / 1024);
+            double zettabytes = (exabytes / 1024);
+            double yottabytes = (zettabytes / 1024);
+
+            System.out.println("bytes : " + bytes);
+            System.out.println("kilobytes : " + kilobytes);
+            System.out.println("megabytes : " + megabytes);
+            System.out.println("gigabytes : " + gigabytes);
+            System.out.println("terabytes : " + terabytes);
+            System.out.println("petabytes : " + petabytes);
+            System.out.println("exabytes : " + exabytes);
+            System.out.println("zettabytes : " + zettabytes);
+            System.out.println("yottabytes : " + yottabytes);
+            return Double.toString(kilobytes);
+        } else {
+            System.out.println("File does not exists!");
+            return "";
+        }
     }
 }

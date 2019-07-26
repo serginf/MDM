@@ -2,7 +2,6 @@ package eu.supersede.mdm.storage.bdi.alignment;
 
 import eu.supersede.mdm.storage.util.ConfigManager;
 import eu.supersede.mdm.storage.util.RDFUtil;
-import eu.supersede.mdm.storage.util.Tuple2;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.jena.rdf.model.Resource;
@@ -23,6 +22,7 @@ public class Finder {
     private List<Resource> propertiesA = new ArrayList<>();
     private List<Resource> propertiesB = new ArrayList<>();
     private JSONArray alignmentsArray = new JSONArray();
+    HashMap<String, JSONObject> alignmentMap = null;
 
     public Finder(String iriA, String iriB) {
         System.out.println(iriA + " " + iriB);
@@ -47,7 +47,7 @@ public class Finder {
         }
         String stopwordsRegex = stopwords.stream().collect(Collectors.joining("|", "\\b(", ")\\b\\s?"));
 
-        HashMap<String, String> map = new HashMap<String, String>();
+        alignmentMap = new HashMap<String, JSONObject>();
         for (Resource rA : propertiesA) {
             for (Resource rB : propertiesB) {
                 //TODO Handle all cases here
@@ -81,9 +81,7 @@ public class Finder {
                         double confidence = c * 100;
                         System.out.println(set + " --> " + rA.getLocalName() + " --- And ---- " + rB.getLocalName() + " -- " + c);
                         if (confidence > 20.0) {
-                            if (!map.containsKey(rA.getURI() + rB.getURI())) {
-                                map.put(rA.getURI() + rB.getURI(), Double.toString(c));
-
+                            if (!alignmentMap.containsKey(rA.getURI() + rB.getURI())) {
                                 JSONObject alignments = new JSONObject();
                                 alignments.put("s", rA.getURI());
                                 alignments.put("p", rB.getURI());
@@ -93,7 +91,7 @@ public class Finder {
                                 alignments.put("structural_confidence", Double.toString(c));
                                 alignments.put("mapping_direction", Double.toString(c));
                                 alignmentsArray.add(alignments);
-
+                                alignmentMap.put(rA.getURI() + rB.getURI(), alignments);
                             }
                         }
                     }
@@ -105,6 +103,10 @@ public class Finder {
 
     public JSONArray getAlignmentsArray() {
         return alignmentsArray;
+    }
+
+    public HashMap<String, JSONObject> getAlignmentMap() {
+        return alignmentMap;
     }
 
     private List<Resource> getProperties(String iri) {

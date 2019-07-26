@@ -1,0 +1,22 @@
+{
+  "id ": 30,
+  "data": {
+    "Bicycles ": {
+      "information ": "Contract X1102",
+      "Year_of_Purchase": "2019",
+      "Buying_Year":"2018",
+      "Manufacturer": "Scant"
+    },
+    "Bicycle_station ": {
+      "station_id ": 1,
+      "name": "01 − C/ GRAN VIA\nCORTS CATALANES, 760",
+      "physical_configuration ": "ELECTRICBIKESTATION",
+      "lat ": 41.397952,
+      "lon": 2.180042,
+      "altitude ": 21,
+      "address": "01 − C/ GRAN VIA\nCORTS CATALANES, 760",
+      "post_code": "08908",
+      "capacity ": 28
+    }
+  }
+}

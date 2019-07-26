@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<villo>
+<datasetid>villo-X101</datasetid>
+<Bikes>
+<info>Villo Beschikbaarheid</info>
+<purchase_year>2018</purchase_year>
+<model>Hybrid</model>
+</Bikes>
+<Bike_Stations>
+<name>103 - ERNEST SOLVAY TRAVAUX DE
+VOIRIE</name>
+<bike_stands>0</bike_stands>
+<id>103</id>
+<capacity>30</capacity>
+<available_bike_stands>0</available_bike_stands>
+<banking>True</banking>
+<available_bikes>1</available_bikes>
+<address>ERNEST SOLVAY - RUE DE ..</address>
+<lattitude>41.397952</lattitude>
+<longitude>2.180042</longitude>
+</Bike_Stations>
+<timestamp>1970-01-01T01:00:00+01:00</timestamp>
+</villo>
