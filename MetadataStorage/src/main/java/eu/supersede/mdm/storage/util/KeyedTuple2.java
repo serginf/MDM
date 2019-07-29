@@ -4,6 +4,8 @@ import java.util.Objects;
 
 public class KeyedTuple2<X, Y> extends Tuple2<X, Y> {
 
+    public KeyedTuple2() { super(null,null); }
+
     public KeyedTuple2(X _1, Y _2) {
         super(_1,_2);
     }

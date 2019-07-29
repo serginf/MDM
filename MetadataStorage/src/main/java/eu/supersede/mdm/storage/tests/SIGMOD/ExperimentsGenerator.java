@@ -3,25 +3,21 @@ package eu.supersede.mdm.storage.tests.SIGMOD;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import eu.supersede.mdm.storage.model.Namespaces;
-import eu.supersede.mdm.storage.model.graph.IntegrationGraph;
+import eu.supersede.mdm.storage.model.graph.IntegrationGraph_old;
 import eu.supersede.mdm.storage.model.graph.RelationshipEdge;
-import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.util.GraphUtil;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Tuple3;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.jgrapht.alg.interfaces.SpanningTreeAlgorithm;
-import org.jgrapht.alg.spanning.KruskalMinimumSpanningTree;
 import org.jgrapht.generate.CompleteGraphGenerator;
-import org.jgrapht.graph.AsSubgraph;
 
 import java.util.*;
 import java.util.function.Supplier;
 
 public class ExperimentsGenerator {
 
-    public static IntegrationGraph generateCliqueGraphOfConcepts(int nConcepts) {
+    public static IntegrationGraph_old generateCliqueGraphOfConcepts(int nConcepts) {
         Supplier<String> vSupplier = new Supplier<String>() {
             private int id = 0;
             @Override
@@ -38,14 +34,14 @@ public class ExperimentsGenerator {
         };
 
 
-        IntegrationGraph G = new IntegrationGraph(vSupplier, eSupplier);
+        IntegrationGraph_old G = new IntegrationGraph_old(vSupplier, eSupplier);
         CompleteGraphGenerator<String,RelationshipEdge> generator = new CompleteGraphGenerator<>(nConcepts);
         generator.generateGraph(G);
         return G;
     }
 
-    public static IntegrationGraph addFeatures(IntegrationGraph G, int upperBound, float probabilityOfBeingAdded) {
-        IntegrationGraph newG = GraphUtil.newGraphFromAnotherGraph(G);
+    public static IntegrationGraph_old addFeatures(IntegrationGraph_old G, int upperBound, float probabilityOfBeingAdded) {
+        IntegrationGraph_old newG = GraphUtil.newGraphFromAnotherGraph(G);
 
         Set<String> concepts = Sets.newHashSet(newG.vertexSet());
         //Everyone gets an ID
@@ -69,11 +65,11 @@ public class ExperimentsGenerator {
         return newG;
     }
 
-    public static IntegrationGraph getConnectedRandomSubgraph(IntegrationGraph G, int coveredEdges, boolean allowCycles) throws Exception {
+    public static IntegrationGraph_old getConnectedRandomSubgraph(IntegrationGraph_old G, int coveredEdges, boolean allowCycles) throws Exception {
         if (coveredEdges>G.edgeSet().size()) throw new Exception("coveredEdges cannot be larger than the graphs number of edges");
 
         String aVertex = GraphUtil.getRandomVertexFromGraph(G);
-        IntegrationGraph res = new IntegrationGraph();
+        IntegrationGraph_old res = new IntegrationGraph_old();
         res.addVertex(aVertex);
 
         Set<RelationshipEdge> seenEdges = Sets.newHashSet();
@@ -95,10 +91,10 @@ public class ExperimentsGenerator {
         return res;
     }
 
-    public static IntegrationGraph getConnectedRandomSubgraphFromDAG(IntegrationGraph G, int coveredEdges) {
+    public static IntegrationGraph_old getConnectedRandomSubgraphFromDAG(IntegrationGraph_old G, int coveredEdges) {
         Random rand = new Random(System.currentTimeMillis());
 
-        IntegrationGraph res = new IntegrationGraph();
+        IntegrationGraph_old res = new IntegrationGraph_old();
         Set<RelationshipEdge> usedEdges = Sets.newHashSet();
         Set<RelationshipEdge> candidateEdges = Sets.newHashSet(G.edgeSet());
         for (int i=0; i < coveredEdges; ++i) {
@@ -124,7 +120,7 @@ public class ExperimentsGenerator {
         return res;
     }
 
-    public static void expandWithOneEdge(IntegrationGraph query, IntegrationGraph G) {
+    public static void expandWithOneEdge(IntegrationGraph_old query, IntegrationGraph_old G) {
         String targetV = GraphUtil.getRandomVertexFromGraph(G);
         while (query.containsVertex(targetV)) targetV = GraphUtil.getRandomVertexFromGraph(G);
         String sourceV = GraphUtil.getRandomVertexFromGraph(query);
@@ -133,7 +129,7 @@ public class ExperimentsGenerator {
         query.addEdge(sourceV,targetV,G.getEdge(sourceV,targetV));
     }
 
-    public static void registerWrapper(IntegrationGraph W, String namedGraph) {
+    public static void registerWrapper(IntegrationGraph_old W, String namedGraph) {
         String wrapperName = "Wrapper_"+ /*UUID.randomUUID()*/RandomStringUtils.randomAlphabetic(3);
         List<Tuple3<String,String,String>> triples = Lists.newArrayList();
 
@@ -158,7 +154,7 @@ public class ExperimentsGenerator {
         W.registerRDFDataset(RDFUtil.convertToURI(wrapperName));
     }
 
-    public static String convertToSPARQL(IntegrationGraph Q, Map<String, String> prefixes) {
+    public static String convertToSPARQL(IntegrationGraph_old Q, Map<String, String> prefixes) {
         String SPARQL = prefixes.keySet().stream().map(p -> "PREFIX "+p+": <"+prefixes.get(p)+"> ").reduce(String::concat).get();
         SPARQL += "SELECT ?a" +
                 " WHERE { " +

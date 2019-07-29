@@ -21,7 +21,9 @@ public enum Namespaces {
     sc("http://schema.org/"),
     duv("http://www.w3.org/ns/duv#"),
 
-    sup("http://www.supersede.eu/");
+    sup("http://www.supersede.eu/"),
+
+    serginf("https://serginf.github.io/");
 
     private String element;
 

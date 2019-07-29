@@ -3,7 +3,7 @@ package eu.supersede.mdm.storage.tests.SIGMOD;
 import com.google.common.collect.Lists;
 import eu.supersede.mdm.storage.ApacheMain;
 import eu.supersede.mdm.storage.model.Namespaces;
-import eu.supersede.mdm.storage.model.graph.IntegrationGraph;
+import eu.supersede.mdm.storage.model.graph.IntegrationGraph_old;
 import eu.supersede.mdm.storage.model.graph.RelationshipEdge;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.model.omq.ConjunctiveQuery;
@@ -25,7 +25,7 @@ import java.util.Set;
 public class CustomizedTestForDebug {
 
     private static int a = 1;
-    private static void registerWrapper(IntegrationGraph W, String namedGraph, String wrapperName) {
+    private static void registerWrapper(IntegrationGraph_old W, String namedGraph, String wrapperName) {
         List<Tuple3<String,String,String>> triples = Lists.newArrayList();
         triples.add(new Tuple3<>(RDFUtil.convertToURI(wrapperName), Namespaces.rdf.val()+"type", SourceGraph.WRAPPER.val()));
         for (String v : W.vertexSet()) {
@@ -53,19 +53,19 @@ public class CustomizedTestForDebug {
         Random random = new Random(System.currentTimeMillis());
         ApacheMain.configPath = basePath + "MetadataStorage/config.sergi.properties";
 
-        IntegrationGraph Q = new IntegrationGraph();
+        IntegrationGraph_old Q = new IntegrationGraph_old();
         Q.addVertex("Concept_1");Q.addVertex("Concept_2");Q.addVertex("Concept_3");Q.addVertex("Concept_4");
         Q.addEdge("Concept_1","Concept_2",new RelationshipEdge("E1"));
         Q.addEdge("Concept_1","Concept_3",new RelationshipEdge("E2"));
         Q.addEdge("Concept_3","Concept_4",new RelationshipEdge("E3"));
-        IntegrationGraph Q_withFeatures = ExperimentsGenerator.addFeatures(Q,2,1);
+        IntegrationGraph_old Q_withFeatures = ExperimentsGenerator.addFeatures(Q,2,1);
         System.out.println("Your query is");Q_withFeatures.printAsWebGraphViz();System.out.println("");
 
         Q_withFeatures.registerRDFDataset("http://www.essi.upc.edu/~snadal/SIGMOD_ontology");
 
 
         //Wrapper_1
-        IntegrationGraph W1 = new IntegrationGraph();
+        IntegrationGraph_old W1 = new IntegrationGraph_old();
         W1.addVertex("Concept_1");W1.addVertex("Concept_2");W1.addVertex("ID");
         W1.addEdge("Concept_1","Concept_2",new RelationshipEdge("E1"));
         W1.addVertex("Concept_1_Feature_id");W1.addVertex("Concept_1_Feature_1");
@@ -81,7 +81,7 @@ public class CustomizedTestForDebug {
         registerWrapper(W1,"http://www.essi.upc.edu/~snadal/SIGMOD_ontology","Wrapper_1");
 
         //Wrapper_2
-        IntegrationGraph W2 = new IntegrationGraph();
+        IntegrationGraph_old W2 = new IntegrationGraph_old();
         W2.addVertex("Concept_1");W2.addVertex("Concept_2");W2.addVertex("Concept_3");W2.addVertex("ID");
         W2.addEdge("Concept_1","Concept_2",new RelationshipEdge("E1"));
         W2.addEdge("Concept_1","Concept_3",new RelationshipEdge("E2"));
@@ -104,7 +104,7 @@ public class CustomizedTestForDebug {
         registerWrapper(W2,"http://www.essi.upc.edu/~snadal/SIGMOD_ontology","Wrapper_2");
 
         //Wrapper_3 (combines with Wrapper_1)
-        IntegrationGraph W3 = new IntegrationGraph();
+        IntegrationGraph_old W3 = new IntegrationGraph_old();
         W3.addVertex("Concept_1");W3.addVertex("Concept_3");W3.addVertex("ID");
         W3.addEdge("Concept_1","Concept_3",new RelationshipEdge("E2"));
         W3.addVertex("Concept_1_Feature_id");W3.addVertex("Concept_1_Feature_2");
@@ -119,7 +119,7 @@ public class CustomizedTestForDebug {
         System.out.println("Wrapper_3 is");W3.printAsWebGraphViz();System.out.println("");
         registerWrapper(W3,"http://www.essi.upc.edu/~snadal/SIGMOD_ontology","Wrapper_3");
 
-        IntegrationGraph W4 = new IntegrationGraph();
+        IntegrationGraph_old W4 = new IntegrationGraph_old();
         W4.addVertex("Concept_1");W4.addVertex("Concept_3");W4.addVertex("ID");
         W4.addVertex("Concept_1_Feature_id");W4.addVertex("Concept_1_Feature_2");
         W4.addEdge("Concept_1_Feature_id","ID",new RelationshipEdge("subClassOf"));
@@ -135,7 +135,7 @@ public class CustomizedTestForDebug {
 
 
         //Wrapper_1
-        IntegrationGraph W5 = new IntegrationGraph();
+        IntegrationGraph_old W5 = new IntegrationGraph_old();
         W5.addVertex("Concept_3");W5.addVertex("Concept_4");W5.addVertex("ID");
         W5.addEdge("Concept_3","Concept_4",new RelationshipEdge("E3"));
         W5.addVertex("Concept_3_Feature_id");

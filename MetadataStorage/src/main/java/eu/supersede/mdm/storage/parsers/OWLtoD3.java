@@ -3,7 +3,6 @@ package eu.supersede.mdm.storage.parsers;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.*;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -53,7 +52,7 @@ public class OWLtoD3 {
                     !ns.getNamespaces().contains(triple._2().getNameSpace()) ||
                     !ns.getNamespaces().contains(triple._3().getNameSpace())) &&
                     !ns.getIgnoredNamespaces().contains(triple._1().getNameSpace()) &&
-                    !BolsterMetamodel.contains(artifactType,triple._1().getURI()) &&
+                    !Metamodel.contains(artifactType,triple._1().getURI()) &&
                     !triple._3().toString().equals("http://www.w3.org/2000/01/rdf-schema#Resource")) {
 
                 elementsToShow.add(triple);

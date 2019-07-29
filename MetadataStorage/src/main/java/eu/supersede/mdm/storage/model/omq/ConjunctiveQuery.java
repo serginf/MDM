@@ -79,10 +79,10 @@ public class ConjunctiveQuery implements Comparable {
         EnumSet.allOf(Namespaces.class).forEach(e -> namespaces.put(e.val(),e.name()));
 
         return "ConjunctiveQuery{" +
-                "projections=" + projections/*sortedProjections.stream().map(s-> {
+                "projections=" + /*projections*/sortedProjections.stream().map(s-> {
                     String uri = namespaces.keySet().stream().filter(n -> s.contains(n)).findFirst().get();
                     return s.replace(uri,namespaces.get(uri)+":");
-                }).collect(Collectors.joining(", ")) */+
+                }).collect(Collectors.joining(", ")) +
                 ", joinConditions=" + joinConditions +
                 ", wrappers=" + wrappers +
                 '}';
