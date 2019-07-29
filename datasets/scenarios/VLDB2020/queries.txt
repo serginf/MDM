@@ -1,4 +1,12 @@
-#Q1
+#Only one concept with multiple contributing features
+SELECT ?idA ?a ?a_prime
+WHERE {
+	VALUES ( ?idA ?a ?a_prime ) { ( s:IDa s:a s:a_prime ) }
+	s:A G:hasFeature s:IDa .
+	s:A G:hasFeature s:a .
+	s:A G:hasFeature s:a_prime
+}
+#Cyclic query
 SELECT ?idA ?a ?idB ?b ?idC ?c
 WHERE {
 	VALUES ( ?idA ?a ?idB ?b ?idC ?c ) { ( s:IDa s:a s:IDb s:b s:IDc s:c ) }

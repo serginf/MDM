@@ -167,7 +167,7 @@ public class QueryRewriting_EdgeBased {
                 .filter(cp -> !Collections.disjoint(edgeCoveringWrappers,cp.get(0).getWrappers()) ||
                            !Collections.disjoint(edgeCoveringWrappers,cp.get(1).getWrappers())
                 )
-                .map(cp -> findJoins(cp.get(0),cp.get(1),null))
+                .map(cp -> findJoins(cp.get(0),cp.get(1)))
                 .collect(Collectors.toSet());
         return CQs;
     }
@@ -181,7 +181,7 @@ public class QueryRewriting_EdgeBased {
         return mergedCQ;
     }
 
-    private static ConjunctiveQuery findJoins(ConjunctiveQuery CQ_A, ConjunctiveQuery CQ_B, InfModel phi) {
+    private static ConjunctiveQuery findJoins(ConjunctiveQuery CQ_A, ConjunctiveQuery CQ_B) {
         Set<String> IDa = Sets.newHashSet();
         CQ_A.getWrappers().forEach(w -> IDa.addAll(coveredIDsPerWrapperInQuery.get(w)));
 
@@ -205,7 +205,7 @@ public class QueryRewriting_EdgeBased {
         return CQ;
     }
 
-    private static void getCoveringCQs(BasicPattern G, Dataset T, String c, ConjunctiveQuery currentCQ, Set<ConjunctiveQuery> candidateCQs, Set<ConjunctiveQuery> coveringCQs) {
+    private static void getCoveringCQs(BasicPattern G, ConjunctiveQuery currentCQ, Set<ConjunctiveQuery> candidateCQs, Set<ConjunctiveQuery> coveringCQs) {
         if (covering(currentCQ.getWrappers(),G)) {
             coveringCQs.add(currentCQ);
         }
@@ -219,48 +219,40 @@ public class QueryRewriting_EdgeBased {
 
 //            if (Sets.union(currentCQ.getProjections(),CQ.getProjections()).containsAll(currentCQ.getProjections()) &&
 //                    !Sets.union(currentCQ.getProjections(),CQ.getProjections()).equals(currentCQ.getProjections())) {
-
-                /*Set<ConjunctiveQuery> CQs = combineSetsOfCQs(Sets.newHashSet(currentCQ),Sets.newHashSet(CQ),c,c,null);//combineCQs(currentCQ,CQ,c,c,T);
-                CQs.forEach(Q -> {
-                    getCoveringCQs(G,T,c,Q,Sets.difference(candidateCQs,Sets.newHashSet(CQ)),coveringCQs);
-                });*/
+                ConjunctiveQuery newCQ = findJoins(currentCQ,CQ);
+                getCoveringCQs(G,newCQ,Sets.difference(candidateCQs,Sets.newHashSet(CQ)),coveringCQs);
             }
         }
     }
 
     private static Set<ConjunctiveQuery> getConceptCoveringCQs(String c, InfModel PHI_o, Dataset T) {
         Map<Wrapper,Set<String>> attsPerWrapper = Maps.newHashMap();
-        ResultSet resultSetFeatures = RDFUtil.runAQuery("SELECT ?f " +
-                "WHERE {<"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?f }",PHI_o);
-        // 4 Unfold LAV mappings
         Set<String> F = Sets.newHashSet();
-        resultSetFeatures.forEachRemaining(f -> F.add(f.get("f").asResource().getURI()));
+        RDFUtil.runAQuery("SELECT ?f " +
+                "WHERE {<"+c+"> <"+ GlobalGraph.HAS_FEATURE.val()+"> ?f }",PHI_o)
+                .forEachRemaining(f -> F.add(f.get("f").asResource().getURI()));
         //Case when the Concept has no data, we need to identify the wrapper using the concept instead of the feature
         if (F.isEmpty()) {
             RDFUtil.runAQuery("SELECT ?g WHERE { GRAPH ?g { <" + c + "> <" + Namespaces.rdf.val() + "type" + "> <" + GlobalGraph.CONCEPT.val() + "> } }", T)
                     .forEachRemaining(wrapper -> {
                         String w = wrapper.get("g").toString();
-                        //System.out.println("        "+w);
                         if (!w.equals(Namespaces.T.val()) && w.contains("Wrapper")/*last min bugfix*/) {
                             attsPerWrapper.putIfAbsent(new Wrapper(w), Sets.newHashSet());
                         }
                     });
         }
+        //Unfold LAV mappings
         F.forEach(f -> {
-            //System.out.println("    "+f);
             ResultSet W = RDFUtil.runAQuery("SELECT ?g " +
                     "WHERE { GRAPH ?g { <" + c + "> <" + GlobalGraph.HAS_FEATURE.val() + "> <" + f + "> } }", T);
             W.forEachRemaining(wRes -> {
                 String w = wRes.get("g").asResource().getURI();
-                // Distinguish the ontology named graph
                 if (!w.equals(Namespaces.T.val()) && w.contains("Wrapper")/*last min bugfix*/) {
-                    //System.out.println("        "+w);
-
-                    ResultSet rsAttr = RDFUtil.runAQuery("SELECT ?a " +
+                    /*ResultSet rsAttr = RDFUtil.runAQuery("SELECT ?a " +
                             "WHERE { GRAPH ?g { ?a <" + Namespaces.owl.val() + "sameAs> <" + f + "> . " +
                             "<" + w + "> <" + SourceGraph.HAS_ATTRIBUTE.val() + "> ?a } }", T);
-                    String attribute = rsAttr.nextSolution().get("a").asResource().getURI();
-                    //System.out.println("            "+attribute);
+                    String attribute = rsAttr.nextSolution().get("a").asResource().getURI();*/
+                    String attribute = attributePerFeatureAndWrapper.get(new Tuple2<>(new Wrapper(w),f));
                     attsPerWrapper.putIfAbsent(new Wrapper(w), Sets.newHashSet());
                     Set<String> currentSet = attsPerWrapper.get(new Wrapper(w));
                     currentSet.add(attribute);
@@ -290,8 +282,7 @@ public class QueryRewriting_EdgeBased {
             BasicPattern phi = new BasicPattern();
             F.forEach(f -> phi.add(new Triple(new ResourceImpl(c).asNode(),
                     new PropertyImpl(GlobalGraph.HAS_FEATURE.val()).asNode(), new ResourceImpl(f).asNode())));
-            getCoveringCQs(phi,T,c,Q,candidateCQs,coveringCQs);
-
+            getCoveringCQs(phi,Q,candidateCQs,coveringCQs);
         }
         return coveringCQs;
     }

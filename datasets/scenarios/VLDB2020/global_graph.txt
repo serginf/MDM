@@ -23,3 +23,9 @@ s:IDc rdfs:subClassOf sc:identifier
 s:A s:AB s:B
 s:B s:BC s:C
 s:C s:CA s:A
+#
+#
+#Extra feature in A
+s:a_prime rdf:type G:Feature
+s:A G:hasFeature s:a_prime
+#

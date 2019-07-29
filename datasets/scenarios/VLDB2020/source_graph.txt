@@ -30,3 +30,14 @@ s:Wrapper3 S:hasAttribute s:w3_IDa
 s:w3_IDc owl:sameAs s:IDc
 s:w3_c owl:sameAs s:c
 s:w3_IDa owl:sameAs s:IDa
+#
+#
+# Wrapper that contributes only to the new feature
+s:Wrapper4 rdf:type S:Wrapper
+s:w4_IDa rdf:type S:Attribute
+s:w4_a_prime rdf:type S:Attribute
+s:Wrapper4 S:hasAttribute s:w4_IDa
+s:Wrapper4 S:hasAttribute s:w4_a_prime
+s:w4_IDa owl:sameAs s:IDa
+s:w4_a_prime owl:sameAs s:a_prime
+#
