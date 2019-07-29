@@ -17,6 +17,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
 import java.util.logging.Logger;
 /**
  * Created by Kashif-Rabbani in June 2019
@@ -73,16 +74,40 @@ public class SchemaIntegrationResource {
                             alignmentsIRI
                     );
 
+                    //Initialize Finder Object to perform lexical Matching of data properties
                     Finder finder = new Finder(dataSource1Info.getAsString("schema_iri"), dataSource2Info.getAsString("schema_iri"));
+                    // get all the lexically matched alignments
                     JSONArray dataPropertiesSpecialAlignments = finder.getAlignmentsArray();
+                    // get the HashMap of Alignments
+                    HashMap<String, JSONObject> hashMapLexicalAlignments = finder.getAlignmentMap();
+                    // Define a local HashMap
+                    HashMap<String, String> localHashMap = new HashMap<String, String>();
+
+
+                    /*System.out.println("Detected by Kashif");
+                    System.out.println(dataPropertiesSpecialAlignments.toJSONString());*/
+
                     JSONArray tempAlignmentsArray = alignmentsArray;
                     RDFUtil.runAQuery("SELECT * WHERE { GRAPH <" + alignmentsIRI + "> {?s ?p ?o} }", alignmentsIRI).forEachRemaining(triple -> {
                         JSONObject alignments = new JSONObject();
+                        localHashMap.put(triple.get("s").toString() + triple.get("p").toString(), triple.get("s").toString() + triple.get("p").toString());
                        schemaIntegrationHelper.populateResponseArray(tempAlignmentsArray, triple, alignments);
                     });
+
+                    JSONArray filterDuplicateObjects = new JSONArray();
+                    hashMapLexicalAlignments.forEach((key, value)->{
+                        if(!localHashMap.containsKey(key)){
+                            filterDuplicateObjects.add(value);
+                        }
+                    });
+
                     alignmentsArray = tempAlignmentsArray;
-                    alignmentsArray.addAll(dataPropertiesSpecialAlignments);
-                    System.out.println(alignmentsArray.toJSONString());
+
+                    /*System.out.println("Detected by LogMap: ");
+                    System.out.println(tempAlignmentsArray.toJSONString());*/
+
+                    alignmentsArray.addAll(filterDuplicateObjects);
+                    //System.out.println(alignmentsArray.toJSONString());
 
                 }
             } // end else condition here

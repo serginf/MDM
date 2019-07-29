@@ -62,7 +62,7 @@ public class SqliteSafeDBWithPool implements Closeable {
      * @return
      */
     public SQLiteConnection getConnection(){
-        System.setProperty("sqlite4java.library.path", "lib/sqlite4java-392");
+        System.setProperty("sqlite4java.library.path", ConfigManager.getProperty("sqlite_java_lib_path"));
         SQLiteConnection connection = pools.get();
         if(connection==null){
             connection = new SQLiteConnection(new File(this.dbpath));

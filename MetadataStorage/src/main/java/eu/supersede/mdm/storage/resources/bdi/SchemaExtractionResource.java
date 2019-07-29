@@ -24,7 +24,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
+import org.apache.log4j.*;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Created by Kashif-Rabbani in June 2019
@@ -32,6 +37,7 @@ import java.util.logging.Logger;
 @Path("metadataStorage")
 public class SchemaExtractionResource {
     private static final Logger LOGGER = Logger.getLogger(SchemaExtractionResource.class.getName());
+
     @POST
     @Path("jsonSchema/")
     @Consumes("text/plain")
@@ -42,6 +48,8 @@ public class SchemaExtractionResource {
             //Parsing body as JSON
             JSONObject objBody = (JSONObject) JSONValue.parse(body);
 
+            LocalDateTime startDatetime = LocalDateTime.now();
+
             //Creating JsonSchemaExtractor Object
             JsonSchemaExtractor jsonSchemaExtractor = new JsonSchemaExtractor();
             //Initiating Extraction Process
@@ -49,6 +57,16 @@ public class SchemaExtractionResource {
             JSONObject res = jsonSchemaExtractor.initiateExtraction(
                     objBody.getAsString("filePath"),
                     objBody.getAsString("givenName").replaceAll(" ", "_"));
+
+
+            LocalDateTime endDateTime = LocalDateTime.now();
+            Duration duration = Duration.between(endDateTime, startDatetime);
+            long diff = Math.abs(duration.toMillis());
+
+            LOGGER.info("EXPERIMENTATION,JSON," + objBody.getAsString("filename") + "," +
+                    SchemaIntegrationHelper.calculateFileSize(objBody.getAsString("filePath")) + "," +  diff);
+
+
 
             //Convert RDFS to VOWL (Visualization Framework) Compatible JSON
             JSONObject vowlObj = Utils.oWl2vowl(JsonSchemaExtractor.getOutputFile());
@@ -82,8 +100,18 @@ public class SchemaExtractionResource {
             //Creating CsvSchemaExtractor Object
             CsvSchemaExtractor csvSchemaExtractor = new CsvSchemaExtractor();
 
-            boolean validity =  csvSchemaExtractor.initCsvSchemaExtractor(objBody.getAsString("filePath"), objBody.getAsString("givenName").replaceAll(" ", "_"));
-            if(validity) {
+            LocalDateTime startDatetime = LocalDateTime.now();
+
+            boolean validity = csvSchemaExtractor.initCsvSchemaExtractor(objBody.getAsString("filePath"), objBody.getAsString("givenName").replaceAll(" ", "_"));
+            if (validity) {
+                LocalDateTime endDateTime = LocalDateTime.now();
+                Duration duration = Duration.between(endDateTime, startDatetime);
+                long diff = Math.abs(duration.toMillis());
+
+                //EXPERIMENTATION,CSV,fileName.csv,11.8544921875,1314
+                LOGGER.info("EXPERIMENTATION,CSV," + objBody.getAsString("filename") + "," +
+                        SchemaIntegrationHelper.calculateFileSize(objBody.getAsString("filePath")) + "," +  diff);
+
                 //Convert RDFS to VOWL (Visualization Framework) Compatible JSON
                 JSONObject vowlObj = Utils.oWl2vowl(csvSchemaExtractor.getCsvModelOutputFilePath());
 
@@ -118,12 +146,19 @@ public class SchemaExtractionResource {
 
             //Creating XmlSchemaExtractor Object
             XmlSchemaExtractor xmlSchemaExtractor = new XmlSchemaExtractor();
-
+            LocalDateTime startDatetime = LocalDateTime.now();
             //Initiating Extraction Process
             // This process will extract XML schema from the file and convert it into RDFS Knowledge Graph.
             JSONObject res = xmlSchemaExtractor.initiateXmlExtraction(
                     objBody.getAsString("filePath"),
                     objBody.getAsString("givenName").replaceAll(" ", "_"));
+
+            LocalDateTime endDateTime = LocalDateTime.now();
+            Duration duration = Duration.between(endDateTime, startDatetime);
+            long diff = Math.abs(duration.toMillis());
+
+            LOGGER.info("EXPERIMENTATION,XML," + objBody.getAsString("filename") + "," +
+                    SchemaIntegrationHelper.calculateFileSize(objBody.getAsString("filePath")) + "," +  diff);
 
             //Convert RDFS to VOWL (Visualization Framework) Compatible JSON
             JSONObject vowlObj = Utils.oWl2vowl(xmlSchemaExtractor.getOutputFilePath());
