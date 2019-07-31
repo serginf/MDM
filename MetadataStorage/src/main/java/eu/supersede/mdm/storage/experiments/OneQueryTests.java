@@ -29,7 +29,7 @@ public class OneQueryTests {
     public static void main(String[] args) throws Exception {
         ApacheMain.configPath = basePath + "MetadataStorage/config.sergi.properties";
         TestUtils.deleteTDB();
-        Map<String, String> prefixes = TestUtils.populatePrefixes(basePath + "datasets/scenarios/VLDB2020/prefixes.txt");
+        Map<String, String> prefixes = TestUtils.populatePrefixes(basePath + "datasets/scenarios/Cyclic_AB-BC-CA/prefixes.txt");
         TestUtils.populateTriples("http://www.essi.upc.edu/~snadal/SIGMOD_ontology", basePath + "datasets/scenarios/SIGMOD_CQ/metamodel.txt", prefixes);
 
         Random random = new Random(System.currentTimeMillis());

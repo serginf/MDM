@@ -194,8 +194,11 @@ public class QueryRewriting_EdgeBased {
                 CQ_B.getWrappers().forEach(wB -> {
                     if (attributePerFeatureAndWrapper.containsKey(new Tuple2<>(wA,ID)) &&
                         attributePerFeatureAndWrapper.containsKey(new Tuple2<>(wB,ID))) {
-                        joinConditions.add(new EquiJoin(attributePerFeatureAndWrapper.get(new Tuple2<>(wA,ID)),
-                                attributePerFeatureAndWrapper.get(new Tuple2<>(wB,ID))));
+                            String L = attributePerFeatureAndWrapper.get(new Tuple2<>(wA,ID));
+                            String R = attributePerFeatureAndWrapper.get(new Tuple2<>(wB,ID));
+                            if (!L.equals(R) && !joinConditions.contains(new EquiJoin(L,R)) && !joinConditions.contains(new EquiJoin(R,L))) {
+                                joinConditions.add(new EquiJoin(L, R));
+                            }
                     }
                 });
             });
