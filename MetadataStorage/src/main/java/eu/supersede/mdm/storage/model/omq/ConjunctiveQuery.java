@@ -54,12 +54,12 @@ public class ConjunctiveQuery implements Comparable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o) { //Query equivalence
         if (o instanceof ConjunctiveQuery) {
             final ConjunctiveQuery other = (ConjunctiveQuery)o;
-            return Objects.equals(projections,other.projections) &&
-                    Objects.equals(joinConditions,other.joinConditions) &&
-                    Objects.equals(wrappers, other.wrappers);
+            return //Objects.equals(projections,other.projections) &&
+                    joinConditions.equals(other.joinConditions) &&
+                    wrappers.equals(other.wrappers);
         } else {
             return false;
         }
@@ -67,7 +67,7 @@ public class ConjunctiveQuery implements Comparable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(projections,joinConditions,wrappers);
+        return Objects.hash(/*projections,*/joinConditions,wrappers);
     }
 
     @Override

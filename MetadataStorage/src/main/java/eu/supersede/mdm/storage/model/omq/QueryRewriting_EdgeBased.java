@@ -161,12 +161,14 @@ public class QueryRewriting_EdgeBased {
         });
     }
 
-    private static Set<ConjunctiveQuery> combineSetsOfCQs(Set<ConjunctiveQuery> CQ_A, Set<ConjunctiveQuery> CQ_B, Set<Wrapper> edgeCoveringWrappers) {
+    private static Set<ConjunctiveQuery> combineSetsOfCQs(Set<ConjunctiveQuery> CQ_A, Set<ConjunctiveQuery> CQ_B,
+                                                          Set<Wrapper> edgeCoveringWrappers, BasicPattern PHI_p) {
         Set<ConjunctiveQuery> CQs = Sets.cartesianProduct(CQ_A,CQ_B).stream()
                 //see if the edge is covered by at least a CQ
-                .filter(cp -> !Collections.disjoint(edgeCoveringWrappers,cp.get(0).getWrappers()) ||
-                           !Collections.disjoint(edgeCoveringWrappers,cp.get(1).getWrappers())
+                .filter(cp -> !Sets.intersection(edgeCoveringWrappers,cp.get(0).getWrappers()).isEmpty() ||
+                           !Sets.intersection(edgeCoveringWrappers,cp.get(1).getWrappers()).isEmpty()
                 )
+                .filter(cp -> minimal(Sets.union(cp.get(0).getWrappers(),cp.get(1).getWrappers()),PHI_p))
                 .map(cp -> findJoins(cp.get(0),cp.get(1)))
                 .collect(Collectors.toSet());
         return CQs;
@@ -346,7 +348,7 @@ public class QueryRewriting_EdgeBased {
             Set<ConjunctiveQuery> Qs = source.getCQs();
             Set<ConjunctiveQuery> Qt = target.getCQs();
 
-            Set<ConjunctiveQuery> Q = combineSetsOfCQs(Qs, Qt, edgeCoveringWrappers);
+            Set<ConjunctiveQuery> Q = combineSetsOfCQs(Qs, Qt, edgeCoveringWrappers, PHI_p);
 
             CQVertex joinedVertex = new CQVertex(source.getLabel()+"-"+target.getLabel(),Q);
             //Remove the processed edge
