@@ -46,7 +46,8 @@ public class IntegrationEdge extends DefaultEdge {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         IntegrationEdge cqVertex = (IntegrationEdge) o;
-        return Objects.equal(label, cqVertex.label);
+        return getSource().equals(cqVertex.getSource()) && getTarget().equals(cqVertex.getTarget());
+        //return Objects.equal(label, cqVertex.label);
     }
 
     @Override

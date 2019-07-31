@@ -139,7 +139,7 @@ public class ExperimentsGenerator {
         //sameAs
         W.vertexSet().forEach(v -> {
             if (v.getLabel().contains("Feature")) {
-                String attributeName = /*UUID.randomUUID().toString()*/RandomStringUtils.randomAlphabetic(2);
+                String attributeName = UUID.randomUUID().toString()/*RandomStringUtils.randomAlphabetic(2)*/;
                 //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(attributeName), Namespaces.rdf.val()+"type", SourceGraph.ATTRIBUTE.val());
                 triples.add(new Tuple3<>(RDFUtil.convertToURI(attributeName), Namespaces.rdf.val()+"type", SourceGraph.ATTRIBUTE.val()));
                 //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(wrapperName), SourceGraph.HAS_ATTRIBUTE.val(), RDFUtil.convertToURI(attributeName));

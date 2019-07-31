@@ -29,7 +29,7 @@ public class ExperimentsRunner {
     private static float COVERED_FEATURES_QUERY = .1f; //Probability that a query includes a feature
     private static float COVERED_FEATURES_WRAPPER = .25f; //Probability that a wrapper includes a feature
 
-    private static String basePath = "/home/snadal/UPC/Projects/MDM_v2/";
+    private static String basePath = "/home/snadal/UPC/Projects/MDM_v2/MDM/";
 
     public static void main(String[] args) throws Exception {
         if (args.length>0) {

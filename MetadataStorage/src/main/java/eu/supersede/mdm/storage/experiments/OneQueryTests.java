@@ -19,13 +19,13 @@ import java.util.Set;
 
 public class OneQueryTests {
 
-    private static int CLIQUE_SIZE = 50;
+    private static int CLIQUE_SIZE = 5;
 
-    private static int MAX_EDGES_IN_QUERY = 3; //The number of edges in G computed as a subgraph of the clique
+    private static int MAX_EDGES_IN_QUERY = 1; //The number of edges in G computed as a subgraph of the clique
 
     private static int MAX_WRAPPERS = 30;
     private static float COVERED_FEATURES_QUERY = .1f; //Probability that a query includes a feature
-    private static float COVERED_FEATURES_WRAPPER = .75f; //Probability that a wrapper includes a feature
+    private static float COVERED_FEATURES_WRAPPER = .2f; //Probability that a wrapper includes a feature
 
     private static String basePath = "/home/snadal/UPC/Projects/MDM_v2/MDM/";
 
@@ -40,18 +40,20 @@ public class OneQueryTests {
 
         //Generate a clique of concepts
         IntegrationGraph clique = ExperimentsGenerator.generateCliqueGraphOfConcepts(CLIQUE_SIZE);
+        System.out.println("The clique is");clique.printAsWebGraphViz();System.out.println("");
         //Here Q=G
         IntegrationGraph Q = ExperimentsGenerator.getConnectedRandomSubgraph(clique,1,false);
-        for (int i = 2; i <= 2; ++i) {
+        for (int i = 1; i < MAX_EDGES_IN_QUERY; ++i) {
             ExperimentsGenerator.expandWithOneEdge(Q,clique);
         }
-        Q.printAsWebGraphViz();System.out.println("");
+        System.out.println("Query only with concepts is");Q.printAsWebGraphViz();System.out.println("");
+
         IntegrationGraph Q_withFeatures = ExperimentsGenerator.addFeatures(Q,1,1f);
         System.out.println("Q with features is");Q_withFeatures.printAsWebGraphViz();System.out.println("");
         Q_withFeatures.registerRDFDataset("http://www.essi.upc.edu/~snadal/SIGMOD_ontology");
         for (int j = 1; j <= MAX_WRAPPERS; ++j) {
             IntegrationGraph W = ExperimentsGenerator.getConnectedRandomSubgraphFromDAG(Q,1);
-            IntegrationGraph W_withFeatures = ExperimentsGenerator.addFeatures(W,1,1f);
+            IntegrationGraph W_withFeatures = ExperimentsGenerator.addFeatures(W,1,COVERED_FEATURES_WRAPPER);
             ExperimentsGenerator.registerWrapper(W_withFeatures,"http://www.essi.upc.edu/~snadal/SIGMOD_ontology");
             System.out.println("W with features is");W_withFeatures.printAsWebGraphViz();System.out.println("");
         }
