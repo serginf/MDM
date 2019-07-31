@@ -42,6 +42,9 @@ public class CQVertex {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
+        if (o.getClass().equals(String.class)) {
+            return Objects.equal((String)o,label);
+        }
         if (o == null || getClass() != o.getClass()) return false;
         CQVertex cqVertex = (CQVertex) o;
         return Objects.equal(label, cqVertex.label);
@@ -55,7 +58,7 @@ public class CQVertex {
     @Override
     public String toString()
     {
-        return label + " - " + CQs;
+        return label/* + " - " + CQs*/;
     }
 
 }

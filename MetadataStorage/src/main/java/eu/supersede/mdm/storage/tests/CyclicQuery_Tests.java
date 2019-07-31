@@ -1,4 +1,4 @@
-package eu.supersede.mdm.storage.tests.VLDB;
+package eu.supersede.mdm.storage.tests;
 
 import com.google.common.collect.Lists;
 import eu.supersede.mdm.storage.ApacheMain;

@@ -1,9 +1,11 @@
-package eu.supersede.mdm.storage.tests.SIGMOD;
+package eu.supersede.mdm.storage.experiments;
 
 import eu.supersede.mdm.storage.ApacheMain;
+import eu.supersede.mdm.storage.model.graph.IntegrationGraph;
 import eu.supersede.mdm.storage.model.graph.IntegrationGraph_old;
 import eu.supersede.mdm.storage.model.omq.ConjunctiveQuery;
 import eu.supersede.mdm.storage.model.omq.QueryRewriting;
+import eu.supersede.mdm.storage.model.omq.QueryRewriting_EdgeBased;
 import eu.supersede.mdm.storage.model.omq.QueryRewriting_SimpleGraph;
 import eu.supersede.mdm.storage.tests.TestUtils;
 import eu.supersede.mdm.storage.util.Tuple2;
@@ -27,7 +29,7 @@ public class ExperimentsRunner {
     private static float COVERED_FEATURES_QUERY = .1f; //Probability that a query includes a feature
     private static float COVERED_FEATURES_WRAPPER = .25f; //Probability that a wrapper includes a feature
 
-    private static String basePath = "/home/snadal/UPC/Projects/MDM/";
+    private static String basePath = "/home/snadal/UPC/Projects/MDM_v2/";
 
     public static void main(String[] args) throws Exception {
         if (args.length>0) {
@@ -52,26 +54,28 @@ public class ExperimentsRunner {
         ApacheMain.configPath = basePath + "MetadataStorage/config.sergi.properties";
 
         //Generate a clique of concepts
-        IntegrationGraph_old clique = ExperimentsGenerator.generateCliqueGraphOfConcepts(CLIQUE_SIZE);
+        IntegrationGraph clique = ExperimentsGenerator.generateCliqueGraphOfConcepts(CLIQUE_SIZE);
         //Here Q=G
-        IntegrationGraph_old Q = ExperimentsGenerator.getConnectedRandomSubgraph(clique,1,false);
+        IntegrationGraph Q = ExperimentsGenerator.getConnectedRandomSubgraph(clique,1,false);
         for (int i = 2; i <= N_EDGES_IN_QUERY; ++i)
             ExperimentsGenerator.expandWithOneEdge(Q,clique);
 
-        IntegrationGraph_old Q_withFeatures = ExperimentsGenerator.addFeatures(Q,UPPER_BOUND_FEATURES_IN_G,COVERED_FEATURES_QUERY);
+        IntegrationGraph Q_withFeatures = ExperimentsGenerator.addFeatures(Q,UPPER_BOUND_FEATURES_IN_G,COVERED_FEATURES_QUERY);
         //System.out.println("Your query is");Q_withFeatures.printAsWebGraphViz();System.out.println("");
 
         Q_withFeatures.registerRDFDataset("http://www.essi.upc.edu/~snadal/SIGMOD_ontology");
         for (int j = 1; j <= N_WRAPPERS; ++j) {
-            IntegrationGraph_old W = ExperimentsGenerator.getConnectedRandomSubgraphFromDAG(Q,N_EDGES_COVERED_BY_WRAPPERS);
-            IntegrationGraph_old W_withFeatures = ExperimentsGenerator.addFeatures(W,UPPER_BOUND_FEATURES_IN_G,COVERED_FEATURES_WRAPPER);
+            IntegrationGraph W = ExperimentsGenerator.getConnectedRandomSubgraphFromDAG(Q,N_EDGES_COVERED_BY_WRAPPERS);
+            IntegrationGraph W_withFeatures = ExperimentsGenerator.addFeatures(W,UPPER_BOUND_FEATURES_IN_G,COVERED_FEATURES_WRAPPER);
             //System.out.println("Your wrapper is");W_withFeatures.printAsWebGraphViz();System.out.println("");
             ExperimentsGenerator.registerWrapper(W_withFeatures,"http://www.essi.upc.edu/~snadal/SIGMOD_ontology");
         }
         Dataset T = Utils.getTDBDataset();
         T.begin(ReadWrite.READ);
         long a = System.currentTimeMillis();
-        Tuple2<Integer, Set<ConjunctiveQuery>> CQs = QueryRewriting.rewriteToUnionOfConjunctiveQueries(QueryRewriting_SimpleGraph.parseSPARQL(ExperimentsGenerator.convertToSPARQL(Q_withFeatures,prefixes), T), T);
+        Tuple2<Integer, Set<ConjunctiveQuery>> CQs = QueryRewriting_EdgeBased.rewriteToUnionOfConjunctiveQueries
+                (QueryRewriting_EdgeBased.parseSPARQL
+                        (ExperimentsGenerator.convertToSPARQL(Q_withFeatures,prefixes), T), T);
         long b = System.currentTimeMillis();
         //edges in query; number of covering wrappers;
         System.out.println(UPPER_BOUND_FEATURES_IN_G+";"+N_EDGES_IN_QUERY+";"+N_WRAPPERS+";"+N_EDGES_COVERED_BY_WRAPPERS+";"+COVERED_FEATURES_QUERY+

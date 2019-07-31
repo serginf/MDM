@@ -1,37 +1,32 @@
 package eu.supersede.mdm.storage.util;
 
 import com.google.common.collect.Lists;
-import eu.supersede.mdm.storage.model.graph.IntegrationGraph_old;
-import eu.supersede.mdm.storage.model.graph.RelationshipEdge;
+import eu.supersede.mdm.storage.model.graph.*;
 import org.jgrapht.Graph;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.DefaultDirectedGraph;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Set;
 
 public class GraphUtil {
 
-    public static IntegrationGraph_old newGraphFromAnotherGraph(Graph<String, RelationshipEdge> sG) {
-        IntegrationGraph_old G = new IntegrationGraph_old();
+    public static IntegrationGraph newGraphFromAnotherGraph(Graph<CQVertex, IntegrationEdge> sG) {
+        IntegrationGraph G = new IntegrationGraph();
         sG.edgeSet().forEach(edge -> {
-            G.addVertex(sG.getEdgeSource((RelationshipEdge) edge));
-            G.addVertex(sG.getEdgeTarget((RelationshipEdge)edge));
-            G.addEdge(sG.getEdgeSource((RelationshipEdge)edge),sG.getEdgeTarget((RelationshipEdge)edge),(RelationshipEdge)edge);
+            G.addVertex(sG.getEdgeSource(edge));
+            G.addVertex(sG.getEdgeTarget(edge));
+            G.addEdge(sG.getEdgeSource(edge),sG.getEdgeTarget(edge),edge);
         });
         return G;
     }
 
-    public static String getRandomVertexFromGraph(IntegrationGraph_old G) {
-        Random r = new Random(System.currentTimeMillis());
-        return Lists.newArrayList(G.vertexSet()).get(r.nextInt(Lists.newArrayList(G.vertexSet()).size()));
+    public static CQVertex getRandomVertexFromGraph(IntegrationGraph G) {
+        return G.vertexSet().stream().skip(new Random().nextInt(G.vertexSet().size())).findFirst().orElse(null);
+        /*return new CQVertex(Arrays.copyOf(G.vertexSet().toArray(), G.vertexSet().size(), String[].class)
+                [new Random().nextInt(G.vertexSet().size())]);*/
     }
-
-    public static RelationshipEdge getRandomEdge(Set<RelationshipEdge> edges) {
-        Random r = new Random(System.currentTimeMillis());
-        return Lists.newArrayList(edges).get(r.nextInt(Lists.newArrayList(edges).size()));
-    }
-
+/*
     public static IntegrationGraph_old getRandomSubgraphFromDijkstraPath(IntegrationGraph_old G) {
         Random random = new Random(System.currentTimeMillis());
         DijkstraShortestPath<String,RelationshipEdge> dijkstra = new DijkstraShortestPath<>(G);
@@ -54,6 +49,12 @@ public class GraphUtil {
             W.addEdge(G.getEdgeSource(edge),G.getEdgeTarget(edge),edge);
         });
         return W;
+    }
+*/
+
+    public static IntegrationEdge getRandomEdge(Set<IntegrationEdge> edges) {
+        Random r = new Random(System.currentTimeMillis());
+        return Lists.newArrayList(edges).get(r.nextInt(Lists.newArrayList(edges).size()));
     }
 
 }

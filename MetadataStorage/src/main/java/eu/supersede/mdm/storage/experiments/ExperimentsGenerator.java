@@ -1,10 +1,10 @@
-package eu.supersede.mdm.storage.tests.SIGMOD;
+package eu.supersede.mdm.storage.experiments;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import eu.supersede.mdm.storage.model.Namespaces;
-import eu.supersede.mdm.storage.model.graph.IntegrationGraph_old;
-import eu.supersede.mdm.storage.model.graph.RelationshipEdge;
+import eu.supersede.mdm.storage.model.graph.*;
+import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.util.GraphUtil;
 import eu.supersede.mdm.storage.util.RDFUtil;
@@ -17,39 +17,40 @@ import java.util.function.Supplier;
 
 public class ExperimentsGenerator {
 
-    public static IntegrationGraph_old generateCliqueGraphOfConcepts(int nConcepts) {
-        Supplier<String> vSupplier = new Supplier<String>() {
+    public static IntegrationGraph generateCliqueGraphOfConcepts(int nConcepts) {
+        Supplier<CQVertex> vSupplier = new Supplier<CQVertex>() {
             private int id = 0;
             @Override
-            public String get() {
-                return "Concept_"+id++;
+            public CQVertex get() {
+                return new CQVertex("Concept_"+id++);
             }
         };
-        Supplier<RelationshipEdge> eSupplier = new Supplier<RelationshipEdge>() {
+        Supplier<IntegrationEdge> eSupplier = new Supplier<IntegrationEdge>() {
             private int id = 0;
             @Override
-            public RelationshipEdge get() {
-                return new RelationshipEdge("Edge_"+id++);
+            public IntegrationEdge get() {
+                return new IntegrationEdge("Edge_"+id++);
             }
         };
 
 
-        IntegrationGraph_old G = new IntegrationGraph_old(vSupplier, eSupplier);
-        CompleteGraphGenerator<String,RelationshipEdge> generator = new CompleteGraphGenerator<>(nConcepts);
+        IntegrationGraph G = new IntegrationGraph(vSupplier, eSupplier);
+        CompleteGraphGenerator<CQVertex,IntegrationEdge> generator = new CompleteGraphGenerator<>(nConcepts);
         generator.generateGraph(G);
         return G;
     }
 
-    public static IntegrationGraph_old addFeatures(IntegrationGraph_old G, int upperBound, float probabilityOfBeingAdded) {
-        IntegrationGraph_old newG = GraphUtil.newGraphFromAnotherGraph(G);
+    public static IntegrationGraph addFeatures(IntegrationGraph G, int upperBound, float probabilityOfBeingAdded) {
+        IntegrationGraph newG = GraphUtil.newGraphFromAnotherGraph(G);
 
-        Set<String> concepts = Sets.newHashSet(newG.vertexSet());
+        Set<CQVertex> concepts = Sets.newHashSet(newG.vertexSet());
         //Everyone gets an ID
-        newG.addVertex("ID");
+        newG.addVertex(new CQVertex(/*Namespaces.sc.val() + "identifier"*/"ID"));
         concepts.forEach(c -> {
-            newG.addVertex(c+"_Feature_id");
-            newG.addEdge(c,c+"_Feature_id",new RelationshipEdge("hasFeature"));
-            newG.addEdge(c+"_Feature_id","ID",new RelationshipEdge("subClassOf"));
+            newG.addVertex(new CQVertex(c.getLabel()+"_Feature_id"));
+            newG.addEdge(c,new CQVertex(c.getLabel()+"_Feature_id"),new IntegrationEdge(/*GlobalGraph.HAS_FEATURE.val()*/"hasFeature"));
+            newG.addEdge(new CQVertex(c.getLabel()+"_Feature_id"),new CQVertex(/*Namespaces.sc.val() + "identifier"*/"ID"),
+                    new IntegrationEdge(/*Namespaces.rdfs.val() + "subClassOf"*/"subClassOf"));
         });
 
         Random random = new Random(System.currentTimeMillis());
@@ -57,31 +58,31 @@ public class ExperimentsGenerator {
         concepts.forEach(c -> {
             for (int f = 1; f <= /*random.nextInt(*/upperBound/*)*/; ++f) {
                 if (random.nextFloat()<probabilityOfBeingAdded) {
-                    newG.addVertex(c + "_Feature_" + f);
-                    newG.addEdge(c, c + "_Feature_" + f, new RelationshipEdge("hasFeature"));
+                    newG.addVertex(new CQVertex(c.getLabel() + "_Feature_" + f));
+                    newG.addEdge(c, new CQVertex(c.getLabel() + "_Feature_" + f), new IntegrationEdge(/*GlobalGraph.HAS_FEATURE.val()*/"hasFeature"));
                 }
             }
         });
         return newG;
     }
 
-    public static IntegrationGraph_old getConnectedRandomSubgraph(IntegrationGraph_old G, int coveredEdges, boolean allowCycles) throws Exception {
+    public static IntegrationGraph getConnectedRandomSubgraph(IntegrationGraph G, int coveredEdges, boolean allowCycles) throws Exception {
         if (coveredEdges>G.edgeSet().size()) throw new Exception("coveredEdges cannot be larger than the graphs number of edges");
 
-        String aVertex = GraphUtil.getRandomVertexFromGraph(G);
-        IntegrationGraph_old res = new IntegrationGraph_old();
+        CQVertex aVertex = GraphUtil.getRandomVertexFromGraph(G);
+        IntegrationGraph res = new IntegrationGraph();
         res.addVertex(aVertex);
 
-        Set<RelationshipEdge> seenEdges = Sets.newHashSet();
+        Set<IntegrationEdge> seenEdges = Sets.newHashSet();
         for (int i = 0; i < coveredEdges; ++i) {
-            Set<RelationshipEdge> candidateNonSeenEdges = Sets.difference(G.outgoingEdgesOf(aVertex),seenEdges);
-            Set<RelationshipEdge> nonSeenEdges = Sets.newHashSet();
+            Set<IntegrationEdge> candidateNonSeenEdges = Sets.difference(G.outgoingEdgesOf(aVertex),seenEdges);
+            Set<IntegrationEdge> nonSeenEdges = Sets.newHashSet();
             candidateNonSeenEdges.forEach(e ->  {
                 if (allowCycles || (!allowCycles && !res.vertexSet().contains(G.getEdgeTarget(e))))
                     nonSeenEdges.add(e);
             });
-            RelationshipEdge nonSeenRandomEdge = GraphUtil.getRandomEdge(nonSeenEdges);
-            String target = G.getEdgeTarget(nonSeenRandomEdge);
+            IntegrationEdge nonSeenRandomEdge = GraphUtil.getRandomEdge(nonSeenEdges);
+            CQVertex target = G.getEdgeTarget(nonSeenRandomEdge);
             res.addVertex(target);
             res.addEdge(aVertex,target,nonSeenRandomEdge);
 
@@ -91,16 +92,16 @@ public class ExperimentsGenerator {
         return res;
     }
 
-    public static IntegrationGraph_old getConnectedRandomSubgraphFromDAG(IntegrationGraph_old G, int coveredEdges) {
+    public static IntegrationGraph getConnectedRandomSubgraphFromDAG(IntegrationGraph G, int coveredEdges) {
         Random rand = new Random(System.currentTimeMillis());
 
-        IntegrationGraph_old res = new IntegrationGraph_old();
-        Set<RelationshipEdge> usedEdges = Sets.newHashSet();
-        Set<RelationshipEdge> candidateEdges = Sets.newHashSet(G.edgeSet());
+        IntegrationGraph res = new IntegrationGraph();
+        Set<IntegrationEdge> usedEdges = Sets.newHashSet();
+        Set<IntegrationEdge> candidateEdges = Sets.newHashSet(G.edgeSet());
         for (int i=0; i < coveredEdges; ++i) {
-            RelationshipEdge randEdge = (RelationshipEdge)
+            IntegrationEdge randEdge = (IntegrationEdge)
                     Lists.newArrayList(candidateEdges.toArray()).get(rand.nextInt(candidateEdges.size()));
-            //RelationshipEdge randEdge = candidateEdges.stream().findAny().get();
+            //IntegrationEdge randEdge = candidateEdges.stream().findAny().get();
 
             res.addVertex(G.getEdgeSource(randEdge));
             res.addVertex(G.getEdgeTarget(randEdge));
@@ -109,27 +110,27 @@ public class ExperimentsGenerator {
             usedEdges.add(randEdge);
 
             candidateEdges = Sets.newHashSet();
-            for (RelationshipEdge usedEdge : usedEdges) {
-                for (RelationshipEdge e : G.incomingEdgesOf(G.getEdgeSource(usedEdge))) candidateEdges.add(e);
-                for (RelationshipEdge e : G.outgoingEdgesOf(G.getEdgeSource(usedEdge))) candidateEdges.add(e);
-                for (RelationshipEdge e : G.incomingEdgesOf(G.getEdgeTarget(usedEdge))) candidateEdges.add(e);
-                for (RelationshipEdge e : G.outgoingEdgesOf(G.getEdgeTarget(usedEdge))) candidateEdges.add(e);
+            for (IntegrationEdge usedEdge : usedEdges) {
+                for (IntegrationEdge e : G.incomingEdgesOf(G.getEdgeSource(usedEdge))) candidateEdges.add(e);
+                for (IntegrationEdge e : G.outgoingEdgesOf(G.getEdgeSource(usedEdge))) candidateEdges.add(e);
+                for (IntegrationEdge e : G.incomingEdgesOf(G.getEdgeTarget(usedEdge))) candidateEdges.add(e);
+                for (IntegrationEdge e : G.outgoingEdgesOf(G.getEdgeTarget(usedEdge))) candidateEdges.add(e);
             }
             candidateEdges = Sets.difference(candidateEdges,usedEdges);
         }
         return res;
     }
 
-    public static void expandWithOneEdge(IntegrationGraph_old query, IntegrationGraph_old G) {
-        String targetV = GraphUtil.getRandomVertexFromGraph(G);
+    public static void expandWithOneEdge(IntegrationGraph query, IntegrationGraph G) {
+        CQVertex targetV = GraphUtil.getRandomVertexFromGraph(G);
         while (query.containsVertex(targetV)) targetV = GraphUtil.getRandomVertexFromGraph(G);
-        String sourceV = GraphUtil.getRandomVertexFromGraph(query);
+        CQVertex sourceV = GraphUtil.getRandomVertexFromGraph(query);
 
         query.addVertex(targetV);
         query.addEdge(sourceV,targetV,G.getEdge(sourceV,targetV));
     }
 
-    public static void registerWrapper(IntegrationGraph_old W, String namedGraph) {
+    public static void registerWrapper(IntegrationGraph W, String namedGraph) {
         String wrapperName = "Wrapper_"+ /*UUID.randomUUID()*/RandomStringUtils.randomAlphabetic(3);
         List<Tuple3<String,String,String>> triples = Lists.newArrayList();
 
@@ -137,14 +138,14 @@ public class ExperimentsGenerator {
         triples.add(new Tuple3<>(RDFUtil.convertToURI(wrapperName), Namespaces.rdf.val()+"type", SourceGraph.WRAPPER.val()));
         //sameAs
         W.vertexSet().forEach(v -> {
-            if (v.contains("Feature")) {
+            if (v.getLabel().contains("Feature")) {
                 String attributeName = /*UUID.randomUUID().toString()*/RandomStringUtils.randomAlphabetic(2);
                 //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(attributeName), Namespaces.rdf.val()+"type", SourceGraph.ATTRIBUTE.val());
                 triples.add(new Tuple3<>(RDFUtil.convertToURI(attributeName), Namespaces.rdf.val()+"type", SourceGraph.ATTRIBUTE.val()));
                 //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(wrapperName), SourceGraph.HAS_ATTRIBUTE.val(), RDFUtil.convertToURI(attributeName));
                 triples.add(new Tuple3<>(RDFUtil.convertToURI(wrapperName), SourceGraph.HAS_ATTRIBUTE.val(), RDFUtil.convertToURI(attributeName)));
                 //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(attributeName), Namespaces.owl.val() + "sameAs", RDFUtil.convertToURI(v));
-                triples.add(new Tuple3<>(RDFUtil.convertToURI(attributeName), Namespaces.owl.val() + "sameAs", RDFUtil.convertToURI(v)));
+                triples.add(new Tuple3<>(RDFUtil.convertToURI(attributeName), Namespaces.owl.val() + "sameAs", RDFUtil.convertToURI(v.getLabel())));
                 //System.out.println("    "+wrapperName+" - "+attributeName + " -- sameAs --> "+v);
             }
         });
@@ -154,16 +155,16 @@ public class ExperimentsGenerator {
         W.registerRDFDataset(RDFUtil.convertToURI(wrapperName));
     }
 
-    public static String convertToSPARQL(IntegrationGraph_old Q, Map<String, String> prefixes) {
+    public static String convertToSPARQL(IntegrationGraph Q, Map<String, String> prefixes) {
         String SPARQL = prefixes.keySet().stream().map(p -> "PREFIX "+p+": <"+prefixes.get(p)+"> ").reduce(String::concat).get();
         SPARQL += "SELECT ?a" +
                 " WHERE { " +
                 " VALUES (?a) { (sup:test) } ";
         StringBuilder b = new StringBuilder();
         Q.edgeSet().forEach(e -> {
-            String source = Q.getEdgeSource(e);
-            String target = Q.getEdgeTarget(e);
-            b.append("<"+RDFUtil.convertToURI(source)+">" + " <" + RDFUtil.convertToURI(e.getLabel()) + "> <" + RDFUtil.convertToURI(target) + "> . ");
+            CQVertex source = Q.getEdgeSource(e);
+            CQVertex target = Q.getEdgeTarget(e);
+            b.append("<"+RDFUtil.convertToURI(source.getLabel())+">" + " <" + RDFUtil.convertToURI(e.getLabel()) + "> <" + RDFUtil.convertToURI(target.getLabel()) + "> . ");
         });
         SPARQL+=b.toString()+"}";
         return SPARQL;
