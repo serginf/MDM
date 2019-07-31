@@ -1,0 +1,38 @@
+#Only one concept with multiple contributing features
+SELECT ?idA ?a ?a_prime
+WHERE {
+	VALUES ( ?idA ?a ?a_prime ) { ( s:IDa s:a s:a_prime ) }
+	s:A G:hasFeature s:IDa .
+	s:A G:hasFeature s:a .
+	s:A G:hasFeature s:a_prime
+}
+#Cyclic query
+SELECT ?idA ?a ?idB ?b ?idC ?c
+WHERE {
+	VALUES ( ?idA ?a ?idB ?b ?idC ?c ) { ( s:IDa s:a s:IDb s:b s:IDc s:c ) }
+	s:A G:hasFeature s:IDa .
+	s:A G:hasFeature s:a .
+	s:A s:AB s:B .
+	s:B G:hasFeature s:IDb .
+	s:B G:hasFeature s:b .
+	s:B s:BC s:C .
+	s:C G:hasFeature s:IDc .
+	s:C G:hasFeature s:c .
+	s:C s:CA s:A
+}
+#Cyclic and multiple contributing features
+SELECT ?idA ?a ?a_prime ?idB ?b ?idC ?c
+WHERE {
+	VALUES ( ?idA ?a ?a_prime ?idB ?b ?idC ?c ) { ( s:IDa s:a s:a_prime s:IDb s:b s:IDc s:c ) }
+	s:A G:hasFeature s:IDa .
+	s:A G:hasFeature s:a .
+	s:A G:hasFeature s:a_prime .
+	s:A s:AB s:B .
+	s:B G:hasFeature s:IDb .
+	s:B G:hasFeature s:b .
+	s:B s:BC s:C .
+	s:C G:hasFeature s:IDc .
+	s:C G:hasFeature s:c .
+	s:C s:CA s:A
+}
+#

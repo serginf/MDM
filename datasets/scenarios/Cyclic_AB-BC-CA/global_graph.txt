@@ -1,0 +1,31 @@
+#Nodes
+s:A rdf:type G:Concept
+s:B rdf:type G:Concept
+s:C rdf:type G:Concept
+s:IDa rdf:type G:Feature
+s:a rdf:type G:Feature
+s:IDb rdf:type G:Feature
+s:b rdf:type G:Feature
+s:IDc rdf:type G:Feature
+s:c rdf:type G:Feature
+#Edges
+s:A G:hasFeature s:IDa
+s:A G:hasFeature s:a
+s:B G:hasFeature s:IDb
+s:B G:hasFeature s:b
+s:C G:hasFeature s:IDc
+s:C G:hasFeature s:c
+#IDs
+s:IDa rdfs:subClassOf sc:identifier
+s:IDb rdfs:subClassOf sc:identifier
+s:IDc rdfs:subClassOf sc:identifier
+#Concepts relationships
+s:A s:AB s:B
+s:B s:BC s:C
+s:C s:CA s:A
+#
+#
+#Extra feature in A
+s:a_prime rdf:type G:Feature
+s:A G:hasFeature s:a_prime
+#
