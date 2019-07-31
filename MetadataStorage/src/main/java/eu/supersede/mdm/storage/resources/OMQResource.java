@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mongodb.MongoClient;
 import eu.supersede.mdm.storage.model.omq.ConjunctiveQuery;
-import eu.supersede.mdm.storage.model.omq.QueryRewriting;
+import eu.supersede.mdm.storage.model.omq.QueryRewriting_EdgeBased;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
 import eu.supersede.mdm.storage.util.MongoCollections;
 import eu.supersede.mdm.storage.util.RDFUtil;
@@ -15,7 +15,6 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
-import org.apache.spark.sql.catalyst.plans.logical.Except;
 import org.bson.Document;
 import scala.Tuple3;
 
@@ -83,8 +82,8 @@ public class OMQResource {
         T.begin(ReadWrite.READ);
         Set<ConjunctiveQuery> UCQ = null;
         try {
-            UCQ = QueryRewriting.rewriteToUnionOfConjunctiveQueries(
-                    QueryRewriting.parseSPARQL(SPARQL.replace("\n", " "), T), T)._2;
+            UCQ = QueryRewriting_EdgeBased.rewriteToUnionOfConjunctiveQueries(
+                    QueryRewriting_EdgeBased.parseSPARQL(SPARQL.replace("\n", " "), T), T)._2;
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception(e);
@@ -123,14 +122,14 @@ public class OMQResource {
             List<String> seenFeatures = Lists.newArrayList();
             List<String> withoutDuplicates = Lists.newArrayList();
             q.getProjections().forEach(proj -> {
-                if (!seenFeatures.contains(QueryRewriting.featuresPerAttribute.get(proj))) {
+                if (!seenFeatures.contains(QueryRewriting_EdgeBased.featuresPerAttribute.get(proj))) {
                     withoutDuplicates.add(proj);
-                    seenFeatures.add(QueryRewriting.featuresPerAttribute.get(proj));
+                    seenFeatures.add(QueryRewriting_EdgeBased.featuresPerAttribute.get(proj));
                 }
             });
             //Now do the sorting
             List<String> projections = Lists.newArrayList(withoutDuplicates);//Lists.newArrayList(q.getProjections());
-            projections.sort(Comparator.comparingInt(s -> listOfFeatures.indexOf(QueryRewriting.featuresPerAttribute.get(s))));
+            projections.sort(Comparator.comparingInt(s -> listOfFeatures.indexOf(QueryRewriting_EdgeBased.featuresPerAttribute.get(s))));
             projections.forEach(proj -> select.append("\""+RDFUtil.nn(proj).split("/")[RDFUtil.nn(proj).split("/").length-1]+"\""+","));
             q.getWrappers().forEach(w -> from.append(wrapperIriToID.get(w.getWrapper())+","));
             q.getJoinConditions().forEach(j -> where.append(

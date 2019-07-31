@@ -1,10 +1,6 @@
 package eu.supersede.mdm.storage.tests;
 
-import com.google.common.collect.Lists;
 import eu.supersede.mdm.storage.ApacheMain;
-import eu.supersede.mdm.storage.model.omq.ConjunctiveQuery;
-import eu.supersede.mdm.storage.model.omq.QueryRewriting_SIGMOD;
-import eu.supersede.mdm.storage.model.omq.QueryRewriting_SimpleGraph;
 import eu.supersede.mdm.storage.util.Tuple2;
 import eu.supersede.mdm.storage.util.Utils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -16,12 +12,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class ConjunctiveQuery_Tests {
     private static String basePath = "/home/snadal/UPC/Projects/MDM/";

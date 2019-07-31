@@ -2,11 +2,8 @@ package eu.supersede.mdm.storage.experiments;
 
 import eu.supersede.mdm.storage.ApacheMain;
 import eu.supersede.mdm.storage.model.graph.IntegrationGraph;
-import eu.supersede.mdm.storage.model.graph.IntegrationGraph_old;
 import eu.supersede.mdm.storage.model.omq.ConjunctiveQuery;
-import eu.supersede.mdm.storage.model.omq.QueryRewriting;
 import eu.supersede.mdm.storage.model.omq.QueryRewriting_EdgeBased;
-import eu.supersede.mdm.storage.model.omq.QueryRewriting_SimpleGraph;
 import eu.supersede.mdm.storage.tests.TestUtils;
 import eu.supersede.mdm.storage.util.Tuple2;
 import eu.supersede.mdm.storage.util.Utils;

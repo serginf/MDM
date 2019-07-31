@@ -99,8 +99,11 @@ public class ExperimentsGenerator {
         Set<IntegrationEdge> usedEdges = Sets.newHashSet();
         Set<IntegrationEdge> candidateEdges = Sets.newHashSet(G.edgeSet());
         for (int i=0; i < coveredEdges; ++i) {
-            IntegrationEdge randEdge = (IntegrationEdge)
-                    Lists.newArrayList(candidateEdges.toArray()).get(rand.nextInt(candidateEdges.size()));
+            IntegrationEdge randEdge =
+                    candidateEdges.stream().skip(new Random().nextInt(candidateEdges.size())).findFirst().orElse(null);
+/*
+                    (IntegrationEdge)
+                    Lists.newArrayList(candidateEdges.toArray()).get(rand.nextInt(candidateEdges.size()));*/
             //IntegrationEdge randEdge = candidateEdges.stream().findAny().get();
 
             res.addVertex(G.getEdgeSource(randEdge));
@@ -130,7 +133,7 @@ public class ExperimentsGenerator {
         query.addEdge(sourceV,targetV,G.getEdge(sourceV,targetV));
     }
 
-    public static void registerWrapper(IntegrationGraph W, String namedGraph) {
+    public static String registerWrapper(IntegrationGraph W, String namedGraph) {
         String wrapperName = "Wrapper_"+ /*UUID.randomUUID()*/RandomStringUtils.randomAlphabetic(3);
         List<Tuple3<String,String,String>> triples = Lists.newArrayList();
 
@@ -139,7 +142,7 @@ public class ExperimentsGenerator {
         //sameAs
         W.vertexSet().forEach(v -> {
             if (v.getLabel().contains("Feature")) {
-                String attributeName = UUID.randomUUID().toString()/*RandomStringUtils.randomAlphabetic(2)*/;
+                String attributeName = /*UUID.randomUUID().toString()*/RandomStringUtils.randomAlphabetic(2);
                 //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(attributeName), Namespaces.rdf.val()+"type", SourceGraph.ATTRIBUTE.val());
                 triples.add(new Tuple3<>(RDFUtil.convertToURI(attributeName), Namespaces.rdf.val()+"type", SourceGraph.ATTRIBUTE.val()));
                 //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(wrapperName), SourceGraph.HAS_ATTRIBUTE.val(), RDFUtil.convertToURI(attributeName));
@@ -153,6 +156,8 @@ public class ExperimentsGenerator {
 
         //LAV mapping
         W.registerRDFDataset(RDFUtil.convertToURI(wrapperName));
+
+        return wrapperName;
     }
 
     public static String convertToSPARQL(IntegrationGraph Q, Map<String, String> prefixes) {
