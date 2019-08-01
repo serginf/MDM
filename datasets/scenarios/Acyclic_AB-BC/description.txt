@@ -1,0 +1,14 @@
+A graph with 3 concepts A-->B-->C
+
+w1(IDa,a,IDb,b)
+w2(IDb,b,IDc,c)
+w3(IDb,b,IDc,c)
+w4(IDa,a,IDb,b)
+w5(IDa,a,IDb,b,IDc,c)
+
+We expect the following queries:
+	- w1 JOIN w2
+	- w1 JOIN w3
+	- w2 JOIN w4
+	- w3 JOIN w4
+	- w5
