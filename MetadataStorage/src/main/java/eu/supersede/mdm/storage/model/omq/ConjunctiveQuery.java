@@ -58,8 +58,8 @@ public class ConjunctiveQuery implements Comparable {
         if (o instanceof ConjunctiveQuery) {
             final ConjunctiveQuery other = (ConjunctiveQuery)o;
             return //Objects.equals(projections,other.projections) &&
-                    joinConditions.equals(other.joinConditions) &&
-                    wrappers.equals(other.wrappers);
+                    joinConditions.equals(other.getJoinConditions()) &&
+                    wrappers.equals(other.getWrappers());
         } else {
             return false;
         }

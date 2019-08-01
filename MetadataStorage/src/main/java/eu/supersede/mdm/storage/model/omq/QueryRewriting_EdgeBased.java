@@ -165,12 +165,26 @@ public class QueryRewriting_EdgeBased {
                                                           Set<Wrapper> edgeCoveringWrappers, BasicPattern PHI_p) {
         Set<ConjunctiveQuery> CQs = Sets.cartesianProduct(CQ_A,CQ_B).stream()
                 //see if the edge is covered by at least a CQ
-                .filter(cp -> !Sets.intersection(edgeCoveringWrappers,cp.get(0).getWrappers()).isEmpty() ||
-                           !Sets.intersection(edgeCoveringWrappers,cp.get(1).getWrappers()).isEmpty()
+                .filter(cp ->
+                        !Collections.disjoint(cp.get(0).getWrappers(),edgeCoveringWrappers) ||
+                        !Collections.disjoint(cp.get(1).getWrappers(),edgeCoveringWrappers)
+                /**
+                        !( // some query must cover the edge
+                            Sets.intersection(cp.get(0).getWrappers(),edgeCoveringWrappers).isEmpty() &&
+                            Sets.intersection(cp.get(1).getWrappers(),edgeCoveringWrappers).isEmpty()
+                        ) && !( //both queries can't cover the edge
+                            !Sets.intersection(cp.get(0).getWrappers(),edgeCoveringWrappers).isEmpty() &&
+                            !Sets.intersection(cp.get(1).getWrappers(),edgeCoveringWrappers).isEmpty()
+                        ) //|| (cp.get(0).equals(cp.get(1)))
+                **/
                 )
+//                .filter(cp -> !Sets.intersection(edgeCoveringWrappers,cp.get(0).getWrappers()).isEmpty() ||
+//                           !Sets.intersection(edgeCoveringWrappers,cp.get(1).getWrappers()).isEmpty()
+//               )
                 .filter(cp -> minimal(Sets.union(cp.get(0).getWrappers(),cp.get(1).getWrappers()),PHI_p))
                 .map(cp -> findJoins(cp.get(0),cp.get(1)))
                 .collect(Collectors.toSet());
+
         return CQs;
     }
 
