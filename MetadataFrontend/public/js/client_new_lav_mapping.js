@@ -78,6 +78,8 @@ $(function() {
                         $('#attributes').append($('<input class="form-control" id="attribute'+i+'" type="text" required="required" readonly="">').val(attribute));
 
                         $('#features').append($('<select class="form-control variable_priority unique required" id="features'+i+'" type="text" name="features[]" required="required"></select>'));
+                        $('#features'+i).select2({containerCssClass: "ChangedHeight"});
+                        document.getElementsByClassName("ChangedHeight")[i].style.height = $('#wrapper').innerHeight()+"px";
                         var j = 1;
                         $('#features'+i).append($('<option>', { value:"feature0", text:"" } ));
                         _.each(currFeatures,function(feature) {
@@ -101,6 +103,7 @@ $(function() {
             $("#globalGraph").trigger("change");
         });
     });
+
 
 
     $('#submitLAVMapping').on("click", function(e){

@@ -58,6 +58,8 @@ $(function() {
                 _.each(data.sameAs,function(sameAs) {
                     $('#attributes').append($('<input class="form-control" type="text" id="attribute'+i+'" required="required" readonly="">').val(sameAs.attribute));
                     $('#features').append($('<select class="form-control variable_priority unique required" id="features'+i+'" type="text" name="features[]" required="required"></select>'));
+                    $('#features'+i).select2({containerCssClass: "ChangedHeight"});
+                    document.getElementsByClassName("ChangedHeight")[i].style.height = $('#wrapper').innerHeight()+"px";
 
                     $("#features"+i).empty().end();
                     var j = 1;
