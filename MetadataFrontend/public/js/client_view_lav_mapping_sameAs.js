@@ -18,6 +18,16 @@ function checkSelected(val) {
     return ret;
 }
 
+// get the local name of an iri, for example:
+// http://www.essi.upc.edu/~snadal/BDIOntology/Source/DataSource/Diagnosis/year_of_diagnosis will be year_of_diagnosis
+function getLocalName(iri){
+    if(iri == undefined)
+        return "";
+    if(iri.includes("#"))
+        return iri.split("#").slice(-1);
+    return iri.split("/").slice(-1);
+}
+
 function updateSameAs(lav_mapping){
     $.ajax({
         url: '/LAVMapping/sameAs',
@@ -34,11 +44,16 @@ var currWrapper;
 var currLAVMapping;
 var originalFeatures= [];
 
+//Variable who has as a key the local name of the iri and as value the full IRI.
+var mapsAtributes = [];
+var mapsFeatures = [];
+
 $(function() {
     $('#wariningModal').on('shown.bs.modal', function () {
         $('#myInput').trigger('focus')
     })
     originalFeatures = [];
+    mapsAtributes = [];
     $.get("/LAVMapping/"+getParameterByName("LAVMappingID"), function(data) {
         var LAVMapping = (data);
         currLAVMapping =LAVMapping;
@@ -55,17 +70,33 @@ $(function() {
             $.get("/globalGraph/"+encodeURIComponent(currGlobalGraph.namedGraph)+"/features", function(features) {
                 currFeatures = features;
                 var i = 0;
+
+
+                mapsFeatures = [];
+
+                //create map between features local name and full iri
+                mapsFeatures["feature0"] = "";
+                _.each(currFeatures,function(feature) {
+                    mapsFeatures[getLocalName(feature)] = feature;
+                });
+
+
+
                 _.each(data.sameAs,function(sameAs) {
-                    $('#attributes').append($('<input class="form-control" type="text" id="attribute'+i+'" required="required" readonly="">').val(sameAs.attribute));
+
+                    mapsAtributes[getLocalName(sameAs.attribute)] = sameAs.attribute;
+
+                    $('#attributes').append($('<input class="form-control" type="text" id="attribute'+i+'" required="required" readonly="">').val(getLocalName(sameAs.attribute)));
                     $('#features').append($('<select class="form-control variable_priority unique required" id="features'+i+'" type="text" name="features[]" required="required"></select>'));
                     $('#features'+i).select2({containerCssClass: "ChangedHeight"});
                     document.getElementsByClassName("ChangedHeight")[i].style.height = $('#wrapper').outerHeight()+"px";
+                    $("#select2-features"+i+"-container").css("line-height",$('#wrapper').outerHeight()+"px")
 
                     $("#features"+i).empty().end();
                     var j = 1;
                     $('#features'+i).append($('<option>', { value:"feature0", text:"" } ));
                     _.each(currFeatures,function(feature) {
-                        $('#features'+i).append($('<option>', { value:"feature"+j, text:feature } ));
+                        $('#features'+i).append($('<option>', { value:"feature"+j, text:getLocalName(feature) } ));
                         if(feature === sameAs.feature){
                             originalFeatures[sameAs.attribute] = feature;
                             $('#features'+i).val("feature"+j);
@@ -105,8 +136,8 @@ $(function() {
 
             lav_mapping.sameAs = new Array();
             for (var i = 0; i < $('#attributes input').length; ++i) {
-                var from = $('#attribute' + i).val();
-                var to = $('#features' + i+' option:selected').text();
+                var from  = mapsAtributes[$('#attribute' + i).val()];
+                var to = mapsFeatures[$('#features' + i+' option:selected').text()];
                 if (to != "" && originalFeatures[from] != to) {
                     var oneMapTo = new Object();
                     oneMapTo.featureOld = originalFeatures[from];
