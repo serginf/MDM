@@ -110,6 +110,28 @@ public class GlobalGraphResource {
         return Response.ok(features.toJSONString()).build();
     }
 
+
+    @ApiOperation(value = "Gets all features with its concept related for the given namedGraph",produces = MediaType.TEXT_PLAIN)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK",examples = @Example(value = {@ExampleProperty(value = "[\"http:/www.essi.upc.edu/us/SportsUML/feature1\",\"http:/www.essi.upc.edu/us/SportsUML/feature2\"]")}))})
+    @GET
+    @Path("globalGraph/{namedGraph}/featuresAndConcepts")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response GET_FeaturesAndConceptsForGlobalGraph(
+            @ApiParam(value = "global graph name", required = true)
+            @PathParam("namedGraph") String namedGraph) {
+
+        LOGGER.info("[GET /globalGraph/features/] namedGraph = "+namedGraph);
+        JSONObject featureConcept = new JSONObject();
+        String SPARQL = "SELECT ?c ?f WHERE { GRAPH <"+namedGraph+"> { ?c <"+GlobalGraph.HAS_FEATURE.val()+"> ?f } }";
+        RDFUtil.runAQuery(SPARQL,namedGraph).forEachRemaining(t -> {
+
+            featureConcept.put(t.get("f").asNode().getURI(), t.get("c").asNode().getURI());
+//            features.add(featureConcept);
+        });
+        return Response.ok(featureConcept.toJSONString()).build();
+    }
+
     @ApiOperation(value = "Create a new global graph",produces = MediaType.TEXT_PLAIN)
     @ApiResponses(value ={
             @ApiResponse(code = 200, message = "OK", examples = @Example(value = {@ExampleProperty(value = "{\"namedGraph\":\"http:\\/namespace\\/example\\/8bb55f0d76514e3182adcef3ac7a2a2f\",\"defaultNamespace\":\"http:\\/namespace\\/example\\/\",\"name\":\"example\",\"globalGraphID\":\"467257310adf4aeb98bd2bd4a83be86e\"}")})),

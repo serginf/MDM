@@ -41,6 +41,7 @@ var currAttributes = [];
 //Variable who has as a key the local name of the iri and as value the full IRI.
 var mapsAtributes = [];
 var mapsFeatures = [];
+var listFeaturesAndConcepts = [];
 
 $(function() {
     $.get("/wrapper", function(data) {
@@ -65,6 +66,15 @@ $(function() {
                     currFeatures = features;
                     var i = 0;
 
+                    listFeaturesAndConcepts = [];
+                    $.ajax({
+                        method: 'GET',
+                        async: false,
+                        url: "/globalGraph/"+encodeURIComponent(currGlobalGraph.namedGraph)+"/featuresAndConcepts"
+                    }).done(function(featuresConcepts){
+                        listFeaturesAndConcepts = featuresConcepts;
+                    });
+
                     mapsFeatures = [];
 
                     //create map between features local name and full iri
@@ -73,13 +83,16 @@ $(function() {
                         mapsFeatures[getLocalName(feature)] = feature;
                     });
 
-
                     _.each(currAttributes,function(attribute) {
                         $("#features"+i).empty().end();
                         var j = 1;
                         $('#features'+i).append($('<option>', { value:"feature0", text:"" } ));
                         _.each(currFeatures,function(feature) {
-                            $('#features'+i).append($('<option>', { value:"feature"+j, text:getLocalName(feature) } ));
+                            if(listFeaturesAndConcepts[feature])
+                                $('#features'+i).append($('<option>', { value:"feature"+j, text:getLocalName(feature) + " ("+getLocalName(listFeaturesAndConcepts[feature])+")" } ));
+                            else
+                                $('#features'+i).append($('<option>', { value:"feature"+j, text:getLocalName(feature) } ));
+
                             ++j;
                         });
                         ++i;
@@ -114,7 +127,10 @@ $(function() {
                         var j = 1;
                         $('#features'+i).append($('<option>', { value:"feature0", text:"" } ));
                         _.each(currFeatures,function(feature) {
-                            $('#features'+i).append($('<option>', { value:"feature"+j, text:mapsFeatures["feature"+j] } ));
+                            if(listFeaturesAndConcepts[feature])
+                                $('#features'+i).append($('<option>', { value:"feature"+j, text:getLocalName(feature) + " ("+getLocalName(listFeaturesAndConcepts[feature])+")" } ));
+                            else
+                                $('#features'+i).append($('<option>', { value:"feature"+j, text:getLocalName(feature) } ));
                             ++j;
                         });
                         ++i;
@@ -147,8 +163,8 @@ $(function() {
         lav_mapping.sameAs = new Array();
         for (var i = 0; i < $('#attributes input').length; ++i) {
             // var from = $('#attribute' + i).val();
-            var from  = mapsAtributes[$('#attribute' + i).val()];
-            var to = mapsFeatures[$('#features' + i+' option:selected').text()];
+            var from  = mapsAtributes[$('#attribute' + i).val().split(" (")[0]];
+            var to = mapsFeatures[$('#features' + i+' option:selected').text().split(" (")[0]];
             if (to != "") {
                 var oneMapTo = new Object();
                 oneMapTo.attribute = from;

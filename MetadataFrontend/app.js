@@ -112,6 +112,7 @@ app.get('/globalGraph/', global_graph_routes.getAllGlobalGraphs);
 app.get('/globalGraph/:globalGraphID', global_graph_routes.getGlobalGraph);
 app.get('/globalGraph/namedGraph/:namedGraph', global_graph_routes.getGlobalGraphFromNamedGraph);
 app.get('/globalGraph/:namedGraph/features', global_graph_routes.getFeaturesForGraph);
+app.get('/globalGraph/:namedGraph/featuresAndConcepts', global_graph_routes.getFeaturesConceptsForGraph);
 app.post('/globalGraph', global_graph_routes.postGlobalGraph);
 //app.post('/globalGraph/:namedGraph/triple', global_graph_routes.postTriple);
 app.post('/globalGraph/:globalGraphID/graphicalGraph', global_graph_routes.postGraphicalGraph);
