@@ -1,0 +1,22 @@
+s:Wrapper1 rdf:type S:Wrapper
+s:w1_IDa rdf:type S:Attribute
+s:w1_a rdf:type S:Attribute
+s:w1_IDb rdf:type S:Attribute
+s:Wrapper1 S:hasAttribute s:w1_IDa
+s:Wrapper1 S:hasAttribute s:w1_a
+s:Wrapper1 S:hasAttribute s:w1_IDb
+s:w1_IDa owl:sameAs s:IDa
+s:w1_a owl:sameAs s:a
+s:w1_IDb owl:sameAs s:IDb
+#
+s:Wrapper2 rdf:type S:Wrapper
+s:w2_IDb rdf:type S:Attribute
+s:w2_b rdf:type S:Attribute
+s:w2_IDa rdf:type S:Attribute
+s:Wrapper2 S:hasAttribute s:w2_IDb
+s:Wrapper2 S:hasAttribute s:w2_b
+s:Wrapper2 S:hasAttribute s:w2_IDa
+s:w2_IDb owl:sameAs s:IDb
+s:w2_b owl:sameAs s:b
+s:w2_IDa owl:sameAs s:IDa
+#

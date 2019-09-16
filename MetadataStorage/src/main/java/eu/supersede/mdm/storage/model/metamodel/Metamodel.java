@@ -3,7 +3,7 @@ package eu.supersede.mdm.storage.model.metamodel;
 /**
  * Created by snadal on 15/12/16.
  */
-public class BolsterMetamodel {
+public class Metamodel {
 
     /**
      * Method to check if a given IRI is part of the metamodel of the type
@@ -16,7 +16,7 @@ public class BolsterMetamodel {
             return false;
         }
         if (type.equals("GLOBAL")) {
-            for (GlobalLevel g : GlobalLevel.values()) {
+            for (GlobalGraph g : GlobalGraph.values()) {
                 if (g.val().equals(elem)) return true;
             }
             return false;

@@ -163,7 +163,8 @@ public class RDFUtil {
                 .replace(Namespaces.S.val(), "")
                 .replace(Namespaces.sup.val(), "")
                 .replace(Namespaces.rdfs.val(), "")
-                .replace(Namespaces.owl.val(), "");
+                .replace(Namespaces.owl.val(), "")
+                .replace(Namespaces.serginf.val(), "");
     }
 
     public static String getRDFString(String namedGraph) {

@@ -5,18 +5,18 @@ import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Tuple3;
-import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.SimpleDirectedGraph;
 
 import java.util.List;
 import java.util.function.Supplier;
 
-public class IntegrationGraph extends DefaultDirectedGraph<CQVertex, IntegrationEdge> {
+public class IntegrationGraph_old extends SimpleDirectedGraph<String, RelationshipEdge> {
 
-    public IntegrationGraph() {
-        super(IntegrationEdge.class);
+    public IntegrationGraph_old() {
+        super(RelationshipEdge.class);
     }
 
-    public IntegrationGraph(Supplier vSupplier, Supplier eSupplier) {
+    public IntegrationGraph_old(Supplier vSupplier, Supplier eSupplier) {
         super(vSupplier,eSupplier,false);
     }
 
@@ -24,23 +24,23 @@ public class IntegrationGraph extends DefaultDirectedGraph<CQVertex, Integration
         List<Tuple3<String,String,String>> triples = Lists.newArrayList();
 
         this.edgeSet().forEach(edge -> {
-            CQVertex source = this.getEdgeSource(edge);
-            CQVertex target = this.getEdgeTarget(edge);
-            if (source.getLabel().contains("Concept") && !source.getLabel().contains("Feature_id"))
+            String source = this.getEdgeSource(edge);
+            String target = this.getEdgeTarget(edge);
+            if (source.contains("Concept") && !source.contains("Feature_id"))
                 //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(source), Namespaces.rdf.val()+"type", GlobalGraph.CONCEPT.val());
-                triples.add(new Tuple3<>(RDFUtil.convertToURI(source.getLabel()), Namespaces.rdf.val()+"type", GlobalGraph.CONCEPT.val()));
-            else if (target.getLabel().contains("Concept") && !target.getLabel().contains("Feature_id"))
+                triples.add(new Tuple3<>(RDFUtil.convertToURI(source), Namespaces.rdf.val()+"type", GlobalGraph.CONCEPT.val()));
+            else if (target.contains("Concept") && !target.contains("Feature_id"))
                 //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(source), Namespaces.rdf.val()+"type", GlobalGraph.CONCEPT.val());
-                triples.add(new Tuple3<>(RDFUtil.convertToURI(source.getLabel()), Namespaces.rdf.val()+"type", GlobalGraph.CONCEPT.val()));
-            else if (source.getLabel().contains("Feature"))
+                triples.add(new Tuple3<>(RDFUtil.convertToURI(source), Namespaces.rdf.val()+"type", GlobalGraph.CONCEPT.val()));
+            else if (source.contains("Feature"))
                 //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(source), Namespaces.rdf.val()+"type", GlobalGraph.FEATURE.val());
-                triples.add(new Tuple3<>(RDFUtil.convertToURI(source.getLabel()), Namespaces.rdf.val()+"type", GlobalGraph.FEATURE.val()));
-            else if (target.getLabel().contains("Feature"))
+                triples.add(new Tuple3<>(RDFUtil.convertToURI(source), Namespaces.rdf.val()+"type", GlobalGraph.FEATURE.val()));
+            else if (target.contains("Feature"))
                 //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(source), Namespaces.rdf.val()+"type", GlobalGraph.FEATURE.val());
-                triples.add(new Tuple3<>(RDFUtil.convertToURI(source.getLabel()), Namespaces.rdf.val()+"type", GlobalGraph.FEATURE.val()));
+                triples.add(new Tuple3<>(RDFUtil.convertToURI(source), Namespaces.rdf.val()+"type", GlobalGraph.FEATURE.val()));
 
             //RDFUtil.addTriple(namedGraph,RDFUtil.convertToURI(source),RDFUtil.convertToURI(edge.getLabel()),RDFUtil.convertToURI(target));
-            triples.add(new Tuple3<>(RDFUtil.convertToURI(source.getLabel()),RDFUtil.convertToURI(edge.getLabel()),RDFUtil.convertToURI(target.getLabel())));
+            triples.add(new Tuple3<>(RDFUtil.convertToURI(source),RDFUtil.convertToURI(edge.getLabel()),RDFUtil.convertToURI(target)));
         });
         RDFUtil.addBatchOfTriples(namedGraph,triples);
     }
@@ -49,8 +49,8 @@ public class IntegrationGraph extends DefaultDirectedGraph<CQVertex, Integration
         System.out.print("digraph \"xx\" {");
         System.out.print("size=\"8,5\"");
         this.edgeSet().forEach(edge -> {
-            String source = this.getEdgeSource(edge).getLabel().replace("Concept","C").replace("Feature","F");
-            String target = this.getEdgeTarget(edge).getLabel().replace("Concept","C").replace("Feature","F");
+            String source = this.getEdgeSource(edge).replace("Concept","C").replace("Feature","F");
+            String target = this.getEdgeTarget(edge).replace("Concept","C").replace("Feature","F");
             String label = edge.getLabel().replace("hasFeature","hasF");
 
             System.out.print("\""+source+"\" -> \""+target+"\" [label = \""+label+"\" ];");
@@ -58,4 +58,5 @@ public class IntegrationGraph extends DefaultDirectedGraph<CQVertex, Integration
         System.out.print("}");
         System.out.println("");
     }
+
 }

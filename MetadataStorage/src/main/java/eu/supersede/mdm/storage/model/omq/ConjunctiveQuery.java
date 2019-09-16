@@ -54,12 +54,12 @@ public class ConjunctiveQuery implements Comparable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o) { //Query equivalence
         if (o instanceof ConjunctiveQuery) {
             final ConjunctiveQuery other = (ConjunctiveQuery)o;
-            return Objects.equals(projections,other.projections) &&
-                    Objects.equals(joinConditions,other.joinConditions) &&
-                    Objects.equals(wrappers, other.wrappers);
+            return //Objects.equals(projections,other.projections) &&
+                    joinConditions.equals(other.getJoinConditions()) &&
+                    wrappers.equals(other.getWrappers());
         } else {
             return false;
         }
@@ -67,7 +67,7 @@ public class ConjunctiveQuery implements Comparable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(projections,joinConditions,wrappers);
+        return Objects.hash(/*projections,*/joinConditions,wrappers);
     }
 
     @Override
@@ -79,10 +79,10 @@ public class ConjunctiveQuery implements Comparable {
         EnumSet.allOf(Namespaces.class).forEach(e -> namespaces.put(e.val(),e.name()));
 
         return "ConjunctiveQuery{" +
-                "projections=" + projections/*sortedProjections.stream().map(s-> {
+                "projections=" + /*projections*/sortedProjections.stream().map(s-> {
                     String uri = namespaces.keySet().stream().filter(n -> s.contains(n)).findFirst().get();
                     return s.replace(uri,namespaces.get(uri)+":");
-                }).collect(Collectors.joining(", ")) */+
+                }).collect(Collectors.joining(", ")) +
                 ", joinConditions=" + joinConditions +
                 ", wrappers=" + wrappers +
                 '}';

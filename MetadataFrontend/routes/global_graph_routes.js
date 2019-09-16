@@ -70,6 +70,16 @@ exports.getFeaturesForGraph = function (req, res, next) {
     });
 };
 
+exports.getFeaturesConceptsForGraph = function (req, res, next) {
+    request.get(config.METADATA_DATA_LAYER_URL + "globalGraph/"+encodeURIComponent(req.params.namedGraph)+"/featuresAndConcepts", function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.status(200).json(JSON.parse(body));
+        } else {
+            res.status(500).send("Error retrieving list of features and concepts for the global graph");
+        }
+    });
+};
+
 exports.postGlobalGraph = function (req, res, next) {
     if (!(req.body.hasOwnProperty('name')) || req.body.name==null
        || !(req.body.hasOwnProperty('defaultNamespace')) || req.body.defaultNamespace==null){

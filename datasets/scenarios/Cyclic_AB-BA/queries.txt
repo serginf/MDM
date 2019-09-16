@@ -1,0 +1,12 @@
+#Cyclic query
+SELECT ?idA ?a ?idB ?b
+WHERE {
+	VALUES ( ?idA ?a ?idB ?b ) { ( s:IDa s:a s:IDb s:b ) }
+	s:A G:hasFeature s:IDa .
+	s:A G:hasFeature s:a .
+	s:A s:AB s:B .
+	s:B G:hasFeature s:IDb .
+	s:B G:hasFeature s:b .
+	s:B s:BA s:A
+}
+#

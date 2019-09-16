@@ -1,10 +1,9 @@
-package eu.supersede.mdm.storage.tests.SIGMOD;
+package eu.supersede.mdm.storage.experiments;
 
 import eu.supersede.mdm.storage.ApacheMain;
 import eu.supersede.mdm.storage.model.graph.IntegrationGraph;
 import eu.supersede.mdm.storage.model.omq.ConjunctiveQuery;
-import eu.supersede.mdm.storage.model.omq.QueryRewriting;
-import eu.supersede.mdm.storage.model.omq.QueryRewriting_SimpleGraph;
+import eu.supersede.mdm.storage.model.omq.QueryRewriting_EdgeBased;
 import eu.supersede.mdm.storage.tests.TestUtils;
 import eu.supersede.mdm.storage.util.Tuple2;
 import eu.supersede.mdm.storage.util.Utils;
@@ -27,7 +26,7 @@ public class ExperimentsRunner {
     private static float COVERED_FEATURES_QUERY = .1f; //Probability that a query includes a feature
     private static float COVERED_FEATURES_WRAPPER = .25f; //Probability that a wrapper includes a feature
 
-    private static String basePath = "/home/snadal/UPC/Projects/MDM/";
+    private static String basePath = "/home/snadal/UPC/Projects/MDM_v2/MDM/";
 
     public static void main(String[] args) throws Exception {
         if (args.length>0) {
@@ -71,7 +70,9 @@ public class ExperimentsRunner {
         Dataset T = Utils.getTDBDataset();
         T.begin(ReadWrite.READ);
         long a = System.currentTimeMillis();
-        Tuple2<Integer, Set<ConjunctiveQuery>> CQs = QueryRewriting.rewriteToUnionOfConjunctiveQueries(QueryRewriting_SimpleGraph.parseSPARQL(ExperimentsGenerator.convertToSPARQL(Q_withFeatures,prefixes), T), T);
+        Tuple2<Integer, Set<ConjunctiveQuery>> CQs = QueryRewriting_EdgeBased.rewriteToUnionOfConjunctiveQueries
+                (QueryRewriting_EdgeBased.parseSPARQL
+                        (ExperimentsGenerator.convertToSPARQL(Q_withFeatures,prefixes), T), T);
         long b = System.currentTimeMillis();
         //edges in query; number of covering wrappers;
         System.out.println(UPPER_BOUND_FEATURES_IN_G+";"+N_EDGES_IN_QUERY+";"+N_WRAPPERS+";"+N_EDGES_COVERED_BY_WRAPPERS+";"+COVERED_FEATURES_QUERY+

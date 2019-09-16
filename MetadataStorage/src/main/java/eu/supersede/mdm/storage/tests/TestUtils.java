@@ -18,7 +18,7 @@ public class TestUtils {
 
     public static void deleteTDB() {
         try {
-            FileUtils.deleteDirectory(new File("/home/snadal/UPC/Projects/MDM/MetadataStorage/MDM_TDBMDM_TDB"));
+            FileUtils.deleteDirectory(new File("/home/snadal/UPC/Projects/MDM_v2/MDM/MetadataStorage/MDM_TDB"));
         } catch (IOException e) {
             e.printStackTrace();
         }
