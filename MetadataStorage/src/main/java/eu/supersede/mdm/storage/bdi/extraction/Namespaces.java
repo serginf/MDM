@@ -14,6 +14,7 @@ public enum Namespaces {
     R("http://www.BDIOntology.com/eca_rule/"),
     I("http://www.BDIOntology.com/integratedSchema/"),
     E("http://www.essi.upc.edu/~snadal/Event/"),
+    BASE("http://www.BDIOntology.com/"),
 
     owl("http://www.w3.org/2002/07/owl#"),
     rdf("http://www.w3.org/1999/02/22-rdf-syntax-ns#"),

@@ -65,7 +65,7 @@ public class MDMLavMapping {
     }
 
     /**
-     * This method is to extract all the features from the MDM global Graph which was generated automatically from Metadata Traceability graph
+     * This method is to extract all the features from the MDM global Graph which was generated automatically from Provenance graph
      * It fills a map with values like this:
      * {feature, [tuple3< _1:LocalName, _2: Source Name, _3: IRI>, tuple3<>, ...]} e.g. one of the real example is shown below:
      * {http://www.BDIOntology.com/global/uKHAoVbK-kphiyJAL/Registration_Number=
@@ -109,7 +109,7 @@ public class MDMLavMapping {
 
 
     /**
-     * This method is to know that the generated MDM global graph is merger of how many sources e.g. BikesBicyclesCycles Metadata traceability graph is a result of
+     * This method is to know that the generated MDM global graph is merger of how many sources e.g. BikesBicyclesCycles Provenance graph is a result of
      * 3 sources. So there must be 3 wrappers associated for the generated MDM global graph.
      * Let's get the ids of the associated wrappers and store them in JsonArray named wrappersCoveringGlobalGraph
      */

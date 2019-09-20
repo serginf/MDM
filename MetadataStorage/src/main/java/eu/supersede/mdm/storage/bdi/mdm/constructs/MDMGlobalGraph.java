@@ -20,9 +20,10 @@ import org.semarglproject.vocab.RDF;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Created by Kashif-Rabbani in June 2019
+ * Created by Kashif-Rabbani in June 2019, updated in September 2019
  */
 public class MDMGlobalGraph {
     private String bdiGgIri = "";
@@ -98,7 +99,7 @@ public class MDMGlobalGraph {
         /* Query to get Classes and their properties from BDI Global Graph to create hasFeature edges between Concepts and Features of MDM Global Graph*/
         connectConceptsAndFeatures(mdmGlobalGraph);
         //Query to get the sameAs or equivalentProperty relationship of features
-        handleSameAsEdges(mdmGlobalGraph);
+        //handleSameAsEdges(mdmGlobalGraph);
         //Query to connect classes having subClassOf relationships
         connectSuperAndSubClasses(mdmGlobalGraph);
 
@@ -150,16 +151,57 @@ public class MDMGlobalGraph {
     private void connectConceptsAndFeatures(Model mdmGlobalGraph) {
         String getClasses = "SELECT * WHERE { GRAPH <" + bdiGgIri + "> { ?s ?p ?o. ?s rdf:type rdfs:Class. }}";
 
-        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getClasses, bdiGgIri).forEachRemaining(triple -> {
+        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getClasses, bdiGgIri).forEachRemaining(classResourceIRI -> {
             //System.out.println();
             //System.out.println();
             //System.out.print(triple.get("s") + "\n");
-            Resource classResource = triple.getResource("s");
-            String getClassProperties = " SELECT * WHERE { GRAPH <" + bdiGgIri + "> { ?property rdfs:domain <" + triple.get("s") + ">; rdfs:range ?range. FILTER NOT EXISTS {?range rdf:type rdfs:Class.}}} ";
-            RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getClassProperties, bdiGgIri).forEachRemaining(featureTriples -> {
+            Resource classResource = classResourceIRI.getResource("s");
+            String getClassProperties = " SELECT * WHERE { GRAPH <" + bdiGgIri + "> { ?property rdfs:domain <" + classResourceIRI.get("s") + ">; rdfs:range ?range. FILTER NOT EXISTS {?range rdf:type rdfs:Class.}}} ";
+
+            RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getClassProperties, bdiGgIri).forEachRemaining(propertyResourceIRI -> {
                 //System.out.print(featureTriples.get("property") + "\t");
 
-                mdmGlobalGraph.add(classResource, new PropertyImpl(GlobalGraph.HAS_FEATURE.val()), featureTriples.getResource("property"));
+                String baseBDIOntologyIRI = eu.supersede.mdm.storage.bdi.extraction.Namespaces.BASE.val();
+
+                //System.out.println("Class IRI: " + classResource.toString());
+                /* There are two types of class IRIs here:
+                 * 1: http://www.BDIOntology.com/schema/Y
+                 * 2: http://www.BDIOntology.com/global/ialjGpo5-DFmJjbSC/XY
+                 * Key here is that last value before / is the class name*/
+
+                String[] bits = classResource.toString().split("/");
+                String lastOneIsClassName = bits[bits.length - 1];
+                //System.out.println("Class Name: " + lastOneIsClassName);
+                //System.out.println("Property: " + propertyResourceIRI.getResource("property").toString());
+
+                String queryToGetEquivalentPropertiesFromPG = "SELECT * WHERE { GRAPH <" + bdiGgIri + "> { ?x  owl:equivalentProperty <" + propertyResourceIRI.get("property") + ">. } }";
+                AtomicReference<Boolean> eqPropExistenceFlag = new AtomicReference<>(false);
+
+                RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + queryToGetEquivalentPropertiesFromPG, bdiGgIri).forEachRemaining(eqPropResourceIRI -> {
+                    //System.out.println(eqPropExistenceFlag.get().toString());
+                    eqPropExistenceFlag.set(true);
+                    //System.out.println(eqPropExistenceFlag.get().toString());
+
+                    System.out.println("Equivalent Property: " + eqPropResourceIRI.get("x").toString());
+                    String eqPropClass = (eqPropResourceIRI.get("x").toString().split(baseBDIOntologyIRI)[1]).split("/")[1];
+                    //System.out.println("Class of Equivalent Property: " + eqPropClass);
+
+                    if (eqPropClass.equals(lastOneIsClassName)) {
+                        //System.out.println("Done! - eqPropClass.equals(lastOneIsClassName)");
+                        mdmGlobalGraph.add(classResource, new PropertyImpl(GlobalGraph.HAS_FEATURE.val()), eqPropResourceIRI.getResource("x"));
+                    }
+
+                    if (propertyResourceIRI.getResource("property").toString().contains(eu.supersede.mdm.storage.bdi.extraction.Namespaces.G.val())) {
+                        /*Get the class IRI from equivalent Property IRI*/
+                        //System.out.println("Global property case");
+                        String eqPropClassIRI = eu.supersede.mdm.storage.bdi.extraction.Namespaces.Schema.val() + eqPropClass;
+                        mdmGlobalGraph.add(new ResourceImpl(eqPropClassIRI), new PropertyImpl(GlobalGraph.HAS_FEATURE.val()), eqPropResourceIRI.getResource("x"));
+                        mdmGlobalGraph.remove(propertyResourceIRI.getResource("property"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
+                    }
+                });
+                if (!propertyResourceIRI.getResource("property").toString().contains(eu.supersede.mdm.storage.bdi.extraction.Namespaces.G.val())) {
+                    mdmGlobalGraph.add(classResource, new PropertyImpl(GlobalGraph.HAS_FEATURE.val()), propertyResourceIRI.getResource("property"));
+                }
             });
         });
     }
@@ -198,5 +240,19 @@ public class MDMGlobalGraph {
             //System.out.print(triple.get("p") + "\t" + triple.get("o")  + "\n");
             mdmGlobalGraph.add(triple.getResource("s"), new PropertyImpl(triple.get("p").toString()), triple.getResource("o"));
         });
+    }
+
+    private String getClassNameFromIRI(String IRI) {
+        String global = eu.supersede.mdm.storage.bdi.extraction.Namespaces.G.val();
+        String schema = eu.supersede.mdm.storage.bdi.extraction.Namespaces.Schema.val();
+        String className = null;
+        if (IRI.contains(global)) {
+            className = IRI.split(global)[1].split("/")[0];
+        }
+
+        if (IRI.contains(schema)) {
+            className = IRI.split(schema)[1].split("/")[0];
+        }
+        return className;
     }
 }
