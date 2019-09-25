@@ -3,18 +3,16 @@ package eu.supersede.mdm.storage.model.omq;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import eu.supersede.mdm.storage.model.Namespaces;
-import eu.supersede.mdm.storage.model.graph.IntegrationEdge;
 import eu.supersede.mdm.storage.model.graph.CQVertex;
+import eu.supersede.mdm.storage.model.graph.IntegrationEdge;
 import eu.supersede.mdm.storage.model.graph.IntegrationGraph;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.model.omq.relational_operators.EquiJoin;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
-import eu.supersede.mdm.storage.util.KeyedTuple2;
 import eu.supersede.mdm.storage.util.RDFUtil;
 import eu.supersede.mdm.storage.util.Tuple2;
 import eu.supersede.mdm.storage.util.Tuple3;
-import jdk.nashorn.internal.objects.Global;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Dataset;
@@ -45,7 +43,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("Duplicates")
-public class QueryRewriting_EdgeBased {
+public class QueryRewriting_Recursive {
 
     private static void addTriple(BasicPattern pattern, String s, String p, String o) {
         pattern.add(new Triple(new ResourceImpl(s).asNode(), new PropertyImpl(p).asNode(), new ResourceImpl(o).asNode()));
