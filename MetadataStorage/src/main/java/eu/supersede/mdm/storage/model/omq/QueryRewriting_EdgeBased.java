@@ -37,6 +37,7 @@ import org.apache.jena.sparql.algebra.op.OpTable;
 import org.apache.jena.sparql.core.BasicPattern;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
+import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 
 import java.util.Collections;
@@ -326,7 +327,7 @@ public class QueryRewriting_EdgeBased {
         InfModel PHI_o = queryStructure._3;
 
         //Identify query-related concepts
-        Graph<String,String> conceptsGraph = new SimpleGraph<>(String.class);
+        Graph<String,String> conceptsGraph = new SimpleDirectedGraph<>(String.class);
         PHI_p.getList().forEach(t -> {
             // Add only concepts so its easier to populate later the list of concepts
             if (!t.getPredicate().getURI().equals(GlobalGraph.HAS_FEATURE.val()) && !t.getObject().getURI().equals(Namespaces.sc.val()+"identifier")) {
@@ -375,7 +376,9 @@ public class QueryRewriting_EdgeBased {
 
             BasicPattern both = new BasicPattern();
             both.addAll(D.get(source)); both.addAll(D.get(target));
-            addTriple(both,source.getLabel(),e.getLabel(),target.getLabel());
+            //addTriple(both,source.getLabel(),e.getLabel(),target.getLabel());
+            //Go back to the original graph to check the labels of the source and target vertex that e connects
+            addTriple(both,conceptsGraph.getEdgeSource(e.getLabel()),e.getLabel(),conceptsGraph.getEdgeTarget(e.getLabel()));
             Set<ConjunctiveQuery> Q = combineSetsOfCQs(Qs, Qt, edgeCoveringWrappers,both);
 
             String newLabel = source.getLabel()+"-"+target.getLabel();
@@ -421,11 +424,11 @@ public class QueryRewriting_EdgeBased {
             G.removeVertex(target);
         }
 
-
+/*
         G.vertexSet().iterator().next().getCQs().forEach(cq -> {
             System.out.println(cq + " --> "+covering(cq.getWrappers(),PHI_p));
         });
-
+*/
         return new Tuple2<>(1,G.vertexSet().iterator().next().getCQs());
     }
 
