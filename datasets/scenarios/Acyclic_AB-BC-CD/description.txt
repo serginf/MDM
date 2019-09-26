@@ -1,0 +1,16 @@
+A graph with 4 concepts A-->B-->C-->D
+
+Here we want to test if all rewritten queries are minimal
+
+w1(IDa,a,IDb,b)
+w2(IDb,b,IDc,c)
+w3(IDc,c,IDd,d)
+
+w4(IDa,a,IDb,b,IDc,c)
+w5(IDb,b,IDc,c,IDd,d)
+
+We expect the following queries:
+	- w1 JOIN w2 JOIN w3
+	- w1 JOIN w5
+	- w2 JOIN w4
+	- w3 JOIN w4

@@ -1,0 +1,14 @@
+#q1
+SELECT ?idA ?a ?idB ?b ?idC ?c
+WHERE {
+	VALUES ( ?idA ?a ?idB ?b ?idC ?c ) { ( s:IDa s:a s:IDb s:b s:IDc s:c ) }
+	s:A G:hasFeature s:IDa .
+	s:A G:hasFeature s:a .
+	s:A s:AB s:B .
+	s:B G:hasFeature s:IDb .
+	s:B G:hasFeature s:b .
+	s:B s:BC s:C .
+	s:C G:hasFeature s:IDc .
+	s:C G:hasFeature s:c .
+}
+#
