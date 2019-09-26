@@ -190,10 +190,21 @@ $(function() {
             method: "POST",
             data: inferObj
         }).done(function(data) {
+            var controlForm = $('input[name="attributeSet[]"]').parents('.controls form:last'),
+                 currentEntry = $('input[name="attributeSet[]"]').parents('.entry:last'),
+            newEntry = $(currentEntry.clone());
+            controlForm.empty();
             _.each(JSON.parse(data.schema), function (att) {
-                var controlForm = $('input[name="attributeSet[]"]').parents('.controls form:last'),
-                    currentEntry = $('input[name="attributeSet[]"]').parents('.entry:last'),
-                    newEntry = $(currentEntry.clone()).appendTo(controlForm);
+                // var controlForm = $('input[name="attributeSet[]"]').parents('.controls form:last'),
+                    currentEntry = $('input[name="attributeSet[]"]').parents('.entry:last');
+
+                    if(currentEntry.length){
+                        newEntry = $(currentEntry.clone()).appendTo(controlForm);
+                    }else{
+                        //there is no inputs
+                        newEntry = newEntry.appendTo(controlForm);
+                    }
+
                     newEntry.find('input').val(att);
                 controlForm.find('.entry:not(:last) .btn-add')
                     .removeClass('btn-add').addClass('btn-remove')
