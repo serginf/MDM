@@ -107,6 +107,13 @@ $(function(){
             table.redraw(true);
 
 
+            $( "#btnDownloadCSV" ).click(function() {
+                if(table){
+                    table.download("csv", "data.csv", {delimiter:","});
+                }else{
+                    console.log("Error generating CSV file.")
+                }
+            });
 
         }).fail(function(err) {
             alert("error "+JSON.stringify(err));
