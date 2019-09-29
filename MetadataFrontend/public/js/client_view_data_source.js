@@ -33,12 +33,16 @@ $(function() {
                 $("#json-tab").addClass("active"); $("#json").addClass("active");
                 $("#json_path").val(dataSource.json_path);
                 break;
+            case "csv":
+                $("#csv-tab").addClass("active"); $("#csv").addClass("active");
+                $("#csv_path").val(dataSource.csv_path);
+                break;
             case "restapi":
                 $("#restapi-tab").addClass("active"); $("#restapi").addClass("active");
                 $("#restapi_url").val(dataSource.restapi_url);
                 $("#restapi_format").val(dataSource.restapi_format);
                 break;
-            case "sqldatabase":
+            case "sql":
                 $("#sqldatabase-tab").addClass("active"); $("#sqldatabase").addClass("active");
                 $("#sql_jdbc").val(dataSource.sql_jdbc);
                 break;
