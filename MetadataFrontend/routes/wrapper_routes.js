@@ -51,9 +51,13 @@ exports.postWrapper = function (req, res, next) {
         }, function done(error, response, body) {
             if (!error && response.statusCode == 200) {
                 res.status(200).json(JSON.parse(body));
-            } else {
+            }else if(response.statusCode == 409){
+                var jsonResponse = JSON.parse(response.body);
+                res.status(409).json(jsonResponse.details);
+            }else {
                 res.status(500).send("Error storing wrapper");
             }
+
         });
     }
 };

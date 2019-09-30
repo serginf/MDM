@@ -181,7 +181,8 @@ $(function() {
         }).done(function() {
             window.location.href = '/manage_wrappers';
         }).fail(function(err) {
-            alert("error "+JSON.stringify(err));
+            // var jsonResponse = JSON.parse(responseText);
+            alert(err.responseText);
         });
     });
 

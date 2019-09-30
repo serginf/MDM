@@ -1,5 +1,7 @@
 package eu.supersede.mdm.storage.errorhandling;
 
+import org.bson.Document;
+
 public class ErrorResponse {
 
     private String type;
@@ -50,31 +52,39 @@ public class ErrorResponse {
 
     public String toString() {
 
-        StringBuilder errorResponsesb = new StringBuilder();
-        errorResponsesb.append("ErrorResponse [ ");
+        Document response = new Document();
+
+//        StringBuilder errorResponsesb = new StringBuilder();
+//        errorResponsesb.append("{\"ErrorResponse\" : { ");
 
         if (type != null) {
-            errorResponsesb.append("type=").append(type).append(" ");
+            response.put("type",type);
+//            errorResponsesb.append("\"type\":").append("\""+type+"\",");
         }
 
         if (code != null) {
-            errorResponsesb.append("code=").append(code).append(" ");
+            response.put("code",code);
+//            errorResponsesb.append("\"code\":").append("\""+code+"\",");
         }
 
         if (details != null) {
-            errorResponsesb.append("details=").append(details).append(" ");
+            response.put("details",details);
+//            errorResponsesb.append("\"details\":").append("\""+details+"\",");
         }
 
         if (location != null) {
-            errorResponsesb.append("location=").append(location).append(" ");
+            response.put("location",location);
+//            errorResponsesb.append("\"location\":").append("\""+location+"\",");
         }
 
         if (moreInfo != null) {
-            errorResponsesb.append("moreInfo=").append(moreInfo);
+            response.put("moreInfo",moreInfo);
+//            errorResponsesb.append("\"moreInfo\":").append("\""+moreInfo+"\"");
         }
 
-        errorResponsesb.append(" ]");
+//        errorResponsesb.append("} }");
 
-        return errorResponsesb.toString();
+        System.out.println(response.toJson());
+        return response.toJson();
     }
 }

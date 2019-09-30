@@ -2,8 +2,11 @@ package eu.supersede.mdm.storage.resources;
 
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import eu.supersede.mdm.storage.errorhandling.exception.AttributesExistWrapperException;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.model.omq.relational_operators.Wrapper;
@@ -25,9 +28,11 @@ import org.bson.Document;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -122,9 +127,29 @@ public class WrapperResource {
         return Response.ok(attributes.toJSONString()).build();
     }
 
+    public static void verifyAttributesCreation(JSONArray attributes){
+        MongoClient client = Utils.getMongoDBClient();
+
+        attributes.forEach(attribute -> {
+
+            Document query = new Document("attributes.name",((JSONObject) attribute).getAsString("name"));
+            Document result =   MongoCollections.getWrappersCollection(client).find(query).first();
+            if(result != null)
+                if(result.size() > 0) //there is another wrapper with the same attribute
+                    throw new AttributesExistWrapperException("Wrapper can not be created",WrapperResource.class.getName(),"The attribute "+(((JSONObject) attribute).getAsString("name"))+" already exist in wrapper: "+result.getString("name"));
+
+        });
+
+        client.close();
+
+    }
+
 
     public static JSONObject createWrapper(String body) {
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
+
+        verifyAttributesCreation((JSONArray) objBody.get("attributes"));
+
         MongoClient client = Utils.getMongoDBClient();
         //Metadata for the wrapper
         objBody.put("wrapperID", "w"+ UUID.randomUUID().toString().replace("-",""));
