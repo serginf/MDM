@@ -6,14 +6,16 @@ import com.mongodb.MongoClient;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import de.uni_stuttgart.vis.vowl.owl2vowl.Owl2Vowl;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.spark.sql.SparkSession;
-
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 /**
@@ -71,30 +73,23 @@ public class Utils {
      * @return JSONObject of containing one element i.e. vowlJson
      */
     public static JSONObject oWl2vowl(String rdfsFilePath) {
-        JSONObject vowlResponse = new JSONObject();
-        Client client = Client.create();
-        WebResource webResource = client
-                .resource(ConfigManager.getProperty("owl2vowl_service_url"));
-
-        JSONObject postData = new JSONObject();
-
-        postData.put("rdfsFilePath", rdfsFilePath);
-        postData.put("vowlJsonFileOutputPath", ConfigManager.getProperty("owl2vowl_service_output_path"));
-
-        ClientResponse response = webResource.type("application/json")
-                .post(ClientResponse.class, postData.toJSONString());
-
-        if (response.getStatus() == 200) {
-            String output = response.getEntity(String.class);
-            JSONParser parser = new JSONParser();
-            try {
-                vowlResponse = (JSONObject) parser.parse(output);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        } else {
-            throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
-        }
+        JSONObject vowlResponse = oWl2vowl(rdfsFilePath, ConfigManager.getProperty("owl2vowl_service_output_path"));
         return vowlResponse;
+    }
+
+    public static JSONObject oWl2vowl(String rdfsFilePath, String vowl_output_path) {
+        JSONObject vowlData = new JSONObject();
+        String var3 = "";
+
+        try {
+            File temp = new File(rdfsFilePath);
+            String vowlFileName = temp.getName().replaceAll(".ttl", "-vowl.json");
+            Owl2Vowl owl2Vowl = new Owl2Vowl(new FileInputStream(rdfsFilePath));
+            vowlData.put("vowlJson", owl2Vowl.getJsonAsString());
+        } catch (FileNotFoundException var7) {
+            var7.printStackTrace();
+        }
+
+        return vowlData;
     }
 }
