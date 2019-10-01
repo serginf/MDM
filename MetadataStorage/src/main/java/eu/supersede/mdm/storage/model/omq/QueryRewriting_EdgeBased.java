@@ -48,6 +48,10 @@ import java.util.stream.Collectors;
 @SuppressWarnings("Duplicates")
 public class QueryRewriting_EdgeBased {
 
+    private static boolean isWrapper(String w) {
+        return w.contains("Wrapper") || w.contains("DataSource");
+    }
+
     private static void addTriple(BasicPattern pattern, String s, String p, String o) {
         pattern.add(new Triple(new ResourceImpl(s).asNode(), new PropertyImpl(p).asNode(), new ResourceImpl(o).asNode()));
     }
@@ -101,7 +105,7 @@ public class QueryRewriting_EdgeBased {
         // Populate allTriplesPerWrapper
         RDFUtil.runAQuery("SELECT DISTINCT ?g WHERE { GRAPH ?g { ?s ?p ?o } }",T).forEachRemaining(w -> {
             String wrapper = w.get("g").asResource().getURI();
-            if (wrapper.contains("Wrapper")) {
+            if (isWrapper(wrapper)) {
                 BasicPattern triplesForW = new BasicPattern();
                 RDFUtil.runAQuery("SELECT ?s ?p ?o WHERE { GRAPH <" + wrapper + "> { ?s ?p ?o } }", T).forEachRemaining(res -> {
                     triplesForW.add(new Triple(new ResourceImpl(res.get("s").toString()).asNode(),
@@ -116,7 +120,7 @@ public class QueryRewriting_EdgeBased {
                 "?f <" + Namespaces.rdfs.val() + "subClassOf> <" + Namespaces.sc.val() + "identifier> } }",T)
                 .forEachRemaining(gf -> {
             Wrapper w = new Wrapper(gf.get("g").asResource().getURI());
-            if (w.getWrapper().contains("Wrapper")) {
+            if (isWrapper(w.getWrapper())) {
                 String ID = gf.get("f").asResource().getURI();
 
                 coveredIDsPerWrapperInQuery.putIfAbsent(w, Sets.newHashSet());
@@ -256,7 +260,7 @@ public class QueryRewriting_EdgeBased {
             RDFUtil.runAQuery("SELECT ?g WHERE { GRAPH ?g { <" + c + "> <" + Namespaces.rdf.val() + "type" + "> <" + GlobalGraph.CONCEPT.val() + "> } }", T)
                     .forEachRemaining(wrapper -> {
                         String w = wrapper.get("g").toString();
-                        if (!w.equals(Namespaces.T.val()) && w.contains("Wrapper")/*last min bugfix*/) {
+                        if (isWrapper(w)) {
                             attsPerWrapper.putIfAbsent(new Wrapper(w), Sets.newHashSet());
                         }
                     });
@@ -267,7 +271,7 @@ public class QueryRewriting_EdgeBased {
                     "WHERE { GRAPH ?g { <" + c + "> <" + GlobalGraph.HAS_FEATURE.val() + "> <" + f + "> } }", T);
             W.forEachRemaining(wRes -> {
                 String w = wRes.get("g").asResource().getURI();
-                if (!w.equals(Namespaces.T.val()) && w.contains("Wrapper")/*last min bugfix*/) {
+                if (isWrapper(w)) {
                     /*ResultSet rsAttr = RDFUtil.runAQuery("SELECT ?a " +
                             "WHERE { GRAPH ?g { ?a <" + Namespaces.owl.val() + "sameAs> <" + f + "> . " +
                             "<" + w + "> <" + SourceGraph.HAS_ATTRIBUTE.val() + "> ?a } }", T);
@@ -313,7 +317,7 @@ public class QueryRewriting_EdgeBased {
                 "WHERE { GRAPH ?g { <" + s + "> <" + e + "> <" + t + "> } }", T);
         W.forEachRemaining(wRes -> {
             String w = wRes.get("g").asResource().getURI();
-            if (w.contains("Wrapper"))
+            if (isWrapper(w))
                 coveringWrappers.add(new Wrapper(w));
         });
         return coveringWrappers;
