@@ -1,3 +1,12 @@
+.tabulator-header-filter > input{
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #c1c1c1;
+}
+
+.tabulator-header-filter > input:focus {
+    outline: 0;
+}
 body {
     padding: 100px;
 }

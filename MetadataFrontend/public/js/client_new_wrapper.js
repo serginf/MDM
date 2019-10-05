@@ -81,6 +81,7 @@ $(function(){
                 col.title = $('input[name^="attributeSet"]')[i].value;
                 col.field = $('input[name^="attributeSet"]')[i].value;
                 col.align = "center";
+                col.headerFilter = true;
                 tableCol.push(col);
             }
 
@@ -101,20 +102,31 @@ $(function(){
                 layoutColumnsOnNewData:true,
                 autoResize:true,
                 columnMinWidth:120,
+                selectable:true,
                 layout:"fitColumns", //fit columns to width of table (optional)
                 columns:tableCol
             });
             table.redraw(true);
 
-
-            $( "#btnDownloadCSV" ).click(function() {
-                if(table){
+            $( "#btnDownload_csv" ).click(function() {
+                if(table)
                     table.download("csv", "data.csv", {delimiter:","});
-                }else{
-                    console.log("Error generating CSV file.")
-                }
+            });
+            $( "#btnDownload_xlsx" ).click(function() {
+                if(table)
+                    table.download("xlsx", "data.xlsx", {sheetName:"data"});
             });
 
+            $( "#btnDownload_json" ).click(function() {
+                if(table)
+                    table.download("json", "data.json");
+            });
+            $( "#btnDownload_pdf" ).click(function() {
+                if(table)
+                    table.download("pdf", "data.pdf", {
+                        orientation:"portrait", //set page orientation to portrait
+                    });
+            });
         }).fail(function(err) {
             alert("error "+JSON.stringify(err));
         });

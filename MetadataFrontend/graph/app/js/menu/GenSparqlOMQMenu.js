@@ -53,6 +53,7 @@ module.exports = function (graph) {
                                     col.title = f;
                                     col.field = getLastElementURI(f);
                                     col.align = "center";
+                                    col.headerFilter = true;
                                     tableCol.push(col);
                                     // $('#dataTable').find('thead > tr').append($('<td>').append($('<b>').text(f)));
                                 });
@@ -75,15 +76,28 @@ module.exports = function (graph) {
                                     columns:tableCol,
                                     pagination:"local",
                                     paginationSize:10,
+                                    selectable:true,
                                     paginationSizeSelector:[5, 10, 15, 20,50,100],
                                 });
 
-                                $( "#btnDownloadCSV" ).click(function() {
-                                    if(table){
+                                $( "#btnDownload_csv" ).click(function() {
+                                    if(table)
                                         table.download("csv", "data.csv", {delimiter:","});
-                                    }else{
-                                        console.log("Error generating CSV file.")
-                                    }
+                                });
+                                $( "#btnDownload_xlsx" ).click(function() {
+                                    if(table)
+                                        table.download("xlsx", "data.xlsx", {sheetName:"data"});
+                                });
+
+                                $( "#btnDownload_json" ).click(function() {
+                                    if(table)
+                                        table.download("json", "data.json");
+                                });
+                                $( "#btnDownload_pdf" ).click(function() {
+                                    if(table)
+                                        table.download("pdf", "data.pdf", {
+                                            orientation:"portrait", //set page orientation to portrait
+                                        });
                                 });
 
                             }).fail(function(err) {
