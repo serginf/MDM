@@ -9,6 +9,56 @@ function getParameterByName(name) {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
+function validation() {
+    var flag = true;
+    $("input").removeClass("is-invalid")
+
+    if($("#inputHost").val() == ""){
+        $("#inputHost").addClass("is-invalid");
+        flag = false;
+    }
+
+    if($("#inputDBname").val() == ""){
+        $("#inputDBname").addClass("is-invalid");
+        flag = false;
+    }
+
+    if($("#inputUser").val() == ""){
+        $("#inputUser").addClass("is-invalid");
+        flag = false;
+    }
+
+
+    return flag;
+}
+
+function buildJDBCString(){
+    var strJDBC = "jdbc:";
+
+   var dbms = $("#selectDBMS").children("option:selected").val();
+   if(dbms == "Postgress")
+       strJDBC+="postgresql://";
+   else if(dbms == "Mysql")
+       strJDBC+="mysql://";
+   else
+       strJDBC+="";
+
+    strJDBC+=$("#inputHost").val();
+
+    if(!$("#inputPort").val() == "")
+        strJDBC+=":"+$("#inputPort").val()+"/";
+    else
+        strJDBC+="/";
+
+    strJDBC+=$("#inputDBname").val();
+
+
+   if(!$("#inputUser").val() == "" )
+        strJDBC+="?user="+$("#inputUser").val()+"&password="+$("#inputPassword").val();
+
+   return strJDBC;
+}
+
 $(function() {
 
     //Trigger label for filename
@@ -88,18 +138,27 @@ $(function() {
     $('#sql_jdbc_test').on("click", function(e){
         e.preventDefault();
 
+        if(!validation())
+            return ;
+
         var dataSource = new Object();
         dataSource.type = "sql";
-        dataSource.sql_jdbc = $("#sql_jdbc").val();
+        dataSource.sql_jdbc = buildJDBCString();
 
         $.ajax({
             url: 'dataSource/test/connection',
             method: "POST",
             data: dataSource
         }).done(function() {
-            alert("Sucessful connection")
+            $("#alertSQL").empty();
+            $("#alertSQL").append("<div class=\"alert alert-green alert-dismissible fade show\" role=\"alert\"><strong>" +
+                "Successful connection!</strong><button class=\"close\" type=\"button\" data-dismiss=\"alert\" aria-label=\"Close\"" +
+                "><span aria-hidden=\"true\">&times;</span></button></div>");
         }).fail(function(err) {
-            alert("Fail connection ");
+            $("#alertSQL").empty();
+            $("#alertSQL").append("<div class=\"alert alert-red alert-dismissible fade show\" role=\"alert\"><strong>" +
+                "Unsuccessful connection!</strong> Make sure the information provided is correct.<button class=\"close\"" +
+                " type=\"button\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button></div>");
         });
     });
 

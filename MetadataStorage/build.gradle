@@ -112,6 +112,7 @@ dependencies {
 
     //JDBC
     compile group: 'postgresql', name: 'postgresql', version: '9.1-901-1.jdbc4'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.44'
 
 
 //  BDI dependencies
