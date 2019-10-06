@@ -121,7 +121,7 @@ $(function() {
 
             case "sqldatabase-tab":
                 dataSource.type = "sql";
-                dataSource.sql_jdbc = $("#sql_jdbc").val();
+                dataSource.sql_jdbc = buildJDBCString();
                 break;
         }
         $.ajax({
