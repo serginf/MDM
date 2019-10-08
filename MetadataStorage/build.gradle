@@ -102,7 +102,6 @@ dependencies {
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.6'
 
     compile files('lib/sqlite4java-392/sqlite4java.jar')
-    compile files('lib/owl2vowl.jar')
 
     compile group: 'io.swagger', name: 'swagger-jersey2-jaxrs', version: '1.5.22'
 //    Powermock
