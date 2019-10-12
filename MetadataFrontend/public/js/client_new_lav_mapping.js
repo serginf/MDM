@@ -163,7 +163,7 @@ $(function() {
         lav_mapping.sameAs = new Array();
         for (var i = 0; i < $('#attributes input').length; ++i) {
             // var from = $('#attribute' + i).val();
-            var from  = mapsAtributes[$('#attribute' + i).val().split(" (")[0]];
+            var from  = mapsAtributes[$('#attribute' + i).val()];
             var to = mapsFeatures[$('#features' + i+' option:selected').text().split(" (")[0]];
             if (to != "") {
                 var oneMapTo = new Object();
