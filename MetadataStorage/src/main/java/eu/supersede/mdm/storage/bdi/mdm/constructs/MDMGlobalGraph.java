@@ -18,6 +18,7 @@ import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.bson.Document;
 import org.semarglproject.vocab.RDF;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -156,14 +157,15 @@ public class MDMGlobalGraph {
             //System.out.println();
             //System.out.print(triple.get("s") + "\n");
             Resource classResource = classResourceIRI.getResource("s");
-            String getClassProperties = " SELECT * WHERE { GRAPH <" + bdiGgIri + "> { ?property rdfs:domain <" + classResourceIRI.get("s") + ">; rdfs:range ?range. FILTER NOT EXISTS {?range rdf:type rdfs:Class.}}} ";
+            String getClassProperties = " SELECT * WHERE { GRAPH <" + bdiGgIri
+                    + "> { ?property rdfs:domain <" + classResourceIRI.get("s") + ">; rdfs:range ?range. FILTER NOT EXISTS {?range rdf:type rdfs:Class.}}} ";
 
             RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getClassProperties, bdiGgIri).forEachRemaining(propertyResourceIRI -> {
-                //System.out.print(featureTriples.get("property") + "\t");
+                System.out.print(propertyResourceIRI.get("property") + "\t");
 
                 String baseBDIOntologyIRI = eu.supersede.mdm.storage.bdi.extraction.Namespaces.BASE.val();
 
-                //System.out.println("Class IRI: " + classResource.toString());
+                System.out.println("Class IRI: " + classResource.toString());
                 /* There are two types of class IRIs here:
                  * 1: http://www.BDIOntology.com/schema/Y
                  * 2: http://www.BDIOntology.com/global/ialjGpo5-DFmJjbSC/XY
@@ -171,8 +173,9 @@ public class MDMGlobalGraph {
 
                 String[] bits = classResource.toString().split("/");
                 String lastOneIsClassName = bits[bits.length - 1];
-                //System.out.println("Class Name: " + lastOneIsClassName);
-                //System.out.println("Property: " + propertyResourceIRI.getResource("property").toString());
+                System.out.println("Class Name: " + lastOneIsClassName);
+                System.out.println("Property: " + propertyResourceIRI.getResource("property").toString());
+
 
                 String queryToGetEquivalentPropertiesFromPG = "SELECT * WHERE { GRAPH <" + bdiGgIri + "> { ?x  owl:equivalentProperty <" + propertyResourceIRI.get("property") + ">. } }";
                 AtomicReference<Boolean> eqPropExistenceFlag = new AtomicReference<>(false);
@@ -182,7 +185,7 @@ public class MDMGlobalGraph {
                     eqPropExistenceFlag.set(true);
                     //System.out.println(eqPropExistenceFlag.get().toString());
 
-                    System.out.println("Equivalent Property: " + eqPropResourceIRI.get("x").toString());
+                    //System.out.println("Equivalent Property: " + eqPropResourceIRI.get("x").toString());
                     String eqPropClass = (eqPropResourceIRI.get("x").toString().split(baseBDIOntologyIRI)[1]).split("/")[1];
                     //System.out.println("Class of Equivalent Property: " + eqPropClass);
 
@@ -193,10 +196,33 @@ public class MDMGlobalGraph {
 
                     if (propertyResourceIRI.getResource("property").toString().contains(eu.supersede.mdm.storage.bdi.extraction.Namespaces.G.val())) {
                         /*Get the class IRI from equivalent Property IRI*/
-                        //System.out.println("Global property case");
-                        String eqPropClassIRI = eu.supersede.mdm.storage.bdi.extraction.Namespaces.Schema.val() + eqPropClass;
-                        mdmGlobalGraph.add(new ResourceImpl(eqPropClassIRI), new PropertyImpl(GlobalGraph.HAS_FEATURE.val()), eqPropResourceIRI.getResource("x"));
-                        mdmGlobalGraph.remove(propertyResourceIRI.getResource("property"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
+                        //System.out.println("Global property Case");
+
+                        //check the domain of the global property
+                        // If it is a global property and it has only one domain then I think i should skip doing the below step
+                        // i) Get the domain of the global property
+                        ArrayList domains = new ArrayList();
+                        String domainOfGlobalProperty = " SELECT * WHERE { GRAPH <" + bdiGgIri + "> { <" + propertyResourceIRI.get("property") + "> rdfs:domain ?domain. } }";
+                        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + domainOfGlobalProperty, bdiGgIri).forEachRemaining(triple -> {
+                            //System.out.print(triple.get("property") + "\t");
+                            //System.out.println(triple.get("domain") + "\t");
+                            domains.add(triple.get("domain"));
+                            //System.out.print(triple.get("range") + "\n");
+                            //mdmGlobalGraph.add(triple.getResource("property"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
+                        });
+
+                        if (domains.size() > 1) {
+                            String eqPropClassIRI = eu.supersede.mdm.storage.bdi.extraction.Namespaces.Schema.val() + eqPropClass;
+                            mdmGlobalGraph.add(new ResourceImpl(eqPropClassIRI), new PropertyImpl(GlobalGraph.HAS_FEATURE.val()), eqPropResourceIRI.getResource("x"));
+                            mdmGlobalGraph.remove(propertyResourceIRI.getResource("property"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
+                        } else {
+                            //System.out.println(domains.size() + " is the domain size");
+                            mdmGlobalGraph.add(new ResourceImpl(domains.get(0).toString()), new PropertyImpl(GlobalGraph.HAS_FEATURE.val()), propertyResourceIRI.getResource("property"));
+                            mdmGlobalGraph.add(eqPropResourceIRI.getResource("x"), new PropertyImpl(RDF.TYPE), new ResourceImpl(GlobalGraph.FEATURE.val()));
+                            mdmGlobalGraph.add(propertyResourceIRI.getResource("property"), new PropertyImpl(GlobalGraph.SAME_AS.val()), eqPropResourceIRI.getResource("x"));
+                        }
+
+
                     }
                 });
                 if (!propertyResourceIRI.getResource("property").toString().contains(eu.supersede.mdm.storage.bdi.extraction.Namespaces.G.val())) {
