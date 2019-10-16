@@ -45,7 +45,10 @@ public class SQL_Wrapper extends Wrapper {
     @Override
     public String inferSchema() throws Exception {
 
-        DriverManager.registerDriver(new org.postgresql.Driver());
+        if(this.url_jdbc.contains("postgresql"))
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        else if(this.url_jdbc.contains("mysql"))
+            DriverManager.registerDriver(new org.gjt.mm.mysql.Driver());
 
         List<String> attributes = new ArrayList<>() ;
 
@@ -87,7 +90,16 @@ public class SQL_Wrapper extends Wrapper {
         return res.toJSONString();
     }
 
-    public boolean testConnection(){
+    public boolean testConnection() {
+        try{
+            if(this.url_jdbc.contains("postgresql"))
+                DriverManager.registerDriver(new org.postgresql.Driver());
+            else if(this.url_jdbc.contains("mysql"))
+                DriverManager.registerDriver(new org.gjt.mm.mysql.Driver());
+        }catch(Exception ex){
+            return false;
+        }
+
         try (Connection conn = DriverManager.getConnection(
                 this.url_jdbc)) {
 

@@ -295,8 +295,26 @@ $(function () {
 
 
 $(document).ready(function () {
-    introJs().start();
-    introJs().addHints();
+
+    if(sessionStorage.getItem('CheckSBSGuideBDI') == "true")
+        $('#CheckSBSGuideBDI').prop('checked', true);
+    else
+        $('#CheckSBSGuideBDI').prop('checked', false);
+    $('#CheckSBSGuideBDI').change(function() {
+        sessionStorage.setItem('CheckSBSGuideBDI', $(this).prop('checked'));
+        if($(this).prop('checked')){
+            introJs().start();
+            introJs().addHints();
+        }else{
+            introJs().exit();
+        }
+    });
+
+    if(sessionStorage.getItem('CheckSBSGuideBDI') == "true"){
+        introJs().start();
+        introJs().addHints();
+    }
+
     $(document).ajaxSend(function () {
         $("#overlay").fadeIn(100);
     });

@@ -81,6 +81,7 @@ $(function(){
                 col.title = $('input[name^="attributeSet"]')[i].value;
                 col.field = $('input[name^="attributeSet"]')[i].value;
                 col.align = "center";
+                col.headerFilter = true;
                 tableCol.push(col);
             }
 
@@ -101,13 +102,31 @@ $(function(){
                 layoutColumnsOnNewData:true,
                 autoResize:true,
                 columnMinWidth:120,
+                selectable:true,
                 layout:"fitColumns", //fit columns to width of table (optional)
                 columns:tableCol
             });
             table.redraw(true);
 
+            $( "#btnDownload_csv" ).click(function() {
+                if(table)
+                    table.download("csv", "data.csv", {delimiter:","});
+            });
+            $( "#btnDownload_xlsx" ).click(function() {
+                if(table)
+                    table.download("xlsx", "data.xlsx", {sheetName:"data"});
+            });
 
-
+            $( "#btnDownload_json" ).click(function() {
+                if(table)
+                    table.download("json", "data.json");
+            });
+            $( "#btnDownload_pdf" ).click(function() {
+                if(table)
+                    table.download("pdf", "data.pdf", {
+                        orientation:"portrait", //set page orientation to portrait
+                    });
+            });
         }).fail(function(err) {
             alert("error "+JSON.stringify(err));
         });
@@ -174,7 +193,8 @@ $(function() {
         }).done(function() {
             window.location.href = '/manage_wrappers';
         }).fail(function(err) {
-            alert("error "+JSON.stringify(err));
+            // var jsonResponse = JSON.parse(responseText);
+            alert(err.responseText);
         });
     });
 
@@ -190,10 +210,21 @@ $(function() {
             method: "POST",
             data: inferObj
         }).done(function(data) {
+            var controlForm = $('input[name="attributeSet[]"]').parents('.controls form:last'),
+                 currentEntry = $('input[name="attributeSet[]"]').parents('.entry:last'),
+            newEntry = $(currentEntry.clone());
+            controlForm.empty();
             _.each(JSON.parse(data.schema), function (att) {
-                var controlForm = $('input[name="attributeSet[]"]').parents('.controls form:last'),
-                    currentEntry = $('input[name="attributeSet[]"]').parents('.entry:last'),
-                    newEntry = $(currentEntry.clone()).appendTo(controlForm);
+                // var controlForm = $('input[name="attributeSet[]"]').parents('.controls form:last'),
+                    currentEntry = $('input[name="attributeSet[]"]').parents('.entry:last');
+
+                    if(currentEntry.length){
+                        newEntry = $(currentEntry.clone()).appendTo(controlForm);
+                    }else{
+                        //there is no inputs
+                        newEntry = newEntry.appendTo(controlForm);
+                    }
+
                     newEntry.find('input').val(att);
                 controlForm.find('.entry:not(:last) .btn-add')
                     .removeClass('btn-add').addClass('btn-remove')

@@ -1,3 +1,25 @@
+.tabulator-header-filter > input{
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #c1c1c1;
+}
+
+.tabulator-header-filter > input:focus {
+  outline: 0;
+}
+
+.alert-green{
+  color: #155724;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+.alert-red{
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
 body {
   padding: 100px;
 }

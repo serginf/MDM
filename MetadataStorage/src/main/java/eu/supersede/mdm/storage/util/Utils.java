@@ -12,7 +12,6 @@ import net.minidev.json.parser.ParseException;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.spark.sql.SparkSession;
-
 import java.io.File;
 import java.io.InputStream;
 

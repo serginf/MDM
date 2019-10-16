@@ -34,10 +34,10 @@ shadowJar {
     classifier = null
     version = null
     manifest {
-        attributes 'Main-Class': 'eu.supersede.mdm.storage.ApacheMain'
+        //attributes 'Main-Class': 'eu.supersede.mdm.storage.ApacheMain'
 
         //For experiments
-        //attributes 'Main-Class': 'eu.supersede.mdm.storage.tests.SIGMOD.ExperimentsRunner'
+        attributes 'Main-Class': 'eu.supersede.mdm.storage.experiments.ExperimentsRunner'
     }
     append 'META-INF/services/org.apache.jena.system.JenaSubsystemLifecycle'
 }
@@ -111,6 +111,7 @@ dependencies {
 
     //JDBC
     compile group: 'postgresql', name: 'postgresql', version: '9.1-901-1.jdbc4'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.44'
 
 
 //  BDI dependencies
@@ -128,7 +129,6 @@ dependencies {
 
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
-
 
 
 }

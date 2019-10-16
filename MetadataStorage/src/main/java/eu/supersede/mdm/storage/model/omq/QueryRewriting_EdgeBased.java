@@ -37,6 +37,7 @@ import org.apache.jena.sparql.algebra.op.OpTable;
 import org.apache.jena.sparql.core.BasicPattern;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
+import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 
 import java.util.Collections;
@@ -46,6 +47,10 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("Duplicates")
 public class QueryRewriting_EdgeBased {
+
+    private static boolean isWrapper(String w) {
+        return w.contains("Wrapper") || w.contains("DataSource");
+    }
 
     private static void addTriple(BasicPattern pattern, String s, String p, String o) {
         pattern.add(new Triple(new ResourceImpl(s).asNode(), new PropertyImpl(p).asNode(), new ResourceImpl(o).asNode()));
@@ -100,7 +105,7 @@ public class QueryRewriting_EdgeBased {
         // Populate allTriplesPerWrapper
         RDFUtil.runAQuery("SELECT DISTINCT ?g WHERE { GRAPH ?g { ?s ?p ?o } }",T).forEachRemaining(w -> {
             String wrapper = w.get("g").asResource().getURI();
-            if (wrapper.contains("Wrapper")) {
+            if (isWrapper(wrapper)) {
                 BasicPattern triplesForW = new BasicPattern();
                 RDFUtil.runAQuery("SELECT ?s ?p ?o WHERE { GRAPH <" + wrapper + "> { ?s ?p ?o } }", T).forEachRemaining(res -> {
                     triplesForW.add(new Triple(new ResourceImpl(res.get("s").toString()).asNode(),
@@ -255,7 +260,7 @@ public class QueryRewriting_EdgeBased {
             RDFUtil.runAQuery("SELECT ?g WHERE { GRAPH ?g { <" + c + "> <" + Namespaces.rdf.val() + "type" + "> <" + GlobalGraph.CONCEPT.val() + "> } }", T)
                     .forEachRemaining(wrapper -> {
                         String w = wrapper.get("g").toString();
-                        if (!w.equals(Namespaces.T.val()) && w.contains("Wrapper")/*last min bugfix*/) {
+                        if (isWrapper(w)) {
                             attsPerWrapper.putIfAbsent(new Wrapper(w), Sets.newHashSet());
                         }
                     });
@@ -266,7 +271,7 @@ public class QueryRewriting_EdgeBased {
                     "WHERE { GRAPH ?g { <" + c + "> <" + GlobalGraph.HAS_FEATURE.val() + "> <" + f + "> } }", T);
             W.forEachRemaining(wRes -> {
                 String w = wRes.get("g").asResource().getURI();
-                if (!w.equals(Namespaces.T.val()) && w.contains("Wrapper")/*last min bugfix*/) {
+                if (isWrapper(w)) {
                     /*ResultSet rsAttr = RDFUtil.runAQuery("SELECT ?a " +
                             "WHERE { GRAPH ?g { ?a <" + Namespaces.owl.val() + "sameAs> <" + f + "> . " +
                             "<" + w + "> <" + SourceGraph.HAS_ATTRIBUTE.val() + "> ?a } }", T);
@@ -312,7 +317,7 @@ public class QueryRewriting_EdgeBased {
                 "WHERE { GRAPH ?g { <" + s + "> <" + e + "> <" + t + "> } }", T);
         W.forEachRemaining(wRes -> {
             String w = wRes.get("g").asResource().getURI();
-            if (w.contains("Wrapper"))
+            if (isWrapper(w))
                 coveringWrappers.add(new Wrapper(w));
         });
         return coveringWrappers;
@@ -326,7 +331,7 @@ public class QueryRewriting_EdgeBased {
         InfModel PHI_o = queryStructure._3;
 
         //Identify query-related concepts
-        Graph<String,String> conceptsGraph = new SimpleGraph<>(String.class);
+        Graph<String,String> conceptsGraph = new SimpleDirectedGraph<>(String.class);
         PHI_p.getList().forEach(t -> {
             // Add only concepts so its easier to populate later the list of concepts
             if (!t.getPredicate().getURI().equals(GlobalGraph.HAS_FEATURE.val()) && !t.getObject().getURI().equals(Namespaces.sc.val()+"identifier")) {
@@ -375,7 +380,9 @@ public class QueryRewriting_EdgeBased {
 
             BasicPattern both = new BasicPattern();
             both.addAll(D.get(source)); both.addAll(D.get(target));
-            addTriple(both,source.getLabel(),e.getLabel(),target.getLabel());
+            //addTriple(both,source.getLabel(),e.getLabel(),target.getLabel());
+            //Go back to the original graph to check the labels of the source and target vertex that e connects
+            addTriple(both,conceptsGraph.getEdgeSource(e.getLabel()),e.getLabel(),conceptsGraph.getEdgeTarget(e.getLabel()));
             Set<ConjunctiveQuery> Q = combineSetsOfCQs(Qs, Qt, edgeCoveringWrappers,both);
 
             String newLabel = source.getLabel()+"-"+target.getLabel();
@@ -421,11 +428,11 @@ public class QueryRewriting_EdgeBased {
             G.removeVertex(target);
         }
 
-
+/*
         G.vertexSet().iterator().next().getCQs().forEach(cq -> {
             System.out.println(cq + " --> "+covering(cq.getWrappers(),PHI_p));
         });
-
+*/
         return new Tuple2<>(1,G.vertexSet().iterator().next().getCQs());
     }
 

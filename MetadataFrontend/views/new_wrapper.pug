@@ -5,6 +5,10 @@ block headers
     link(rel='stylesheet', href='/stylesheets/highlight.js/default.min.css')
     script(src='/js/highlight.js/highlight.min.js')
     link(rel='stylesheet', href='/stylesheets/tabulator_semantic-ui.min.css')
+    script(type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js')
+    script(src='/js/xlsx.full.min.js')
+    script(type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js')
+    script(type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.0.10/jspdf.plugin.autotable.min.js')
     script(src='/js/tabulator.min.js')
 
 block content
@@ -208,4 +212,18 @@ block content
                         span(aria-hidden="true") ×
                 .modal-body(style="position:relative;text-align:center;")
                     span#spinner.fa.fa-spinner.fa-spin(style="font-size: 128px;")
-                    div#dataTable
+
+                    .row
+                        .col-md-2
+                            .input-group
+                                .input-group-btn.dropright
+
+                                        button.btn.btn-secondary.dropdown-toggle(type='button' data-toggle='dropdown' data-boundary="viewport" aria-haspopup='true' aria-expanded='false')
+                                            | Download as
+                                        .dropdown-menu
+                                            a#btnDownload_csv.dropdown-item CSV
+                                                a#btnDownload_json.dropdown-item JSON
+                                                a#btnDownload_xlsx.dropdown-item XLSX
+                                                a#btnDownload_pdf.dropdown-item PDF
+                    .row
+                            div#dataTable

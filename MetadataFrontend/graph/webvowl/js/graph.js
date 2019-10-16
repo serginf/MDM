@@ -1714,11 +1714,13 @@ module.exports = function (graphContainerSelector) {
                     var n  = new Object();
                     n.source =data[nodesId.indexOf(domain)] ;
                     n.target =data[nodesId.indexOf(range)]  ;
-                    if(label.property().iriType() === Global.HAS_RELATION.iri)
+                    if(label.property().iriType() === Global.HAS_RELATION.iri){
                         n.name = label.property().iri(); //uri for has_relation is given by user
-                    else
+                        n.iri =label.property().iri();
+                    }else{
                         n.name = label.property().iriType();
-                    n.iri =label.property().iriType();
+                        n.iri =label.property().iriType();
+                    }
                     data.push(n);
                 }
 

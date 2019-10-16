@@ -24,12 +24,12 @@ block content
                         | Data sources represent external endpoints where to fetch data from. We support connection to classic databases (e.g., SQL databases), NOSQL stores (e.g., document stores) and REST APIs.
 
         .card.bg-secondary.mb-3
-            form#dataSourceForm
+            form#dataSourceForm.needs-validation
                 .form-group#nameForm
                     label.col-lg-4.col-form-label Name
                     .col-lg-12
                         input#name.form-control(type='text', name='name', required='required')
-                
+
                 .form-group#typeForm
                     label.col-lg-4.col-form-label Type
                     .col-lg-12
@@ -50,7 +50,7 @@ block content
                                 a.text-primary#restapi-tab.nav-link(data-toggle="tab" href="#restapi" role="tab" aria-controls="messages" aria-selected="false") REST API
                             li.nav-item
                                 a.text-primary#sqldatabase-tab.nav-link(data-toggle="tab" href="#sqldatabase" role="tab" aria-controls="settings" aria-selected="false") SQL Database
-                
+
                 .tab-content
                     #avro.tab-pane.active
                         .form-group#avro_pathForm
@@ -68,7 +68,7 @@ block content
                                         label.custom-file-label(for='csv_path') Choose file
 
                                 //input#csv_path.form-control(type='text', name='csv_path', required='required')
-                
+
                     #mongodb.tab-pane(role="tabpanel" aria-labelledby="mongodb-tab")
                         .form-group#mongodb_hostnameForm
                             label.col-lg-4.col-form-label Connection string
@@ -78,15 +78,15 @@ block content
                             label.col-lg-4.col-form-label Database
                             .col-lg-12
                                 input#mongodb_database.form-control(type='text', name='mongodb_database', required='required')
-                
+
                     #neo4j.tab-pane
-                
+
                     #parquet.tab-pane
                         .form-group#parquet_pathForm
                             label.col-lg-4.col-form-label Parquet path (with protocol)
                             .col-lg-12
                                 input#parquet_path.form-control(type='text', name='parquet_path', required='required')
-                
+
                     #restapi.tab-pane(role="tabpanel" aria-labelledby="restapi-tab")
                         .form-group#restapi_urlForm
                             label.col-lg-4.col-form-label URL
@@ -99,7 +99,7 @@ block content
                                     option(selected="" value="json") Flat JSON
                                     option(value="yaml") YAML (N/A)
                                     option(value="xml") XML (N/A)
-                
+
                     #json.tab-pane
                         .form-group#json_pathForm
                             label.col-lg-4.col-form-label File
@@ -109,16 +109,49 @@ block content
                                         input#json_path.custom-file-input(type='file', name='json_path', required='required')
                                         label.custom-file-label(for='json_path') Choose file
                                 //input#json_path.form-control(type='text', name='json_path', required='required')
-                
+
                     #sqldatabase.tab-pane(role="tabpanel" aria-labelledby="sqldatabase-tab")
                         .form-group#sql_jdbcForm
-                            label.col-lg-4.col-form-label JDBC
                             .col-lg-12
-                                //input#sql_jdbc.form-control(type='text', name='name', required='required')
-                                .input-group.mb-3
-                                    input#sql_jdbc.form-control(type='text' required='required' aria-label="Recipient's username" aria-describedby='sql_jdbc_test')
-                                    .input-group-append
-                                        button#sql_jdbc_test.btn.btn-info(type='button') Test connection
+                                #alertSQL
+                                .form-row
+                                    .form-group.col-md-4
+                                        label(for='selectDBMS') Select DBMS
+                                        select#selectDBMS.form-control
+                                            option Postgress
+                                            option Oracle
+                                            option Mysql
+                                    .form-group.col-md-4
+                                        label(for='inputHost') Host
+                                        input#inputHost.form-control(type='text' placeholder='Host' required)
+                                        .invalid-feedback It's required to type a host.
+                                    .form-group.col-md-4
+                                        label(for='inputPort') Port
+                                        input#inputPort.form-control(type='number' placeholder='Port')
+                                .form-row
+                                    .form-group.col-md-8
+                                        label(for='inputDBname') DB name
+                                        input#inputDBname.form-control(type='text' placeholder='Enter DB name' required)
+                                        .invalid-feedback It's required to type a database name.
+                                    .form-group.col-md-4
+                                        label  &nbsp;
+                                        .form-check
+                                            .custom-control.custom-checkbox.mr-sm-2
+                                                label.custom-control-label(for='inputSSL') Enable SSL
+                                                input#inputSSL.custom-control-input(type='checkbox')
+
+                                .form-row
+                                    .form-group.col-md-4
+                                        label(for='inputUser') User
+                                        input#inputUser.form-control(type='text' placeholder='User' required)
+                                        .invalid-feedback It's required to type a user.
+                                    .form-group.col-md-4
+                                        label(for='inputPassword') Password
+                                        input#inputPassword.form-control(type='password' placeholder='Password')
+                                    .form-group.col-md-4
+                                        label  &nbsp;
+                                        button#sql_jdbc_test.form-control.btn.btn-info(type='button') Test connection
+
 
 
                 .form-group

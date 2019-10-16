@@ -42,19 +42,21 @@ block content
                     .col-lg-12
                         ul#typeTabs.nav.nav-tabs(role="tablist")
                             li.nav-item
-                                a.text-primary#avro-tab.nav-link(role="tab" aria-controls="profile" aria-selected="false") Avro
+                                a.text-primary#avro-tab.nav-link(role="tab"  aria-controls="profile" aria-selected="false") Avro
                             li.nav-item
                                 a.text-primary#json-tab.nav-link(role="tab" aria-controls="messages" aria-selected="false") JSON file
                             li.nav-item
-                                a.text-primary#mongodb-tab.nav-link(role="tab" aria-controls="home" aria-selected="true") MongoDB
+                                a.text-primary#csv-tab.nav-link(role="tab"  aria-controls="messages" aria-selected="false") CSV file
                             li.nav-item
-                                a.text-primary#neo4j-tab.nav-link(role="tab" aria-controls="home" aria-selected="true") Neo4j
+                                a.text-primary#mongodb-tab.nav-link(role="tab"  aria-controls="home" aria-selected="true") MongoDB
                             li.nav-item
-                                a.text-primary#parquet-tab.nav-link(role="tab" aria-controls="home" aria-selected="true") Parquet
+                                a.text-primary#neo4j-tab.nav-link(role="tab"  aria-controls="home" aria-selected="true") Neo4j
                             li.nav-item
-                                a.text-primary#restapi-tab.nav-link(role="tab" aria-controls="messages" aria-selected="false") REST API
+                                a.text-primary#parquet-tab.nav-link(role="tab"  aria-controls="home" aria-selected="true") Parquet
                             li.nav-item
-                                a.text-primary#sqldatabase-tab.nav-link(role="tab" aria-controls="settings" aria-selected="false") SQL Database
+                                a.text-primary#restapi-tab.nav-link(role="tab"  aria-controls="messages" aria-selected="false") REST API
+                            li.nav-item
+                                a.text-primary#sqldatabase-tab.nav-link(role="tab"  aria-controls="settings" aria-selected="false") SQL Database
                 
                 .tab-content
                     #avro.tab-pane
@@ -99,7 +101,12 @@ block content
                             label.col-lg-4.col-form-label File path
                             .col-lg-12
                                 input#json_path.form-control(type='text', name='json_path', required='required', readonly='')
-                
+                    #csv.tab-pane
+                        .form-group#csv_pathForm
+                            label.col-lg-4.col-form-label File path
+                            .col-lg-12
+                                input#csv_path.form-control(type='text', name='csv_path', required='required', readonly='')
+
                     #sqldatabase.tab-pane(role="tabpanel" aria-labelledby="sqldatabase-tab")
                         .form-group#sql_jdbcForm
                             label.col-lg-4.col-form-label JDBC
