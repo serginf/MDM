@@ -120,7 +120,7 @@ public class QueryRewriting_EdgeBased {
                 "?f <" + Namespaces.rdfs.val() + "subClassOf> <" + Namespaces.sc.val() + "identifier> } }",T)
                 .forEachRemaining(gf -> {
             Wrapper w = new Wrapper(gf.get("g").asResource().getURI());
-            if (w.getWrapper().contains("Wrapper")) {
+            if (isWrapper(w.getWrapper())) {
                 String ID = gf.get("f").asResource().getURI();
 
                 coveredIDsPerWrapperInQuery.putIfAbsent(w, Sets.newHashSet());
