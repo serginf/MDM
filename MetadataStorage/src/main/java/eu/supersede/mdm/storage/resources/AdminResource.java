@@ -49,8 +49,7 @@ public class AdminResource {
         client.getDatabase(ConfigManager.getProperty("system_metadata_db_name")).drop();
 
         try {
-            FileUtils.deleteDirectory(new File(ConfigManager.getProperty("metadata_db_file") +
-                    ConfigManager.getProperty("metadata_db_name")));
+            FileUtils.deleteDirectory(new File(ConfigManager.getProperty("metadata_db_file")));
         } catch (IOException e) {
             e.printStackTrace();
         }
