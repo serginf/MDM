@@ -6,6 +6,7 @@ import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.graph.IntegrationEdge;
 import eu.supersede.mdm.storage.model.graph.CQVertex;
 import eu.supersede.mdm.storage.model.graph.IntegrationGraph;
+import eu.supersede.mdm.storage.model.graph.RelationshipEdge;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.model.omq.relational_operators.EquiJoin;
@@ -331,13 +332,14 @@ public class QueryRewriting_EdgeBased {
         InfModel PHI_o = queryStructure._3;
 
         //Identify query-related concepts
-        Graph<String,String> conceptsGraph = new SimpleDirectedGraph<>(String.class);
+        Graph<String,RelationshipEdge> conceptsGraph = new SimpleDirectedGraph<>(RelationshipEdge.class);
         PHI_p.getList().forEach(t -> {
             // Add only concepts so its easier to populate later the list of concepts
             if (!t.getPredicate().getURI().equals(GlobalGraph.HAS_FEATURE.val()) && !t.getObject().getURI().equals(Namespaces.sc.val()+"identifier")) {
                 conceptsGraph.addVertex(t.getSubject().getURI());
                 conceptsGraph.addVertex(t.getObject().getURI());
-                conceptsGraph.addEdge(t.getSubject().getURI(), t.getObject().getURI(), t.getPredicate().getURI()/*UUID.randomUUID().toString()*/);
+                conceptsGraph.addEdge(t.getSubject().getURI(), t.getObject().getURI(),
+                        new RelationshipEdge(t.getPredicate().getURI()) /*UUID.randomUUID().toString()*/);
             }
         });
         // This is required when only one concept is queried, where all edges are hasFeature
@@ -354,8 +356,8 @@ public class QueryRewriting_EdgeBased {
             CQVertex source = G.vertexSet().stream().filter(v -> v.getLabel().equals(conceptsGraph.getEdgeSource(e))).findFirst().get();
             CQVertex target = G.vertexSet().stream().filter(v -> v.getLabel().equals(conceptsGraph.getEdgeTarget(e))).findFirst().get();
 
-            Set<Wrapper> wrappers = getEdgeCoveringWrappers(source.getLabel(),target.getLabel(),e,T);
-            G.addEdge(source,target,new IntegrationEdge(e,wrappers));
+            Set<Wrapper> wrappers = getEdgeCoveringWrappers(source.getLabel(),target.getLabel(),e.getLabel(),T);
+            G.addEdge(source,target,new IntegrationEdge(e.getLabel(),wrappers));
         });
 
         //Define a data structure D: CQVertex --> BGP
@@ -382,7 +384,8 @@ public class QueryRewriting_EdgeBased {
             both.addAll(D.get(source)); both.addAll(D.get(target));
             //addTriple(both,source.getLabel(),e.getLabel(),target.getLabel());
             //Go back to the original graph to check the labels of the source and target vertex that e connects
-            addTriple(both,conceptsGraph.getEdgeSource(e.getLabel()),e.getLabel(),conceptsGraph.getEdgeTarget(e.getLabel()));
+            addTriple(both,conceptsGraph.getEdgeSource(new RelationshipEdge(e.getLabel())),
+                    e.getLabel(),conceptsGraph.getEdgeTarget(new RelationshipEdge(e.getLabel())));
             Set<ConjunctiveQuery> Q = combineSetsOfCQs(Qs, Qt, edgeCoveringWrappers,both);
 
             String newLabel = source.getLabel()+"-"+target.getLabel();

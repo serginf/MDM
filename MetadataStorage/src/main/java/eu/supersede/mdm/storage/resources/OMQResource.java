@@ -187,6 +187,7 @@ public class OMQResource {
                 e.printStackTrace();
             }
         });
+        System.out.println(SQL);
         SQLiteUtils.executeSelect(SQL,features).forEach(d -> data.add(d));
 
         client.close();
