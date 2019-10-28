@@ -1,5 +1,6 @@
 package eu.supersede.mdm.storage;
 
+import eu.supersede.mdm.storage.db.mongo.MongoConnectionServlet;
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
@@ -38,6 +39,7 @@ public class ApacheMain {
         config.packages("eu.supersede.mdm.storage.errorhandling");
         config.register(ApiListingResource.class);
         config.register(SwaggerSerializers.class);
+        config.register(new MyApplicationBinder());
 
         configSwagger();
 
@@ -46,6 +48,8 @@ public class ApacheMain {
 
         ServletContextHandler context = new ServletContextHandler(server, "/*");
         context.addServlet(servlet, "/*");
+
+        context.addEventListener(new MongoConnectionServlet());
 
         ContextHandlerCollection contexts = new ContextHandlerCollection();
         contexts.addHandler(buildSwaggerUI());
