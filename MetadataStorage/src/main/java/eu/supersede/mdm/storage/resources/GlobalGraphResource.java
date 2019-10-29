@@ -4,6 +4,9 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import eu.supersede.mdm.storage.db.mongo.models.GlobalGraphModel;
+import eu.supersede.mdm.storage.db.mongo.repositories.GlobalGraphRepository;
+import eu.supersede.mdm.storage.db.mongo.utils.UtilsMongo;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.parsers.ImportOWLtoGlobalGraph;
@@ -19,6 +22,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.bson.Document;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -38,6 +42,9 @@ public class GlobalGraphResource {
             "{} request finished with inputs: {} and return value: {} in {}ms";
     GlobalGraphValidator validator = new GlobalGraphValidator();
 
+    @Inject
+    GlobalGraphRepository globalGraphR;
+
     @ApiOperation(value = "Gets all global graphs registered",produces = MediaType.TEXT_PLAIN)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK")})
     @GET
@@ -52,6 +59,9 @@ public class GlobalGraphResource {
         client.close();
 
         return Response.ok(new Gson().toJson(globalGraphs)).build();
+        //TODO: (Javier) test when collection is empty
+//        String json = UtilsMongo.ToJsonString(globalGraphR.findAll());
+//        return Response.ok(json).build();
     }
 
     @ApiOperation(value = "Gets the information related for the given globalgraphid",produces = MediaType.TEXT_PLAIN)
@@ -65,11 +75,11 @@ public class GlobalGraphResource {
             @PathParam("globalGraphID") String globalGraphID) {
 
         LOGGER.info("[GET /globalGraph/] globalGraphID = "+globalGraphID);
-        MongoClient client = Utils.getMongoDBClient();
-        Document query = new Document("globalGraphID",globalGraphID);
-        Document res = MongoCollections.getGlobalGraphCollection(client).find(query).first();
-        client.close();
-        return Response.ok((res.toJson())).build();
+
+        GlobalGraphModel globalGraph = globalGraphR.findByGlobalGraphID(globalGraphID);
+        if(globalGraph != null )
+            return Response.ok(UtilsMongo.ToJsonString(globalGraph)).build();
+        return Response.status(404).build();
     }
 
     @ApiOperation(value = "Gets the information related for the given namedGraph",produces = MediaType.TEXT_PLAIN)
@@ -84,11 +94,10 @@ public class GlobalGraphResource {
 
         LOGGER.info("[GET /globalGraph/namedGraph/] namedGraph = "+namedGraph);
 
-        MongoClient client = Utils.getMongoDBClient();
-        Document query = new Document("namedGraph",namedGraph);
-        Document res = MongoCollections.getGlobalGraphCollection(client).find(query).first();
-        client.close();
-        return Response.ok((res.toJson())).build();
+        GlobalGraphModel globalGraph = globalGraphR.findByNamedGraph(namedGraph);
+        if(globalGraph != null )
+            return Response.ok(UtilsMongo.ToJsonString(globalGraph)).build();
+        return Response.status(404).build();
     }
 
     @ApiOperation(value = "Gets all features related for the given namedGraph",produces = MediaType.TEXT_PLAIN)
@@ -146,7 +155,7 @@ public class GlobalGraphResource {
         validator.validateGeneralBody(body,"POST /globalGraph");
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
 
-        MongoClient client = Utils.getMongoDBClient();
+//        MongoClient client = Utils.getMongoDBClient();
 
         objBody.put("globalGraphID", UUID.randomUUID().toString().replace("-",""));
 
@@ -156,9 +165,12 @@ public class GlobalGraphResource {
 
         objBody.put("namedGraph", namedGraph+UUID.randomUUID().toString().replace("-",""));
 
-        MongoCollections.getGlobalGraphCollection(client).insertOne(Document.parse(objBody.toJSONString()));
+//        MongoCollections.getGlobalGraphCollection(client).insertOne(Document.parse(objBody.toJSONString()));
+//
+//        client.close();
 
-        client.close();
+        globalGraphR.create(objBody.toJSONString());
+
         return Response.ok(objBody.toJSONString()).build();
     }
 

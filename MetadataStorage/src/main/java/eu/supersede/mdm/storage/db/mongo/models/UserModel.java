@@ -6,12 +6,7 @@ import org.bson.types.ObjectId;
 
 public class UserModel {
 
-
-//    @JsonSerialize(using = ToStringSerializer.class)
-
-//    @JsonProperty("_id") @org.jongo.marshall.jackson.oid.ObjectId
-//@JsonFormat(shape = JsonFormat.Shape.STRING)
-@JsonSerialize(using = ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
     private String username;
     private String password;

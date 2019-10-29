@@ -1,16 +1,21 @@
 package eu.supersede.mdm.storage.db.mongo.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.bson.types.ObjectId;
+
+import java.util.List;
 
 public class GlobalGraphModel {
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
     private String namedGraph;
     private String defaultNamespace;
     private String name;
     private String globalGraphID;
-    private String graphicalID;
-    private String[] wrappers;
+    private String graphicalGraph;
+    private List<String> wrappers;
 
     public ObjectId getId() {
         return id;
@@ -52,19 +57,19 @@ public class GlobalGraphModel {
         this.globalGraphID = globalGraphID;
     }
 
-    public String getGraphicalID() {
-        return graphicalID;
+    public String getGraphicalGraph() {
+        return graphicalGraph;
     }
 
-    public void setGraphicalID(String graphicalID) {
-        this.graphicalID = graphicalID;
+    public void setGraphicalGraph(String graphicalGraph) {
+        this.graphicalGraph = graphicalGraph;
     }
 
-    public String[] getWrappers() {
+    public List<String> getWrappers() {
         return wrappers;
     }
 
-    public void setWrappers(String[] wrappers) {
+    public void setWrappers(List<String> wrappers) {
         this.wrappers = wrappers;
     }
 }

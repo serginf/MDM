@@ -3,8 +3,8 @@ package eu.supersede.mdm.storage.db.mongo.repositories;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import eu.supersede.mdm.storage.db.mongo.MongoConnection;
-import eu.supersede.mdm.storage.util.Utils;
 import eu.supersede.mdm.storage.db.mongo.models.UserModel;
+import eu.supersede.mdm.storage.db.mongo.utils.UtilsMongo;
 
 import javax.annotation.PostConstruct;
 
@@ -16,7 +16,7 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class UserRepository {
 
-    private static final String FIELD_USERNAME = "username";
+    private final String FIELD_USERNAME = "username";
     private MongoCollection<UserModel> usersCollection;
 
     @PostConstruct
@@ -38,7 +38,7 @@ public class UserRepository {
 
     public void create(String userJson){
         try {
-            UserModel user = Utils.mapper.readValue(userJson, UserModel.class);
+            UserModel user = UtilsMongo.mapper.readValue(userJson, UserModel.class);
             usersCollection.insertOne(user);
         } catch (IOException ex) {
             ex.printStackTrace();
