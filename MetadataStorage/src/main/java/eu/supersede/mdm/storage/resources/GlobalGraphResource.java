@@ -53,15 +53,10 @@ public class GlobalGraphResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response GET_globalGraph() {
         LOGGER.info("[GET /GET_globalGraph/]");
-        MongoClient client = Utils.getMongoDBClient();
-        List<String> globalGraphs = Lists.newArrayList();
-        MongoCollections.getGlobalGraphCollection(client).find().iterator().forEachRemaining(document -> globalGraphs.add(document.toJson()));
-        client.close();
 
-        return Response.ok(new Gson().toJson(globalGraphs)).build();
         //TODO: (Javier) test when collection is empty
-//        String json = UtilsMongo.ToJsonString(globalGraphR.findAll());
-//        return Response.ok(json).build();
+        String json = UtilsMongo.serializeListJsonAsString(globalGraphR.findAll());
+        return Response.ok(json).build();
     }
 
     @ApiOperation(value = "Gets the information related for the given globalgraphid",produces = MediaType.TEXT_PLAIN)
@@ -155,8 +150,6 @@ public class GlobalGraphResource {
         validator.validateGeneralBody(body,"POST /globalGraph");
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
 
-//        MongoClient client = Utils.getMongoDBClient();
-
         objBody.put("globalGraphID", UUID.randomUUID().toString().replace("-",""));
 
         String namedGraph =
@@ -164,10 +157,6 @@ public class GlobalGraphResource {
                 objBody.getAsString("defaultNamespace") : objBody.getAsString("defaultNamespace") + "/";
 
         objBody.put("namedGraph", namedGraph+UUID.randomUUID().toString().replace("-",""));
-
-//        MongoCollections.getGlobalGraphCollection(client).insertOne(Document.parse(objBody.toJSONString()));
-//
-//        client.close();
 
         globalGraphR.create(objBody.toJSONString());
 
@@ -198,10 +187,9 @@ public class GlobalGraphResource {
     @ApiResponses(value ={
             @ApiResponse(code = 200, message = "OK", examples = @Example(value = {@ExampleProperty(value = "{\"namedGraph\":\"http:\\/namespace\\/example\\/8bb55f0d76514e3182adcef3ac7a2a2f\",\"defaultNamespace\":\"http:\\/namespace\\/example\\/\",\"name\":\"example\",\"globalGraphID\":\"467257310adf4aeb98bd2bd4a83be86e\"}")})),
             @ApiResponse(code = 400, message = "triples are missing")})
-    //@POST @Path("globalGraph/{namedGraph}/triple/{s}/{p}/{o}")
     @POST @Path("globalGraph/{namedGraph}/triple/")
     @Consumes("text/plain")
-    public Response POST_triple(@PathParam("namedGraph") String namedGraph, String body/*, @PathParam("s") String s, @PathParam("p") String p, @PathParam("o") String o*/) {
+    public Response POST_triple(@PathParam("namedGraph") String namedGraph, String body) {
         LOGGER.info("[POST /globalGraph/"+namedGraph+"/triple] body = "+body);
         validator.validateBodyTriples(body,"POST /globalGraph/"+namedGraph+"/triple");
         JSONObject objBody = (JSONObject) JSONValue.parse(body);

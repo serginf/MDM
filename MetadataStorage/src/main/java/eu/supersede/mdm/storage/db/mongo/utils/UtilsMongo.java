@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UtilsMongo {
@@ -16,20 +17,30 @@ public class UtilsMongo {
 
     public static String ToJsonString(Object obj){
         try {
-            //Mapping List will result in '[{...' and we expect '["{....' so need to do this since frontend expects a non-json array of json strings
-            if (obj instanceof List) {
-                String json = "[";
-                for (Object element : ((List) obj)) {
-                    json+=mapper.writeValueAsString(element);
-                }
-                json += "]";
-                return json;
-            }
             return mapper.writeValueAsString(obj);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return "";
+    }
+
+    /**
+     * Method to parse all objects in a list to Json and save the result in a list and then parse as json.
+     *
+     * @param list
+     * @return
+     */
+    public static String serializeListJsonAsString(List list){
+        try {
+            List<String> serializeJson = new ArrayList<>();
+            for (Object element : list) {
+                serializeJson.add(mapper.writeValueAsString(element));
+            }
+            return mapper.writeValueAsString(serializeJson);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+            return "";
     }
 
 }

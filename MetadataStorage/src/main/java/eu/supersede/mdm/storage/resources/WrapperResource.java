@@ -6,6 +6,10 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import eu.supersede.mdm.storage.db.mongo.models.WrapperModel;
+import eu.supersede.mdm.storage.db.mongo.repositories.DataSourceRepository;
+import eu.supersede.mdm.storage.db.mongo.repositories.WrapperRepository;
+import eu.supersede.mdm.storage.db.mongo.utils.UtilsMongo;
 import eu.supersede.mdm.storage.errorhandling.exception.AttributesExistWrapperException;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
@@ -25,6 +29,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.bson.Document;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -44,6 +49,12 @@ public class WrapperResource {
 
     private static final Logger LOGGER = Logger.getLogger(WrapperResource.class.getName());
 
+    @Inject
+    WrapperRepository wrapperR;
+
+    @Inject
+    DataSourceRepository dataSourceR;
+
     @GET
     @Path("wrapper/")
     @Consumes(MediaType.TEXT_PLAIN)
@@ -51,11 +62,9 @@ public class WrapperResource {
     public Response GET_wrapper() {
         System.out.println("[GET /wrapper/]");
 
-        MongoClient client = Utils.getMongoDBClient();
-        List<String> wrappers = Lists.newArrayList();
-        MongoCollections.getWrappersCollection(client).find().iterator().forEachRemaining(document -> wrappers.add(document.toJson()));
-        client.close();
-        return Response.ok(new Gson().toJson(wrappers)).build();
+        //TODO: (Javier) test when collection is empty
+        String json = UtilsMongo.serializeListJsonAsString(wrapperR.findAll());
+        return Response.ok(json).build();
     }
 
     @GET
@@ -65,11 +74,10 @@ public class WrapperResource {
     public Response GET_wrapperByID(@PathParam("wrapperID") String wrapperID) {
         System.out.println("[GET /wrapper/] wrapperID = " + wrapperID);
 
-        MongoClient client = Utils.getMongoDBClient();
-        Document query = new Document("wrapperID", wrapperID);
-        Document res = MongoCollections.getWrappersCollection(client).find(query).first();
-        client.close();
-        return Response.ok((res.toJson())).build();
+        WrapperModel wrapper = wrapperR.findByWrapperID(wrapperID);
+        if(wrapper != null )
+            return Response.ok(UtilsMongo.ToJsonString(wrapper)).build();
+        return Response.status(404).build();
     }
 
     @POST
@@ -77,7 +85,7 @@ public class WrapperResource {
     @Consumes("text/plain")
     public Response POST_wrapper(String body) {
         System.out.println("[POST /wrapper/] body = " + body);
-        JSONObject objBody = createWrapper(body);
+        JSONObject objBody = createWrapper2(body);
         return Response.ok(objBody.toJSONString()).build();
     }
 
@@ -145,6 +153,7 @@ public class WrapperResource {
     }
 
 
+    //TODO: (JAVIER) remove this method implementing in kashif persistence
     public static JSONObject createWrapper(String body) {
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
 
@@ -183,9 +192,44 @@ public class WrapperResource {
             //}
         });
 
-        client.close();
         return objBody;
     }
+
+    public JSONObject createWrapper2(String body) {
+        JSONObject objBody = (JSONObject) JSONValue.parse(body);
+
+        verifyAttributesCreation((JSONArray) objBody.get("attributes"));
+
+
+        //Metadata for the wrapper
+        objBody.put("wrapperID", "w"+ UUID.randomUUID().toString().replace("-",""));
+        String wrapperName = objBody.getAsString("name")/*.trim().replace(" ","")*/;
+        String wIRI = SourceGraph.WRAPPER.val()+"/"+wrapperName;
+        objBody.put("iri",wIRI);
+
+        wrapperR.create(objBody.toJSONString());
+
+        //Update the data source with the new wrapper
+        dataSourceR.addWrapper(objBody.getAsString("dataSourceID"),objBody.getAsString("wrapperID"));
+
+        String dsIRI =  dataSourceR.findByDataSourceID(objBody.getAsString("dataSourceID")).getIri();
+
+        RDFUtil.addTriple(dsIRI, wIRI, Namespaces.rdf.val() + "type", SourceGraph.WRAPPER.val());
+        RDFUtil.addTriple(dsIRI, dsIRI, SourceGraph.HAS_WRAPPER.val(), wIRI);
+        ((JSONArray) objBody.get("attributes")).forEach(attribute -> {
+            String attName = ((JSONObject) attribute).getAsString("name");
+            //String attIRI = dsIRI + "/" + wrapperName + "." + attName/*.trim().replace(" ", "")*/;
+            String attIRI = dsIRI + "/" + attName/*.trim().replace(" ", "")*/;
+            RDFUtil.addTriple(dsIRI, attIRI, Namespaces.rdf.val() + "type", SourceGraph.ATTRIBUTE.val());
+            RDFUtil.addTriple(dsIRI, wIRI, SourceGraph.HAS_ATTRIBUTE.val(), attIRI);
+            //if (Boolean.parseBoolean(((JSONObject)attribute).getAsString("isID"))) {
+            //    RDFUtil.addTriple(S,attIRI,Namespaces.rdfs.val()+"subClassOf",Namespaces.sc.val()+"identifier");
+            //}
+        });
+
+        return objBody;
+    }
+
 
     public static JSONArray getWrapperAttributes(String iri) {
         JSONArray attributes = new JSONArray();

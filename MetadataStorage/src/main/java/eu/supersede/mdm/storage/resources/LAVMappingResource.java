@@ -3,6 +3,9 @@ package eu.supersede.mdm.storage.resources;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
+import eu.supersede.mdm.storage.db.mongo.models.LAVMappingModel;
+import eu.supersede.mdm.storage.db.mongo.repositories.LAVMappingRepository;
+import eu.supersede.mdm.storage.db.mongo.utils.UtilsMongo;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.service.impl.DeleteGlobalGraphServiceImpl;
 import eu.supersede.mdm.storage.service.impl.DeleteLavMappingServiceImpl;
@@ -18,6 +21,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.bson.Document;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -34,17 +38,19 @@ public class LAVMappingResource {
 
     private static final Logger LOGGER = Logger.getLogger(LAVMappingResource.class.getName());
 
+    @Inject
+    LAVMappingRepository LAVMappingR;
+
     @GET
     @Path("LAVMapping/")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public Response GET_LAVMapping() {
         LOGGER.info("[GET /LAVMapping/]");
-        MongoClient client = Utils.getMongoDBClient();
-        List<String> LAVMappings = Lists.newArrayList();
-        MongoCollections.getLAVMappingCollection(client).find().iterator().forEachRemaining(document -> LAVMappings.add(document.toJson()));
-        client.close();
-        return Response.ok(new Gson().toJson(LAVMappings)).build();
+
+        //TODO: (Javier) test when collection is empty
+        String json = UtilsMongo.serializeListJsonAsString(LAVMappingR.findAll());
+        return Response.ok(json).build();
     }
 
     @GET
@@ -54,11 +60,10 @@ public class LAVMappingResource {
     public Response GET_LAVMappingByID(@PathParam("LAVMappingID") String LAVMappingID) {
         LOGGER.info("[GET /LAVMapping/] LAVMappingID = " + LAVMappingID);
 
-        MongoClient client = Utils.getMongoDBClient();
-        Document query = new Document("LAVMappingID", LAVMappingID);
-        Document res = MongoCollections.getLAVMappingCollection(client).find(query).first();
-        client.close();
-        return Response.ok((res.toJson())).build();
+        LAVMappingModel mappping = LAVMappingR.findByLAVMappingID(LAVMappingID);
+        if(mappping != null )
+            return Response.ok(UtilsMongo.ToJsonString(mappping)).build();
+        return Response.status(404).build();
     }
 
     @POST

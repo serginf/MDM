@@ -4,6 +4,9 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import eu.supersede.mdm.storage.db.mongo.models.DataSourceModel;
+import eu.supersede.mdm.storage.db.mongo.repositories.DataSourceRepository;
+import eu.supersede.mdm.storage.db.mongo.utils.UtilsMongo;
 import eu.supersede.mdm.storage.model.Namespaces;
 import eu.supersede.mdm.storage.model.metamodel.SourceGraph;
 import eu.supersede.mdm.storage.model.omq.wrapper_implementations.SQL_Wrapper;
@@ -21,6 +24,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.bson.Document;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -36,17 +40,19 @@ public class DataSourceResource {
 
     private static final Logger LOGGER = Logger.getLogger(DataSourceResource.class.getName());
 
+    @Inject
+    DataSourceRepository dataSourceR;
+
     @GET
     @Path("dataSource/")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public Response GET_dataSource() {
         System.out.println("[GET /GET_dataSource/]");
-        MongoClient client = Utils.getMongoDBClient();
-        List<String> dataSources = Lists.newArrayList();
-        MongoCollections.getDataSourcesCollection(client).find().iterator().forEachRemaining(document -> dataSources.add(document.toJson()));
-        client.close();
-        return Response.ok(new Gson().toJson(dataSources)).build();
+
+        //TODO: (Javier) test when collection is empty
+        String json = UtilsMongo.serializeListJsonAsString(dataSourceR.findAll());
+        return Response.ok(json).build();
     }
 
     @GET
@@ -55,11 +61,11 @@ public class DataSourceResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response GET_dataSourceByID(@PathParam("dataSourceID") String dataSourceID) {
         System.out.println("[GET /dataSource/] dataSourceID = " + dataSourceID);
-        MongoClient client = Utils.getMongoDBClient();
-        Document query = new Document("dataSourceID", dataSourceID);
-        Document res = MongoCollections.getDataSourcesCollection(client).find(query).first();
-        client.close();
-        return Response.ok((res.toJson())).build();
+
+        DataSourceModel dataSource = dataSourceR.findByDataSourceID(dataSourceID);
+        if(dataSource != null )
+            return Response.ok(UtilsMongo.ToJsonString(dataSource)).build();
+        return Response.status(404).build();
     }
 
     @POST
@@ -68,20 +74,19 @@ public class DataSourceResource {
     public Response POST_dataSource(String body) {
         System.out.println("[POST /dataSource/] body = " + body);
         JSONObject objBody = (JSONObject) JSONValue.parse(body);
-        MongoClient client = Utils.getMongoDBClient();
         String dsName = objBody.getAsString("name").trim().replace(" ","");
         String iri = SourceGraph.DATA_SOURCE.val()+"/"+dsName;
         //Save metadata
         objBody.put("dataSourceID", UUID.randomUUID().toString().replace("-",""));
         objBody.put("iri", iri);
         objBody.put("bootstrappingType", "manual");
-        MongoCollections.getDataSourcesCollection(client).insertOne(Document.parse(objBody.toJSONString()));
+
+        dataSourceR.create(objBody.toJSONString());
 
         RDFUtil.addTriple(iri, iri, Namespaces.rdf.val()+"type", SourceGraph.DATA_SOURCE.val());
 
         objBody.put("rdf",RDFUtil.getRDFString(iri));
 
-        client.close();
         return Response.ok(objBody.toJSONString()).build();
     }
 

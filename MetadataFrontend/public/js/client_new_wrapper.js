@@ -152,7 +152,7 @@ $(function() {
                 if(dataSources[i].dataSourceID == $(this).val()) currDataSource = dataSources[i];
             }
             $("#sparksqlQueryForm").hide(); $("#mongodbQueryForm").hide(); $("#cypherQueryForm").hide(); $("#jsonForm").hide();
-            $("#restapiQueryForm").hide(); $("#sqlQueryForm").hide();
+            $("#restapiQueryForm").hide(); $("#sqlQueryForm").hide(); $("#csvForm").hide();
 
             if (currDataSource.type == "avro") query = $("#sparksqlQueryForm").show();
             else if (currDataSource.type == "csv") $("#csvForm").show();

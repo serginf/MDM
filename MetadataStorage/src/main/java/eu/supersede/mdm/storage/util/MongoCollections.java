@@ -7,6 +7,7 @@ import org.bson.Document;
 
 public class MongoCollections {
 
+    //TODO: (JAVIER) Delete this methods when mongo persistence layer is finished.
     public static MongoCollection<Document> getGlobalGraphCollection(MongoClient client) {
         return client.getDatabase(ConfigManager.getProperty("system_metadata_db_name")).getCollection("globalGraphs");
     }
