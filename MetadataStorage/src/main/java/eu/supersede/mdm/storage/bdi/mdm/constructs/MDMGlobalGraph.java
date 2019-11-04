@@ -2,6 +2,7 @@ package eu.supersede.mdm.storage.bdi.mdm.constructs;
 
 import com.mongodb.MongoClient;
 import eu.supersede.mdm.storage.model.Namespaces;
+import eu.supersede.mdm.storage.model.graph.RelationshipEdge;
 import eu.supersede.mdm.storage.model.metamodel.GlobalGraph;
 import eu.supersede.mdm.storage.parsers.OWLtoWebVOWL;
 import eu.supersede.mdm.storage.util.MongoCollections;
@@ -16,8 +17,12 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.bson.Document;
+import org.jgrapht.Graph;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
+import org.jgrapht.graph.SimpleDirectedGraph;
 import org.semarglproject.vocab.RDF;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -103,6 +108,10 @@ public class MDMGlobalGraph {
         //handleSameAsEdges(mdmGlobalGraph);
         //Query to connect classes having subClassOf relationships
         connectSuperAndSubClasses(mdmGlobalGraph);
+
+        //Sergi added
+        //This is to create artificial concepts grouping all equivalent features
+        //processEquivalentProperties(mdmGlobalGraph);
 
         mdmGlobalGraph.commit();
         mdmGlobalGraph.close();
@@ -265,6 +274,31 @@ public class MDMGlobalGraph {
             //System.out.print(triple.getResource("s") + "\t");
             //System.out.print(triple.get("p") + "\t" + triple.get("o")  + "\n");
             mdmGlobalGraph.add(triple.getResource("s"), new PropertyImpl(triple.get("p").toString()), triple.getResource("o"));
+        });
+    }
+
+    private void processEquivalentProperties(Model mdmGlobalGraph) {
+        String getEquivProperties = "SELECT * WHERE { GRAPH <" + bdiGgIri + "> { ?s owl:equivalentProperty ?o }}";
+
+        //Connect in a graph equivalent properties
+        //each connected component will represent a concept
+        Graph<String, RelationshipEdge> G = new SimpleDirectedGraph<>(RelationshipEdge.class);
+
+        RDFUtil.runAQuery(RDFUtil.sparqlQueryPrefixes + getEquivProperties, bdiGgIri).forEachRemaining(triple -> {
+            G.addVertex(triple.getResource("s").getURI());
+            G.addVertex(triple.getResource("o").getURI());
+            G.addEdge(triple.getResource("s").getURI(),triple.getResource("o").getURI(),
+                    new RelationshipEdge(UUID.randomUUID().toString()));
+//            mdmGlobalGraph.add(triple.getResource("s"), new PropertyImpl(triple.get("p").toString()), triple.getResource("o"));
+        });
+        ConnectivityInspector<String, RelationshipEdge> c = new ConnectivityInspector<>(G);
+        c.connectedSets().forEach(s -> {
+            String concept = UUID.randomUUID().toString();
+            mdmGlobalGraph.add(new ResourceImpl(concept),new PropertyImpl(RDF.TYPE),  new ResourceImpl(GlobalGraph.CONCEPT.val()));
+            s.forEach(f -> {
+                mdmGlobalGraph.add(new ResourceImpl(concept),new PropertyImpl(GlobalGraph.HAS_FEATURE.val()),
+                        new ResourceImpl(f));
+            });
         });
     }
 

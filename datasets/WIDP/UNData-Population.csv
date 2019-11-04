@@ -1,4 +1,4 @@
-Country,Population aged 0 to 14 years old percentage,Population aged 60 or more years old percentage,Population density,Population mid-year estimates millions,Population,Population mid-year estimates for females millions,Population mid-year estimates for males millions,Sex ratio males per 100 females
+Country,PopulationYoung_Percentage,PopulationOld_Percentage,PopulationDensity,PopulationMidYear,Population,PopulationMidYear_Females,PopulationMidYear_Males,SexRatio_MalesPer100Females
 Afghanistan,42.6,4.2,55.7,36.37,36370000,17.64,18.74,106.2
 Africa,40.6,5.5,43.4,1287.92,1287920000,644.62,643.3,99.8
 Albania,17.1,19.7,107.1,2.93,2930000,1.45,1.48,101.8

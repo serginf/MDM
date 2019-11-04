@@ -11,9 +11,9 @@ import java.util.Map;
 public class measureMedians {
 
     public static void main(String[] args) throws Exception {
-        System.out.println("UPPER_BOUND_FEATURES_IN_G;MAX_EDGES_IN_QUERY;MAX_WRAPPERS;COVERED_FEATURES_QUERY;COVERED_FEATURES_WRAPPER;SIZE_OF_INTERMEDIATE_RESULTS;SIZE_OF_CQs;PROCESSING_TIME");
+        System.out.println("|F|;|E_Q|;|W|;|E_W|;Frac_Q;Frac_W;SIZE_OF_INTERMEDIATE_RESULTS;|UCQ|;R (ms)");
 
-        String path = "/home/snadal/Desktop/experiments/17desembre/allexperiments.txt";
+        String path = "/home/snadal/Desktop/20191001.txt";
 
         Map<String, List<String>> allData = Maps.newHashMap();
         Files.readAllLines(new File(path).toPath()).forEach(line -> {
@@ -30,6 +30,17 @@ public class measureMedians {
         });
 
         allData.forEach((dimension,values) -> {
+            int X = 0, Y = 0, Z = 0;
+            int N = 0;
+            for(String v : values) {
+                X += Integer.parseInt(v.split(";")[0]);
+                Y += Integer.parseInt(v.split(";")[1]);
+                Z += Integer.parseInt(v.split(";")[2]);
+                N++;
+            };
+            System.out.print(dimension+";");
+            System.out.println((double)(X)/(double)(N)+";"+(double)(Y)/(double)(N)+";"+(double)(Z)/(double)(N));
+            /*
             values.sort((s, t1) -> {
                 int a = Integer.parseInt(s.split(";")[2]);
                 int b = Integer.parseInt(t1.split(";")[2]);
@@ -38,7 +49,7 @@ public class measureMedians {
 
             System.out.print(dimension+";");
             if (values.size() == 1 || values.size() == 2) System.out.println(values.get(0));
-            else System.out.println(values.get(1));
+            else System.out.println(values.get(1));*/
         });
 
     }

@@ -1,4 +1,4 @@
-Country of origin,Asylum seekers - including pending cases number,International migrant stock - Both sexes percentage,International migrant stock - Both sexes number,International migrant stock - Female perc total Population,International migrant stock - Male perc total Population,Other of concern to UNHCR number,Total population of concern to UNHCR number,Total refugees and people in refugee-like situations number
+Country_Origin,AsylumSeekersNumber,InternationalMigrantStock_Percentage,InternationalMigrantStock_BothSexesNumber,InternationalMigrantStock_FemalePercentage,InternationalMigrantStock_MalePercentage,OtherOfConcernToUNHCR,TotalPopulationOfConcern,TotalRefugees
 Afghanistan,205,0.4,133612,0.4,0.4,2101881,2189205,87119
 Africa,589255,2,24650223,1.8,2.1,15203541,21927197,6134401
 Albania,2743,1.8,52484,1.8,1.8,4860,7716,113
