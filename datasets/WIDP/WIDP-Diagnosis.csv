@@ -1,4 +1,4 @@
-Diagnosis origin,year of diagnosis,Number_of_cases_diagnosed,Avg of CH_PR_16_YEAR-TREATMENT-START,Sum of CH_PR_16_#ABARAX-BOTTLES,Average of CH_PR_16_BODY-WEIGHT,Sum of CH_PR_16_#LAMPIT-BOTTLES
+Diagnosis_Country,Diagnosis_Year,Number_of_cases_diagnosed,AvgYearTreatmentStart,ABARAX_BOTTLES,BODY_WEIGHT,LAMPIT_BOTTLES
 Australia,2014,2,2016,0,12,4
 French Republic,2013,232,2016,50,45,82
 Kingdom of Denmark,2010,34,2012,36,86,87
