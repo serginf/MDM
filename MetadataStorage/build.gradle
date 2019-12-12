@@ -34,10 +34,10 @@ shadowJar {
     classifier = null
     version = null
     manifest {
-        //attributes 'Main-Class': 'eu.supersede.mdm.storage.ApacheMain'
+        attributes 'Main-Class': 'eu.supersede.mdm.storage.ApacheMain'
 
         //For experiments
-        attributes 'Main-Class': 'eu.supersede.mdm.storage.experiments.ExperimentsRunner'
+        //attributes 'Main-Class': 'eu.supersede.mdm.storage.experiments.ExperimentsRunner'
     }
     append 'META-INF/services/org.apache.jena.system.JenaSubsystemLifecycle'
 }
@@ -130,5 +130,6 @@ dependencies {
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
 
+    compile files('lib/CoreCover.jar')
 
 }
